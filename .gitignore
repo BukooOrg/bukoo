@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Production
+/dist
+/build
+/out
+
+# Next.js
+/.next/
+
+# Vite
+vite.config.js.timestamp-*
+
+# Misc
+.DS_Store
+Thumbs.db
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+backend/.env
+
+# Vercel
+.vercel
+
+# Typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Python (Backend)
+backend/venv/
+backend/.venv/
+backend/env/
+backend/__pycache__/
+backend/*.py[cod]
+backend/*$py.class
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/data/*.db
+
+# IDEs
+.vscode/
+.idea/
