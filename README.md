@@ -18,6 +18,8 @@ A premium, editorial-minimalism bookstore ecommerce application built with React
 - [Python](https://www.python.org/) (3.9+)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (for the database)
 
+# ❗❗❗❗❗Dont do 1 and 2 first, unfinished ❗❗❗❗❗
+
 ### 1. Database Setup
 
 The project uses PostgreSQL. The easiest way to run it is via Docker:
