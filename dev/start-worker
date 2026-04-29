@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+show_help() {
+  echo "Usage: $0 [OPTIONS]"
+  echo ""
+  echo "Options:"
+  echo "  -q, --queues QUEUES    Comma-separated list of queues to process"
+  echo "  -c, --concurrency NUM  Number of worker processes (default: 1)"
+  echo "  -P, --pool POOL        Pool implementation (default: solo)"
+  echo "  --loglevel LEVEL       Log level (default: INFO)"
+  echo "  -e, --env-file FILE    Path to an env file to source before starting"
+  echo "  -h, --help             Show this help message"
+  echo ""
+  echo "Examples:"
+  echo "  $0"
+  echo "  $0 --queues mail"
+  echo "  $0 --queues mail,default --concurrency 2"
+  echo "  $0 --queues mail --concurrency 4 --pool prefork"
+  echo ""
+  echo "Available queues:"
+  echo "  default   - General-purpose catch-all queue"
+  echo "  mail      - Email notification tasks"
+}
+
+QUEUES=""
+CONCURRENCY=1
+POOL="solo"
+LOGLEVEL="INFO"
+ENV_FILE=""
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -q|--queues)
+      QUEUES="$2"
+      shift 2
+      ;;
+    -c|--concurrency)
+      CONCURRENCY="$2"
+      shift 2
+      ;;
+    -P|--pool)
+      POOL="$2"
+      shift 2
+      ;;
+    --loglevel)
+      LOGLEVEL="$2"
+      shift 2
+      ;;
+    -e|--env-file)
+      ENV_FILE="$2"
+      shift 2
+      ;;
+    -h|--help)
+      show_help
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1"
+      show_help
+      exit 1
+      ;;
+  esac
+done
+
+SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+cd "$SCRIPT_DIR/../backend"
+
+if [[ -n "${ENV_FILE}" ]]; then
+  if [[ ! -f "${ENV_FILE}" ]]; then
+    echo "Env file ${ENV_FILE} not found"
+    exit 1
+  fi
+  echo "Loading environment variables from ${ENV_FILE}"
+  set -a
+  source "${ENV_FILE}"
+  set +a
+fi
+
+if [[ -z "${QUEUES}" ]]; then
+  QUEUES="mail,default"
+  echo "No queues specified, using defaults: ${QUEUES}"
+else
+  echo "Using specified queues: ${QUEUES}"
+fi
+
+echo "Starting Celery worker with:"
+echo "  Queues:      ${QUEUES}"
+echo "  Concurrency: ${CONCURRENCY}"
+echo "  Pool:        ${POOL}"
+echo "  Log Level:   ${LOGLEVEL}"
+
+uv run \
+  celery -A app.infrastructure.tasks.celery_app worker \
+  -P "${POOL}" -c "${CONCURRENCY}" --loglevel "${LOGLEVEL}" -Q "${QUEUES}"

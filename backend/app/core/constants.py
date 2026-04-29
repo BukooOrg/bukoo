@@ -1,0 +1,54 @@
+"""
+Application-wide enumerations and constants.
+No external dependencies — safe to import from any layer.
+"""
+
+from __future__ import annotations
+
+from enum import StrEnum
+
+
+class UserRole(StrEnum):
+    ADMIN = "admin"
+    USER = "user"
+
+
+class UserStatus(StrEnum):
+    PENDING = "pending"
+    ACTIVE = "active"
+
+
+class OrderStatus(StrEnum):
+    PENDING = "pending"
+    PAID = "paid"
+    SHIPPED = "shipped"
+    DELIVERED = "delivered"
+    CANCELLED = "cancelled"
+
+
+class PaymentStatus(StrEnum):
+    PENDING = "pending"
+    SUCCESS = "success"
+    FAILED = "failed"
+
+
+class PaymentProvider(StrEnum):
+    # RAZORPAY = "razorpay"
+    pass
+
+
+class ObjectStorage(StrEnum):
+    MINIO = "minio"
+    LOCAL = "local"
+    S3 = "s3"
+
+
+class AuthProvider(StrEnum):
+    CREDENTIAL = "credential"
+    GOOGLE = "google"
+
+
+class NotificationStatus(StrEnum):
+    PENDING = "pending"
+    SENT = "sent"
+    FAILED = "failed"

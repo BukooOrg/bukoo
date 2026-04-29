@@ -1,0 +1,73 @@
+# ========================
+# GENERAL SETTINGS
+# ========================
+[general]
+ignore=body-is-missing
+
+# ========================
+# TITLE (HEADER) RULES
+# ========================
+
+# header-max-length: 100
+[title-max-length]
+line-length=100
+
+# type + scope + subject format
+# Equivalent to:
+# type(scope): subject
+# build - affect build components like build tool, ci pipeline, dependencies, project version, etc
+# chore - miscellaneous commits e.g. modifying .gitignore
+# ci - affect operational components like infrastructure, deployment, backup, recovery
+# docs - affect documentation only
+# feat - add or remove a new feature to the app
+# fix - fix a bug in the app
+# perf - rewrite/restructure your code, however do not change any app behavior
+# refactor - special refactor commits that improve performance, reorganizing modules
+# revert - revert a previous commit
+# security - commit related to security
+# style - commit do not affect the meaning (white-space, formatting, missing semi-colons, etc)
+# test - add missing tests or correcting existing tests
+# translation - commit related to translation
+[title-match-regex]
+regex = ^(build|chore|ci|docs|feat|fix|perf|refactor|revert|security|style|test|translation)(\([a-z0-9\-]+\))?: .+
+
+# subject-empty (enforced via regex above)
+
+# This rule automatically forbids: ?:!.,;
+[title-trailing-punctuation]
+
+# ========================
+# BODY RULES
+# ========================
+
+# body-leading-blank
+[body-first-line-empty]
+
+# body-max-line-length: 100
+[body-max-line-length]
+line-length=100
+
+# ========================
+# FOOTER RULES
+# ========================
+
+# ========================
+# TYPE CASE
+# ========================
+
+# enforce lowercase type via regex already
+
+# ========================
+# SCOPE CASE
+# ========================
+
+# enforce lowercase scope via regex:
+# (\([a-z0-9\-]+\))
+
+# ========================
+# EXTRA STRICTNESS (OPTIONAL)
+# ========================
+
+# prevent empty subject
+[title-min-length]
+min-length=10
