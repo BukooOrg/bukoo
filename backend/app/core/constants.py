@@ -37,9 +37,8 @@ class PaymentProvider(StrEnum):
     pass
 
 
-class ObjectStorage(StrEnum):
+class ObjectStorageType(StrEnum):
     MINIO = "minio"
-    LOCAL = "local"
     S3 = "s3"
 
 

@@ -1,17 +1,14 @@
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
+from app.core.constants import AuthProvider
+
 
 @dataclass
 class AccountEntity:
-    """
-    Represents one OAuth integration row.
-    provider + open_id uniquely identifies an external OAuth identity.
-    """
-
     _id: str
     _user_id: str
-    _provider: str
+    _provider: AuthProvider
     _open_id: str
     _encrypted_token: str | None
     _created_at: datetime
@@ -27,7 +24,7 @@ class AccountEntity:
         return self._user_id
 
     @property
-    def provider(self) -> str:
+    def provider(self) -> AuthProvider:
         return self._provider
 
     @property

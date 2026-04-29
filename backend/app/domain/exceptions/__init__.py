@@ -24,7 +24,7 @@ from .payment import (
     PaymentCreationError,
     PaymentVerificationError,
 )
-from .storage import StorageUploadError
+from .storage import StorageNotFoundError, StorageUploadError
 
 __all__ = [
     "DomainException",
@@ -44,4 +44,5 @@ __all__ = [
     "PaymentCreationError",
     "PaymentVerificationError",
     "StorageUploadError",
+    "StorageNotFoundError",
 ]

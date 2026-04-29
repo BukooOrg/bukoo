@@ -8,7 +8,7 @@ instantiated exactly once per process.
 from __future__ import annotations
 
 import os
-from enum import Enum
+from enum import StrEnum
 from functools import lru_cache
 
 from pydantic import (
@@ -20,8 +20,12 @@ from pydantic import (
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.core.constants import ObjectStorageType
 
-class EnvironmentOption(str, Enum):
+from .util import size_to_bytes
+
+
+class EnvironmentOption(StrEnum):
     LOCAL = "development"
     STAGING = "staging"
     PRODUCTION = "production"
@@ -226,12 +230,33 @@ class PostgresConfig(DatabaseConfig):
         default="postgresql+asyncpg://",
     )
 
-    @computed_field  # type: ignore[prop-decorator]
+    @computed_field
     @property
     def POSTGRES_URI(self) -> str:
         credentials = f"{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
         location = f"{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
         return f"{credentials}@{location}"
+
+
+class ObjectStorageConfig(BaseSettings):
+    STORAGE_TYPE: ObjectStorageType = Field(
+        description="Type of storage to use.Options: 'minio', s3",
+        default=ObjectStorageType.MINIO,
+    )
+    STREAM_CHUNK_SIZE: str = Field(
+        description="Chunk size used by load_stream"
+        "Default is 8MB that is matched with the S3 multipart minimum",
+        default="8mb",
+    )
+
+    @computed_field
+    @property
+    def STREAM_CHUNK_SIZE_BYTES(self) -> int:
+        default_size_bytes = 8 * 1024**2  # 8mb
+
+        size_bytes = size_to_bytes(self.STREAM_CHUNK_SIZE) or default_size_bytes
+
+        return max(default_size_bytes, size_bytes)
 
 
 class MinioConfig(BaseSettings):
@@ -341,6 +366,7 @@ class Config(
     FileLoggerConfig,
     ConsoleLoggerConfig,
     PostgresConfig,
+    ObjectStorageConfig,
     MinioConfig,
     S3StorageConfig,
     GoogleOAuthConfig,

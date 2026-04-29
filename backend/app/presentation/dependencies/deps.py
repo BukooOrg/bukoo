@@ -13,8 +13,8 @@ from app.application.interfaces.email_notification_service import (
 from app.application.interfaces.password_hasher import IPasswordHasher
 from app.application.interfaces.storage_service import IStorageService
 from app.application.interfaces.token_service import ITokenService
-from app.core.config import EnvironmentOption, get_configs
-from app.core.constants import UserRole
+from app.core.config import get_configs
+from app.core.constants import ObjectStorageType, UserRole
 from app.domain.entities.user import UserEntity
 from app.domain.exceptions import InvalidTokenError, TokenExpiredError
 from app.domain.repositories.account_repository import IAccountRepository
@@ -85,9 +85,14 @@ GoogleStrategy = Annotated[IAuthStrategy, Depends(get_google_strategy)]
 # Storage
 def get_storage_service() -> IStorageService:
     configs = get_configs()
-    if configs.ENVIRONMENT == EnvironmentOption.PRODUCTION:
-        return S3Storage()
-    return MinIOStorage()
+
+    match configs.STORAGE_TYPE:
+        case ObjectStorageType.MINIO:
+            return MinIOStorage()
+        case ObjectStorageType.S3:
+            return S3Storage()
+        case _:
+            raise ValueError(f"unsupported storage type {configs.STORAGE_TYPE}")
 
 
 StorageService = Annotated[IStorageService, Depends(get_storage_service)]
