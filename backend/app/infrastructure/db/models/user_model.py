@@ -59,7 +59,7 @@ class UserModel(DefaultFieldMixin, SoftDeleteMixin):
     role: Mapped[UserRole] = mapped_column(
         EnumText(UserRole, length=50), nullable=False, default=UserRole.USER
     )
-    status: Mapped[str] = mapped_column(
+    status: Mapped[UserStatus] = mapped_column(
         EnumText(UserStatus, length=50),
         nullable=False,
         default=UserStatus.PENDING,

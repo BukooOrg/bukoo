@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import UTC
+
 
 def size_to_bytes(size: int | float | str) -> int | None:
     """
@@ -34,3 +36,12 @@ def size_to_bytes(size: int | float | str) -> int | None:
     except ValueError as e:
         print(f"Error: {e}")
         return None
+
+
+def _utc(dt: object) -> object:
+    """Attach UTC timezone to a naive datetime returned by the DB driver."""
+    from datetime import datetime
+
+    if isinstance(dt, datetime) and dt.tzinfo is None:
+        return dt.replace(tzinfo=UTC)
+    return dt

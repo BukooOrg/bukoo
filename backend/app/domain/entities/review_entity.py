@@ -16,6 +16,7 @@ class ReviewEntity:
     _rating: int | None
     _comment: str | None
     _created_at: datetime
+    _updated_at: datetime
     _deleted_at: datetime | None
     # FK kept for reference; user may have been deleted (SET NULL in DB).
     _user_id: str | None = None
@@ -50,6 +51,10 @@ class ReviewEntity:
     @property
     def created_at(self) -> datetime:
         return self._created_at
+
+    @property
+    def updated_at(self) -> datetime:
+        return self._updated_at
 
     @property
     def deleted_at(self) -> datetime | None:
