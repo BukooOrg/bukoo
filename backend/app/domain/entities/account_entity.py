@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
@@ -9,7 +11,7 @@ class AccountEntity:
     _id: str
     _user_id: str
     _provider: AuthProvider
-    _open_id: str
+    _open_id: str | None
     _encrypted_token: str | None
     _created_at: datetime
     _updated_at: datetime
@@ -28,7 +30,7 @@ class AccountEntity:
         return self._provider
 
     @property
-    def open_id(self) -> str:
+    def open_id(self) -> str | None:
         return self._open_id
 
     @property
@@ -43,16 +45,8 @@ class AccountEntity:
     def updated_at(self) -> datetime:
         return self._updated_at
 
-    # setters
-    @encrypted_token.setter
-    def encrypted_token(self, value: str | None) -> None:
-        self._encrypted_token = value
-
-    @updated_at.setter
-    def updated_at(self, value: datetime) -> None:
-        self._updated_at = value
-
     # methods
     def update_token(self, encrypted_token: str) -> None:
-        self.encrypted_token = encrypted_token
-        self.updated_at = datetime.now(UTC)
+        """Replace the stored OAuth token and stamp updated_at."""
+        self._encrypted_token = encrypted_token
+        self._updated_at = datetime.now(UTC)

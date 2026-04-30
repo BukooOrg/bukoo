@@ -25,10 +25,10 @@ class UserMapper:
             status=UserStatus(model.status),
             hashed_password=model.hashed_password,
             avatar_url=model.avatar_url,
-            last_login_at=_utc(model.last_login_at),  # type: ignore[arg-type]
-            created_at=_utc(model.created_at),  # type: ignore[arg-type]
-            updated_at=_utc(model.updated_at),  # type: ignore[arg-type]
-            deleted_at=_utc(model.deleted_at),  # type: ignore[arg-type]
+            last_login_at=_utc(model.last_login_at),
+            created_at=_utc(model.created_at),
+            updated_at=_utc(model.updated_at),
+            deleted_at=_utc(model.deleted_at),
         )
 
     @staticmethod
@@ -53,8 +53,8 @@ class AccountMapper:
             provider=model.provider,
             open_id=model.open_id,
             encrypted_token=model.encrypted_token,
-            created_at=_utc(model.created_at),  # type: ignore[arg-type]
-            updated_at=_utc(model.updated_at),  # type: ignore[arg-type]
+            created_at=_utc(model.created_at),
+            updated_at=_utc(model.updated_at),
         )
 
     @staticmethod

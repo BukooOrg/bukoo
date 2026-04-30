@@ -76,10 +76,9 @@ class OrderModel(DefaultFieldMixin):
         lazy="selectin",
         init=False,
     )
-    payment: Mapped[PaymentModel | None] = relationship(
+    payments: Mapped[list[PaymentModel]] = relationship(
         "PaymentModel",
         back_populates="order",
-        uselist=False,
         cascade="all, delete-orphan",
         lazy="selectin",
         init=False,

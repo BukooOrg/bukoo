@@ -51,7 +51,7 @@ class CartItemModel(DefaultFieldMixin):
         back_populates="cart_items",
         init=False,
     )
-    book: Mapped["BookModel"] = relationship(
+    book: Mapped[BookModel] = relationship(
         "BookModel",
         lazy="selectin",
         init=False,

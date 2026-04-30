@@ -37,9 +37,9 @@ class WishlistModel(DefaultFieldMixin):
         back_populates="wishlist",
         init=False,
     )
-    items: Mapped[list[WishlistItemModel]] = relationship(
+    wishlist_items: Mapped[list[WishlistItemModel]] = relationship(
         "WishlistItemModel",
-        back_populates="wishlist_items",
+        back_populates="wishlist",
         cascade="all, delete-orphan",
         lazy="selectin",
         init=False,

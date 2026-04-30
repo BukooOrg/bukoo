@@ -33,7 +33,7 @@ class AccountModel(DefaultFieldMixin):
     provider: Mapped[AuthProvider] = mapped_column(
         EnumText(AuthProvider, length=50), nullable=False
     )
-    open_id: Mapped[str] = mapped_column(String(255), nullable=False)
+    open_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
     encrypted_token: Mapped[str | None] = mapped_column(
         String(2000), nullable=True, default=None
     )

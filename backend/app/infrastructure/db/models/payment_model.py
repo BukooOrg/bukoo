@@ -46,7 +46,7 @@ class PaymentModel(DefaultFieldMixin):
     )
 
     order_id: Mapped[str] = mapped_column(
-        String(255),  # FK → orders.id VARCHAR(255)
+        String(255),
         ForeignKey("orders.id", ondelete="CASCADE"),
         nullable=False,
         init=False,
@@ -64,7 +64,7 @@ class PaymentModel(DefaultFieldMixin):
 
     order: Mapped[OrderModel] = relationship(
         "OrderModel",
-        back_populates="payment",
+        back_populates="payments",
         init=False,
     )
 
