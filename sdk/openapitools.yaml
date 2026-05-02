@@ -1,0 +1,16 @@
+generatorName: typescript-fetch
+inputSpec: ./openapi.json
+outputDir: ./javascript-client
+additionalProperties:
+  npmName: "@bukoo/api-client"
+  npmVersion: "0.1.0"
+  supportsES6: true
+  typescriptThreePlus: true
+  withSeparateModelsAndApi: true
+  modelPackage: models
+  apiPackage: apis
+  enumPropertyNaming: UPPERCASE
+  stringEnums: true
+  generateAliasAsModel: true
+  useSingleRequestParameter: true
+  prefixParameterInterfaces: false

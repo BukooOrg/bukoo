@@ -31,7 +31,9 @@ from app.presentation.schemas.auth_schema import (
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post("/register", response_model=TokenResponse, status_code=201)
+@router.post(
+    "/register", response_model=TokenResponse, status_code=201, operation_id="register"
+)
 async def register(
     body: RegisterRequest,
     db_session: DbSession,
@@ -57,7 +59,7 @@ async def register(
     return TokenResponse(access_token=result.access_token)
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login", response_model=TokenResponse, operation_id="login")
 async def login(
     body: LoginRequest,
     db_session: DbSession,
@@ -71,7 +73,9 @@ async def login(
     return TokenResponse(access_token=result.access_token)
 
 
-@router.post("/login/google", response_model=TokenResponse)
+@router.post(
+    "/login/google", response_model=TokenResponse, operation_id="loginWithGoogle"
+)
 async def google_login(
     body: GoogleLoginRequest,
     db_session: DbSession,

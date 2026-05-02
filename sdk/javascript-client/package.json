@@ -1,0 +1,14 @@
+{
+  "$schema": "https://www.schemastore.org/package.json",
+  "name": "@bukoo/api-client",
+  "version": "0.1.0",
+  "description": "Generated TypeScript SDK for Bukoo API",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

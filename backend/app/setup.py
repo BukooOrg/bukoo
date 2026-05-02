@@ -158,6 +158,110 @@ class AppFactory:
 
         return lifespan
 
+    @staticmethod
+    def _patch_openapi_response_schemas(application: FastAPI) -> None:
+        """Align OpenAPI response schemas with the actual HTTP envelope.
+
+        - 2xx  → ResponseWrapper{Inner}  {success, data, meta}
+        - 4xx/5xx → ErrorResponse        {success, error, meta}
+        """
+        original = application.openapi
+
+        def patched_openapi() -> dict[str, Any]:
+            if application.openapi_schema:
+                return application.openapi_schema
+
+            schema = original()
+            schema.setdefault("components", {}).setdefault("schemas", {})
+            components = schema["components"]["schemas"]
+
+            # shared meta
+            components["ResponseMeta"] = {
+                "title": "ResponseMeta",
+                "type": "object",
+                "required": ["requestId", "timestamp"],
+                "properties": {
+                    "requestId": {"title": "Request Id", "type": "string"},
+                    "timestamp": {"title": "Timestamp", "type": "string"},
+                },
+            }
+
+            # error schemas
+            components["ValidationErrorDetail"] = {
+                "title": "ValidationErrorDetail",
+                "type": "object",
+                "required": ["field", "message", "code"],
+                "properties": {
+                    "field": {"title": "Field", "type": "string"},
+                    "message": {"title": "Message", "type": "string"},
+                    "code": {"title": "Code", "type": "string"},
+                },
+            }
+            components["ErrorBody"] = {
+                "title": "ErrorBody",
+                "type": "object",
+                "required": ["code", "message"],
+                "properties": {
+                    "code": {"title": "Code", "type": "string"},
+                    "message": {"title": "Message", "type": "string"},
+                    "details": {"title": "Details"},
+                },
+            }
+            components["ErrorResponse"] = {
+                "title": "ErrorResponse",
+                "type": "object",
+                "required": ["success", "error", "meta"],
+                "properties": {
+                    "success": {"title": "Success", "type": "boolean"},
+                    "error": {"$ref": "#/components/schemas/ErrorBody"},
+                    "meta": {"$ref": "#/components/schemas/ResponseMeta"},
+                },
+            }
+
+            error_schema_ref = {"$ref": "#/components/schemas/ErrorResponse"}
+
+            for path_item in schema.get("paths", {}).values():
+                for operation in path_item.values():
+                    if not isinstance(operation, dict):
+                        continue
+                    for status_str, resp in operation.get("responses", {}).items():
+                        code = int(status_str)
+
+                        if 200 <= code < 300:
+                            for media in resp.get("content", {}).values():
+                                if "schema" not in media:
+                                    continue
+                                data_ref = media["schema"]
+                                inner_name = (
+                                    data_ref.get("$ref", "").split("/")[-1] or "Data"
+                                )
+                                media["schema"] = {
+                                    "title": f"ResponseWrapper{inner_name}",
+                                    "type": "object",
+                                    "required": ["success", "data", "meta"],
+                                    "properties": {
+                                        "success": {
+                                            "title": "Success",
+                                            "type": "boolean",
+                                        },
+                                        "data": data_ref,
+                                        "meta": {
+                                            "$ref": "#/components/schemas/ResponseMeta"
+                                        },
+                                    },
+                                }
+
+                        elif code >= 400:
+                            if "content" not in resp:
+                                resp["content"] = {"application/json": {}}
+                            for media in resp["content"].values():
+                                media["schema"] = error_schema_ref
+
+            application.openapi_schema = schema
+            return schema
+
+        application.openapi = patched_openapi  # type: ignore[method-assign]
+
     # main entry
     @staticmethod
     def create_application(
@@ -185,15 +289,16 @@ class AppFactory:
     ) -> FastAPI:
         # --- before creating application ---
         if isinstance(configs, AppConfig):
-            to_update = {
+            to_update: dict[str, Any] = {
                 "title": configs.APP_NAME,
                 "description": configs.APP_DESCRIPTION,
                 "contact": {
                     "name": configs.CONTACT_NAME,
                     "email": configs.CONTACT_EMAIL,
                 },
-                "license_info": {"name": configs.LICENSE_NAME},
             }
+            if configs.LICENSE_NAME is not None:
+                to_update["license_info"] = {"name": configs.LICENSE_NAME}
             kwargs.update(to_update)
 
         if isinstance(configs, EnvironmentConfig):
@@ -256,5 +361,7 @@ class AppFactory:
                 return out
 
             application.include_router(docs_router)
+
+        AppFactory._patch_openapi_response_schemas(application)
 
         return application

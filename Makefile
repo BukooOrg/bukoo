@@ -1,5 +1,6 @@
 .PHONY: dev worker lint format format-check typecheck check migrate upgrade downgrade \
-        test test-unit test-integration test-cov clean install seed-init help
+        test test-unit test-integration test-cov clean install seed-init \
+        export-spec generate-sdk help
 
 # Default target - show help
 .DEFAULT_GOAL := help
@@ -64,3 +65,21 @@ clean: ## Remove caches and build artifacts
 
 seed-init: ## Seed with initial data
 	cd backend && uv run python -m app.infrastructure.db.seed
+
+# ── SDK generation ──────────────────────────────────────────────────────────
+SDK_DIR   := sdk
+SPEC_FILE := $(SDK_DIR)/openapi.json
+GEN_IMAGE := openapitools/openapi-generator-cli:v7.10.0
+
+export-spec: ## Export OpenAPI spec from FastAPI app (no server required)
+	cd backend && uv run python scripts/export_openapi.py --output ../$(SPEC_FILE)
+
+generate-sdk: export-spec ## Generate TypeScript SDK from OpenAPI spec
+	docker run --rm \
+	  -v "$(PWD)/$(SDK_DIR):/sdk" \
+	  $(GEN_IMAGE) generate \
+	  -i /sdk/openapi.json \
+	  -c /sdk/openapitools.yaml \
+	  -o /sdk/javascript-client
+	@echo "SDK generated at sdk/javascript-client"
+

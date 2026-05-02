@@ -23,6 +23,7 @@ htmlcov/
 .ruff_cache/
 .mypy_cache/
 .importlinter_cache/
+.cache
 
 # Testing & Coverage
 .pytest_cache/
@@ -79,6 +80,9 @@ yarn-error.log*
 
 # Docker
 *.log
+
+# SDK
+sdk/openapi.json
 
 # --------------------------------------------------------
 # Merging from legacy

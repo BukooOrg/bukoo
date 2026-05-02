@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class ErrorCode(str, Enum):
+class ErrorCode(StrEnum):
     # Generic
     INTERNAL_ERROR = "INTERNAL_ERROR"
     VALIDATION_ERROR = "VALIDATION_ERROR"

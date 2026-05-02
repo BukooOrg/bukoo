@@ -1,13 +1,30 @@
+import { ResponseError } from '@bukoo/api-client';
 import React, { useState, useEffect } from 'react';
 
 import { PageLayout } from '@/components/layout/page-layout';
 import { LatestProductCard } from '@/components/products/latest-product-card';
+import { healthApi } from '@/lib/apiClient';
 import { getCollectionProducts, getCollections } from '@/lib/sfcc';
 
 export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [_collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function healthCheck() {
+      try {
+        const res = await healthApi.healthCheck();
+        console.log(res);
+      } catch (err) {
+        if (err instanceof ResponseError) {
+          const body = await err.response.json();
+          console.error(body);
+        }
+      }
+    }
+    healthCheck();
+  }, []);
 
   useEffect(() => {
     async function loadData() {
@@ -30,6 +47,13 @@ export default function Home() {
   return (
     <PageLayout>
       <div className='pt-36 pb-24 px-sides max-w-[1440px] mx-auto'>
+        {/* API health (testing)
+        {apiHealth && (
+          <p className='text-[10px] font-sans uppercase tracking-widest text-primary/40 mb-4'>
+            API {apiHealth.healthStatus} · {apiHealth.environment} · v{apiHealth.version}
+          </p>
+        )} */}
+
         {/* Results Info (Minimalist) */}
         <div className='flex items-center justify-between pb-6 mb-10 border-b border-border'>
           <p className='text-[10px] font-sans font-black uppercase tracking-[0.3em] text-primary'>
