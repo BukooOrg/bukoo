@@ -2,8 +2,17 @@
 
 set -euo pipefail
 
+# Load nvm and switch to the version pinned in .nvmrc
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+# shellcheck source=/dev/null
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
-cd "$SCRIPT_DIR/../frontend"
+cd "$SCRIPT_DIR/.."
+
+nvm use
+
+cd frontend
 
 pnpm install
 
