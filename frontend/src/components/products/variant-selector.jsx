@@ -1,41 +1,38 @@
-"use client";
+'use client';
 
-import React, { startTransition, useEffect, useMemo } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
-import { cva } from "class-variance-authority";
-import { ColorSwatch } from "@/components/ui/forms/color-picker";
-import { Button } from "@/components/ui/forms/button";
-import { getColorHex } from "@/lib/utils";
+import { cva } from 'class-variance-authority';
+import React, { useEffect, useMemo } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 
-const variantOptionSelectorVariants = cva("flex items-center gap-4", {
+import { Button } from '@/components/ui/forms/button';
+import { ColorSwatch } from '@/components/ui/forms/color-picker';
+import { getColorHex } from '@/lib/utils';
+
+const variantOptionSelectorVariants = cva('flex items-center gap-4', {
   variants: {
     variant: {
-      card: "rounded-lg bg-card py-2 px-3 justify-between",
-      condensed: "justify-start"
-    }
+      card: 'rounded-lg bg-card py-2 px-3 justify-between',
+      condensed: 'justify-start',
+    },
   },
   defaultVariants: {
-    variant: "card"
-  }
+    variant: 'card',
+  },
 });
 
-export function VariantOptionSelector({
-  option,
-  variant,
-  product
-}) {
+export function VariantOptionSelector({ option, variant, product }) {
   const { variants, options } = product;
   const [searchParams, setSearchParams] = useSearchParams();
   const params = useParams();
   const optionNameLowerCase = option.name.toLowerCase();
 
-  const selectedValue = searchParams.get(optionNameLowerCase) || "";
-  const activeProductId = searchParams.get("pid") || "";
+  const selectedValue = searchParams.get(optionNameLowerCase) || '';
+  const activeProductId = searchParams.get('pid') || '';
 
   // Auto-select single color option
   useEffect(() => {
     if (
-      optionNameLowerCase === "color" &&
+      optionNameLowerCase === 'color' &&
       option.values.length === 1 &&
       option.values[0] &&
       !selectedValue
@@ -55,40 +52,36 @@ export function VariantOptionSelector({
     ...variant.selectedOptions.reduce(
       (accumulator, option) => ({
         ...accumulator,
-        [option.name.toLowerCase()]: option.value
+        [option.name.toLowerCase()]: option.value,
       }),
       {}
-    )
+    ),
   }));
 
-  const isColorOption = optionNameLowerCase === "color";
+  const isColorOption = optionNameLowerCase === 'color';
   const isProductPage = params.handle === product.id;
   const isTargetingProduct = isProductPage || activeProductId === product.id;
 
   return (
     <dl className={variantOptionSelectorVariants({ variant })}>
-      <dt className="text-base font-semibold">{option.name}</dt>
-      <dd className="flex flex-wrap gap-2">
+      <dt className='text-base font-semibold'>{option.name}</dt>
+      <dd className='flex flex-wrap gap-2'>
         {option.values.map((value) => {
           const currentState = Object.fromEntries(searchParams.entries());
           const optionParams = {
             ...currentState,
-            [optionNameLowerCase]: value.id
+            [optionNameLowerCase]: value.id,
           };
 
           const filtered = Object.entries(optionParams).filter(([key, val]) =>
             options.find(
               (option) =>
-                option.name.toLowerCase() === key &&
-                option.values.some((v) => v.name === val)
+                option.name.toLowerCase() === key && option.values.some((v) => v.name === val)
             )
           );
 
           const isAvailableForSale = combinations.find((combination) =>
-            filtered.every(
-              ([key, val]) =>
-                combination[key] === val && combination.availableForSale
-            )
+            filtered.every(([key, val]) => combination[key] === val && combination.availableForSale)
           );
 
           const isActive = isTargetingProduct && selectedValue === value.id;
@@ -100,23 +93,23 @@ export function VariantOptionSelector({
               <ColorSwatch
                 key={value.id}
                 color={
-                  Array.isArray(color) ?
-                    [
-                      { name: value.name, value: color[0] },
-                      { name: value.name, value: color[1] }
-                    ] :
-                    { name: value.name, value: color }
+                  Array.isArray(color)
+                    ? [
+                        { name: value.name, value: color[0] },
+                        { name: value.name, value: color[1] },
+                      ]
+                    : { name: value.name, value: color }
                 }
                 isSelected={isActive}
                 onColorChange={() => {
                   const newParams = new URLSearchParams(searchParams);
                   newParams.set(optionNameLowerCase, value.id);
                   if (!isProductPage) {
-                    newParams.set("pid", product.id);
+                    newParams.set('pid', product.id);
                   }
                   setSearchParams(newParams);
                 }}
-                size={variant === "condensed" ? "sm" : "md"}
+                size={variant === 'condensed' ? 'sm' : 'md'}
                 atLeastOneColorSelected={!!selectedValue}
               />
             );
@@ -130,12 +123,11 @@ export function VariantOptionSelector({
                 setSearchParams(newParams);
               }}
               key={value.id}
-              variant={isActive ? "default" : "outline"}
-              size="sm"
+              variant={isActive ? 'default' : 'outline'}
+              size='sm'
               disabled={!isAvailableForSale}
-              title={`${option.name} ${value.name}${!isAvailableForSale ? " (Out of Stock)" : ""}`}
-              className="min-w-[48px]"
-            >
+              title={`${option.name} ${value.name}${!isAvailableForSale ? ' (Out of Stock)' : ''}`}
+              className='min-w-[48px]'>
               {value.name}
             </Button>
           );
@@ -165,8 +157,7 @@ export const useSelectedVariant = (product) => {
     return variants.find((variant) =>
       variant.selectedOptions.every(
         (option) =>
-          option.value.toLowerCase() ===
-          selectedOptions[option.name.toLowerCase()]?.toLowerCase()
+          option.value.toLowerCase() === selectedOptions[option.name.toLowerCase()]?.toLowerCase()
       )
     );
   }, [variants, selectedOptions]);
@@ -187,16 +178,12 @@ export const useProductImages = (product, selectedOptions) => {
 
     return (product.images || []).filter((image) => {
       return Object.entries(optionsObject || {}).every(([key, value]) =>
-        image.selectedOptions?.some(
-          (option) => option.name === key && option.value === value
-        )
+        image.selectedOptions?.some((option) => option.name === key && option.value === value)
       );
     });
   }, [optionsObject, product.images]);
 
-  const defaultImages = (product.images || []).filter(
-    (image) => !image.selectedOptions
-  );
+  const defaultImages = (product.images || []).filter((image) => !image.selectedOptions);
 
   const featuredImage = product.featuredImage;
 

@@ -11,7 +11,7 @@ def size_to_bytes(size: int | float | str) -> int | None:
     units = {"b": 1, "kb": 1024, "mb": 1024**2, "gb": 1024**2, "tb": 1024**2}
 
     try:
-        if isinstance(size, (int, float)):
+        if isinstance(size, int | float):
             return int(size)
 
         if not isinstance(size, str):

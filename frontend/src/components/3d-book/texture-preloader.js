@@ -22,7 +22,7 @@ export class TexturePreloader {
 
     const loadPromise = new Promise((resolve, reject) => {
       const img = new Image();
-      img.crossOrigin = "anonymous";
+      img.crossOrigin = 'anonymous';
       img.onload = () => {
         this.preloadedTextures.set(url, img);
         this.loadingPromises.delete(url);

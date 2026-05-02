@@ -1,3 +1,3 @@
 export const storeCatalog = {
-  rootCategoryId: "joyco-root"
+  rootCategoryId: 'joyco-root',
 };

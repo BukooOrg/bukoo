@@ -1,18 +1,15 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
+import { useEffect, useState } from 'react';
 
-
-
-
+import { cn } from '@/lib/utils';
 
 export function DebugGrid({ className }) {
   const [gridState, setGridState] = useState('hidden');
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.shiftKey && e.key.toLowerCase() === "d") {
+      if (e.shiftKey && e.key.toLowerCase() === 'd') {
         setGridState((prev) => {
           if (prev === 'hidden') return 'padded';
           if (prev === 'padded') return 'unpadded';
@@ -21,8 +18,8 @@ export function DebugGrid({ className }) {
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   if (gridState === 'hidden') return null;
@@ -30,18 +27,14 @@ export function DebugGrid({ className }) {
   return (
     <div
       className={cn(
-        "fixed inset-0 pointer-events-none z-50",
-        gridState === 'padded' ? "px-sides" : "",
-        "base-grid",
+        'fixed inset-0 pointer-events-none z-50',
+        gridState === 'padded' ? 'px-sides' : '',
+        'base-grid',
         className
       )}>
-
-      {Array.from({ length: 12 }).map((_, i) =>
-      <div
-        key={i}
-        className="h-full bg-[tomato] opacity-20" />
-
-      )}
-    </div>);
-
+      {Array.from({ length: 12 }).map((_, i) => (
+        <div key={i} className='h-full bg-[tomato] opacity-20' />
+      ))}
+    </div>
+  );
 }

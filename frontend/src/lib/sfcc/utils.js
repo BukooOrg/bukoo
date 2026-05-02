@@ -14,9 +14,9 @@ export const reshapeCategory = (category) => {
     description: category.description,
     seo: {
       title: category.pageTitle || category.title || category.name,
-      description: category.pageDescription || category.description
+      description: category.pageDescription || category.description,
     },
-    parentCategoryTree: category.parentCategoryTree || []
+    parentCategoryTree: category.parentCategoryTree || [],
   };
 };
 
@@ -34,26 +34,30 @@ export const reshapeProduct = (product) => {
     title: product.title || product.name,
     description: product.description || product.shortDescription || product.longDescription,
     descriptionHtml: product.descriptionHtml || product.longDescription || product.shortDescription,
-    vendor: product.vendor || "Bukoo Editions",
-    featuredImage: product.featuredImage || (product.imageGroups?.[0]?.images?.[0] ? {
-      url: product.imageGroups[0].images[0].link,
-      width: 800,
-      height: 1200,
-      altText: product.name
-    } : null),
+    vendor: product.vendor || 'Bukoo Editions',
+    featuredImage:
+      product.featuredImage ||
+      (product.imageGroups?.[0]?.images?.[0]
+        ? {
+            url: product.imageGroups[0].images[0].link,
+            width: 800,
+            height: 1200,
+            altText: product.name,
+          }
+        : null),
     priceRange: product.priceRange || {
       minVariantPrice: {
-        amount: (product.price || product.min_price || "0").toString(),
-        currencyCode: product.currency || product.currency_code || "GBP"
+        amount: (product.price || product.min_price || '0').toString(),
+        currencyCode: product.currency || product.currency_code || 'GBP',
       },
       maxVariantPrice: {
-        amount: (product.price || product.max_price || "0").toString(),
-        currencyCode: product.currency || product.currency_code || "GBP"
-      }
+        amount: (product.price || product.max_price || '0').toString(),
+        currencyCode: product.currency || product.currency_code || 'GBP',
+      },
     },
     variants: product.variants || [],
     options: product.options || product.variationAttributes || [],
-    tags: product.tags || []
+    tags: product.tags || [],
   };
 };
 

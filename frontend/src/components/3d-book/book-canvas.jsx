@@ -1,18 +1,19 @@
-import React, { Suspense, useRef, useEffect, useState } from "react"
-import { Canvas, useFrame } from "@react-three/fiber"
-import { TrackballControls, Environment } from "@react-three/drei"
-import { Book } from "./book-3d-model"
-import { CameraController } from "./camera-controller"
+import { TrackballControls, Environment } from '@react-three/drei';
+import { Canvas, useFrame } from '@react-three/fiber';
+import React, { Suspense, useRef, useState } from 'react';
+
+import { Book } from './book-3d-model';
+import { CameraController } from './camera-controller';
 
 function RenderDetector({ onFirstRender }) {
-  const hasRendered = useRef(false)
+  const hasRendered = useRef(false);
   useFrame(() => {
     if (!hasRendered.current) {
-      hasRendered.current = true
-      onFirstRender()
+      hasRendered.current = true;
+      onFirstRender();
     }
-  })
-  return null
+  });
+  return null;
 }
 
 export function BookModel({
@@ -23,27 +24,26 @@ export function BookModel({
   frontCoverUrl,
   backCoverUrl,
 }) {
-  const controlsRef = useRef()
-  const [hasFirstRender, setHasFirstRender] = useState(false)
+  const controlsRef = useRef();
+  const [hasFirstRender, setHasFirstRender] = useState(false);
 
   const handleBookReady = (ready) => {
     if (onReady) {
-      onReady(ready && hasFirstRender)
+      onReady(ready && hasFirstRender);
     }
-  }
+  };
 
   return (
-    <div className="w-full h-full">
+    <div className='w-full h-full'>
       <Canvas
-        className="w-full h-full"
+        className='w-full h-full'
         camera={{ position: params.cameraPosition, fov: params.cameraFov }}
-        dpr={[1, 2]}
-      >
+        dpr={[1, 2]}>
         <Suspense fallback={null}>
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 10, 5]} intensity={1} />
-          <directionalLight position={[-5, 8, 10]} intensity={0.8} color="#fffacd" />
-          <Environment preset="sunset" />
+          <directionalLight position={[-5, 8, 10]} intensity={0.8} color='#fffacd' />
+          <Environment preset='sunset' />
           <RenderDetector onFirstRender={() => setHasFirstRender(true)} />
           <Book
             params={params}
@@ -67,5 +67,5 @@ export function BookModel({
         </Suspense>
       </Canvas>
     </div>
-  )
+  );
 }

@@ -1,0 +1,10 @@
+node_modules
+dist
+.next
+out
+build
+public
+coverage
+pnpm-lock.yaml
+*.min.js
+.cache

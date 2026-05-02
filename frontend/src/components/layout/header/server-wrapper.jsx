@@ -1,5 +1,6 @@
-import { getCollections } from "@/lib/sfcc";
-import { Header } from "./index";
+import { getCollections } from '@/lib/sfcc';
+
+import { Header } from './index';
 
 export async function HeaderWithData() {
   const collections = await getCollections();

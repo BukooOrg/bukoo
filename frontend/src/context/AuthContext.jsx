@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+
 import { apiFetch } from '../lib/api';
 
 const AuthContext = createContext();
@@ -16,7 +17,7 @@ export function AuthProvider({ children }) {
           const userData = await apiFetch('/api/auth/me');
           setUser(userData);
         } catch (error) {
-          console.error("Auth check failed", error);
+          console.error('Auth check failed', error);
           Cookies.remove('jwt');
         }
       }
@@ -32,9 +33,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>{children}</AuthContext.Provider>
   );
 }
 
