@@ -32,7 +32,7 @@ class CredentialProvider(IAuthStrategy):
         # find_by_email already excludes soft-deleted rows
         user = await self._user_repo.find_by_email(email)
 
-        if user is None or not user.has_password:
+        if user is None or not user.have_password:
             raise InvalidCredentialsError()
 
         if not self._hasher.verify(password, user.hashed_password):  # type: ignore[arg-type]

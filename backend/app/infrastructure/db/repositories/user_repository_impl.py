@@ -10,7 +10,7 @@ from typing import override
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domain.entities.user import UserEntity
+from app.domain.entities.user_entity import UserEntity
 from app.domain.repositories.user_repository import IUserRepository
 from app.infrastructure.db.mappers.user_mapper import UserMapper
 from app.infrastructure.db.models.user_model import UserModel

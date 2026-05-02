@@ -13,14 +13,17 @@ from fastapi.openapi.utils import get_openapi
 from app.application.use_cases.system.system_register import SystemRegisterUseCase
 from app.core.config import (
     AppConfig,
-    # ClientSideCacheConfig,
     CORSConfig,
     EnvironmentConfig,
     EnvironmentOption,
 )
 from app.domain.exceptions.base import DomainException
 from app.infrastructure.db.session import session_scope
-from app.presentation.dependencies.deps import get_password_hasher, get_user_repository
+from app.presentation.dependencies.deps import (
+    get_account_repository,
+    get_password_hasher,
+    get_user_repository,
+)
 from app.presentation.http.base_handler import (
     domain_exception_handler,
 )
@@ -92,11 +95,15 @@ class AppFactory:
     async def _create_system_admin_user() -> None:
         async with session_scope() as db_session:
             user_repo = get_user_repository(db_session)
+            account_repo = get_account_repository(db_session)
             password_hasher = get_password_hasher()
 
             if await user_repo.count_including_deleted() == 0:
                 use_case = SystemRegisterUseCase(
-                    db_session=db_session, user_repo=user_repo, hasher=password_hasher
+                    db_session=db_session,
+                    user_repo=user_repo,
+                    account_repo=account_repo,
+                    hasher=password_hasher,
                 )
                 await use_case.execute()
 

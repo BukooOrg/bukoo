@@ -19,7 +19,7 @@ from app.application.interfaces.email_notification_service import (
 from app.application.interfaces.password_hasher import IPasswordHasher
 from app.application.interfaces.token_service import ITokenService
 from app.core.constants import UserRole, UserStatus
-from app.domain.entities.user import UserEntity
+from app.domain.entities.user_entity import UserEntity
 from app.domain.exceptions import UserAlreadyExistsError
 from app.domain.repositories.user_repository import IUserRepository
 
@@ -47,17 +47,18 @@ class RegisterUseCase(BaseUseCase):
 
         now = datetime.now(UTC)
         user = UserEntity(
-            id=str(uuid7()),
-            email=cmd.email,
-            full_name=cmd.full_name,
-            role=UserRole.USER,
-            status=UserStatus.PENDING,  # activated after email verification
-            hashed_password=self._hasher.hash(cmd.password),
-            avatar_url=None,
-            last_login_at=None,
-            created_at=now,
-            updated_at=now,
-            deleted_at=None,
+            _id=str(uuid7()),
+            _email=cmd.email,
+            _full_name=cmd.full_name,
+            _date_of_birth=now,
+            _role=UserRole.USER,
+            _status=UserStatus.PENDING,  # activated after email verification
+            _hashed_password=self._hasher.hash(cmd.password),
+            _avatar_url=None,
+            _last_login_at=None,
+            _created_at=now,
+            _updated_at=now,
+            _deleted_at=None,
         )
         await self._user_repo.save(user)
         await self._db_session.commit()

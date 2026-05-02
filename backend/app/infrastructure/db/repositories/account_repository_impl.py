@@ -9,10 +9,10 @@ from typing import override
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domain.entities.user import AccountEntity
+from app.domain.entities import AccountEntity
 from app.domain.repositories.account_repository import IAccountRepository
-from app.infrastructure.db.mappers.user_mapper import AccountMapper
-from app.infrastructure.db.models.user_model import AccountModel
+from app.infrastructure.db.mappers import AccountMapper
+from app.infrastructure.db.models import AccountModel
 
 
 class AccountRepositoryImpl(IAccountRepository):

@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from app.domain.entities.user import UserEntity
+from app.domain.entities.user_entity import UserEntity
 
 
 class IUserRepository(ABC):

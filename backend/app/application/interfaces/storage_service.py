@@ -20,7 +20,7 @@ class IStorageService(ABC):
         pass
 
     @abstractmethod
-    async def load_stream(self, key: str) -> AsyncGenerator[bytes, None]:
+    def load_stream(self, key: str) -> AsyncGenerator[bytes, None]:
         """
         Yield the object body in 8 MB chunks.
 

@@ -6,30 +6,27 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.application.interfaces.auth_provider import IAuthStrategy
-from app.application.interfaces.email_notification_service import (
+from app.application.interfaces import (
+    IAuthStrategy,
     IEmailNotificationService,
+    IPasswordHasher,
+    IStorageService,
+    ITokenService,
 )
-from app.application.interfaces.password_hasher import IPasswordHasher
-from app.application.interfaces.storage_service import IStorageService
-from app.application.interfaces.token_service import ITokenService
 from app.core.config import get_configs
 from app.core.constants import ObjectStorageType, UserRole
-from app.domain.entities.user import UserEntity
+from app.domain.entities import UserEntity
 from app.domain.exceptions import InvalidTokenError, TokenExpiredError
-from app.domain.repositories.account_repository import IAccountRepository
-from app.domain.repositories.user_repository import IUserRepository
-from app.infrastructure.auth.credential_provider import CredentialProvider
-from app.infrastructure.auth.google_provider import GoogleProvider
-from app.infrastructure.auth.jwt_service import JWTService
-from app.infrastructure.auth.password_hasher import BcryptPasswordHasher
-from app.infrastructure.db.repositories.account_repository_impl import (
-    AccountRepositoryImpl,
+from app.domain.repositories import IAccountRepository, IUserRepository
+from app.infrastructure.auth import (
+    BcryptPasswordHasher,
+    CredentialProvider,
+    GoogleProvider,
+    JWTService,
 )
-from app.infrastructure.db.repositories.user_repository_impl import UserRepositoryImpl
+from app.infrastructure.db.repositories import AccountRepositoryImpl, UserRepositoryImpl
 from app.infrastructure.db.session import get_db_session
-from app.infrastructure.storage.minio_storage import MinIOStorage
-from app.infrastructure.storage.s3_storage import S3Storage
+from app.infrastructure.storage import MinIOStorage, S3Storage
 from app.infrastructure.tasks.email_notification_service import (
     CeleryEmailNotificationService,
 )

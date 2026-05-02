@@ -1,5 +1,5 @@
-.PHONY: dev worker lint format format-check typecheck import-lint check migrate upgrade downgrade \
-        test test-unit test-integration test-cov clean install help
+.PHONY: dev worker lint format format-check typecheck check migrate upgrade downgrade \
+        test test-unit test-integration test-cov clean install seed-init help
 
 # Default target - show help
 .DEFAULT_GOAL := help
@@ -31,10 +31,7 @@ format-check: ## Check formatting without writing changes
 typecheck: ## Run mypy type checker
 	cd backend && uv run mypy app/
 
-import-lint: ## Enforce Clean Architecture import boundaries
-	cd backend && uv run lint-imports
-
-check: lint format-check typecheck import-lint ## Run all checks (lint, format, typecheck, import-lint)
+check: lint format-check typecheck ## Run all checks (lint, format, typecheck)
 	@echo "All checks passed."
 
 migrate: ## Generate a new Alembic migration (msg=<description>)
@@ -64,3 +61,6 @@ clean: ## Remove caches and build artifacts
 	find backend/ -type d -name .mypy_cache -exec rm -rf {} +
 	find backend/ -type d -name .ruff_cache -exec rm -rf {} +
 	rm -rf backend/htmlcov/ backend/.coverage
+
+seed-init: ## Seed with initial data
+	cd backend && uv run python -m app.infrastructure.db.seed

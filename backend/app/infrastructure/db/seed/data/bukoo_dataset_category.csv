@@ -1,0 +1,62 @@
+name,url_slug,collection
+Fantasy,fantasy,Fiction
+Science Fiction,science-fiction,Fiction
+Mystery & Thriller,mystery-thriller,Fiction
+Romance,romance,Fiction
+Horror,horror,Fiction
+Historical Fiction,historical-fiction,Fiction
+Literary Fiction,literary-fiction,Fiction
+Short Stories,short-stories,Fiction
+Poetry,poetry,Fiction
+Drama & Plays,drama-plays,Fiction
+Biography & Memoir,biography-memoir,Non-Fiction
+History,history,Non-Fiction
+Politics & Government,politics-government,Non-Fiction
+Philosophy,philosophy,Non-Fiction
+Psychology,psychology,Non-Fiction
+Social Sciences,social-sciences,Non-Fiction
+True Crime,true-crime,Non-Fiction
+Management,management,Business & Finance
+Entrepreneurship,entrepreneurship,Business & Finance
+Economics,economics,Business & Finance
+Finance & Investing,finance-investing,Business & Finance
+Career & Success,career-success,Business & Finance
+Mathematics,mathematics,Science & Technology
+Physics,physics,Science & Technology
+Chemistry,chemistry,Science & Technology
+Biology,biology,Science & Technology
+Programming,programming,Science & Technology
+Computer Science,computer-science,Science & Technology
+Data Science & AI,data-science-ai,Science & Technology
+School Textbooks,school-textbooks,Academic & Textbooks
+University Textbooks,university-textbooks,Academic & Textbooks
+Exam Preparation,exam-preparation,Academic & Textbooks
+Reference,reference,Academic & Textbooks
+Picture Books,picture-books,Children & Kids
+Early Learning,early-learning,Children & Kids
+Bedtime Stories,bedtime-stories,Children & Kids
+Rhymes & Poetry,rhymes-poetry,Children & Kids
+Activity Books,activity-books,Children & Kids
+Cooking & Recipes,cooking-recipes,Lifestyle & Hobbies
+Health & Fitness,health-fitness,Lifestyle & Hobbies
+Mental Health & Self-Help,mental-health-self-help,Lifestyle & Hobbies
+Travel,travel,Lifestyle & Hobbies
+Arts & Crafts,arts-crafts,Lifestyle & Hobbies
+Art & Design,art-design,Arts & Entertainment
+Photography,photography,Arts & Entertainment
+Music,music,Arts & Entertainment
+Film & Media,film-media,Arts & Entertainment
+Fashion,fashion,Arts & Entertainment
+Performing Arts,performing-arts,Arts & Entertainment
+Islam,islam,Religion & Spirituality
+Christianity,christianity,Religion & Spirituality
+Buddhism,buddhism,Religion & Spirituality
+Hinduism,hinduism,Religion & Spirituality
+General Spirituality,general-spirituality,Religion & Spirituality
+Manga,manga,Comics & Graphic Novels
+Graphic Novels,graphic-novels,Comics & Graphic Novels
+Comics,comics,Comics & Graphic Novels
+English Language,english-language,Language & Learning
+Malay Language,malay-language,Language & Learning
+Chinese Language,chinese-language,Language & Learning
+Foreign Languages,foreign-languages,Language & Learning

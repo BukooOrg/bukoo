@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from typing import Any
 
 
 @dataclass
@@ -91,7 +92,7 @@ class AddressEntity:
         self._country = country
         self._updated_at = datetime.now(UTC)
 
-    def to_snapshot(self) -> dict:
+    def to_snapshot(self) -> dict[str, Any]:
         """
         Return a plain dict snapshot suitable for storing in
         orders.address_snapshot (JSONB) at checkout time.

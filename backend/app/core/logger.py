@@ -5,12 +5,37 @@ import os
 from logging.handlers import RotatingFileHandler
 from typing import Any
 
+import sqlparse
 import structlog
 from structlog.dev import ConsoleRenderer
 from structlog.processors import JSONRenderer
 from structlog.types import EventDict, Processor
 
 from app.core.config import get_configs
+
+logger = structlog.get_logger()
+
+
+def format_sql(statement: str) -> str:
+    return sqlparse.format(statement, reindent=True, keyword_case="upper")
+
+
+def format_sql_processor(_: Any, __: str, event_dict: EventDict) -> EventDict:
+    """Beautify SQL statements in SQLAlchemy log events."""
+    logger_name = event_dict.get("logger", "")
+    if "sqlalchemy.engine" in logger_name:
+        event = event_dict.get("event", "")
+        if event and any(
+            kw in event.upper()
+            for kw in ("SELECT", "INSERT", "UPDATE", "DELETE", "CREATE", "DROP")
+        ):
+            event_dict["event"] = "\n\n" + sqlparse.format(
+                event,
+                reindent=True,
+                keyword_case="upper",
+                indent_width=2,
+            )
+    return event_dict
 
 
 def drop_color_message_key(_: Any, __: str, event_dict: EventDict) -> EventDict:
@@ -69,6 +94,7 @@ SHARED_PROCESSORS: list[Processor] = [
     structlog.stdlib.PositionalArgumentsFormatter(),
     structlog.stdlib.ExtraAdder(),
     drop_color_message_key,
+    format_sql_processor,
     timestamper,
     structlog.processors.StackInfoRenderer(),
 ]
@@ -102,7 +128,6 @@ def build_formatter(
 # Setup log directory
 LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "..", "..", "logs")
 os.makedirs(LOG_DIR, exist_ok=True)
-
 
 configs = get_configs()
 

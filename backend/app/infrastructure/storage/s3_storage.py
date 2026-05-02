@@ -103,7 +103,7 @@ class S3Storage(IStorageService):
 
     @override
     async def load_stream(self, key: str) -> AsyncGenerator[bytes, None]:
-        chunks = await asyncio.to_thread(self._iter_chunks, key)
+        chunks: list[bytes] = await asyncio.to_thread(self._iter_chunks, key)
         for chunk in chunks:
             yield chunk
 

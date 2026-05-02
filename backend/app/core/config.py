@@ -99,7 +99,7 @@ class SystemConfig(BaseSettings):
     )
     DEFAULT_ADMIN_PASSWORD: str = Field(
         description="Default admin password",
-        default="admin123",
+        default="Adm!n123",
     )
 
 
@@ -230,7 +230,7 @@ class PostgresConfig(DatabaseConfig):
         default="postgresql+asyncpg://",
     )
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def POSTGRES_URI(self) -> str:
         credentials = f"{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
@@ -249,7 +249,7 @@ class ObjectStorageConfig(BaseSettings):
         default="8mb",
     )
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def STREAM_CHUNK_SIZE_BYTES(self) -> int:
         default_size_bytes = 8 * 1024**2  # 8mb

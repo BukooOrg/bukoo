@@ -24,7 +24,7 @@ from app.application.dtos.auth_dto import AuthResult
 from app.application.interfaces.auth_provider import IAuthStrategy
 from app.core.config import get_configs
 from app.core.constants import AuthProvider, UserRole, UserStatus
-from app.domain.entities.user import AccountEntity, UserEntity
+from app.domain.entities import AccountEntity, UserEntity
 from app.domain.repositories.account_repository import IAccountRepository
 from app.domain.repositories.user_repository import IUserRepository
 
@@ -75,7 +75,7 @@ class GoogleProvider(IAuthStrategy):
         full_name: str = info.get("name", email)
         open_id: str = info["id"]
         avatar_url: str | None = info.get("picture")
-        provider = AuthProvider.GOOGLE.value
+        provider = AuthProvider.GOOGLE
 
         #  3. Look up existing OAuth account link
         existing_account = await self._account_repo.find_by_provider_and_open_id(
@@ -97,29 +97,30 @@ class GoogleProvider(IAuthStrategy):
         else:
             # 5. Brand-new user — create with PENDING status
             user = UserEntity(
-                id=str(uuid7()),
-                email=email,
-                full_name=full_name,
-                role=UserRole.USER,
-                status=UserStatus.PENDING,
-                hashed_password=None,  # OAuth-only account
-                avatar_url=avatar_url,
-                last_login_at=now,
-                created_at=now,
-                updated_at=now,
-                deleted_at=None,
+                _id=str(uuid7()),
+                _email=email,
+                _full_name=full_name,
+                _date_of_birth=now,
+                _role=UserRole.USER,
+                _status=UserStatus.PENDING,
+                _hashed_password=None,  # OAuth-only account
+                _avatar_url=avatar_url,
+                _last_login_at=now,
+                _created_at=now,
+                _updated_at=now,
+                _deleted_at=None,
             )
             await self._user_repo.save(user)
 
         #  6. Link the OAuth account
         account = AccountEntity(
-            id=str(uuid7()),
-            user_id=user.id,
-            provider=provider,
-            open_id=open_id,
-            encrypted_token=access_token,  # encrypt before storing in production
-            created_at=now,
-            updated_at=now,
+            _id=str(uuid7()),
+            _user_id=user.id,
+            _provider=provider,
+            _open_id=open_id,
+            _encrypted_token=access_token,  # encrypt before storing in production
+            _created_at=now,
+            _updated_at=now,
         )
         await self._account_repo.save(account)
 
