@@ -62,130 +62,6 @@ For validation errors with multiple fields:
 ```
 """
 
-# import json
-# import traceback
-# from datetime import UTC, datetime
-
-# import structlog
-# from fastapi import Request, Response
-# from fastapi.responses import JSONResponse
-# from starlette.middleware.base import BaseHTTPMiddleware
-
-# from app.application.errors.error_codes import ErrorCode
-# from app.domain.exceptions.base import DomainException
-# from app.presentation.http.exception_mapper import EXCEPTION_MAP
-
-# logger = structlog.get_logger()
-
-
-# EXCLUDED_PATHS = {
-#     "/docs",
-#     "/redoc",
-#     "/openapi.json",
-#     "/health",
-# }
-
-
-# class ResponseFormatterMiddleware(BaseHTTPMiddleware):
-#     async def dispatch(self, request: Request, call_next):
-#         # skip excluded paths
-#         if request.url.path in EXCLUDED_PATHS:
-#             return await call_next(request)
-
-#         try:
-#             response = await call_next(request)
-
-#             # 204 (no body)
-#             if response.status_code == 204:
-#                 return response
-
-#             content_type = response.headers.get("content-type", "")
-
-#             # oOnly wrap JSON responses
-#             if "application/json" not in content_type:
-#                 return response
-
-#             # avoid breaking streaming responses
-#             if hasattr(response, "body_iterator"):
-#                 body = b""
-#                 async for chunk in response.body_iterator:
-#                     body += chunk
-#             else:
-#                 body = response.body
-
-#             data = json.loads(body) if body else None
-
-#             envelope = {
-#                 "success": True,
-#                 "data": data,
-#                 "meta": self._meta(),
-#             }
-
-#             return JSONResponse(
-#                 status_code=response.status_code,
-#                 content=envelope,
-#             )
-
-#         except Exception as exc:
-#             return await self._handle_exception(exc)
-
-#     async def _handle_exception(self, exc: Exception) -> Response:
-#         # domain exception
-#         if isinstance(exc, DomainException):
-#             mapping = EXCEPTION_MAP.get(type(exc))
-
-#             if mapping:
-#                 return self._error_response(
-#                     status_code=mapping.status_code,
-#                     code=mapping.code,
-#                     message=mapping.message,
-#                     details=exc.context,
-#                 )
-
-#             return self._error_response(
-#                 status_code=400,
-#                 code=ErrorCode.BAD_REQUEST,
-#                 message=exc.message,
-#             )
-
-#         # unexpected exception (500)
-#         logger.error(
-#             "Unhandled exception",
-#             error=str(exc),
-#             traceback=traceback.format_exc(),
-#         )
-
-#         return self._error_response(
-#             status_code=500,
-#             code=ErrorCode.INTERNAL_ERROR,
-#             message="Internal server error",
-#         )
-
-#     def _error_response(
-#         self, status_code: int, code: ErrorCode, message: str, details=None
-#     ):
-#         return JSONResponse(
-#             status_code=status_code,
-#             content={
-#                 "success": False,
-#                 "error": {
-#                     "code": code,
-#                     "message": message,
-#                     "details": details,
-#                 },
-#                 "meta": self._meta(),
-#             },
-#         )
-
-#     def _meta(self):
-#         ctx = structlog.contextvars.get_contextvars()
-#         print(ctx)
-
-#         return {
-#             "requestId": ctx.get("request_id"),
-#             "timestamp": datetime.now(UTC).isoformat(),
-#         }
-
 import json
 from collections.abc import MutableMapping
 from datetime import UTC, datetime
@@ -201,6 +77,7 @@ EXCLUDED_PATHS = {
 }
 
 
+# todo: make sure this can handle set-cookie well
 class ResponseFormatterMiddleware:
     def __init__(self, app: ASGIApp):
         self.app = app
@@ -233,21 +110,21 @@ class ResponseFormatterMiddleware:
             elif message["type"] == "http.response.body":
                 body_chunks.append(message.get("body", b""))
 
+                # only construct the response envelope when the full body is received
+                # if the last body chunk is received, the condition become true
                 if not message.get("more_body", False):
                     full_body = b"".join(body_chunks)
 
-                    content_type = dict(headers).get(b"content-type", b"").decode()
-
                     # duplicate headers can break the app
-                    # headers_dict = {k.lower(): v for k, v in headers}
-                    # content_type = headers_dict.get(b"content-type", b"").decode()
+                    headers_dict = {k.lower(): v for k, v in headers}
+                    content_type = headers_dict.get(b"content-type", b"").decode()
 
-                    # Skip non-JSON
+                    # skip non-JSON
                     if "application/json" not in content_type:
                         await send(message)
                         return
 
-                    # Skip errors (this is what you want)
+                    # skip errors
                     if status_code >= 400:
                         await send(
                             {
@@ -265,7 +142,7 @@ class ResponseFormatterMiddleware:
                         )
                         return
 
-                    #  Only success responses get wrapped
+                    # only success responses get wrapped
                     try:
                         data = json.loads(full_body) if full_body else None
                     except Exception:
@@ -284,11 +161,22 @@ class ResponseFormatterMiddleware:
 
                     new_body = json.dumps(envelope).encode()
 
+                    existing_headers = list(headers)
+
+                    # duplicate headers can break the app
+                    headers_dict = {k.lower(): v for k, v in existing_headers}
+
+                    # ensure correct content-type
+                    headers_dict.pop(b"content-length", None)
+                    headers_dict[b"content-type"] = b"application/json"
+
+                    final_headers = list(headers_dict.items())
+
                     await send(
                         {
                             "type": "http.response.start",
                             "status": status_code,
-                            "headers": [(b"content-type", b"application/json")],
+                            "headers": final_headers,
                         }
                     )
                     await send(
@@ -298,7 +186,6 @@ class ResponseFormatterMiddleware:
                             "more_body": False,
                         }
                     )
-
             else:
                 await send(message)
 
