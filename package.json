@@ -1,0 +1,8 @@
+{
+  "$schema": "https://www.schemastore.org/package.json",
+  "name": "bukoo",
+  "private": true,
+  "devDependencies": {
+    "@usebruno/cli": "^1"
+  }
+}
