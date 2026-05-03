@@ -1,0 +1,54 @@
+fail_fast: false
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        types: [python, yaml, toml]
+      - id: end-of-file-fixer
+        types: [python, yaml, toml]
+      - id: check-yaml
+        types: [yaml]
+      - id: check-toml
+        types: [toml]
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: debug-statements
+        types: [python]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.9
+    hooks:
+      - id: ruff
+        name: ruff lint
+        args: ["--fix"]
+        files: ^backend/
+      - id: ruff-format
+        name: ruff format
+        files: ^backend/
+
+  - repo: local
+    hooks:
+      - id: eslint-frontend
+        name: eslint (lint + prettier)
+        language: system
+        entry: bash -c 'cd frontend && pnpm fix-all-files'
+        files: ^frontend/.*\.(js|jsx|cjs|mjs)$
+        pass_filenames: false
+
+      - id: mypy
+        name: mypy typecheck
+        language: system
+        entry: bash -c 'cd backend && uv run mypy app/'
+        types: [python]
+        files: ^backend/
+        pass_filenames: false
+
+  - repo: https://github.com/jorisroovers/gitlint
+    rev: v0.19.1
+    hooks:
+      - id: gitlint
+        stages: [commit-msg]

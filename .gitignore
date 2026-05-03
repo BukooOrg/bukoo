@@ -1,12 +1,42 @@
-# Dependencies
-node_modules/
-.pnp
-.pnp.js
+# Environments
+.env
+.env.*
+!.env.dev.example
+!.env.example
+.venv/
+env/
+venv/
+ENV/
 
-# Testing
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Linting & Type Checking
+.ruff_cache/
+.mypy_cache/
+.importlinter_cache/
+.cache
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
 /coverage
 
-# Production
+# Node
+node_modules/
+.next/
+dist/
+.pnp
+.pnp.js
 /dist
 /build
 /out
@@ -17,7 +47,27 @@ node_modules/
 # Vite
 vite.config.js.timestamp-*
 
-# Misc
+# Vercel
+.vercel
+
+# Typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Local DB / Docker volumes
+*.db
+*.sqlite3
+docker/data/
+
+# Logs
+*.log
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# OS
 .DS_Store
 Thumbs.db
 *.pem
@@ -28,32 +78,23 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# Local env files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-backend/.env
+# Docker
+*.log
 
-# Vercel
-.vercel
+# SDK
+sdk/openapi.json
 
-# Typescript
-*.tsbuildinfo
-next-env.d.ts
+# --------------------------------------------------------
+# Merging from legacy
+# --------------------------------------------------------
 
-# Python (Backend)
-backend/venv/
-backend/.venv/
-backend/env/
-backend/__pycache__/
-backend/*.py[cod]
-backend/*$py.class
-backend/.pytest_cache/
-backend/.mypy_cache/
-backend/data/*.db
-
-# IDEs
-.vscode/
-.idea/
+# Python (Backend legacy)
+backend_legacy/venv/
+backend_legacy/.venv/
+backend_legacy/env/
+backend_legacy/__pycache__/
+backend_legacy/*.py[cod]
+backend_legacy/*$py.class
+backend_legacy/.pytest_cache/
+backend_legacy/.mypy_cache/
+backend_legacy/data/*.db

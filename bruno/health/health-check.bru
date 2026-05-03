@@ -1,0 +1,37 @@
+meta {
+  name: Health Check
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/health
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("service is healthy", function() {
+    expect(res.body.data.health_status).to.equal("healthy");
+  });
+
+  test("has environment", function() {
+    expect(res.body.data).to.have.property("environment");
+  });
+
+  test("has version", function() {
+    expect(res.body.data).to.have.property("version");
+  });
+
+  test("has timestamp", function() {
+    expect(res.body.data).to.have.property("timestamp");
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

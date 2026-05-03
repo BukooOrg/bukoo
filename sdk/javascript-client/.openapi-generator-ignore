@@ -1,0 +1,4 @@
+# Protect hand-written files from being overwritten on regeneration
+package.json
+tsconfig.json
+.gitignore

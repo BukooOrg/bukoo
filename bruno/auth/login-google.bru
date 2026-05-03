@@ -1,0 +1,22 @@
+meta {
+  name: Login with Google
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/auth/login/google
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "code": "{{googleOauthCode}}",
+    "redirect_uri": "{{googleRedirectUri}}"
+  }
+}
