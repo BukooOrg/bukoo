@@ -11,7 +11,7 @@ from fastapi import APIRouter
 
 from app.application.dtos.auth_dto import RegisterCommand
 from app.application.use_cases.auth.login import LoginUseCase
-from app.application.use_cases.auth.register import RegisterUseCase
+from app.application.use_cases.auth.register_customer import RegisterCustomerUseCase
 from app.presentation.dependencies.deps import (
     CredentialStrategy,
     DbSession,
@@ -20,11 +20,13 @@ from app.presentation.dependencies.deps import (
     PasswordHasher,
     TokenService,
     UserRepo,
+    VerificationTokenRepo,
 )
 from app.presentation.schemas.auth_schema import (
     GoogleLoginRequest,
     LoginRequest,
     RegisterRequest,
+    RegisterResponse,
     TokenResponse,
 )
 
@@ -32,21 +34,24 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post(
-    "/register", response_model=TokenResponse, status_code=201, operation_id="register"
+    "/register",
+    response_model=RegisterResponse,
+    status_code=201,
+    operation_id="register",
 )
 async def register(
     body: RegisterRequest,
     db_session: DbSession,
     user_repo: UserRepo,
+    verification_token_repo: VerificationTokenRepo,
     hasher: PasswordHasher,
-    token_svc: TokenService,
     email_svc: EmailNotificationService,
-) -> TokenResponse:
-    use_case = RegisterUseCase(
+) -> RegisterResponse:
+    use_case = RegisterCustomerUseCase(
         db_session=db_session,
         user_repo=user_repo,
+        verification_token_repo=verification_token_repo,
         hasher=hasher,
-        token_svc=token_svc,
         email_svc=email_svc,
     )
     result = await use_case.execute(
@@ -54,9 +59,16 @@ async def register(
             email=body.email,
             password=body.password,
             full_name=body.full_name,
+            date_of_birth=body.date_of_birth,
         )
     )
-    return TokenResponse(access_token=result.access_token)
+    return RegisterResponse(
+        id=result.id,
+        email=result.email,
+        full_name=result.full_name,
+        status=result.status,
+        created_at=result.created_at,
+    )
 
 
 @router.post("/login", response_model=TokenResponse, operation_id="login")

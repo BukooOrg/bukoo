@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import date, datetime
+
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from app.application.validators.password import (
@@ -11,6 +13,7 @@ from app.application.validators.password import (
     SPECIAL_RE,
     UPPER_RE,
 )
+from app.core.constants import UserStatus
 
 
 class LoginRequest(BaseModel):
@@ -58,7 +61,39 @@ class LoginRequest(BaseModel):
 
 
 class RegisterRequest(LoginRequest):
+    password: str = Field(
+        ...,
+        min_length=8,
+        max_length=128,
+        description="User password (min 8 chars, requires uppercase, lowercase, digit, special char)",
+    )
+    full_name: str = Field(..., min_length=2, max_length=100)
+    date_of_birth: date = Field(..., description="ISO 8601 date (YYYY-MM-DD)")
+
+    @field_validator("date_of_birth")
+    @classmethod
+    def validate_date_of_birth(cls, value: date) -> date:
+        from datetime import date as date_type
+
+        today = date_type.today()
+        if value >= today:
+            raise ValueError("date_of_birth must be in the past.")
+        age_years = (
+            today.year
+            - value.year
+            - ((today.month, today.day) < (value.month, value.day))
+        )
+        if age_years < 5:
+            raise ValueError("User must be at least 5 years old.")
+        return value
+
+
+class RegisterResponse(BaseModel):
+    id: str
+    email: str
     full_name: str
+    status: UserStatus
+    created_at: datetime
 
 
 class GoogleLoginRequest(BaseModel):

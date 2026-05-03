@@ -26,7 +26,7 @@ export interface RegisterRequest {
      */
     email: string;
     /**
-     * User password (plain text, will be hashed server-side)
+     * User password (min 8 chars, requires uppercase, lowercase, digit, special char)
      * @type {string}
      * @memberof RegisterRequest
      */
@@ -37,6 +37,12 @@ export interface RegisterRequest {
      * @memberof RegisterRequest
      */
     fullName: string;
+    /**
+     * ISO 8601 date (YYYY-MM-DD)
+     * @type {Date}
+     * @memberof RegisterRequest
+     */
+    dateOfBirth: Date;
 }
 
 /**
@@ -46,6 +52,7 @@ export function instanceOfRegisterRequest(value: object): value is RegisterReque
     if (!('email' in value) || value['email'] === undefined) return false;
     if (!('password' in value) || value['password'] === undefined) return false;
     if (!('fullName' in value) || value['fullName'] === undefined) return false;
+    if (!('dateOfBirth' in value) || value['dateOfBirth'] === undefined) return false;
     return true;
 }
 
@@ -62,6 +69,7 @@ export function RegisterRequestFromJSONTyped(json: any, ignoreDiscriminator: boo
         'email': json['email'],
         'password': json['password'],
         'fullName': json['full_name'],
+        'dateOfBirth': (new Date(json['date_of_birth'])),
     };
 }
 
@@ -79,6 +87,7 @@ export function RegisterRequestToJSONTyped(value?: RegisterRequest | null, ignor
         'email': value['email'],
         'password': value['password'],
         'full_name': value['fullName'],
+        'date_of_birth': ((value['dateOfBirth']).toISOString().substring(0,10)),
     };
 }
 

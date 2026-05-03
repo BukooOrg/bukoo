@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import date, datetime
+
+from app.core.constants import UserStatus
 
 
 @dataclass(frozen=True)
@@ -8,6 +11,16 @@ class RegisterCommand:
     email: str
     password: str
     full_name: str
+    date_of_birth: date
+
+
+@dataclass(frozen=True)
+class RegisterResult:
+    id: str
+    email: str
+    full_name: str
+    status: UserStatus
+    created_at: datetime
 
 
 @dataclass(frozen=True)

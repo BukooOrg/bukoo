@@ -1,5 +1,5 @@
 meta {
-  name: Register
+  name: success
   type: http
   seq: 1
 }
@@ -15,16 +15,12 @@ headers {
 }
 
 body:json {
+  // success
   {
     "email": "{{email}}",
     "password": "{{password}}",
-    "full_name": "Dev User"
-  }
-}
-
-script:post-response {
-  if (res.status === 201) {
-    bru.setEnvVar("token", res.body.data.access_token);
+    "full_name": "Ada Lovelace",
+    "date_of_birth": "1990-05-15"
   }
 }
 
@@ -33,16 +29,16 @@ tests {
     expect(res.status).to.equal(201);
   });
 
-  test("success flag", function() {
+  test("success flag is true", function() {
     expect(res.body.success).to.be.true;
   });
 
-  test("access token present", function() {
-    expect(res.body.data.access_token).to.be.a("string").and.not.empty;
+  test("status is pending", function() {
+    expect(res.body.data.status).to.equal("pending");
   });
 
-  test("token type is bearer", function() {
-    expect(res.body.data.token_type).to.equal("bearer");
+  test("email matches submitted email", function() {
+    expect(res.body.data.email).to.equal(bru.getEnvVar("email"));
   });
 
   test("meta has requestId", function() {

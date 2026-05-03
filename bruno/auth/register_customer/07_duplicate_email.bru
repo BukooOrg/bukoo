@@ -1,0 +1,41 @@
+meta {
+  name: duplicate email
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/auth/register
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // duplicate email
+  // note: run success first before executing call this api
+  // Relies on 01_success.bru having registered {{email}} earlier in the same run.
+  {
+    "email": "{{email}}",
+    "password": "{{password}}",
+    "full_name": "Ada Lovelace",
+    "date_of_birth": "1990-05-15"
+  }
+}
+
+tests {
+  test("status 409", function() {
+    expect(res.status).to.equal(409);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is USER_ALREADY_EXISTS", function() {
+    expect(res.body.error.code).to.equal("USER_ALREADY_EXISTS");
+  });
+}

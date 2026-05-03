@@ -10,8 +10,8 @@
 
 @layer base {
   :root {
-    --font-sans: "Inter", system-ui, sans-serif;
-    --font-serif: "EB Garamond", serif;
+    --font-sans: 'Inter', system-ui, sans-serif;
+    --font-serif: 'EB Garamond', serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     --background: 0 0% 96%;
     --foreground: 31 85% 13%;

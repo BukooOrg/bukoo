@@ -94,6 +94,7 @@ fe-lint: ## Lint frontend (ESLint)
 
 fe-format: ## Auto-format frontend code (ESLint fix + Prettier)
 	$(PNPM) fix-all-files
+	$(PNPM) format-all-files
 
 fe-format-check: ## Check frontend formatting without writing changes (Prettier)
 	$(PNPM) exec prettier --check .

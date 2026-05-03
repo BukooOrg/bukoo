@@ -52,3 +52,8 @@ class NotificationStatus(StrEnum):
     PENDING = "pending"
     SENT = "sent"
     FAILED = "failed"
+
+
+class VerificationTokenType(StrEnum):
+    EMAIL_VERIFY = "email_verify"
+    PASSWORD_RESET = "password_reset"

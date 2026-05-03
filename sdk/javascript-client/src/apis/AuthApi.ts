@@ -19,6 +19,7 @@ import type {
   GoogleLoginRequest,
   LoginRequest,
   RegisterRequest,
+  ResponseWrapperRegisterResponse,
   ResponseWrapperTokenResponse,
 } from '../models/index';
 import {
@@ -30,6 +31,8 @@ import {
     LoginRequestToJSON,
     RegisterRequestFromJSON,
     RegisterRequestToJSON,
+    ResponseWrapperRegisterResponseFromJSON,
+    ResponseWrapperRegisterResponseToJSON,
     ResponseWrapperTokenResponseFromJSON,
     ResponseWrapperTokenResponseToJSON,
 } from '../models/index';
@@ -126,7 +129,7 @@ export class AuthApi extends runtime.BaseAPI {
     /**
      * Register
      */
-    async registerRaw(requestParameters: RegisterOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperTokenResponse>> {
+    async registerRaw(requestParameters: RegisterOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperRegisterResponse>> {
         if (requestParameters['registerRequest'] == null) {
             throw new runtime.RequiredError(
                 'registerRequest',
@@ -148,13 +151,13 @@ export class AuthApi extends runtime.BaseAPI {
             body: RegisterRequestToJSON(requestParameters['registerRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperTokenResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperRegisterResponseFromJSON(jsonValue));
     }
 
     /**
      * Register
      */
-    async register(requestParameters: RegisterOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperTokenResponse> {
+    async register(requestParameters: RegisterOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperRegisterResponse> {
         const response = await this.registerRaw(requestParameters, initOverrides);
         return await response.value();
     }

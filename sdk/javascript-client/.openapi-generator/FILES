@@ -11,10 +11,13 @@ src/models/HTTPValidationError.ts
 src/models/HealthCheckResponse.ts
 src/models/LoginRequest.ts
 src/models/RegisterRequest.ts
+src/models/RegisterResponse.ts
 src/models/ResponseMeta.ts
 src/models/ResponseWrapperHealthCheckResponse.ts
+src/models/ResponseWrapperRegisterResponse.ts
 src/models/ResponseWrapperTokenResponse.ts
 src/models/TokenResponse.ts
+src/models/UserStatus.ts
 src/models/ValidationError.ts
 src/models/ValidationErrorDetail.ts
 src/models/ValidationErrorLocInner.ts

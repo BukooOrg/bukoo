@@ -183,12 +183,25 @@ make worker
 
 Run all commands from the **project root**.
 
+### Pre Install
+
+```bash
+sudo chmod -R +x .    # change files permission to be executable
+```
+
 ### Install
 
 ```bash
 make install          # install backend + frontend dependencies
 make be-install       # backend only (uv sync)
 make fe-install       # frontend only (pnpm install)
+```
+
+### Post Install
+
+```bash
+uv tool install pre-commit    # install pre-commit package
+./dev/install-git-hooks       # install git hooks
 ```
 
 ### Development

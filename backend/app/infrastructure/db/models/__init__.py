@@ -33,6 +33,7 @@ from .payment_model import PaymentModel
 from .publisher_model import PublisherModel
 from .review_model import ReviewModel
 from .user_model import UserModel
+from .verification_token_model import VerificationTokenModel
 from .wishlist_item_model import WishlistItemModel
 from .wishlist_model import WishlistModel
 
@@ -55,4 +56,5 @@ __all__ = [
     "PaymentModel",
     "ReviewModel",
     "NotificationModel",
+    "VerificationTokenModel",
 ]

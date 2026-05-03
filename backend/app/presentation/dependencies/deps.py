@@ -17,14 +17,22 @@ from app.core.config import get_configs
 from app.core.constants import ObjectStorageType, UserRole
 from app.domain.entities import UserEntity
 from app.domain.exceptions import InvalidTokenError, TokenExpiredError
-from app.domain.repositories import IAccountRepository, IUserRepository
+from app.domain.repositories import (
+    IAccountRepository,
+    IUserRepository,
+    IVerificationTokenRepository,
+)
 from app.infrastructure.auth import (
     BcryptPasswordHasher,
     CredentialProvider,
     GoogleProvider,
     JWTService,
 )
-from app.infrastructure.db.repositories import AccountRepositoryImpl, UserRepositoryImpl
+from app.infrastructure.db.repositories import (
+    AccountRepositoryImpl,
+    UserRepositoryImpl,
+    VerificationTokenRepositoryImpl,
+)
 from app.infrastructure.db.session import get_db_session
 from app.infrastructure.storage import MinIOStorage, S3Storage
 from app.infrastructure.tasks.email_notification_service import (
@@ -44,8 +52,17 @@ def get_account_repository(session: DbSession) -> IAccountRepository:
     return AccountRepositoryImpl(session)
 
 
+def get_verification_token_repository(
+    session: DbSession,
+) -> IVerificationTokenRepository:
+    return VerificationTokenRepositoryImpl(session)
+
+
 UserRepo = Annotated[IUserRepository, Depends(get_user_repository)]
 AccountRepo = Annotated[IAccountRepository, Depends(get_account_repository)]
+VerificationTokenRepo = Annotated[
+    IVerificationTokenRepository, Depends(get_verification_token_repository)
+]
 
 
 #  Auth infrastructure
