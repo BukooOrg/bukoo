@@ -5,7 +5,7 @@ Implements an approved API endpoint proposal for the Bukoo backend, following th
 ## Input Format
 
 ```
-/implement <proposal_ref>
+/implement <proposal_ref> [| <notes>]
 ```
 
 Accepted formats for `<proposal_ref>`:
@@ -14,13 +14,22 @@ Accepted formats for `<proposal_ref>`:
 - Catalog notation: `1.6`, `4.3`
 - Description: `auth logout`, `create book`
 
+The optional `| <notes>` section passes free-form context that overrides or supplements the proposal. Examples:
+
+```
+/implement 1.6 | use SendGrid instead of SMTP; skip step 14, no schema change
+/implement auth logout | also invalidate all refresh tokens
+```
+
 ---
 
 ## Steps
 
 ### 1. Locate the Proposal
 
-Search `.claude/context/api-proposals/` for a file matching the input. If multiple files match, list them and ask the user to confirm which one.
+Parse the input: split on `|` — everything before is `<proposal_ref>`, everything after (if present) is `<notes>`. Trim both parts.
+
+Search `.claude/context/api-proposals/` for a file matching `<proposal_ref>`. If multiple files match, list them and ask the user to confirm which one.
 
 If no file is found, tell the user and suggest running `/propose <endpoint_ref>` first.
 
@@ -32,12 +41,40 @@ If no file is found, tell the user and suggest running `/propose <endpoint_ref>`
 - `backend/CLAUDE.md`
 - Any existing files that will be modified (e.g., `deps.py`, `exception_mapper.py`, the relevant route file)
 
-### 3. Check Proposal Status
+If `<notes>` were provided, display them prominently before proceeding:
+
+> **Implementation notes:** `<notes>`
+
+These notes take precedence over proposal defaults for any decision they cover (e.g., skipping a step, choosing a library, adjusting behaviour).
+
+### 3. Explore the Codebase
+
+Before writing any code, scan the areas the proposal touches. This prevents creating duplicate files and ensures you reuse existing patterns.
+
+**Always read:**
+
+- Any existing file in the same domain group (e.g., if implementing an `auth` use case, scan `app/application/use_cases/auth/` and `app/infrastructure/db/repositories/` for the auth repo)
+- A representative existing use case in the same group as a pattern reference
+
+**Read if the proposal involves side-effects:**
+
+| Side-effect           | Where to look first                                                                                                                   |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Email / notifications | `app/infrastructure/tasks/` and `app/infrastructure/services/` — find the existing service file and add to it, don't create a new one |
+| File storage          | `app/infrastructure/services/` for the existing MinIO/storage service                                                                 |
+| Celery tasks          | `app/infrastructure/tasks/` — identify the existing task service file for this domain                                                 |
+| External API          | `app/application/interfaces/` for any declared interface; `app/infrastructure/services/` for existing implementations                 |
+
+**New dependencies:** If the proposal or notes require a package not yet in `pyproject.toml`, run `uv add <package>` before writing the code that uses it.
+
+**Non-standard flow:** If this endpoint deviates from the standard 16-step sequence (see [Non-Standard Scenarios](#non-standard-scenarios) below), note the deviation and adapt accordingly before starting Step 4.
+
+### 4. Check Proposal Status
 
 - If status = `Draft` → **stop**. Tell the user the proposal is not yet approved. Ask them to review it and use `/propose` to finalize it first.
 - If status = `Approved` or `Implemented` → proceed.
 
-### 4. Implement in Layer Order
+### 5. Implement in Layer Order
 
 Work through all 16 checklist items **in sequence**. Never skip steps or reorder them — layer dependencies require inner layers to exist before outer ones import them.
 
@@ -116,12 +153,33 @@ For each step:
 - Run `make migrate msg="<descriptive message>"` and review the generated file.
 - Do NOT run `make upgrade` automatically — leave that for the developer to run manually.
 
-#### Step 15: Bruno Test File
+#### Step 15: Bruno Test Files
 
-- Create `bruno/<api_set_folder>/<use_case_name>.bru`.
-- Follow the exact `.bru` format: `meta`, HTTP method block, `headers`, `body:json` (if applicable), `script:post-response` (if token extraction needed), `tests` block.
-- Implement all test cases listed in the proposal's Bruno Tests section.
-- Use `{{baseUrl}}{{apiBase}}` for URLs, `{{token}}` for auth headers.
+Create a subfolder `bruno/<api_set_folder>/<use_case_name>/` for the use case. Inside it:
+
+1. **`folder.bru`** — folder metadata. Set `seq` to the position of this use case folder among siblings under the API set folder (check existing sibling `folder.bru` files to find the next seq number):
+
+   ```bru
+   meta {
+     name: [Human Readable Use Case Name]
+     seq: [N]
+   }
+   ```
+
+2. **One `.bru` file per test case** from the proposal's Bruno Tests section, named `NN_<snake_case_description>.bru` with zero-padded prefix:
+   - `01_success.bru` — always the happy path, seq: 1
+   - `02_<error_description>.bru` — first error case, seq: 2
+   - `03_<error_description>.bru` — second error case, seq: 3
+   - … one file per remaining error case, incrementing seq each time
+
+   Rules:
+   - `meta.seq` must equal the numeric prefix (e.g., `03_…` → `seq: 3`). Wrong seq breaks Bruno runner ordering.
+   - File description uses snake_case matching the test scenario (e.g., `02_invalid_email.bru`, `07_duplicate_email.bru`).
+   - Error cases that depend on prior state (e.g., duplicate after a successful creation) must note the dependency in a comment inside `body:json`.
+
+3. Follow the exact `.bru` format: `meta`, HTTP method block, `headers`, `body:json` (if applicable), `script:post-response` (if token extraction needed), `tests` block.
+4. Use `{{baseUrl}}{{apiBase}}` for URLs, `{{token}}` for auth headers.
+5. See `bruno/CLAUDE.md` for the full structure reference.
 
 #### Step 16: Pytest Unit Tests
 
@@ -132,7 +190,7 @@ For each step:
 - Use `async def test_*()` — asyncio_mode is `auto` in `pytest.ini`.
 - Cover all test cases listed in the proposal's Pytest section.
 
-### 5. Run Quality Checks
+### 6. Run Quality Checks
 
 After all 16 steps are complete, run:
 
@@ -142,11 +200,11 @@ make be-check
 
 Fix all ruff lint, format, and mypy errors before reporting done. Do not skip or suppress errors without a documented reason.
 
-### 6. Update Proposal Status
+### 7. Update Proposal Status
 
 Edit the proposal file: change `Status: Approved` → `Status: Implemented`.
 
-### 7. Report Summary
+### 8. Report Summary
 
 Output a summary listing:
 
@@ -155,6 +213,23 @@ Output a summary listing:
 - Checklist completion (16/16 ✓ or partial)
 - Any steps skipped and why (e.g., "Step 6–7 skipped: no new ORM model needed")
 - Any remaining manual steps (e.g., "Run `make upgrade` to apply migration")
+
+---
+
+## Non-Standard Scenarios
+
+The 16-step layer sequence covers the general case. Some endpoints require deviations — identify them during Step 3 exploration and adapt accordingly.
+
+| Scenario                  | How to adapt                                                                                                                                                                                         |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Celery task needed**    | Scan `app/infrastructure/tasks/` first. Add the new task method to the existing domain service file (e.g., `email_notification_service.py`) — never create a new standalone task file.               |
+| **New external service**  | Check `app/application/interfaces/` for an existing declared interface. If one exists, implement it in `app/infrastructure/services/`. If not, declare the interface first (Step 4), then implement. |
+| **File upload / storage** | Read the existing MinIO/storage service in `app/infrastructure/services/` before writing anything. Add to it rather than creating a standalone uploader.                                             |
+| **New Python dependency** | Run `uv add <package>` before writing the code that uses it. Note the new dependency in the Step 8 summary.                                                                                          |
+| **No DB mutation**        | Skip Steps 6–7 (ORM model + mapper) and Step 14 (migration). Note in summary.                                                                                                                        |
+| **Auth-only endpoint**    | Steps 6–8 may be skipped if the use case only reads from an existing repo with no new methods needed.                                                                                                |
+
+If a scenario isn't listed here, follow the principle: **scan existing files in the relevant directory before creating anything new**.
 
 ---
 

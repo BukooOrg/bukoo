@@ -5,13 +5,21 @@ Picks up where work left off on a Bukoo API endpoint — either continuing a pro
 ## Input Format
 
 ```
-/continue <endpoint_ref>
+/continue <endpoint_ref> [| <notes>]
 ```
 
 Accepted formats for `<endpoint_ref>`:
+
 - Catalog notation: `1.6`, `4.3`, `11.1`
 - Zero-padded: `01_06`, `04_03`
 - Description: `auth logout`, `create book`, `place order`
+
+The optional `| <notes>` section passes free-form context for the remaining work. Examples:
+
+```
+/continue 1.6 | skip step 14, migration already applied
+/continue auth logout | use SendGrid for the confirmation email
+```
 
 ---
 
@@ -19,7 +27,9 @@ Accepted formats for `<endpoint_ref>`:
 
 ### 1. Locate the Proposal
 
-Search `.claude/context/api-proposals/` for a file matching the endpoint reference.
+Parse the input: split on `|` — everything before is `<endpoint_ref>`, everything after (if present) is `<notes>`. Trim both parts.
+
+Search `.claude/context/api-proposals/` for a file matching `<endpoint_ref>`.
 
 - File naming pattern: `[api_set_idx]_[uc_idx]_[use_case_name]_proposal.md`
 - If not found → stop and say: "No proposal file found for '[input]'. Run `/propose <endpoint_ref>` to create one first."
@@ -29,9 +39,16 @@ Search `.claude/context/api-proposals/` for a file matching the endpoint referen
 
 Read the full proposal file. Note the **Status** field and the state of the **Implementation Checklist** (which boxes are ticked).
 
+If `<notes>` were provided, display them prominently before proceeding:
+
+> **Continuation notes:** `<notes>`
+
+Apply them to all remaining steps — they may override decisions in the proposal (e.g., skipping a step, changing a library choice).
+
 ### 3. Determine Continuation Mode
 
 #### Mode A — Proposal Continuation
+
 **Trigger:** Status = `Draft`
 
 1. Summarize the current state of the proposal: which sections are complete, which are thin or missing.
@@ -41,6 +58,7 @@ Read the full proposal file. Note the **Status** field and the state of the **Im
 5. On user approval, update status to `Approved` and save.
 
 #### Mode B — Implementation Continuation
+
 **Trigger:** Status = `Approved` or `Implemented` (but checklist has unchecked items)
 
 1. Read all context files in parallel:
@@ -50,24 +68,24 @@ Read the full proposal file. Note the **Status** field and the state of the **Im
 
 2. Audit the codebase against the checklist. For each unchecked step, verify whether the artifact actually exists:
 
-   | Checklist Step | Where to look |
-   |----------------|---------------|
-   | 1. Domain entity | `app/domain/entities/` |
-   | 2. Domain exceptions | `app/domain/exceptions/` |
-   | 3. Repository interface | `app/domain/repositories/` |
-   | 4. DTOs | `app/application/dtos/` |
-   | 5. Use case | `app/application/use_cases/` |
-   | 6. ORM model | `app/infrastructure/db/models/` |
-   | 7. Mapper | `app/infrastructure/db/mappers/` |
-   | 8. Repository implementation | `app/infrastructure/db/repositories/` |
-   | 9. Exception mapping | `app/presentation/http/exception_mapper.py` |
-   | 10. Error codes | `app/application/errors/error_codes.py` |
-   | 11. Pydantic schemas | `app/presentation/schemas/` |
-   | 12. Route handler | `app/presentation/api/app_api/v1/` |
-   | 13. deps.py wiring | `app/presentation/dependencies/deps.py` |
-   | 14. Migration | `backend/migrations/versions/` |
-   | 15. Bruno test | `bruno/` |
-   | 16. Pytest unit tests | `backend/tests/unit/` |
+   | Checklist Step               | Where to look                               |
+   | ---------------------------- | ------------------------------------------- |
+   | 1. Domain entity             | `app/domain/entities/`                      |
+   | 2. Domain exceptions         | `app/domain/exceptions/`                    |
+   | 3. Repository interface      | `app/domain/repositories/`                  |
+   | 4. DTOs                      | `app/application/dtos/`                     |
+   | 5. Use case                  | `app/application/use_cases/`                |
+   | 6. ORM model                 | `app/infrastructure/db/models/`             |
+   | 7. Mapper                    | `app/infrastructure/db/mappers/`            |
+   | 8. Repository implementation | `app/infrastructure/db/repositories/`       |
+   | 9. Exception mapping         | `app/presentation/http/exception_mapper.py` |
+   | 10. Error codes              | `app/application/errors/error_codes.py`     |
+   | 11. Pydantic schemas         | `app/presentation/schemas/`                 |
+   | 12. Route handler            | `app/presentation/api/app_api/v1/`          |
+   | 13. deps.py wiring           | `app/presentation/dependencies/deps.py`     |
+   | 14. Migration                | `backend/migrations/versions/`              |
+   | 15. Bruno test               | `bruno/`                                    |
+   | 16. Pytest unit tests        | `backend/tests/unit/`                       |
 
 3. Report the audit result clearly:
 

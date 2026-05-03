@@ -22,6 +22,7 @@ from app.domain.repositories.verification_token_repository import (
 
 from ..base import BaseUseCase
 
+# todo move to appropriate location
 _OTP_TTL_MINUTES = 15
 
 

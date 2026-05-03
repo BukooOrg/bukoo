@@ -5,7 +5,7 @@ Generates a detailed API endpoint proposal for a Bukoo use case, iterates with t
 ## Input Format
 
 ```
-/propose <endpoint_ref>
+/propose <endpoint_ref> [| <notes>]
 ```
 
 Accepted formats for `<endpoint_ref>`:
@@ -14,19 +14,35 @@ Accepted formats for `<endpoint_ref>`:
 - Zero-padded: `01_06`, `04_03`
 - Description: `auth logout`, `create book`, `place order`
 
+The optional `| <notes>` section passes free-form context that shapes the proposal. Examples:
+
+```
+/propose 1.6 | also invalidate all refresh tokens on logout
+/propose auth register | use SendGrid for verification email
+```
+
 ---
 
 ## Steps
 
 ### 1. Parse the Reference
 
-Map the input to an API set index and endpoint index using `.claude/context/api-endpoint-catalog.md`. If the reference is ambiguous or not found, list the closest matches and ask the user to clarify.
+Split input on `|` — everything before is `<endpoint_ref>`, everything after (if present) is `<notes>`. Trim both parts.
+
+Map `<endpoint_ref>` to an API set index and endpoint index using `.claude/context/api-endpoint-catalog.md`. If the reference is ambiguous or not found, list the closest matches and ask the user to clarify.
 
 ### 2. Read Context (in parallel)
 
 - `.claude/context/api-endpoint-catalog.md` — endpoint spec and notes
 - `.claude/context/architecture.md` — layer rules, request lifecycle, patterns
 - `.claude/context/domain-model.md` — entities, invariants, existing repo interfaces
+- Relevant existing domain files (entity, exceptions, repo interface) for this domain group — read these to use **real class names** in the proposal, not placeholders
+
+If `<notes>` were provided, display them prominently before generating the proposal:
+
+> **Proposal notes:** `<notes>`
+
+Apply them throughout — they may add behaviour, restrict scope, or specify implementation choices.
 
 ### 3. Generate the Proposal
 
@@ -163,18 +179,21 @@ _(None — if no request body)_
 
 ## Procedures
 
-Detailed step-by-step logic (pseudocode in English). Be specific: name exact exception classes, error codes, field names, and where `commit()` is called. Short and concise without missing details.
+Detailed step-by-step logic in plain English. Use **real class names** from the domain files you read in Step 2 — no placeholders like `[EntityNotFoundError]`. Be specific about exception classes, error codes, field names, and where `commit()` is called.
 
-1. [Auth/Guard check] Validate Bearer token via `CurrentUser` / `AdminUser` dependency. If invalid → raise HTTP 401 (handled by deps.py, not the use case).
-2. [Input validation] Pydantic schema validates the request body. If invalid → raise HTTP 422 (handled automatically by FastAPI).
-3. [Business logic step] ...
-4. [Repository call] Call `repo.find_by_id(id)`. If not found → raise `[EntityNotFoundError]`.
-5. [Domain rule enforcement] Check invariant. If violated → raise `[DomainException]`.
-6. [Mutation] Call entity method (e.g., `entity.update(...)`). This updates `_updated_at` internally.
-7. [Persist] Call `repo.save(entity)`. Repository does NOT commit.
-8. [Commit] Call `await self._db_session.commit()` in the use case.
-9. [Side effect] (If applicable) Dispatch Celery task / upload to storage / send email.
-10. [Return] Build and return the result DTO.
+**General flow pattern** (adapt step count to the endpoint's actual complexity — simple endpoints may need 4 steps, complex ones 12+):
+
+- **Auth/guard** — Validate Bearer token via `CurrentUser` / `AdminUser` dependency. Handled by `deps.py`, not the use case.
+- **Input validation** — Pydantic schema validates request body. Handled automatically by FastAPI (HTTP 422 on failure).
+- **Existence / uniqueness checks** — Repo lookup; raise the appropriate domain exception if not found or already exists.
+- **Domain rule enforcement** — Check invariants; raise domain exceptions for violations.
+- **Mutation** — Call entity method(s). Entity updates `_updated_at` internally.
+- **Persist** — `repo.save(entity)`. Repo does NOT commit.
+- **Commit** — `await self._db_session.commit()` in the use case, after all mutations.
+- **Side effects** — (if applicable) Dispatch Celery task / upload to storage / send email.
+- **Return** — Build and return the result DTO.
+
+Write each step as a numbered sentence. Skip phases that don't apply. Add extra steps when the endpoint has multi-entity logic, conditional branching, or chained side-effects.
 
 ---
 
@@ -224,21 +243,23 @@ _(None — if no new error codes needed)_
 
 ### Bruno Tests
 
-**File:** `bruno/[api_set_folder]/[use_case_name].bru`
+**Folder:** `bruno/[api_set_folder]/[use_case_name]/`
 
-**Happy Path:**
+Each test case is a separate `.bru` file. File names are zero-padded: `01_success.bru`, `02_<error>.bru`, …
+
+**`01_success.bru` — Happy Path:**
 
 - [ ] Status [200/201] OK
 - [ ] `res.body.success` is `true`
 - [ ] `res.body.data.[field]` equals expected value
 - [ ] `res.body.meta.requestId` is a string
 
-**Error Cases:**
+**Error Cases (one file each, seq increments with filename prefix):**
 
-- [ ] Status 401 when no Authorization header provided
-- [ ] Status 401 when token is expired or invalid
-- [ ] Status [4xx] when [condition] → error code `[CODE]`
-- [ ] Status [4xx] when [condition] → error code `[CODE]`
+- [ ] `02_[description].bru` — Status 401 when no Authorization header provided
+- [ ] `03_[description].bru` — Status 401 when token is expired or invalid
+- [ ] `04_[description].bru` — Status [4xx] when [condition] → error code `[CODE]`
+- [ ] `05_[description].bru` — Status [4xx] when [condition] → error code `[CODE]`
 
 ### Pytest Unit Tests
 
@@ -276,7 +297,7 @@ _(None — if no new error codes needed)_
 - [ ] 12. Route handler (`app/presentation/api/app_api/v1/[group]_routes.py`)
 - [ ] 13. Wire in `deps.py` (`app/presentation/dependencies/deps.py`)
 - [ ] 14. Alembic migration — _only if schema changed_ (`make migrate msg="..."`)
-- [ ] 15. Bruno test file (`bruno/[api_set]/[use_case].bru`)
+- [ ] 15. Bruno test files (`bruno/[api_set]/[use_case]/` — `folder.bru` + `01_success.bru` + one file per error case)
 - [ ] 16. Pytest unit tests (`backend/tests/unit/test_[use_case].py`)
 
 ```

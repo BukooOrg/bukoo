@@ -37,12 +37,12 @@ bukoo/
 
 Detailed reference documents for Claude are in `.claude/context/`:
 
-| File                                 | When to read                                                                                                            |
-| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| `.claude/context/project-context.md` | For orientation: what features exist, who uses them, what is out of scope, implementation status                        |
-| `.claude/context/architecture.md`    | Before implementing features that span multiple layers; understanding request lifecycle, session handling, or auth flow |
-| `.claude/context/domain-model.md`    | Before adding new entities or use cases; understanding entity relationships and invariants                              |
-| `.claude/context/api-endpoint-catalog.md` | Before implementing any route; the authoritative list of all 86 endpoints grouped by API set, with access levels |
+| File                                      | When to read                                                                                                            |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `.claude/context/project-context.md`      | For orientation: what features exist, who uses them, what is out of scope, implementation status                        |
+| `.claude/context/architecture.md`         | Before implementing features that span multiple layers; understanding request lifecycle, session handling, or auth flow |
+| `.claude/context/domain-model.md`         | Before adding new entities or use cases; understanding entity relationships and invariants                              |
+| `.claude/context/api-endpoint-catalog.md` | Before implementing any route; the authoritative list of all 86 endpoints grouped by API set, with access levels        |
 
 ## All Make Targets (run from repo root)
 
