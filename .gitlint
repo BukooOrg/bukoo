@@ -15,6 +15,7 @@ line-length=100
 # type + scope + subject format
 # Equivalent to:
 # type(scope): subject
+# agent - add AI agent-related document artifact that will modify the agent behaviour
 # build - affect build components like build tool, ci pipeline, dependencies, project version, etc
 # chore - miscellaneous commits e.g. modifying .gitignore
 # ci - affect operational components like infrastructure, deployment, backup, recovery
