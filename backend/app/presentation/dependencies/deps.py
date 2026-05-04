@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,7 +17,12 @@ from app.application.interfaces import (
 from app.core.config import get_configs
 from app.core.constants import ObjectStorageType, UserRole
 from app.domain.entities import UserEntity
-from app.domain.exceptions import InvalidTokenError, TokenExpiredError
+from app.domain.exceptions import (
+    AdminAccessRequiredError,
+    InvalidCredentialsError,
+    InvalidTokenError,
+    TokenAlreadyRevokedError,
+)
 from app.domain.repositories import (
     IAccountRepository,
     IUserRepository,
@@ -80,8 +85,8 @@ def get_password_hasher() -> IPasswordHasher:
     return BcryptPasswordHasher()
 
 
-def get_token_service() -> ITokenService:
-    return JWTService()
+def get_token_service(cache_svc: CacheService) -> ITokenService:
+    return JWTService(cache_svc=cache_svc)
 
 
 PasswordHasher = Annotated[IPasswordHasher, Depends(get_password_hasher)]
@@ -135,28 +140,38 @@ EmailNotificationService = Annotated[
 _bearer = HTTPBearer()
 
 
-async def get_current_user(
+TokenPayloadObj = dict[str, object]
+
+
+async def get_token_payload(
     credentials: Annotated[HTTPAuthorizationCredentials, Depends(_bearer)],
-    user_repo: UserRepo,
     token_svc: TokenService,
-) -> UserEntity:
+) -> TokenPayloadObj:
     try:
-        payload = token_svc.decode_token(credentials.credentials)
-        user_id = str(payload.get("sub", ""))
-    except (InvalidTokenError, TokenExpiredError) as exc:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=exc.message,
-            headers={"WWW-Authenticate": "Bearer"},
-        ) from exc
+        payload = token_svc.decode_token(credentials.credentials, verify_exp=False)
+    except InvalidTokenError as exc:
+        raise exc
+
+    jti = str(payload.get("jti", ""))
+    if jti and await token_svc.is_token_revoked(jti):
+        raise TokenAlreadyRevokedError
+
+    return payload
+
+
+TokenPayload = Annotated[TokenPayloadObj, Depends(get_token_payload)]
+
+
+async def get_current_user(
+    payload: Annotated[TokenPayload, Depends(get_token_payload)],
+    user_repo: UserRepo,
+) -> UserEntity:
+    user_id = str(payload.get("sub", ""))
 
     user = await user_repo.find_by_id(user_id)
     if user is None or not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found or inactive.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise InvalidCredentialsError
+
     return user
 
 
@@ -165,10 +180,11 @@ CurrentUser = Annotated[UserEntity, Depends(get_current_user)]
 
 async def require_admin(current_user: CurrentUser) -> UserEntity:
     if current_user.role != UserRole.ADMIN:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required.",
-        )
+        # raise HTTPException(
+        #     status_code=status.HTTP_403_FORBIDDEN,
+        #     detail="Admin access required.",
+        # )
+        raise AdminAccessRequiredError
     return current_user
 
 

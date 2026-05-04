@@ -28,6 +28,11 @@ class InvalidTokenError(DomainException):
         super().__init__("Token is invalid.")
 
 
+class TokenAlreadyRevokedError(DomainException):
+    def __init__(self) -> None:
+        super().__init__("Token already revoked.")
+
+
 class UserNotVerifiedError(DomainException):
     def __init__(self, email: str) -> None:
         self.email = email

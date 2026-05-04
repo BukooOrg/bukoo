@@ -69,3 +69,13 @@ class ResendVerificationCommand:
 class ResendVerificationResult:
     email: str
     message: str
+
+
+@dataclass(frozen=True)
+class LogoutCommand:
+    token_payload: dict[str, object]
+
+
+@dataclass(frozen=True)
+class LogoutResult:
+    message: str

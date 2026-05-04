@@ -79,6 +79,14 @@ class FakeTokenService(ITokenService):
     def decode_token(self, token: str) -> dict[str, object]:
         return {}
 
+    @override
+    async def revoke_token(self, payload: dict[str, object]) -> None:
+        pass
+
+    @override
+    async def is_token_revoked(self, jti: str) -> bool:
+        return False
+
 
 class FakeAuthProviderFactory(IAuthProviderFactory):
     """Stub factory that always returns a fixed provider — tests factory substitutability."""

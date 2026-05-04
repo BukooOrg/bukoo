@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from .admin import AdminAccessRequiredError
 from .auth import (
     InvalidCredentialsError,
     InvalidTokenError,
+    TokenAlreadyRevokedError,
     TokenExpiredError,
     UserAlreadyExistsError,
     UserAlreadyVerifiedError,
@@ -33,6 +35,7 @@ __all__ = [
     "DomainException",
     "InvalidCredentialsError",
     "InvalidTokenError",
+    "TokenAlreadyRevokedError",
     "TokenExpiredError",
     "UserAlreadyExistsError",
     "UserAlreadyVerifiedError",
@@ -53,4 +56,5 @@ __all__ = [
     "CacheWriteError",
     "CacheReadError",
     "CacheDeleteError",
+    "AdminAccessRequiredError",
 ]

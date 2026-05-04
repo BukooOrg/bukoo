@@ -1,0 +1,26 @@
+meta {
+  name: already logged out
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/auth/logout
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  // depends on 01_success.bru having already revoked this token
+  token: {{token}}
+}
+
+tests {
+  test("status 401", function() {
+    expect(res.status).to.equal(401);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+}

@@ -3,7 +3,8 @@ Auth routes:
 - register
 - verify email
 - credential login
-- Google OAuth login.
+- Google OAuth login
+- logout.
 """
 
 from __future__ import annotations
@@ -11,17 +12,19 @@ from __future__ import annotations
 from fastapi import APIRouter, Response
 
 from app.application.dtos.auth_dto import (
+    LogoutCommand,
     RegisterCommand,
     ResendVerificationCommand,
     VerifyEmailCommand,
 )
 from app.application.use_cases.auth.login import LoginUseCase
+from app.application.use_cases.auth.logout import LogoutUseCase
 from app.application.use_cases.auth.register_customer import RegisterCustomerUseCase
 from app.application.use_cases.auth.resend_email_verification import (
     ResendEmailVerificationUseCase,
 )
 from app.application.use_cases.auth.verify_email import VerifyEmailUseCase
-from app.core.util import set_auth_cookie
+from app.core.util import clear_auth_cookie, set_auth_cookie
 from app.presentation.dependencies.deps import (
     AccountRepo,
     CredentialAuthFactory,
@@ -29,6 +32,7 @@ from app.presentation.dependencies.deps import (
     EmailNotificationService,
     GoogleAuthFactory,
     PasswordHasher,
+    TokenPayload,
     TokenService,
     UserRepo,
     VerificationTokenRepo,
@@ -36,6 +40,7 @@ from app.presentation.dependencies.deps import (
 from app.presentation.schemas.auth_schema import (
     GoogleLoginRequest,
     LoginRequest,
+    LogoutResponse,
     RegisterRequest,
     RegisterResponse,
     ResendVerificationRequest,
@@ -164,3 +169,16 @@ async def resend_verification(
     )
     result = await use_case.execute(ResendVerificationCommand(email=body.email))
     return ResendVerificationResponse(email=result.email, message=result.message)
+
+
+@router.post("/logout", response_model=LogoutResponse, operation_id="logout")
+async def logout(
+    token_payload: TokenPayload,
+    response: Response,
+    db_session: DbSession,
+    token_svc: TokenService,
+) -> LogoutResponse:
+    use_case = LogoutUseCase(db_session=db_session, token_svc=token_svc)
+    result = await use_case.execute(LogoutCommand(token_payload=token_payload))
+    clear_auth_cookie(response)
+    return LogoutResponse(message=result.message)

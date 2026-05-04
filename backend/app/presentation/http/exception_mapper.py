@@ -2,6 +2,7 @@ from fastapi import status
 
 from app.application.errors.error_codes import ErrorCode
 from app.domain.exceptions import (
+    AdminAccessRequiredError,
     BookAlreadyExistsError,
     BookNotFoundError,
     DomainException,
@@ -12,6 +13,7 @@ from app.domain.exceptions import (
     OrderAlreadyPaidError,
     OrderNotFoundError,
     OutOfStockError,
+    TokenAlreadyRevokedError,
     TokenExpiredError,
     UserAlreadyExistsError,
     UserAlreadyVerifiedError,
@@ -60,6 +62,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         ErrorCode.INVALID_TOKEN,
         "Invalid token",
     ),
+    TokenAlreadyRevokedError: HttpExceptionMapping(
+        status.HTTP_401_UNAUTHORIZED,
+        ErrorCode.TOKEN_REVOKED,
+        "Token has been revoked",
+    ),
     UserNotVerifiedError: HttpExceptionMapping(
         status.HTTP_403_FORBIDDEN,
         ErrorCode.USER_NOT_VERIFIED,
@@ -106,5 +113,10 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_422_UNPROCESSABLE_ENTITY,
         ErrorCode.EMPTY_ORDER,
         "Order cannot be empty",
+    ),
+    AdminAccessRequiredError: HttpExceptionMapping(
+        status.HTTP_403_FORBIDDEN,
+        ErrorCode.ADMIN_ACCESS_REQUIRED,
+        "Admin access required.",
     ),
 }

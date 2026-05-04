@@ -22,6 +22,7 @@ class RedisCacheService(ICacheService):
 
     def __init__(self) -> None:
         configs = get_configs()
+        # todo: move configs to appropriate location
         pool = ConnectionPool.from_url(
             configs.CACHE_REDIS_URL,
             max_connections=20,
