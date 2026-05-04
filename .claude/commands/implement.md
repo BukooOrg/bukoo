@@ -58,12 +58,13 @@ Before writing any code, scan the areas the proposal touches. This prevents crea
 
 **Read if the proposal involves side-effects:**
 
-| Side-effect           | Where to look first                                                                                                                   |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| Email / notifications | `app/infrastructure/tasks/` and `app/infrastructure/services/` — find the existing service file and add to it, don't create a new one |
-| File storage          | `app/infrastructure/services/` for the existing MinIO/storage service                                                                 |
-| Celery tasks          | `app/infrastructure/tasks/` — identify the existing task service file for this domain                                                 |
-| External API          | `app/application/interfaces/` for any declared interface; `app/infrastructure/services/` for existing implementations                 |
+| Side-effect              | Where to look first                                                                                                                                                          |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Email / notifications    | `app/infrastructure/tasks/` and `app/infrastructure/services/` — find the existing service file and add to it, don't create a new one                                        |
+| File storage             | `app/infrastructure/services/` for the existing MinIO/storage service                                                                                                       |
+| Celery tasks             | `app/infrastructure/tasks/` — identify the existing task service file for this domain                                                                                        |
+| External API             | `app/application/interfaces/` for any declared interface; `app/infrastructure/services/` for existing implementations                                                        |
+| Cache / key-value store  | `app/infrastructure/cache/redis_cache.py` — inject `CacheService` from `deps.py` (alias for `ICacheService`); do not use Redis directly; key pattern: `bukoo:{feature}:{id}` |
 
 **New dependencies:** If the proposal or notes require a package not yet in `pyproject.toml`, run `uv add <package>` before writing the code that uses it.
 

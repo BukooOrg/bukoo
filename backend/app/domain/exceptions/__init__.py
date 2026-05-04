@@ -16,6 +16,7 @@ from .book import (
     BookNotFoundError,
     InvalidISBNError,
 )
+from .cache import CacheDeleteError, CacheReadError, CacheWriteError
 from .order import (
     EmptyOrderError,
     OrderAlreadyPaidError,
@@ -49,4 +50,7 @@ __all__ = [
     "PaymentVerificationError",
     "StorageUploadError",
     "StorageNotFoundError",
+    "CacheWriteError",
+    "CacheReadError",
+    "CacheDeleteError",
 ]

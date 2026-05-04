@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.interfaces import (
     IAuthProviderFactory,
+    ICacheService,
     IEmailNotificationService,
     IPasswordHasher,
     IStorageService,
@@ -28,6 +29,7 @@ from app.infrastructure.auth import (
     GoogleAuthProviderFactory,
     JWTService,
 )
+from app.infrastructure.cache import RedisCacheService
 from app.infrastructure.db.repositories import (
     AccountRepositoryImpl,
     UserRepositoryImpl,
@@ -63,6 +65,14 @@ AccountRepo = Annotated[IAccountRepository, Depends(get_account_repository)]
 VerificationTokenRepo = Annotated[
     IVerificationTokenRepository, Depends(get_verification_token_repository)
 ]
+
+
+# Cache
+def get_cache_service() -> ICacheService:
+    return RedisCacheService()
+
+
+CacheService = Annotated[ICacheService, Depends(get_cache_service)]
 
 
 #  Auth infrastructure

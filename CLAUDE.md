@@ -131,14 +131,15 @@ make clean            # remove all build artifacts and caches
 
 Start with `make infra-up`. All services are required before running the backend or worker.
 
-| Service    | Port(s)     | Purpose                        |
-| ---------- | ----------- | ------------------------------ |
-| PostgreSQL | 5432        | Primary database               |
-| pgAdmin    | 5050        | Database UI                    |
-| Mailpit    | 1025 / 8025 | SMTP trap (dev email testing)  |
-| MinIO      | 9000 / 9001 | Object storage (local S3)      |
-| Redis      | 6379        | Celery broker + result backend |
-| Flower     | 5555        | Celery task monitoring         |
+| Service      | Port(s)     | Purpose                                  |
+| ------------ | ----------- | ---------------------------------------- |
+| PostgreSQL   | 5432        | Primary database                         |
+| pgAdmin      | 5050        | Database UI                              |
+| Mailpit      | 1025 / 8025 | SMTP trap (dev email testing)            |
+| MinIO        | 9000 / 9001 | Object storage (local S3)                |
+| Redis        | 6379        | Celery broker + result backend + Caching |
+| Flower       | 5555        | Celery task monitoring                   |
+| RedisInsight | 5540        | Redis UI                                 |
 
 Docker env is loaded from `docker/.env.dev` (copy from `docker/.env.dev.example`).
 

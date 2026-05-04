@@ -324,9 +324,13 @@ class GoogleOAuthConfig(BaseSettings):
 
 
 class RedisConfig(BaseSettings):
-    REDIS_URL: str = Field(
+    BROKER_REDIS_URL: str = Field(
         description="Redis broker URL used by Celery",
         default="redis://localhost:6379/0",
+    )
+    CACHE_REDIS_URL: str = Field(
+        description="Redis URL for the application cache (token blocklist, OTP storage, etc.)",
+        default="redis://localhost:6379/1",
     )
 
 

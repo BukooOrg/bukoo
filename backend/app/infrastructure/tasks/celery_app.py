@@ -24,8 +24,8 @@ def create_celery() -> Celery:
     configs = get_configs()
     app = Celery(
         configs.APP_NAME,
-        broker=configs.REDIS_URL,
-        backend=configs.REDIS_URL,
+        broker=configs.BROKER_REDIS_URL,
+        backend=configs.BROKER_REDIS_URL,
         include=tasks,
     )
     app.conf.update(
