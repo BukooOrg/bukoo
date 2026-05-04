@@ -1,0 +1,38 @@
+meta {
+  name: expired token
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/auth/verify-email
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // expired token — use a separate test account whose OTP TTL (15 min) has elapsed
+  // To reproduce: register a user, wait 15+ minutes, then submit any OTP.
+  {
+    "email": "expired@example.com",
+    "otp": "123456"
+  }
+}
+
+tests {
+  test("status 401", function() {
+    expect(res.status).to.equal(401);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is INVALID_TOKEN", function() {
+    expect(res.body.error.code).to.equal("INVALID_TOKEN");
+  });
+}

@@ -14,6 +14,7 @@ from app.domain.exceptions import (
     OutOfStockError,
     TokenExpiredError,
     UserAlreadyExistsError,
+    UserAlreadyVerifiedError,
     UserNotFoundError,
 )
 
@@ -41,6 +42,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_409_CONFLICT,
         ErrorCode.USER_ALREADY_EXISTS,
         "User already exists",
+    ),
+    UserAlreadyVerifiedError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.USER_ALREADY_VERIFIED,
+        "User already verified",
     ),
     TokenExpiredError: HttpExceptionMapping(
         status.HTTP_401_UNAUTHORIZED,

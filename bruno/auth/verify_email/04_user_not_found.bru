@@ -1,0 +1,37 @@
+meta {
+  name: user not found
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/auth/verify-email
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // user not found — email does not exist in the system
+  {
+    "email": "nobody@example.com",
+    "otp": "123456"
+  }
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is USER_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("USER_NOT_FOUND");
+  });
+}

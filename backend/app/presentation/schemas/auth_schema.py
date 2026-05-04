@@ -116,3 +116,15 @@ class TokenResponse(BaseModel):
         default="bearer",
         description="Token type (typically 'bearer')",
     )
+
+
+class VerifyEmailRequest(BaseModel):
+    email: EmailStr = Field(..., description="Email address to verify")
+    otp: str = Field(
+        ..., min_length=1, description="6-digit OTP sent to the email address"
+    )
+
+
+class VerifyEmailResponse(BaseModel):
+    email: str
+    message: str

@@ -17,7 +17,7 @@ headers {
 body:json {
   // age under 5 years
   {
-    "email": "{{email}}",
+    "email": "{{email1}}",
     "password": "{{password}}",
     "full_name": "Ada Lovelace",
     "date_of_birth": "2022-01-01"
@@ -28,11 +28,11 @@ tests {
   test("status 422", function() {
     expect(res.status).to.equal(422);
   });
-
+  
   test("success flag is false", function() {
     expect(res.body.success).to.be.false;
   });
-
+  
   test("error code is VALIDATION_ERROR", function() {
     expect(res.body.error.code).to.equal("VALIDATION_ERROR");
   });

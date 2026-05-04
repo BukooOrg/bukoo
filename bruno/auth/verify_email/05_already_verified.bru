@@ -1,0 +1,37 @@
+meta {
+  name: already verified
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/auth/verify-email
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // already verified — relies on 01_success.bru having verified {{email2}} earlier in the same run
+  {
+    "email": "{{email2}}",
+    "otp": "{{otp}}"
+  }
+}
+
+tests {
+  test("status 409", function() {
+    expect(res.status).to.equal(409);
+  });
+  
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+  
+  test("error code is USER_ALREADY_VERIFIED", function() {
+    expect(res.body.error.code).to.equal("USER_ALREADY_VERIFIED");
+  });
+}

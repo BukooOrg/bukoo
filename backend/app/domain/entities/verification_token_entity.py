@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 
 from app.core.constants import VerificationTokenType
 
@@ -53,10 +53,15 @@ class VerificationTokenEntity:
     # derived properties
     @property
     def is_expired(self) -> bool:
-        from datetime import UTC
-
         return datetime.now(UTC) >= self._expires_at
 
     @property
     def is_used(self) -> bool:
         return self._used_at is not None
+
+    # methods
+    def mark_used(self) -> None:
+        """Consume the token so it cannot be replayed."""
+        now = datetime.now(UTC)
+        self._used_at = now
+        self._updated_at = now

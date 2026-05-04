@@ -46,3 +46,15 @@ class AuthResult:
 class TokenDTO:
     access_token: str
     token_type: str = "bearer"
+
+
+@dataclass(frozen=True)
+class VerifyEmailCommand:
+    email: str
+    otp: str
+
+
+@dataclass(frozen=True)
+class VerifyEmailResult:
+    email: str
+    message: str

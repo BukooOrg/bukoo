@@ -35,3 +35,9 @@ class UserNotVerifiedError(DomainException):
             f"Account '{email}' has not been verified. "
             "Please check your email for the verification link."
         )
+
+
+class UserAlreadyVerifiedError(DomainException):
+    def __init__(self, email: str) -> None:
+        self.email = email
+        super().__init__(f"Account '{email}' is already verified.")

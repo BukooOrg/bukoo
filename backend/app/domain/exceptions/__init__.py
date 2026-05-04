@@ -5,6 +5,7 @@ from .auth import (
     InvalidTokenError,
     TokenExpiredError,
     UserAlreadyExistsError,
+    UserAlreadyVerifiedError,
     UserNotFoundError,
     UserNotVerifiedError,
 )
@@ -32,6 +33,7 @@ __all__ = [
     "InvalidTokenError",
     "TokenExpiredError",
     "UserAlreadyExistsError",
+    "UserAlreadyVerifiedError",
     "UserNotFoundError",
     "UserNotVerifiedError",
     "BookAlreadyExistsError",

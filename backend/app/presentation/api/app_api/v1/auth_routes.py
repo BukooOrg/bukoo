@@ -1,6 +1,7 @@
 """
 Auth routes:
 - register
+- verify email
 - credential login
 - Google OAuth login.
 """
@@ -9,10 +10,12 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from app.application.dtos.auth_dto import RegisterCommand
+from app.application.dtos.auth_dto import RegisterCommand, VerifyEmailCommand
 from app.application.use_cases.auth.login import LoginUseCase
 from app.application.use_cases.auth.register_customer import RegisterCustomerUseCase
+from app.application.use_cases.auth.verify_email import VerifyEmailUseCase
 from app.presentation.dependencies.deps import (
+    AccountRepo,
     CredentialStrategy,
     DbSession,
     EmailNotificationService,
@@ -28,6 +31,8 @@ from app.presentation.schemas.auth_schema import (
     RegisterRequest,
     RegisterResponse,
     TokenResponse,
+    VerifyEmailRequest,
+    VerifyEmailResponse,
 )
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -69,6 +74,30 @@ async def register(
         status=result.status,
         created_at=result.created_at,
     )
+
+
+@router.post(
+    "/verify-email",
+    response_model=VerifyEmailResponse,
+    operation_id="verifyEmail",
+)
+async def verify_email(
+    body: VerifyEmailRequest,
+    db_session: DbSession,
+    user_repo: UserRepo,
+    verification_token_repo: VerificationTokenRepo,
+    account_repo: AccountRepo,
+    hasher: PasswordHasher,
+) -> VerifyEmailResponse:
+    use_case = VerifyEmailUseCase(
+        db_session=db_session,
+        user_repo=user_repo,
+        verification_token_repo=verification_token_repo,
+        account_repo=account_repo,
+        hasher=hasher,
+    )
+    result = await use_case.execute(VerifyEmailCommand(email=body.email, otp=body.otp))
+    return VerifyEmailResponse(email=result.email, message=result.message)
 
 
 @router.post("/login", response_model=TokenResponse, operation_id="login")
