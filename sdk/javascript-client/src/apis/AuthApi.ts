@@ -19,8 +19,12 @@ import type {
   GoogleLoginRequest,
   LoginRequest,
   RegisterRequest,
+  ResendVerificationRequest,
   ResponseWrapperRegisterResponse,
+  ResponseWrapperResendVerificationResponse,
   ResponseWrapperTokenResponse,
+  ResponseWrapperVerifyEmailResponse,
+  VerifyEmailRequest,
 } from '../models/index';
 import {
     ErrorResponseFromJSON,
@@ -31,13 +35,21 @@ import {
     LoginRequestToJSON,
     RegisterRequestFromJSON,
     RegisterRequestToJSON,
+    ResendVerificationRequestFromJSON,
+    ResendVerificationRequestToJSON,
     ResponseWrapperRegisterResponseFromJSON,
     ResponseWrapperRegisterResponseToJSON,
+    ResponseWrapperResendVerificationResponseFromJSON,
+    ResponseWrapperResendVerificationResponseToJSON,
     ResponseWrapperTokenResponseFromJSON,
     ResponseWrapperTokenResponseToJSON,
+    ResponseWrapperVerifyEmailResponseFromJSON,
+    ResponseWrapperVerifyEmailResponseToJSON,
+    VerifyEmailRequestFromJSON,
+    VerifyEmailRequestToJSON,
 } from '../models/index';
 
-export interface LoginOperationRequest {
+export interface CredentialLoginRequest {
     loginRequest: LoginRequest;
 }
 
@@ -49,19 +61,27 @@ export interface RegisterOperationRequest {
     registerRequest: RegisterRequest;
 }
 
+export interface ResendEmailVerificationRequest {
+    resendVerificationRequest: ResendVerificationRequest;
+}
+
+export interface VerifyEmailOperationRequest {
+    verifyEmailRequest: VerifyEmailRequest;
+}
+
 /**
  * 
  */
 export class AuthApi extends runtime.BaseAPI {
 
     /**
-     * Login
+     * Credential Login
      */
-    async loginRaw(requestParameters: LoginOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperTokenResponse>> {
+    async credentialLoginRaw(requestParameters: CredentialLoginRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperTokenResponse>> {
         if (requestParameters['loginRequest'] == null) {
             throw new runtime.RequiredError(
                 'loginRequest',
-                'Required parameter "loginRequest" was null or undefined when calling login().'
+                'Required parameter "loginRequest" was null or undefined when calling credentialLogin().'
             );
         }
 
@@ -83,10 +103,10 @@ export class AuthApi extends runtime.BaseAPI {
     }
 
     /**
-     * Login
+     * Credential Login
      */
-    async login(requestParameters: LoginOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperTokenResponse> {
-        const response = await this.loginRaw(requestParameters, initOverrides);
+    async credentialLogin(requestParameters: CredentialLoginRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperTokenResponse> {
+        const response = await this.credentialLoginRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -159,6 +179,78 @@ export class AuthApi extends runtime.BaseAPI {
      */
     async register(requestParameters: RegisterOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperRegisterResponse> {
         const response = await this.registerRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Resend Verification
+     */
+    async resendEmailVerificationRaw(requestParameters: ResendEmailVerificationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperResendVerificationResponse>> {
+        if (requestParameters['resendVerificationRequest'] == null) {
+            throw new runtime.RequiredError(
+                'resendVerificationRequest',
+                'Required parameter "resendVerificationRequest" was null or undefined when calling resendEmailVerification().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/api/app/v1/auth/resend-verification`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ResendVerificationRequestToJSON(requestParameters['resendVerificationRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperResendVerificationResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Resend Verification
+     */
+    async resendEmailVerification(requestParameters: ResendEmailVerificationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperResendVerificationResponse> {
+        const response = await this.resendEmailVerificationRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Verify Email
+     */
+    async verifyEmailRaw(requestParameters: VerifyEmailOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperVerifyEmailResponse>> {
+        if (requestParameters['verifyEmailRequest'] == null) {
+            throw new runtime.RequiredError(
+                'verifyEmailRequest',
+                'Required parameter "verifyEmailRequest" was null or undefined when calling verifyEmail().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/api/app/v1/auth/verify-email`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: VerifyEmailRequestToJSON(requestParameters['verifyEmailRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperVerifyEmailResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Verify Email
+     */
+    async verifyEmail(requestParameters: VerifyEmailOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperVerifyEmailResponse> {
+        const response = await this.verifyEmailRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

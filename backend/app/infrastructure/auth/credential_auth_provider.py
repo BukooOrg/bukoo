@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import override
 
-import structlog
-
 from app.application.dtos.auth_dto import AuthResult
 from app.application.interfaces.auth_provider import IAuthProvider
 from app.application.interfaces.password_hasher import IPasswordHasher
@@ -14,8 +12,6 @@ from app.domain.exceptions import (
     UserSuspendedError,
 )
 from app.domain.repositories.user_repository import IUserRepository
-
-logger = structlog.getLogger(__name__)
 
 
 class CredentialAuthProvider(IAuthProvider):
@@ -40,8 +36,6 @@ class CredentialAuthProvider(IAuthProvider):
         assert user.hashed_password is not None
         if not self._hasher.verify(password, user.hashed_password):
             raise InvalidCredentialsError()
-
-        logger.debug(user)
 
         if user.status == UserStatus.PENDING:
             raise UserNotVerifiedError(user.email)

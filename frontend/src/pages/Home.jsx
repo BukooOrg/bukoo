@@ -26,6 +26,28 @@ export default function Home() {
     healthCheck();
   }, []);
 
+  // useEffect(() => {
+  //   async function credentialLogin() {
+  //     try {
+  //       const res = await authApi.credentialLogin({
+  //         loginRequest: {
+  //           email: 'user1@gmail.com',
+  //           password: 'User!123',
+  //         },
+  //       });
+
+  //       console.log(res);
+  //     } catch (err) {
+  //       console.error(err);
+  //       if (err instanceof ResponseError) {
+  //         const body = await err.response.json();
+  //         console.error(body);
+  //       }
+  //     }
+  //   }
+  //   credentialLogin();
+  // }, []);
+
   useEffect(() => {
     async function loadData() {
       try {
