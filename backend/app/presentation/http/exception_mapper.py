@@ -16,6 +16,8 @@ from app.domain.exceptions import (
     UserAlreadyExistsError,
     UserAlreadyVerifiedError,
     UserNotFoundError,
+    UserNotVerifiedError,
+    UserSuspendedError,
 )
 
 
@@ -57,6 +59,16 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_401_UNAUTHORIZED,
         ErrorCode.INVALID_TOKEN,
         "Invalid token",
+    ),
+    UserNotVerifiedError: HttpExceptionMapping(
+        status.HTTP_403_FORBIDDEN,
+        ErrorCode.USER_NOT_VERIFIED,
+        "Account email not verified",
+    ),
+    UserSuspendedError: HttpExceptionMapping(
+        status.HTTP_403_FORBIDDEN,
+        ErrorCode.USER_SUSPENDED,
+        "Account is suspended",
     ),
     # Book
     BookNotFoundError: HttpExceptionMapping(

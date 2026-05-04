@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from datetime import UTC
 
+from fastapi import Response
+
 
 def size_to_bytes(size: int | float | str) -> int | None:
     """
@@ -36,6 +38,32 @@ def size_to_bytes(size: int | float | str) -> int | None:
     except ValueError as e:
         print(f"Error: {e}")
         return None
+
+
+# todo: move to appropriate location
+_AUTH_COOKIE_NAME = "access_token"
+
+
+def set_auth_cookie(response: Response, token: str) -> None:
+    """Attach an HttpOnly Bearer cookie to the response."""
+    from app.core.config import EnvironmentOption, get_configs  # avoid circular import
+
+    configs = get_configs()
+    secure = configs.ENVIRONMENT == EnvironmentOption.PRODUCTION
+    response.set_cookie(
+        key=_AUTH_COOKIE_NAME,
+        value=f"Bearer {token}",
+        httponly=True,
+        secure=secure,
+        samesite="lax",
+        max_age=configs.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        path="/",
+    )
+
+
+def clear_auth_cookie(response: Response) -> None:
+    """Delete the auth cookie (used on logout)."""
+    response.delete_cookie(key=_AUTH_COOKIE_NAME, path="/")
 
 
 def _utc(dt: object) -> object:

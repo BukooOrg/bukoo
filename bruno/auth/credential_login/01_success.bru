@@ -1,0 +1,59 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/auth/login
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // success — use a verified (ACTIVE) account registered by 01_success in register_customer
+  {
+    "email": "{{email1}}",
+    "password": "{{password}}"
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setEnvVar("token", res.body.data.access_token);
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("access_token is a non-empty string", function() {
+    expect(res.body.data.access_token).to.be.a("string").and.not.empty;
+  });
+  
+  test("token_type is bearer", function() {
+    expect(res.body.data.token_type).to.equal("bearer");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+  
+  test("Set-Cookie header contains access_token", function() {
+    const cookies = res.headers["set-cookie"] || [];
+    
+    const accessTokenCookie = cookies.find(cookie => cookie.toLowerCase().startsWith("access_token="));
+    
+    expect(accessTokenCookie).to.exist;
+  });
+}

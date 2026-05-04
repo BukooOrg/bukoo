@@ -1,5 +1,5 @@
 """
-GoogleProvider — Strategy pattern: Google OAuth2 authentication.
+GoogleAuthProvider — Factory Method pattern: Google OAuth2 authentication.
 
 Flow:
   1. Exchange auth code for access token.
@@ -21,7 +21,7 @@ import httpx
 from uuid_extension import uuid7
 
 from app.application.dtos.auth_dto import AuthResult
-from app.application.interfaces.auth_provider import IAuthStrategy
+from app.application.interfaces.auth_provider import IAuthProvider
 from app.core.config import get_configs
 from app.core.constants import AuthProvider, UserRole, UserStatus
 from app.domain.entities import AccountEntity, UserEntity
@@ -32,7 +32,7 @@ _TOKEN_URL = "https://oauth2.googleapis.com/token"
 _USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
 
 
-class GoogleProvider(IAuthStrategy):
+class GoogleAuthProvider(IAuthProvider):
     def __init__(
         self,
         user_repo: IUserRepository,
@@ -77,7 +77,7 @@ class GoogleProvider(IAuthStrategy):
         avatar_url: str | None = info.get("picture")
         provider = AuthProvider.GOOGLE
 
-        #  3. Look up existing OAuth account link
+        # 3. Look up existing OAuth account link
         existing_account = await self._account_repo.find_by_provider_and_open_id(
             provider, open_id
         )
@@ -103,7 +103,7 @@ class GoogleProvider(IAuthStrategy):
                 _date_of_birth=now,
                 _role=UserRole.USER,
                 _status=UserStatus.PENDING,
-                _hashed_password=None,  # OAuth-only account
+                _hashed_password=None,
                 _avatar_url=avatar_url,
                 _last_login_at=now,
                 _created_at=now,
@@ -112,13 +112,13 @@ class GoogleProvider(IAuthStrategy):
             )
             await self._user_repo.save(user)
 
-        #  6. Link the OAuth account
+        # 6. Link the OAuth account
         account = AccountEntity(
             _id=str(uuid7()),
             _user_id=user.id,
             _provider=provider,
             _open_id=open_id,
-            _encrypted_token=access_token,  # encrypt before storing in production
+            _encrypted_token=access_token,
             _created_at=now,
             _updated_at=now,
         )

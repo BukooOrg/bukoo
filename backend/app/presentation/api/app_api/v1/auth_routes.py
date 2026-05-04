@@ -8,7 +8,7 @@ Auth routes:
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 
 from app.application.dtos.auth_dto import (
     RegisterCommand,
@@ -21,12 +21,13 @@ from app.application.use_cases.auth.resend_email_verification import (
     ResendEmailVerificationUseCase,
 )
 from app.application.use_cases.auth.verify_email import VerifyEmailUseCase
+from app.core.util import set_auth_cookie
 from app.presentation.dependencies.deps import (
     AccountRepo,
-    CredentialStrategy,
+    CredentialAuthFactory,
     DbSession,
     EmailNotificationService,
-    GoogleStrategy,
+    GoogleAuthFactory,
     PasswordHasher,
     TokenService,
     UserRepo,
@@ -109,17 +110,17 @@ async def verify_email(
     return VerifyEmailResponse(email=result.email, message=result.message)
 
 
-@router.post("/login", response_model=TokenResponse, operation_id="login")
-async def login(
+@router.post("/login", response_model=TokenResponse, operation_id="credentialLogin")
+async def credential_login(
     body: LoginRequest,
+    response: Response,
     db_session: DbSession,
-    strategy: CredentialStrategy,
+    factory: CredentialAuthFactory,
     token_svc: TokenService,
 ) -> TokenResponse:
-    use_case = LoginUseCase(
-        db_session=db_session, strategy=strategy, token_svc=token_svc
-    )
+    use_case = LoginUseCase(db_session=db_session, factory=factory, token_svc=token_svc)
     result = await use_case.execute({"email": body.email, "password": body.password})
+    set_auth_cookie(response, result.access_token)
     return TokenResponse(access_token=result.access_token)
 
 
@@ -128,16 +129,16 @@ async def login(
 )
 async def google_login(
     body: GoogleLoginRequest,
+    response: Response,
     db_session: DbSession,
-    strategy: GoogleStrategy,
+    factory: GoogleAuthFactory,
     token_svc: TokenService,
 ) -> TokenResponse:
-    use_case = LoginUseCase(
-        db_session=db_session, strategy=strategy, token_svc=token_svc
-    )
+    use_case = LoginUseCase(db_session=db_session, factory=factory, token_svc=token_svc)
     result = await use_case.execute(
         {"code": body.code, "redirect_uri": body.redirect_uri or ""}
     )
+    set_auth_cookie(response, result.access_token)
     return TokenResponse(access_token=result.access_token)
 
 

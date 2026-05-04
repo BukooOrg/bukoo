@@ -8,6 +8,7 @@ from .auth import (
     UserAlreadyVerifiedError,
     UserNotFoundError,
     UserNotVerifiedError,
+    UserSuspendedError,
 )
 from .base import DomainException
 from .book import (
@@ -36,6 +37,7 @@ __all__ = [
     "UserAlreadyVerifiedError",
     "UserNotFoundError",
     "UserNotVerifiedError",
+    "UserSuspendedError",
     "BookAlreadyExistsError",
     "BookNotFoundError",
     "InvalidISBNError",

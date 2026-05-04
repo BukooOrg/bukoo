@@ -1,21 +1,24 @@
-"""
-CredentialProvider — Strategy pattern: email + password authentication.
-Rejects soft-deleted users and PENDING (unverified) users.
-"""
-
 from __future__ import annotations
 
 from typing import override
 
+import structlog
+
 from app.application.dtos.auth_dto import AuthResult
-from app.application.interfaces.auth_provider import IAuthStrategy
+from app.application.interfaces.auth_provider import IAuthProvider
 from app.application.interfaces.password_hasher import IPasswordHasher
 from app.core.constants import UserStatus
-from app.domain.exceptions import InvalidCredentialsError, UserNotVerifiedError
+from app.domain.exceptions import (
+    InvalidCredentialsError,
+    UserNotVerifiedError,
+    UserSuspendedError,
+)
 from app.domain.repositories.user_repository import IUserRepository
 
+logger = structlog.getLogger(__name__)
 
-class CredentialProvider(IAuthStrategy):
+
+class CredentialAuthProvider(IAuthProvider):
     def __init__(
         self,
         user_repo: IUserRepository,
@@ -29,17 +32,22 @@ class CredentialProvider(IAuthStrategy):
         email = payload.get("email", "")
         password = payload.get("password", "")
 
-        # find_by_email already excludes soft-deleted rows
         user = await self._user_repo.find_by_email(email)
 
         if user is None or not user.have_password:
             raise InvalidCredentialsError()
 
-        if not self._hasher.verify(password, user.hashed_password):  # type: ignore[arg-type]
+        assert user.hashed_password is not None
+        if not self._hasher.verify(password, user.hashed_password):
             raise InvalidCredentialsError()
+
+        logger.debug(user)
 
         if user.status == UserStatus.PENDING:
             raise UserNotVerifiedError(user.email)
+
+        if user.status == UserStatus.SUSPENDED:
+            raise UserSuspendedError(user.email)
 
         user.record_login()
         await self._user_repo.save(user)

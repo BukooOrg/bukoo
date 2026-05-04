@@ -7,7 +7,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.interfaces import (
-    IAuthStrategy,
+    IAuthProviderFactory,
     IEmailNotificationService,
     IPasswordHasher,
     IStorageService,
@@ -24,8 +24,8 @@ from app.domain.repositories import (
 )
 from app.infrastructure.auth import (
     BcryptPasswordHasher,
-    CredentialProvider,
-    GoogleProvider,
+    CredentialAuthProviderFactory,
+    GoogleAuthProviderFactory,
     JWTService,
 )
 from app.infrastructure.db.repositories import (
@@ -78,22 +78,22 @@ PasswordHasher = Annotated[IPasswordHasher, Depends(get_password_hasher)]
 TokenService = Annotated[ITokenService, Depends(get_token_service)]
 
 
-# Strategy pattern: auth provider selection
-def get_credential_strategy(
+# Factory Method pattern: auth provider factory selection
+def get_credential_factory(
     user_repo: UserRepo,
     hasher: PasswordHasher,
-) -> IAuthStrategy:
-    return CredentialProvider(user_repo=user_repo, hasher=hasher)
+) -> IAuthProviderFactory:
+    return CredentialAuthProviderFactory(user_repo=user_repo, hasher=hasher)
 
 
-def get_google_strategy(
+def get_google_factory(
     user_repo: UserRepo, account_repo: AccountRepo
-) -> IAuthStrategy:
-    return GoogleProvider(user_repo=user_repo, account_repo=account_repo)
+) -> IAuthProviderFactory:
+    return GoogleAuthProviderFactory(user_repo=user_repo, account_repo=account_repo)
 
 
-CredentialStrategy = Annotated[IAuthStrategy, Depends(get_credential_strategy)]
-GoogleStrategy = Annotated[IAuthStrategy, Depends(get_google_strategy)]
+CredentialAuthFactory = Annotated[IAuthProviderFactory, Depends(get_credential_factory)]
+GoogleAuthFactory = Annotated[IAuthProviderFactory, Depends(get_google_factory)]
 
 
 # Storage

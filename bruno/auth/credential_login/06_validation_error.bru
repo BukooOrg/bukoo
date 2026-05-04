@@ -1,0 +1,33 @@
+meta {
+  name: validation error malformed email
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/auth/login
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // malformed email fails Pydantic validation before reaching the use case
+  {
+    "email": "not-an-email",
+    "password": "Secure@123"
+  }
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+}
