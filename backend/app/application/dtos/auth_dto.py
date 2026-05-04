@@ -58,3 +58,14 @@ class VerifyEmailCommand:
 class VerifyEmailResult:
     email: str
     message: str
+
+
+@dataclass(frozen=True)
+class ResendVerificationCommand:
+    email: str
+
+
+@dataclass(frozen=True)
+class ResendVerificationResult:
+    email: str
+    message: str

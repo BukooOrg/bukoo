@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}{{apiBase}}/auth/verify-email
+  url: {{baseUrl}}{{apiBase}}/auth/resend-verification
   body: json
   auth: none
 }
@@ -15,14 +15,11 @@ headers {
 }
 
 body:json {
-  // success
-  // note: run register_customer/01_success.bru first to create {{email2}}.
-  // Retrieve the 6-digit OTP from Mailpit (http://localhost:8025) and set {{otp}} in the environment.
+  // success — resend verification email to a PENDING account
+  // note: run register_customer/01_success.bru first to create {{email1}}, and do NOT run verify_email/01_success.bru before this.
   {
-    "email": "{{email1}}",
-    "otp": "{{otp}}"
-  } 
-  
+    "email": "{{email1}}"
+  }
 }
 
 tests {

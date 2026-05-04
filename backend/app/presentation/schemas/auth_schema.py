@@ -128,3 +128,12 @@ class VerifyEmailRequest(BaseModel):
 class VerifyEmailResponse(BaseModel):
     email: str
     message: str
+
+
+class ResendVerificationRequest(BaseModel):
+    email: EmailStr = Field(..., description="Email address to resend verification to")
+
+
+class ResendVerificationResponse(BaseModel):
+    email: str
+    message: str

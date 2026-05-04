@@ -10,9 +10,16 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from app.application.dtos.auth_dto import RegisterCommand, VerifyEmailCommand
+from app.application.dtos.auth_dto import (
+    RegisterCommand,
+    ResendVerificationCommand,
+    VerifyEmailCommand,
+)
 from app.application.use_cases.auth.login import LoginUseCase
 from app.application.use_cases.auth.register_customer import RegisterCustomerUseCase
+from app.application.use_cases.auth.resend_email_verification import (
+    ResendEmailVerificationUseCase,
+)
 from app.application.use_cases.auth.verify_email import VerifyEmailUseCase
 from app.presentation.dependencies.deps import (
     AccountRepo,
@@ -30,6 +37,8 @@ from app.presentation.schemas.auth_schema import (
     LoginRequest,
     RegisterRequest,
     RegisterResponse,
+    ResendVerificationRequest,
+    ResendVerificationResponse,
     TokenResponse,
     VerifyEmailRequest,
     VerifyEmailResponse,
@@ -130,3 +139,27 @@ async def google_login(
         {"code": body.code, "redirect_uri": body.redirect_uri or ""}
     )
     return TokenResponse(access_token=result.access_token)
+
+
+@router.post(
+    "/resend-verification",
+    response_model=ResendVerificationResponse,
+    operation_id="resendEmailVerification",
+)
+async def resend_verification(
+    body: ResendVerificationRequest,
+    db_session: DbSession,
+    user_repo: UserRepo,
+    verification_token_repo: VerificationTokenRepo,
+    hasher: PasswordHasher,
+    email_svc: EmailNotificationService,
+) -> ResendVerificationResponse:
+    use_case = ResendEmailVerificationUseCase(
+        db_session=db_session,
+        user_repo=user_repo,
+        verification_token_repo=verification_token_repo,
+        hasher=hasher,
+        email_svc=email_svc,
+    )
+    result = await use_case.execute(ResendVerificationCommand(email=body.email))
+    return ResendVerificationResponse(email=result.email, message=result.message)
