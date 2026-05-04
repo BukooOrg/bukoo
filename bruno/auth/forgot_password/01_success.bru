@@ -1,0 +1,41 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/auth/password/forgot
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // success — request a password reset for an existing ACTIVE account
+  // note: run register_customer/01_success.bru and verify_email/01_success.bru first to have an ACTIVE user at {{email1}}
+  {
+    "email": "{{email1}}"
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("message is present", function() {
+    expect(res.body.data.message).to.be.a("string");
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

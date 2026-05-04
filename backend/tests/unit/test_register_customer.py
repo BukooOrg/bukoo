@@ -92,6 +92,10 @@ class FakeEmailNotificationService(IEmailNotificationService):
     def send_verification_email(self, to: str, otp: str) -> None:
         self.sent_verification_emails.append({"to": to, "otp": otp})
 
+    @override
+    def send_password_reset_email(self, to: str, otp: str) -> None:
+        pass
+
 
 def _make_valid_command(
     email: str = "reader@example.com",

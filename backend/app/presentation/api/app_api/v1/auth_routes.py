@@ -12,11 +12,13 @@ from __future__ import annotations
 from fastapi import APIRouter, Response
 
 from app.application.dtos.auth_dto import (
+    ForgotPasswordCommand,
     LogoutCommand,
     RegisterCommand,
     ResendVerificationCommand,
     VerifyEmailCommand,
 )
+from app.application.use_cases.auth.forgot_password import ForgotPasswordUseCase
 from app.application.use_cases.auth.login import LoginUseCase
 from app.application.use_cases.auth.logout import LogoutUseCase
 from app.application.use_cases.auth.register_customer import RegisterCustomerUseCase
@@ -38,6 +40,8 @@ from app.presentation.dependencies.deps import (
     VerificationTokenRepo,
 )
 from app.presentation.schemas.auth_schema import (
+    ForgotPasswordRequest,
+    ForgotPasswordResponse,
     GoogleLoginRequest,
     LoginRequest,
     LogoutResponse,
@@ -169,6 +173,30 @@ async def resend_verification(
     )
     result = await use_case.execute(ResendVerificationCommand(email=body.email))
     return ResendVerificationResponse(email=result.email, message=result.message)
+
+
+@router.post(
+    "/password/forgot",
+    response_model=ForgotPasswordResponse,
+    operation_id="forgotPassword",
+)
+async def forgot_password(
+    body: ForgotPasswordRequest,
+    db_session: DbSession,
+    user_repo: UserRepo,
+    verification_token_repo: VerificationTokenRepo,
+    hasher: PasswordHasher,
+    email_svc: EmailNotificationService,
+) -> ForgotPasswordResponse:
+    use_case = ForgotPasswordUseCase(
+        db_session=db_session,
+        user_repo=user_repo,
+        verification_token_repo=verification_token_repo,
+        hasher=hasher,
+        email_svc=email_svc,
+    )
+    result = await use_case.execute(ForgotPasswordCommand(email=body.email))
+    return ForgotPasswordResponse(message=result.message)
 
 
 @router.post("/logout", response_model=LogoutResponse, operation_id="logout")

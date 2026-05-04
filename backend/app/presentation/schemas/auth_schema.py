@@ -141,3 +141,11 @@ class ResendVerificationResponse(BaseModel):
 
 class LogoutResponse(BaseModel):
     message: str
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr = Field(..., description="Email address to send the reset code to")
+
+
+class ForgotPasswordResponse(BaseModel):
+    message: str

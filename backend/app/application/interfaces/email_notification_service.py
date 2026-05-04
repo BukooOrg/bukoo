@@ -11,3 +11,7 @@ class IEmailNotificationService(ABC):
     @abstractmethod
     def send_verification_email(self, to: str, otp: str) -> None:
         pass
+
+    @abstractmethod
+    def send_password_reset_email(self, to: str, otp: str) -> None:
+        pass

@@ -79,3 +79,13 @@ class LogoutCommand:
 @dataclass(frozen=True)
 class LogoutResult:
     message: str
+
+
+@dataclass(frozen=True)
+class ForgotPasswordCommand:
+    email: str
+
+
+@dataclass(frozen=True)
+class ForgotPasswordResult:
+    message: str
