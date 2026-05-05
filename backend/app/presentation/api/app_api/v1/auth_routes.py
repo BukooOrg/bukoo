@@ -19,6 +19,7 @@ from app.application.dtos.auth_dto import (
     LogoutCommand,
     RegisterCommand,
     ResendVerificationCommand,
+    ResetPasswordCommand,
     VerifyEmailCommand,
     VerifyPasswordResetCommand,
 )
@@ -29,6 +30,7 @@ from app.application.use_cases.auth.register_customer import RegisterCustomerUse
 from app.application.use_cases.auth.resend_email_verification import (
     ResendEmailVerificationUseCase,
 )
+from app.application.use_cases.auth.reset_password import ResetPasswordUseCase
 from app.application.use_cases.auth.verify_email import VerifyEmailUseCase
 from app.application.use_cases.auth.verify_password_reset import (
     VerifyPasswordResetUseCase,
@@ -56,6 +58,8 @@ from app.presentation.schemas.auth_schema import (
     RegisterResponse,
     ResendVerificationRequest,
     ResendVerificationResponse,
+    ResetPasswordRequest,
+    ResetPasswordResponse,
     TokenResponse,
     VerifyEmailRequest,
     VerifyEmailResponse,
@@ -218,6 +222,34 @@ async def logout(
     result = await use_case.execute(LogoutCommand(token_payload=token_payload))
     clear_auth_cookie(response)
     return LogoutResponse(message=result.message)
+
+
+@router.post(
+    "/password/reset",
+    response_model=ResetPasswordResponse,
+    operation_id="resetPassword",
+)
+async def reset_password(
+    body: ResetPasswordRequest,
+    db_session: DbSession,
+    user_repo: UserRepo,
+    verification_token_repo: VerificationTokenRepo,
+    hasher: PasswordHasher,
+) -> ResetPasswordResponse:
+    use_case = ResetPasswordUseCase(
+        db_session=db_session,
+        user_repo=user_repo,
+        verification_token_repo=verification_token_repo,
+        hasher=hasher,
+    )
+    result = await use_case.execute(
+        ResetPasswordCommand(
+            email=str(body.email),
+            otp=body.otp,
+            new_password=body.new_password,
+        )
+    )
+    return ResetPasswordResponse(message=result.message)
 
 
 @router.get(

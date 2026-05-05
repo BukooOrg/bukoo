@@ -2,13 +2,13 @@
 
 ## Overview
 
-| Field        | Value                 |
-| ------------ | --------------------- |
-| API Set      | 1. Auth API Set       |
-| Use Case     | 1.4. Credential Login |
-| File Index   | 01_04                 |
-| Access Level | 🌐 Public             |
-| Status       | Implemented           |
+| Field        | Value               |
+| ------------ | ------------------- |
+| API Set      | 1. Auth API Set     |
+| Use Case     | 4. Credential Login |
+| File Index   | 01_04               |
+| Access Level | 🌐 Public           |
+| Status       | Implemented         |
 
 ---
 

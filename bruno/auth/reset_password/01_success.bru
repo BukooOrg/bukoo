@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}{{apiBase}}/auth/verify-email
+  url: {{baseUrl}}{{apiBase}}/auth/password/reset
   body: json
   auth: none
 }
@@ -15,14 +15,14 @@ headers {
 }
 
 body:json {
-  // success
-  // note: run register_customer/01_success.bru first to create {{email2}}.
-  // Retrieve the 6-digit OTP from Mailpit (http://localhost:8025) and set {{verifyEmailOtp}} in the environment.
+  // success — reset password with a valid OTP
+  // prerequisites: run forgot_password/01_success.bru first to issue an OTP for {{email1}}
+  // retrieve the OTP from Mailpit (http://localhost:8025) and set it as {{resetPasswordOtp}} in env
   {
     "email": "{{email1}}",
-    "otp": "{{verifyEmailOtp}}"
-  } 
-  
+    "otp": "{{resetPasswordOtp}}",
+    "new_password": "NewP@ssw0rd1!"
+  }
 }
 
 tests {
@@ -32,10 +32,6 @@ tests {
   
   test("success flag is true", function() {
     expect(res.body.success).to.be.true;
-  });
-  
-  test("email matches submitted email", function() {
-    expect(res.body.data.email).to.equal(bru.getEnvVar("email1"));
   });
   
   test("message is present", function() {

@@ -100,3 +100,15 @@ class VerifyPasswordResetCommand:
 @dataclass(frozen=True)
 class VerifyPasswordResetResult:
     valid: bool
+
+
+@dataclass(frozen=True)
+class ResetPasswordCommand:
+    email: str
+    otp: str
+    new_password: str
+
+
+@dataclass(frozen=True)
+class ResetPasswordResult:
+    message: str
