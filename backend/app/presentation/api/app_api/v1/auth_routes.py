@@ -4,12 +4,15 @@ Auth routes:
 - verify email
 - credential login
 - Google OAuth login
-- logout.
+- logout
+- forgot password
+- verify password reset token.
 """
 
 from __future__ import annotations
 
 from fastapi import APIRouter, Response
+from pydantic import EmailStr
 
 from app.application.dtos.auth_dto import (
     ForgotPasswordCommand,
@@ -17,6 +20,7 @@ from app.application.dtos.auth_dto import (
     RegisterCommand,
     ResendVerificationCommand,
     VerifyEmailCommand,
+    VerifyPasswordResetCommand,
 )
 from app.application.use_cases.auth.forgot_password import ForgotPasswordUseCase
 from app.application.use_cases.auth.login import LoginUseCase
@@ -26,6 +30,9 @@ from app.application.use_cases.auth.resend_email_verification import (
     ResendEmailVerificationUseCase,
 )
 from app.application.use_cases.auth.verify_email import VerifyEmailUseCase
+from app.application.use_cases.auth.verify_password_reset import (
+    VerifyPasswordResetUseCase,
+)
 from app.core.util import clear_auth_cookie, set_auth_cookie
 from app.presentation.dependencies.deps import (
     AccountRepo,
@@ -52,6 +59,7 @@ from app.presentation.schemas.auth_schema import (
     TokenResponse,
     VerifyEmailRequest,
     VerifyEmailResponse,
+    VerifyPasswordResetResponse,
 )
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -210,3 +218,28 @@ async def logout(
     result = await use_case.execute(LogoutCommand(token_payload=token_payload))
     clear_auth_cookie(response)
     return LogoutResponse(message=result.message)
+
+
+@router.get(
+    "/password/reset/verify",
+    response_model=VerifyPasswordResetResponse,
+    operation_id="verifyPasswordReset",
+)
+async def verify_password_reset(
+    email: EmailStr,
+    otp: str,
+    db_session: DbSession,
+    user_repo: UserRepo,
+    verification_token_repo: VerificationTokenRepo,
+    hasher: PasswordHasher,
+) -> VerifyPasswordResetResponse:
+    use_case = VerifyPasswordResetUseCase(
+        db_session=db_session,
+        user_repo=user_repo,
+        verification_token_repo=verification_token_repo,
+        hasher=hasher,
+    )
+    result = await use_case.execute(
+        VerifyPasswordResetCommand(email=str(email), otp=otp)
+    )
+    return VerifyPasswordResetResponse(valid=result.valid)

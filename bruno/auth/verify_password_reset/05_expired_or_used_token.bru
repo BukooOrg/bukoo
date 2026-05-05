@@ -1,0 +1,27 @@
+meta {
+  name: expired or used token
+  type: http
+  seq: 5
+}
+
+get {
+  // expired or used token — use this OTP after running auth/password/reset/01_success.bru
+  // (which consumes the token), then re-use the same OTP here to trigger INVALID_TOKEN.
+  url: {{baseUrl}}{{apiBase}}/auth/password/reset/verify?email={{email1}}&otp={{otp}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 401", function() {
+    expect(res.status).to.equal(401);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is INVALID_TOKEN", function() {
+    expect(res.body.error.code).to.equal("INVALID_TOKEN");
+  });
+}

@@ -89,3 +89,14 @@ class ForgotPasswordCommand:
 @dataclass(frozen=True)
 class ForgotPasswordResult:
     message: str
+
+
+@dataclass(frozen=True)
+class VerifyPasswordResetCommand:
+    email: str
+    otp: str
+
+
+@dataclass(frozen=True)
+class VerifyPasswordResetResult:
+    valid: bool

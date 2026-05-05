@@ -149,3 +149,7 @@ class ForgotPasswordRequest(BaseModel):
 
 class ForgotPasswordResponse(BaseModel):
     message: str
+
+
+class VerifyPasswordResetResponse(BaseModel):
+    valid: bool
