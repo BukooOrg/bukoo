@@ -12,6 +12,7 @@ from app.domain.exceptions import (
     InvalidCredentialsError,
     InvalidISBNError,
     InvalidTokenError,
+    NoAuthHeaderError,
     OAuthProviderNotFoundError,
     OAuthStateInvalidError,
     OrderAlreadyPaidError,
@@ -75,6 +76,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_403_FORBIDDEN,
         ErrorCode.USER_NOT_VERIFIED,
         "Account email not verified",
+    ),
+    NoAuthHeaderError: HttpExceptionMapping(
+        status.HTTP_403_FORBIDDEN,
+        ErrorCode.NOT_AUTH_HEADER,
+        NoAuthHeaderError().message,
     ),
     UserSuspendedError: HttpExceptionMapping(
         status.HTTP_403_FORBIDDEN,

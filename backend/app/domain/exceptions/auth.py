@@ -42,6 +42,11 @@ class UserNotVerifiedError(DomainException):
         )
 
 
+class NoAuthHeaderError(DomainException):
+    def __init__(self) -> None:
+        super().__init__("Authorization Header is missing.")
+
+
 class UserAlreadyVerifiedError(DomainException):
     def __init__(self, email: str) -> None:
         self.email = email

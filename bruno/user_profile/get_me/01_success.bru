@@ -1,0 +1,50 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/users/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("data.id is a string", function() {
+    expect(res.body.data.id).to.be.a("string");
+  });
+
+  test("data.email is a string", function() {
+    expect(res.body.data.email).to.be.a("string");
+  });
+
+  test("data.role is user or admin", function() {
+    expect(["user", "admin"]).to.include(res.body.data.role);
+  });
+
+  test("data.status is active", function() {
+    expect(res.body.data.status).to.equal("active");
+  });
+
+  test("data.avatar_url is null or http string", function() {
+    const url = res.body.data.avatar_url;
+    expect(url === null || (typeof url === "string" && url.startsWith("http"))).to.be.true;
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

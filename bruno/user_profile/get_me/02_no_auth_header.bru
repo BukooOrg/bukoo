@@ -1,0 +1,21 @@
+meta {
+  name: no auth header
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/users/me
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 403", function() {
+    expect(res.status).to.equal(403);
+  });
+  
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+}

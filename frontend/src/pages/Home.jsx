@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 import { PageLayout } from '@/components/layout/page-layout';
 import { LatestProductCard } from '@/components/products/latest-product-card';
-import { healthApi } from '@/lib/apiClient';
+import { healthApi, usersApi } from '@/lib/apiClient';
 import { getCollectionProducts, getCollections } from '@/lib/sfcc';
 
 export default function Home() {
@@ -24,6 +24,21 @@ export default function Home() {
       }
     }
     healthCheck();
+  }, []);
+
+  useEffect(() => {
+    async function getMe() {
+      try {
+        const res = await usersApi.getMe();
+        console.log(res);
+      } catch (err) {
+        if (err instanceof ResponseError) {
+          const body = await err.response.json();
+          console.error(body);
+        }
+      }
+    }
+    getMe();
   }, []);
 
   // useEffect(() => {

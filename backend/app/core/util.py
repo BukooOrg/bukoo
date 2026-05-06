@@ -67,6 +67,35 @@ def clear_auth_cookie(response: Response) -> None:
     response.delete_cookie(key=_AUTH_COOKIE_NAME, path="/")
 
 
+def build_public_url(key: str | None) -> str | None:
+    """Convert a stored object storage key to its public-facing URL.
+
+    Keys under pub/ are publicly readable; the URL is constructed directly
+    from config rather than generating a signed URL (which would expire).
+
+    MinIO  → http(s)://{MINIO_ENDPOINT}/{MINIO_BUCKET}/{key}
+    S3     → https://{AWS_S3_BUCKET}.s3.{AWS_REGION}.amazonaws.com/{key}
+    """
+    if key is None:
+        return None
+
+    from app.core.config import get_configs  # avoid circular import
+    from app.core.constants import ObjectStorageType
+
+    configs = get_configs()
+    match configs.STORAGE_TYPE:
+        case ObjectStorageType.MINIO:
+            protocol = "https" if configs.MINIO_USE_SSL else "http"
+            return f"{protocol}://{configs.MINIO_ENDPOINT}/{configs.MINIO_BUCKET}/{key}"
+        case ObjectStorageType.S3:
+            return (
+                f"https://{configs.AWS_S3_BUCKET}"
+                f".s3.{configs.AWS_REGION}.amazonaws.com/{key}"
+            )
+        case _:
+            return key
+
+
 def _utc(dt: object) -> object:
     """Attach UTC timezone to a naive datetime returned by the DB driver."""
     from datetime import datetime

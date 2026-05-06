@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import Depends
+import structlog
+from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,6 +22,7 @@ from app.domain.exceptions import (
     AdminAccessRequiredError,
     InvalidCredentialsError,
     InvalidTokenError,
+    NoAuthHeaderError,
     TokenAlreadyRevokedError,
 )
 from app.domain.repositories import (
@@ -46,6 +48,8 @@ from app.infrastructure.storage import MinIOStorage, S3Storage
 from app.infrastructure.tasks.email_notification_service import (
     CeleryEmailNotificationService,
 )
+
+logger = structlog.getLogger(__name__)
 
 # DB session
 DbSession = Annotated[AsyncSession, Depends(get_db_session)]
@@ -174,18 +178,31 @@ EmailNotificationService = Annotated[
 ]
 
 # Current user guard
-_bearer = HTTPBearer()
+_bearer = HTTPBearer(auto_error=False)
 
 
 TokenPayloadObj = dict[str, object]
 
 
 async def get_token_payload(
-    credentials: Annotated[HTTPAuthorizationCredentials, Depends(_bearer)],
+    request: Request,
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)],
     token_svc: TokenService,
 ) -> TokenPayloadObj:
+    token: str | None = None
+
+    if credentials is not None:
+        token = credentials.credentials
+    else:
+        cookie_value = request.cookies.get("access_token")
+        if cookie_value and cookie_value.startswith("Bearer "):
+            token = cookie_value.removeprefix("Bearer ")
+
+    if token is None:
+        raise NoAuthHeaderError
+
     try:
-        payload = token_svc.decode_token(credentials.credentials, verify_exp=False)
+        payload = token_svc.decode_token(token, verify_exp=False)
     except InvalidTokenError as exc:
         raise exc
 
