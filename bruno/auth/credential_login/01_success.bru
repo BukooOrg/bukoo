@@ -1,7 +1,7 @@
 meta {
-  name: Login
+  name: success
   type: http
-  seq: 2
+  seq: 1
 }
 
 post {
@@ -15,10 +15,12 @@ headers {
 }
 
 body:json {
+  // success — use a verified (ACTIVE) account registered by 01_success in register_customer
   {
-    "email": "{{email}}",
+    "email": "{{email1}}",
     "password": "{{password}}"
   }
+  
 }
 
 script:post-response {
@@ -32,19 +34,27 @@ tests {
     expect(res.status).to.equal(200);
   });
   
-  test("success flag", function() {
+  test("success flag is true", function() {
     expect(res.body.success).to.be.true;
   });
   
-  test("access token present", function() {
+  test("access_token is a non-empty string", function() {
     expect(res.body.data.access_token).to.be.a("string").and.not.empty;
   });
   
-  test("token type is bearer", function() {
+  test("token_type is bearer", function() {
     expect(res.body.data.token_type).to.equal("bearer");
   });
   
   test("meta has requestId", function() {
     expect(res.body.meta.requestId).to.be.a("string");
+  });
+  
+  test("Set-Cookie header contains access_token", function() {
+    const cookies = res.headers["set-cookie"] || [];
+    
+    const accessTokenCookie = cookies.find(cookie => cookie.toLowerCase().startsWith("access_token="));
+    
+    expect(accessTokenCookie).to.exist;
   });
 }

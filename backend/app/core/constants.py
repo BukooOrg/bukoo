@@ -46,9 +46,15 @@ class ObjectStorageType(StrEnum):
 class AuthProvider(StrEnum):
     CREDENTIAL = "credential"
     GOOGLE = "google"
+    FACEBOOK = "facebook"
 
 
 class NotificationStatus(StrEnum):
     PENDING = "pending"
     SENT = "sent"
     FAILED = "failed"
+
+
+class VerificationTokenType(StrEnum):
+    EMAIL_VERIFY = "email_verify"
+    PASSWORD_RESET = "password_reset"

@@ -14,11 +14,13 @@ from .payment_entity import PaymentEntity
 from .publisher_entity import PublisherEntity
 from .review_entity import ReviewEntity
 from .user_entity import UserEntity
+from .verification_token_entity import VerificationTokenEntity
 from .wishlist_entity import WishlistEntity
 from .wishlist_item_entity import WishlistItemEntity
 
 __all__ = [
     "AccountEntity",
+    "VerificationTokenEntity",
     "AddressEntity",
     "AuthorEntity",
     "BookAuthorEntity",

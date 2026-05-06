@@ -250,6 +250,48 @@ Development uses MinIO (local S3-compatible server at `:9000`). Production uses 
 
 ---
 
+## Cache Abstraction
+
+`RedisCacheService` is the single Redis-backed implementation of `ICacheService`
+(`app/application/interfaces/cache_service.py`). It is wired into `deps.py` as:
+
+```python
+def get_cache_service() -> ICacheService:
+    return RedisCacheService()   # app/infrastructure/cache/redis_cache.py
+
+CacheService = Annotated[ICacheService, Depends(get_cache_service)]
+```
+
+**Interface contract** (`ICacheService`):
+
+| Method | Signature | Purpose |
+|--------|-----------|---------|
+| `set` | `async set(key, value, ttl_seconds=None) -> None` | Store with optional TTL |
+| `get` | `async get(key) -> str \| None` | Retrieve or `None` if missing/expired |
+| `delete` | `async delete(key) -> None` | Remove key (no-op if absent) |
+| `exists` | `async exists(key) -> bool` | True if key exists and has not expired |
+
+**`RedisCacheService` production decisions:**
+
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| DB | DB 1 (`CACHE_REDIS_URL`) | Isolated from Celery broker on DB 0; independent `FLUSHDB` |
+| Connection pool | `ConnectionPool.from_url(max_connections=20)` | Reused across requests; avoids per-call TCP handshake |
+| Key prefix | `bukoo:{key}` | Prevents namespace collision if Redis is shared |
+| Response decoding | `decode_responses=True` | Returns `str` directly; no per-site `.decode()` calls |
+| Error handling | Re-raise `redis.exceptions.RedisError` | Fail-hard on blocklist writes (security-critical path) |
+
+**Current usages:**
+
+| Caller | Key pattern | TTL |
+|--------|-------------|-----|
+| `JWTService.revoke_token` | `bukoo:blocklist:{jti}` | Remaining JWT lifetime (seconds) |
+
+All future short-lived key-value needs (OTP storage, rate limiting, feature flags)
+should extend `ICacheService` rather than access Redis directly.
+
+---
+
 ## Auth Flow
 
 ### Credential Login (email + password)
@@ -292,6 +334,9 @@ Google OAuth share the same use case class. The correct strategy is injected via
 Bearer token from Authorization header
   → JWTService.decode_token(token)
       → raises TokenExpiredError or InvalidTokenError on failure
+  → token_svc.is_token_revoked(jti from payload["jti"])
+      → checks RedisCacheService for key "bukoo:blocklist:{jti}"
+      → raises HTTP 401 if found (token was revoked by logout)
   → user_repo.find_by_id(user_id from payload["sub"])
   → raises HTTP 401 if user not found or not active
   → returns UserEntity
@@ -300,12 +345,34 @@ Bearer token from Authorization header
 Note: `get_current_user` in `deps.py` raises `HTTPException` directly (not
 `DomainException`) because token errors are presentation-layer concerns.
 
+**`RawToken` dependency:** `deps.py` also exposes `RawToken = Annotated[str, Depends(get_raw_token)]`
+which returns the raw Bearer string without decoding it. Route handlers that need
+both auth guard and the raw token (e.g., `POST /auth/logout`) can declare both
+`CurrentUser` and `RawToken` — FastAPI deduplicates the underlying `HTTPBearer`
+call within the same request.
+
+### Logout Flow
+
+```
+POST /api/app/v1/auth/logout (requires CurrentUser)
+  → CurrentUser guard validates token + blocklist check (see above)
+  → RawToken dependency returns raw Bearer string
+  → LogoutUseCase.execute(LogoutCommand(access_token=raw_token))
+  → JWTService.revoke_token(token)
+      → decodes token to extract jti + exp
+      → computes TTL = exp − now
+      → if TTL > 0: CacheService.set("blocklist:{jti}", "1", ttl_seconds=TTL)
+      → if TTL ≤ 0: skip (token already expired, nothing to revoke)
+  → clear_auth_cookie(response)   (removes access_token HTTP-only cookie)
+  → returns LogoutResult(message="Logged out successfully.")
+```
+
 ---
 
 ## Celery Configuration
 
 ```
-broker: Redis (REDIS_URL from .env, e.g. redis://localhost:6379/0)
+broker: Redis (BROKER_REDIS_URL from .env, DB 0 — e.g. redis://redis:6379/0)
 result_backend: Redis (same URL)
 
 Queue routing:
@@ -318,6 +385,10 @@ Task includes (must list every task module):
 Worker launch: make worker (QUEUES=mail,default by default)
 Monitor: http://localhost:5555 (Flower)
 ```
+
+**Redis DB split:** Celery uses DB 0 (`BROKER_REDIS_URL`). The application cache
+uses DB 1 (`CACHE_REDIS_URL`). This isolates queue state from cache state — a
+`FLUSHDB` on the cache DB does not drop Celery task queues.
 
 To add a new queue, update the `task_routes` in `create_celery()` in
 `app/infrastructure/tasks/celery_app.py` and adjust `dev/start-worker`.

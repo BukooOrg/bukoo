@@ -1,0 +1,48 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/auth/verify-email
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // success
+  // note: run register_customer/01_success.bru first to create {{email2}}.
+  // Retrieve the 6-digit OTP from Mailpit (http://localhost:8025) and set {{verifyEmailOtp}} in the environment.
+  {
+    "email": "{{email1}}",
+    "otp": "{{verifyEmailOtp}}"
+  } 
+  
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("email matches submitted email", function() {
+    expect(res.body.data.email).to.equal(bru.getEnvVar("email1"));
+  });
+  
+  test("message is present", function() {
+    expect(res.body.data.message).to.be.a("string");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

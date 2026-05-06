@@ -1,0 +1,37 @@
+meta {
+  name: already verified
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/auth/resend-verification
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // already verified — account is already ACTIVE
+  // note: run verify_email/01_success.bru first to activate {{email2}}, then use that email here.
+  {
+    "email": "{{email2}}"
+  }
+}
+
+tests {
+  test("status 409", function() {
+    expect(res.status).to.equal(409);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is USER_ALREADY_VERIFIED", function() {
+    expect(res.body.error.code).to.equal("USER_ALREADY_VERIFIED");
+  });
+}

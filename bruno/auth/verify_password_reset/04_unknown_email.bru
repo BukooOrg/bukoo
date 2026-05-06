@@ -1,0 +1,30 @@
+meta {
+  name: unknown email
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/auth/password/reset/verify?email=ghost@example.com&otp={{resetPasswordOtp}}
+  body: none
+  auth: none
+}
+
+params:query {
+  email: ghost@example.com
+  otp: {{resetPasswordOtp}}
+}
+
+tests {
+  test("status 401", function() {
+    expect(res.status).to.equal(401);
+  });
+  
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+  
+  test("error code is INVALID_TOKEN", function() {
+    expect(res.body.error.code).to.equal("INVALID_TOKEN");
+  });
+}

@@ -254,12 +254,15 @@ Paths that bypass the envelope: `/health`, `/docs`, `/redoc`, `/openapi.json`.
 
 All routes are prefixed `/api/app/v1/`:
 
-| Method | Path                            | Description        |
-| ------ | ------------------------------- | ------------------ |
-| POST   | `/api/app/v1/auth/register`     | Register new user  |
-| POST   | `/api/app/v1/auth/login`        | Credential login   |
-| POST   | `/api/app/v1/auth/login/google` | Google OAuth login |
-| GET    | `/api/app/v1/health`            | Health check       |
+| Method | Path                                   | Auth        | Description              |
+| ------ | -------------------------------------- | ----------- | ------------------------ |
+| POST   | `/api/app/v1/auth/register`            | None        | Register new user        |
+| POST   | `/api/app/v1/auth/verify-email`        | None        | Verify email with OTP    |
+| POST   | `/api/app/v1/auth/resend-verification` | None        | Resend verification OTP  |
+| POST   | `/api/app/v1/auth/login`               | None        | Credential login         |
+| POST   | `/api/app/v1/auth/login/google`        | None        | Google OAuth login       |
+| POST   | `/api/app/v1/auth/logout`              | `CurrentUser` | Revoke token + clear cookie |
+| GET    | `/api/app/v1/health`                   | None        | Health check             |
 
 To add new routes for the same version: create `<feature>_routes.py` under
 `app/presentation/api/app_api/v1/` and register in the `v1/__init__.py`.
@@ -284,20 +287,56 @@ To add a new setting: add a `Field(...)` to the appropriate config class.
 
 Available as typed `Annotated` aliases in `deps.py`:
 
-- `CurrentUser` — validates Bearer JWT, returns active `UserEntity`
+- `CurrentUser` — validates Bearer JWT, checks blocklist, returns active `UserEntity`
 - `AdminUser` — requires `role == UserRole.ADMIN` (raises 403 otherwise)
+- `RawToken` — returns the raw Bearer token string without decoding (use alongside `CurrentUser` when the handler also needs to pass the token to a use case, e.g., logout)
 
 ```python
 @router.get("/profile")
 async def get_profile(user: CurrentUser) -> ProfileResponse:
     ...
+
+@router.post("/logout")
+async def logout(raw_token: RawToken, _current_user: CurrentUser) -> LogoutResponse:
+    ...
 ```
+
+## Cache Service
+
+`RedisCacheService` (`app/infrastructure/cache/redis_cache.py`) implements `ICacheService`
+(`app/application/interfaces/cache_service.py`). Inject via the `CacheService` typed alias
+from `deps.py` — never access Redis directly in application or domain code.
+
+**Key prefix:** all keys are stored as `bukoo:{key}` to prevent namespace collisions.
+
+**Interface methods:**
+
+| Method   | Signature                                             | Purpose                        |
+| -------- | ----------------------------------------------------- | ------------------------------ |
+| `set`    | `async set(key, value, ttl_seconds=None) -> None`     | Store with optional TTL        |
+| `get`    | `async get(key) -> str \| None`                       | Retrieve or `None` if missing  |
+| `delete` | `async delete(key) -> None`                           | Remove key (no-op if absent)   |
+| `exists` | `async exists(key) -> bool`                           | True if key exists and not expired |
+
+**Redis DB layout:**
+
+| DB | URL env var         | Used by                          |
+| -- | ------------------- | -------------------------------- |
+| 0  | `BROKER_REDIS_URL`  | Celery broker + result backend   |
+| 1  | `CACHE_REDIS_URL`   | Application cache (blocklist, OTP, etc.) |
+
+**Current usages:**
+
+| Caller             | Key pattern              | TTL                         |
+| ------------------ | ------------------------ | --------------------------- |
+| `JWTService.revoke_token` | `bukoo:blocklist:{jti}` | Remaining JWT lifetime (s) |
 
 ## Celery Tasks
 
 - App definition: `app/infrastructure/tasks/celery_app.py`
 - Task modules: `app/infrastructure/tasks/email_tasks.py`
 - Two queues: `mail` (pattern `email.*`) and `default` (everything else)
+- Broker: Redis DB 0 (`BROKER_REDIS_URL`)
 - Start worker: `make worker`; monitor at `http://localhost:5555` (Flower)
 
 To add a task: create it in `app/infrastructure/tasks/`, add the module to the

@@ -1,0 +1,38 @@
+meta {
+  name: user not verified
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/auth/login
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // account that has been registered but not yet verified (status PENDING)
+  // note: requires a PENDING account to exist — seed or register without verifying
+  {
+    "email": "{{email1}}",
+    "password": "{{password}}"
+  }
+}
+
+tests {
+  test("status 403", function() {
+    expect(res.status).to.equal(403);
+  });
+  
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+  
+  test("error code is USER_NOT_VERIFIED", function() {
+    expect(res.body.error.code).to.equal("USER_NOT_VERIFIED");
+  });
+}

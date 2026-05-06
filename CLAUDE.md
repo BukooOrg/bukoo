@@ -37,12 +37,12 @@ bukoo/
 
 Detailed reference documents for Claude are in `.claude/context/`:
 
-| File                                 | When to read                                                                                                            |
-| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| `.claude/context/project-context.md` | For orientation: what features exist, who uses them, what is out of scope, implementation status                        |
-| `.claude/context/architecture.md`    | Before implementing features that span multiple layers; understanding request lifecycle, session handling, or auth flow |
-| `.claude/context/domain-model.md`    | Before adding new entities or use cases; understanding entity relationships and invariants                              |
-| `.claude/context/api-endpoint-catalog.md` | Before implementing any route; the authoritative list of all 86 endpoints grouped by API set, with access levels |
+| File                                      | When to read                                                                                                            |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `.claude/context/project-context.md`      | For orientation: what features exist, who uses them, what is out of scope, implementation status                        |
+| `.claude/context/architecture.md`         | Before implementing features that span multiple layers; understanding request lifecycle, session handling, or auth flow |
+| `.claude/context/domain-model.md`         | Before adding new entities or use cases; understanding entity relationships and invariants                              |
+| `.claude/context/api-endpoint-catalog.md` | Before implementing any route; the authoritative list of all 86 endpoints grouped by API set, with access levels        |
 
 ## All Make Targets (run from repo root)
 
@@ -131,14 +131,15 @@ make clean            # remove all build artifacts and caches
 
 Start with `make infra-up`. All services are required before running the backend or worker.
 
-| Service    | Port(s)     | Purpose                        |
-| ---------- | ----------- | ------------------------------ |
-| PostgreSQL | 5432        | Primary database               |
-| pgAdmin    | 5050        | Database UI                    |
-| Mailpit    | 1025 / 8025 | SMTP trap (dev email testing)  |
-| MinIO      | 9000 / 9001 | Object storage (local S3)      |
-| Redis      | 6379        | Celery broker + result backend |
-| Flower     | 5555        | Celery task monitoring         |
+| Service      | Port(s)     | Purpose                                  |
+| ------------ | ----------- | ---------------------------------------- |
+| PostgreSQL   | 5432        | Primary database                         |
+| pgAdmin      | 5050        | Database UI                              |
+| Mailpit      | 1025 / 8025 | SMTP trap (dev email testing)            |
+| MinIO        | 9000 / 9001 | Object storage (local S3)                |
+| Redis        | 6379        | Celery broker + result backend + Caching |
+| Flower       | 5555        | Celery task monitoring                   |
+| RedisInsight | 5540        | Redis UI                                 |
 
 Docker env is loaded from `docker/.env.dev` (copy from `docker/.env.dev.example`).
 

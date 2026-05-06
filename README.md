@@ -114,7 +114,7 @@ Everything else defaults to values that work with the Docker setup out of the bo
 make infra-up
 ```
 
-This starts: PostgreSQL · pgAdmin · Mailpit · MinIO · Redis · Flower.
+This starts: PostgreSQL · pgAdmin · Mailpit · MinIO · Redis · Flower · RedisInsight.
 
 Verify all services are healthy:
 
@@ -176,6 +176,7 @@ make worker
 | Mailpit (email)    | http://localhost:8025       | —                                               |
 | MinIO Console      | http://localhost:9001       | `minioadmin` / `minioadmin`                     |
 | Flower (Celery)    | http://localhost:5555       | —                                               |
+| RedisInsight       | http://localhost:5540       | —                                               |
 
 ---
 
@@ -183,12 +184,25 @@ make worker
 
 Run all commands from the **project root**.
 
+### Pre Install
+
+```bash
+sudo chmod -R +x .    # change files permission to be executable
+```
+
 ### Install
 
 ```bash
 make install          # install backend + frontend dependencies
 make be-install       # backend only (uv sync)
 make fe-install       # frontend only (pnpm install)
+```
+
+### Post Install
+
+```bash
+uv tool install pre-commit    # install pre-commit package
+./dev/install-git-hooks       # install git hooks
 ```
 
 ### Development
@@ -265,7 +279,8 @@ Loaded by the FastAPI app at runtime. Copy from `backend/.env.example`.
 | `POSTGRES_USER`     | `postgres`                         | PostgreSQL username                    |
 | `POSTGRES_PASSWORD` | `postgres`                         | PostgreSQL password                    |
 | `POSTGRES_DB`       | `bukoo`                            | Database name                          |
-| `REDIS_URL`         | `redis://localhost:6379/0`         | Celery broker URL                      |
+| `BROKER_REDIS_URL`  | `redis://localhost:6379/0`         | Celery broker URL                      |
+| `CACHE_REDIS_URL`   | `redis://localhost:6379/1`         | Redis Cache URL                        |
 | `SMTP_HOST`         | `localhost`                        | SMTP server (Mailpit in dev)           |
 | `SMTP_PORT`         | `1025`                             | Mailpit SMTP port                      |
 | `MINIO_ENDPOINT`    | `localhost:9000`                   | MinIO server address                   |
@@ -284,8 +299,8 @@ The backend follows Clean Architecture with four strictly ordered layers. Depend
 
 ```
 domain/          ← entities, repository interfaces (Protocols), domain services
-application/     ← use cases, DTOs
-infrastructure/  ← SQLAlchemy repos, JWT, bcrypt, MinIO/S3, SMTP, Celery tasks
+application/     ← use cases, DTOs, service interfaces (ICacheService, ITokenService, …)
+infrastructure/  ← SQLAlchemy repos, JWT, bcrypt, MinIO/S3, SMTP, Celery tasks, Redis cache
 presentation/    ← FastAPI routers, Pydantic schemas, FastAPI Depends()
 ```
 

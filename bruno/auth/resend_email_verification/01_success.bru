@@ -1,0 +1,45 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/auth/resend-verification
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // success — resend verification email to a PENDING account
+  // note: run register_customer/01_success.bru first to create {{email1}}, and do NOT run verify_email/01_success.bru before this.
+  {
+    "email": "{{email1}}"
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("email matches submitted email", function() {
+    expect(res.body.data.email).to.equal(bru.getEnvVar("email1"));
+  });
+  
+  test("message is present", function() {
+    expect(res.body.data.message).to.be.a("string");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

@@ -23,6 +23,7 @@ dependencies = [
     "uuid-extension>=0.2.0",
     "structlog>=25.1.0,<=25.5.0",
     "celery[redis]>=5.3.0",
+    "redis[hiredis]>=4.5.2",
 ]
 
 [project.optional-dependencies]

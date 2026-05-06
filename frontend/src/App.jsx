@@ -9,6 +9,7 @@ import { AuthProvider } from './context/AuthContext';
 // Pages
 import Home from './pages/Home';
 import Login from './pages/Login';
+import OAuthCallback from './pages/OAuthCallback';
 import ProductDetail from './pages/ProductDetail';
 import Register from './pages/Register';
 import Shop from './pages/Shop';
@@ -29,6 +30,7 @@ function App() {
                 <Route path='/product/:handle' element={<ProductDetail />} />
                 <Route path='/login' element={<Login />} />
                 <Route path='/register' element={<Register />} />
+                <Route path='/oauth/callback' element={<OAuthCallback />} />
                 <Route
                   path='*'
                   element={

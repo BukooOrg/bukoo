@@ -49,7 +49,7 @@ class UserModel(DefaultFieldMixin, SoftDeleteMixin):
 
     email: Mapped[str] = mapped_column(String(255), nullable=False)
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)
-    date_of_birth: Mapped[date] = mapped_column(Date(), nullable=False)
+    date_of_birth: Mapped[date | None] = mapped_column(Date(), nullable=True)
     hashed_password: Mapped[str | None] = mapped_column(
         String(255), nullable=True, default=None
     )

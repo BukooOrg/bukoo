@@ -11,6 +11,7 @@
     "preview": "vite preview",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs --cache --cache-location ../.cache/eslint/bukoo-frontend.eslintcache",
     "fix-all-files": "eslint . --ext .js,.jsx,.cjs,.mjs --fix --cache --cache-location ../.cache/eslint/bukoo-frontend.eslintcache",
+    "format-all-files": "prettier --write '**/*.{js,jsx,cjs,mjs,css,html,json,md}' --log-level silent",
     "clean": "rimraf .dist ./.next ./out ./coverage ./tsconfig.tsbuildinfo ./node_modules/.cache ./.eslintcache"
   },
   "dependencies": {

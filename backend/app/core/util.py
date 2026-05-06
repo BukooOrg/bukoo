@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from datetime import UTC
 
+import httpx
+from fastapi import Response
+
 
 def size_to_bytes(size: int | float | str) -> int | None:
     """
@@ -38,6 +41,32 @@ def size_to_bytes(size: int | float | str) -> int | None:
         return None
 
 
+# todo: move to appropriate location
+_AUTH_COOKIE_NAME = "access_token"
+
+
+def set_auth_cookie(response: Response, token: str) -> None:
+    """Attach an HttpOnly Bearer cookie to the response."""
+    from app.core.config import EnvironmentOption, get_configs  # avoid circular import
+
+    configs = get_configs()
+    secure = configs.ENVIRONMENT == EnvironmentOption.PRODUCTION
+    response.set_cookie(
+        key=_AUTH_COOKIE_NAME,
+        value=f"Bearer {token}",
+        httponly=True,
+        secure=secure,
+        samesite="lax",
+        max_age=configs.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        path="/",
+    )
+
+
+def clear_auth_cookie(response: Response) -> None:
+    """Delete the auth cookie (used on logout)."""
+    response.delete_cookie(key=_AUTH_COOKIE_NAME, path="/")
+
+
 def _utc(dt: object) -> object:
     """Attach UTC timezone to a naive datetime returned by the DB driver."""
     from datetime import datetime
@@ -45,3 +74,33 @@ def _utc(dt: object) -> object:
     if isinstance(dt, datetime) and dt.tzinfo is None:
         return dt.replace(tzinfo=UTC)
     return dt
+
+
+async def download_content(
+    url: str,
+    *,
+    timeout: float = 15.0,
+    follow_redirects: bool = True,
+) -> tuple[bytes, str] | None:
+    """
+    Download content from a URL.
+
+    Returns:
+        (content_bytes, content_type) on success
+        None on failure
+    """
+    try:
+        async with httpx.AsyncClient(
+            timeout=timeout,
+            follow_redirects=follow_redirects,
+        ) as client:
+            resp = await client.get(url)
+            resp.raise_for_status()
+
+            content_type = resp.headers.get("content-type", "").split(";")[0].strip()
+
+            return resp.content, content_type or "application/octet-stream"
+
+    except Exception as exc:
+        print(f"Could not download from {url}: {exc}")
+        return None

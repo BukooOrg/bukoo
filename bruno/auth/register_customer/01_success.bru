@@ -1,0 +1,54 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/auth/register
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // success
+  // {
+  //   "email": "{{email1}}",
+  //   "password": "{{password}}",
+  //   "full_name": "Ada Lovelace",
+  //   "date_of_birth": "1990-05-15"
+  // }
+  
+  {
+    "email": "{{email1}}",
+    "password": "{{password}}",
+    "full_name": "Bob",
+    "date_of_birth": "1990-05-15"
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("status is pending", function() {
+    expect(res.body.data.status).to.equal("pending");
+  });
+  
+  test("email matches submitted email", function() {
+    expect(res.body.data.email).to.equal(bru.getEnvVar("email"));
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

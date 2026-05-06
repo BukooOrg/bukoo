@@ -20,9 +20,6 @@ class ResponseWrapper[DataType](BaseModel):
     meta: ResponseMeta
 
 
-# ── Error shapes ─────────────────────────────────────────────────────────────
-
-
 class ValidationErrorDetail(BaseModel):
     """One field-level validation failure (from RequestValidationError)."""
 

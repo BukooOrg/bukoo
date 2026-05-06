@@ -69,7 +69,8 @@ features must be built, and which external providers are in play.
 | **Database** | PostgreSQL + pgAdmin UI | PostgreSQL |
 | **Object storage** | MinIO (local S3-compatible) | AWS S3 |
 | **Email sending** | Mailpit (SMTP trap, UI at `:8025`) | TBD |
-| **Background jobs** | Celery + Redis broker + Flower monitor + Kombu | Same |
+| **Background jobs** | Celery + Redis (DB 0, `BROKER_REDIS_URL`) + Flower + Kombu | Same |
+| **App cache** | Redis (DB 1, `CACHE_REDIS_URL`) + RedisInsight UI at `:5540` | Redis |
 | **OAuth** | Google OAuth | Google OAuth |
 | **Payment** | Simulated only (no real provider) | Simulated only |
 
@@ -87,12 +88,13 @@ features must be built, and which external providers are in play.
 ## Implementation Status (as of project start)
 
 **Implemented:**
-- User registration, credential login, Google OAuth login
-- JWT authentication with Bearer token guard
+- User registration, email verification, resend verification, credential login, Google OAuth login, logout
+- JWT authentication with Bearer token guard + server-side token revocation via Redis blocklist
+- Redis cache abstraction (`ICacheService` / `RedisCacheService`, DB 1)
 - Health check endpoint
 - Domain entities for all 18 types (User, Book, Order, Cart, Wishlist, etc.)
 - ORM models and mappers for all entities
-- Celery + Redis task queue with email notification service
+- Celery + Redis task queue with email notification service (broker on DB 0)
 - MinIO / S3 storage abstraction
 
 **Not yet implemented (use cases to build):**

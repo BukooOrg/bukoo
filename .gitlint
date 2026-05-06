@@ -30,7 +30,7 @@ line-length=100
 # test - add missing tests or correcting existing tests
 # translation - commit related to translation
 [title-match-regex]
-regex = ^(build|chore|ci|docs|feat|fix|perf|refactor|revert|security|style|test|translation)(\([a-z0-9\-]+\))?: .+
+regex = ^(agent|build|chore|ci|docs|feat|fix|perf|refactor|revert|security|style|test|translation)(\([a-z0-9\-]+\))?: .+
 
 # subject-empty (enforced via regex above)
 

@@ -23,6 +23,7 @@ class DatabaseManager:
         configs = get_configs()
         assert configs.POSTGRES_URI, "POSTGRES_URI must be configured."
 
+        # todo: move configs to appropriate location
         self.engine: AsyncEngine = create_async_engine(
             f"{configs.POSTGRES_ASYNC_PREFIX}{configs.POSTGRES_URI}",
             pool_size=10,

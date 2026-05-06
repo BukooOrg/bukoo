@@ -1,0 +1,25 @@
+meta {
+  name: invalid otp
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/auth/password/reset/verify?email={{email1}}&otp=999999
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 401", function() {
+    expect(res.status).to.equal(401);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is INVALID_TOKEN", function() {
+    expect(res.body.error.code).to.equal("INVALID_TOKEN");
+  });
+}

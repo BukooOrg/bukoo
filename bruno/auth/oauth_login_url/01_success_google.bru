@@ -1,0 +1,34 @@
+meta {
+  name: success google
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/auth/oauth/google/login
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("url starts with Google auth endpoint", function() {
+    expect(res.body.data.url).to.be.a("string");
+    expect(res.body.data.url).to.include("https://accounts.google.com/o/oauth2/v2/auth");
+  });
+
+  test("url contains state param", function() {
+    expect(res.body.data.url).to.include("state=");
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

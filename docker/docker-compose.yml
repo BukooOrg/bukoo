@@ -108,12 +108,25 @@ services:
     env_file:
       - ./.env.dev
     environment:
-      CELERY_BROKER_URL: ${REDIS_URL:-redis://redis:6379/0}
+      CELERY_BROKER_URL: ${BROKER_REDIS_URL:-redis://redis:6379/0}
     depends_on:
       redis:
         condition: service_healthy
+
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: bukoo_redisinsight
+    restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports:
+      - "5540:5540"
+    volumes:
+      - redisinsight_data:/data
 
 volumes:
   postgres_data:
   pgadmin_data:
   minio_data:
+  redisinsight_data:

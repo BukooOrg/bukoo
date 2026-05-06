@@ -21,3 +21,27 @@ class CeleryEmailNotificationService(IEmailNotificationService):
                 f"<p>Your account has been created. Please verify your email to get started.</p>"
             ),
         )
+
+    @override
+    def send_verification_email(self, to: str, otp: str) -> None:
+        send_mail.delay(
+            to=to,
+            subject="Verify your email address",
+            body_html=(
+                f"<h1>Email Verification</h1>"
+                f"<p>Your verification code is: <strong>{otp}</strong></p>"
+                f"<p>This code expires in 15 minutes.</p>"
+            ),
+        )
+
+    @override
+    def send_password_reset_email(self, to: str, otp: str) -> None:
+        send_mail.delay(
+            to=to,
+            subject="Reset your password",
+            body_html=(
+                f"<h1>Password Reset</h1>"
+                f"<p>Your password reset code is: <strong>{otp}</strong></p>"
+                f"<p>This code expires in 15 minutes.</p>"
+            ),
+        )

@@ -1,12 +1,20 @@
 from __future__ import annotations
 
+from .admin import AdminAccessRequiredError
 from .auth import (
+    FacebookOAuthError,
+    GoogleOAuthError,
     InvalidCredentialsError,
     InvalidTokenError,
+    OAuthProviderNotFoundError,
+    OAuthStateInvalidError,
+    TokenAlreadyRevokedError,
     TokenExpiredError,
     UserAlreadyExistsError,
+    UserAlreadyVerifiedError,
     UserNotFoundError,
     UserNotVerifiedError,
+    UserSuspendedError,
 )
 from .base import DomainException
 from .book import (
@@ -14,6 +22,7 @@ from .book import (
     BookNotFoundError,
     InvalidISBNError,
 )
+from .cache import CacheDeleteError, CacheReadError, CacheWriteError
 from .order import (
     EmptyOrderError,
     OrderAlreadyPaidError,
@@ -28,12 +37,19 @@ from .storage import StorageNotFoundError, StorageUploadError
 
 __all__ = [
     "DomainException",
+    "FacebookOAuthError",
+    "GoogleOAuthError",
     "InvalidCredentialsError",
     "InvalidTokenError",
+    "OAuthProviderNotFoundError",
+    "OAuthStateInvalidError",
+    "TokenAlreadyRevokedError",
     "TokenExpiredError",
     "UserAlreadyExistsError",
+    "UserAlreadyVerifiedError",
     "UserNotFoundError",
     "UserNotVerifiedError",
+    "UserSuspendedError",
     "BookAlreadyExistsError",
     "BookNotFoundError",
     "InvalidISBNError",
@@ -45,4 +61,8 @@ __all__ = [
     "PaymentVerificationError",
     "StorageUploadError",
     "StorageNotFoundError",
+    "CacheWriteError",
+    "CacheReadError",
+    "CacheDeleteError",
+    "AdminAccessRequiredError",
 ]
