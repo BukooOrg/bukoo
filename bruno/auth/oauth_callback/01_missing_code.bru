@@ -1,0 +1,18 @@
+meta {
+  name: missing code
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/auth/oauth/google/callback?state=some-state-value
+  body: none
+  auth: none
+}
+
+tests {
+  test("redirects to frontend error callback", function() {
+    expect(res.url).to.include("/oauth/callback");
+    expect(res.url).to.include("error=OAUTH_STATE_INVALID");
+  });
+}

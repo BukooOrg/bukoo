@@ -3,7 +3,6 @@ from __future__ import annotations
 import secrets
 from datetime import UTC, datetime, timedelta
 
-import structlog
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid_extension import uuid7
 
@@ -20,8 +19,6 @@ from app.domain.repositories.verification_token_repository import (
 )
 
 from ..base import BaseUseCase
-
-logger = structlog.get_logger(__name__)
 
 # todo: move to appropriate location
 _OTP_TTL_MINUTES = 15
@@ -79,7 +76,6 @@ class ForgotPasswordUseCase(BaseUseCase):
 
         await self._db_session.commit()
 
-        logger.debug({"to": user.email, "otp": otp})
         self._email_svc.send_password_reset_email(to=user.email, otp=str(otp))
 
         return ForgotPasswordResult(message=_GENERIC_MESSAGE)

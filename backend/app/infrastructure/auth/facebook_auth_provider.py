@@ -2,31 +2,32 @@ from __future__ import annotations
 
 import urllib.parse
 from datetime import UTC, date, datetime
-from typing import Any, override
+from typing import override
 
 import httpx
 import structlog
 from uuid_extension import uuid7
 
 from app.application.dtos.auth_dto import AuthResult, OAuthUserInfo
-from app.application.interfaces import IAuthProvider, IOAuthProvider
+from app.application.interfaces.auth_provider import IAuthProvider
+from app.application.interfaces.oauth_provider import IOAuthProvider
 from app.application.interfaces.storage_service import IStorageService
 from app.core.constants import AuthProvider, UserRole, UserStatus
 from app.core.util import download_content
 from app.domain.entities import AccountEntity, UserEntity
-from app.domain.exceptions.auth import GoogleOAuthError, UserSuspendedError
+from app.domain.exceptions.auth import FacebookOAuthError, UserSuspendedError
 from app.domain.repositories.account_repository import IAccountRepository
 from app.domain.repositories.user_repository import IUserRepository
 
 logger = structlog.get_logger(__name__)
 
-_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
-_TOKEN_URL = "https://oauth2.googleapis.com/token"
-_USERINFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo"
-_PEOPLE_API_URL = "https://people.googleapis.com/v1/people/me"
+_AUTH_URL = "https://www.facebook.com/v18.0/dialog/oauth"
+_TOKEN_URL = "https://graph.facebook.com/v18.0/oauth/access_token"
+_USERINFO_URL = "https://graph.facebook.com/me"
+_USERINFO_FIELDS = "id,name,email,picture.type(large),birthday"
 
 
-class GoogleAuthProvider(IAuthProvider, IOAuthProvider):
+class FacebookAuthProvider(IAuthProvider, IOAuthProvider):
     def __init__(
         self,
         user_repo: IUserRepository,
@@ -47,10 +48,10 @@ class GoogleAuthProvider(IAuthProvider, IOAuthProvider):
     def get_authorization_url(self, state: str) -> str:
         params = {
             "client_id": self._client_id,
-            "response_type": "code",
             "redirect_uri": self._redirect_uri,
-            "scope": "openid email profile https://www.googleapis.com/auth/user.birthday.read",
+            "scope": "email,public_profile",
             "state": state,
+            "response_type": "code",
         }
         return f"{_AUTH_URL}?{urllib.parse.urlencode(params)}"
 
@@ -58,75 +59,71 @@ class GoogleAuthProvider(IAuthProvider, IOAuthProvider):
     async def get_access_token(self, code: str) -> str:
         async with httpx.AsyncClient() as client:
             try:
-                response = await client.post(
+                response = await client.get(
                     _TOKEN_URL,
-                    data={
-                        "code": code,
+                    params={
                         "client_id": self._client_id,
                         "client_secret": self._client_secret,
                         "redirect_uri": self._redirect_uri,
-                        "grant_type": "authorization_code",
+                        "code": code,
                     },
-                    headers={"Accept": "application/json"},
                 )
                 response.raise_for_status()
             except httpx.HTTPStatusError as exc:
-                raise GoogleOAuthError() from exc
+                raise FacebookOAuthError() from exc
 
             data: dict[str, str] = response.json()
             access_token = data.get("access_token")
             if not access_token:
-                raise GoogleOAuthError()
+                raise FacebookOAuthError()
             return access_token
 
     @override
     async def get_user_info(self, token: str) -> OAuthUserInfo:
         async with httpx.AsyncClient() as client:
-            # get user info
             try:
                 response = await client.get(
                     _USERINFO_URL,
-                    headers={"Authorization": f"Bearer {token}"},
+                    params={"fields": _USERINFO_FIELDS, "access_token": token},
                 )
                 response.raise_for_status()
             except httpx.HTTPStatusError as exc:
-                raise GoogleOAuthError() from exc
+                raise FacebookOAuthError() from exc
 
-            info: dict[str, Any] = response.json()
+            info: dict[str, object] = response.json()
+            email = info.get("email")
+            if not email or not isinstance(email, str):
+                raise FacebookOAuthError()
 
-            # get DOB from People API
+            picture_url: str | None = None
+            picture = info.get("picture")
+            if isinstance(picture, dict):
+                data = picture.get("data")
+                if isinstance(data, dict):
+                    url = data.get("url")
+                    if isinstance(url, str):
+                        picture_url = url
+
             dob: date | None = None
-            try:
-                people_resp = await client.get(
-                    _PEOPLE_API_URL,
-                    params={"personFields": "birthdays"},
-                    headers={"Authorization": f"Bearer {token}"},
-                )
-                people_resp.raise_for_status()
-                people_data = people_resp.json()
+            birthday = info.get("birthday")
 
-                birthdays = people_data.get("birthdays", [])
-                if birthdays:
-                    birth_date = birthdays[0].get("date", {})
-                    year = birth_date.get("year")
-                    month = birth_date.get("month")
-                    day = birth_date.get("day")
+            if isinstance(birthday, str):
+                parts = birthday.split("/")
 
-                    if year and month and day:
+                try:
+                    if len(parts) == 3:
+                        month, day, year = map(int, parts)
                         dob = date(year=year, month=month, day=day)
-
-            except httpx.HTTPStatusError as exc:
-                logger.error(
-                    "google_dob_not_available",
-                    status_code=exc.response.status_code,
-                    response=exc.response.text,
-                )
+                except ValueError as exc:
+                    logger.info("failed to parse dob", exc=exc)
+            else:
+                logger.info("User have not dob")
 
             return OAuthUserInfo(
-                id=info["sub"],
-                email=info["email"],
-                name=info.get("name", ""),
-                avatar_url=info.get("picture"),
+                id=str(info["id"]),
+                email=email,
+                name=str(info.get("name", "")),
+                avatar_url=picture_url,
                 date_of_birth=dob,
             )
 
@@ -138,9 +135,9 @@ class GoogleAuthProvider(IAuthProvider, IOAuthProvider):
 
         now = datetime.now(UTC)
 
-        # Branch A: account already linked to this Google identity
+        # Branch A: account already linked to this Facebook identity
         existing_account = await self._account_repo.find_by_provider_and_open_id(
-            AuthProvider.GOOGLE, user_info.id
+            AuthProvider.FACEBOOK, user_info.id
         )
         if existing_account:
             linked_user = await self._user_repo.find_by_id(existing_account.user_id)
@@ -164,7 +161,6 @@ class GoogleAuthProvider(IAuthProvider, IOAuthProvider):
                 user_by_email.activate()
             user: UserEntity = user_by_email
             is_new_user = False
-
         else:
             user_id = str(uuid7())
             avatar_key = None
@@ -178,11 +174,10 @@ class GoogleAuthProvider(IAuthProvider, IOAuthProvider):
                             avatar_key, avatar_bytes, content_type
                         )
                     except Exception as exc:
-                        logger.error("Failed to upload cover image to object storage")
-                        logger.error(exc)
+                        logger.debug("Failed to upload cover image to object storage")
+                        logger.debug(exc)
 
                         avatar_key = None
-
             user = UserEntity(
                 _id=user_id,
                 _email=user_info.email,
@@ -203,7 +198,7 @@ class GoogleAuthProvider(IAuthProvider, IOAuthProvider):
         new_account = AccountEntity(
             _id=str(uuid7()),
             _user_id=user.id,
-            _provider=AuthProvider.GOOGLE,
+            _provider=AuthProvider.FACEBOOK,
             _open_id=user_info.id,
             _encrypted_token=access_token,
             _created_at=now,

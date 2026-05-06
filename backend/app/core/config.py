@@ -59,6 +59,10 @@ class AppConfig(BaseSettings):
         description="Application version string shown in OpenAPI docs",
         default=None,
     )
+    FRONTEND_URL: str = Field(
+        description="Frontend application base URL; used for OAuth callback redirects after completing the OAuth flow",
+        default="http://localhost:5173",
+    )
     LICENSE_NAME: str | None = Field(
         description="License name shown in OpenAPI docs",
         default=None,
@@ -319,7 +323,22 @@ class GoogleOAuthConfig(BaseSettings):
         validation_alias=AliasChoices(
             "GOOGLE_REDIRECT_URI", "GOOGLE_OAUTH_REDIRECT_URI"
         ),
-        default="http://localhost:8000/api/v1/auth/google/callback",
+        default="http://localhost:8000/api/app/v1/auth/oauth/google/callback",
+    )
+
+
+class FacebookOAuthConfig(BaseSettings):
+    FACEBOOK_CLIENT_ID: SecretStr = Field(
+        description="Facebook OAuth 2.0 app ID",
+        default=SecretStr("facebook-client-id"),
+    )
+    FACEBOOK_CLIENT_SECRET: SecretStr = Field(
+        description="Facebook OAuth 2.0 app secret",
+        default=SecretStr("facebook-client-secret"),
+    )
+    FACEBOOK_REDIRECT_URI: str = Field(
+        description="OAuth 2.0 redirect URI registered with Facebook; must match exactly",
+        default="http://localhost:8000/api/app/v1/auth/oauth/facebook/callback",
     )
 
 
@@ -374,6 +393,7 @@ class Config(
     MinioConfig,
     S3StorageConfig,
     GoogleOAuthConfig,
+    FacebookOAuthConfig,
     RedisConfig,
     MailConfig,
 ):

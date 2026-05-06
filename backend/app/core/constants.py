@@ -46,6 +46,7 @@ class ObjectStorageType(StrEnum):
 class AuthProvider(StrEnum):
     CREDENTIAL = "credential"
     GOOGLE = "google"
+    FACEBOOK = "facebook"
 
 
 class NotificationStatus(StrEnum):

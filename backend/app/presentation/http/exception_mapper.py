@@ -7,9 +7,13 @@ from app.domain.exceptions import (
     BookNotFoundError,
     DomainException,
     EmptyOrderError,
+    FacebookOAuthError,
+    GoogleOAuthError,
     InvalidCredentialsError,
     InvalidISBNError,
     InvalidTokenError,
+    OAuthProviderNotFoundError,
+    OAuthStateInvalidError,
     OrderAlreadyPaidError,
     OrderNotFoundError,
     OutOfStockError,
@@ -118,5 +122,26 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_403_FORBIDDEN,
         ErrorCode.ADMIN_ACCESS_REQUIRED,
         "Admin access required.",
+    ),
+    # OAuth
+    OAuthStateInvalidError: HttpExceptionMapping(
+        status.HTTP_400_BAD_REQUEST,
+        ErrorCode.OAUTH_STATE_INVALID,
+        "OAuth state token is invalid or expired",
+    ),
+    OAuthProviderNotFoundError: HttpExceptionMapping(
+        status.HTTP_400_BAD_REQUEST,
+        ErrorCode.OAUTH_PROVIDER_NOT_FOUND,
+        "OAuth provider not supported",
+    ),
+    GoogleOAuthError: HttpExceptionMapping(
+        status.HTTP_400_BAD_REQUEST,
+        ErrorCode.GOOGLE_OAUTH_ERROR,
+        "Google OAuth request failed",
+    ),
+    FacebookOAuthError: HttpExceptionMapping(
+        status.HTTP_400_BAD_REQUEST,
+        ErrorCode.FACEBOOK_OAUTH_ERROR,
+        "Facebook OAuth authentication failed",
     ),
 }

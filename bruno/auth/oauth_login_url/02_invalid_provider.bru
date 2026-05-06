@@ -1,0 +1,25 @@
+meta {
+  name: invalid provider
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/auth/oauth/githubb/login
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 400", function() {
+    expect(res.status).to.equal(400);
+  });
+  
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+  
+  test("error code is OAUTH_PROVIDER_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("OAUTH_PROVIDER_NOT_FOUND");
+  });
+}

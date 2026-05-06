@@ -1,0 +1,18 @@
+meta {
+  name: invalid state
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/auth/oauth/google/callback?code=some-code&state=state-not-in-redis-000000000000
+  body: none
+  auth: none
+}
+
+tests {
+  test("redirects to frontend error callback", function() {
+    expect(res.url).to.include("/oauth/callback");
+    expect(res.url).to.include("error=OAUTH_STATE_INVALID");
+  });
+}

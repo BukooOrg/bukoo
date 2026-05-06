@@ -26,7 +26,7 @@ export interface RegisterRequest {
      */
     email: string;
     /**
-     * User password (min 8 chars, requires uppercase, lowercase, digit, special char)
+     * User password (plain text, will be hashed server-side)
      * @type {string}
      * @memberof RegisterRequest
      */

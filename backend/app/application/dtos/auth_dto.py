@@ -7,6 +7,26 @@ from app.core.constants import UserStatus
 
 
 @dataclass(frozen=True)
+class OAuthUserInfo:
+    id: str
+    email: str
+    name: str
+    avatar_url: str | None
+    date_of_birth: date | None
+
+
+@dataclass(frozen=True)
+class GetOAuthLoginUrlResult:
+    url: str
+
+
+@dataclass(frozen=True)
+class OAuthCallbackCommand:
+    code: str
+    state: str
+
+
+@dataclass(frozen=True)
 class RegisterCommand:
     email: str
     password: str

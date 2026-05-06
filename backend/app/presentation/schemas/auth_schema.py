@@ -120,3 +120,10 @@ class ResetPasswordRequest(BaseModel):
 
 class ResetPasswordResponse(BaseModel):
     message: str
+
+
+class OAuthLoginUrlResponse(BaseModel):
+    url: str = Field(
+        ...,
+        description="OAuth provider authorization URL; redirect the browser to this URL",
+    )

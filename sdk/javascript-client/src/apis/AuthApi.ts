@@ -16,35 +16,53 @@
 import * as runtime from '../runtime';
 import type {
   ErrorResponse,
-  GoogleLoginRequest,
+  ForgotPasswordRequest,
   LoginRequest,
   RegisterRequest,
   ResendVerificationRequest,
+  ResetPasswordRequest,
+  ResponseWrapperForgotPasswordResponse,
+  ResponseWrapperLogoutResponse,
+  ResponseWrapperOAuthLoginUrlResponse,
   ResponseWrapperRegisterResponse,
   ResponseWrapperResendVerificationResponse,
+  ResponseWrapperResetPasswordResponse,
   ResponseWrapperTokenResponse,
   ResponseWrapperVerifyEmailResponse,
+  ResponseWrapperVerifyPasswordResetResponse,
   VerifyEmailRequest,
 } from '../models/index';
 import {
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
-    GoogleLoginRequestFromJSON,
-    GoogleLoginRequestToJSON,
+    ForgotPasswordRequestFromJSON,
+    ForgotPasswordRequestToJSON,
     LoginRequestFromJSON,
     LoginRequestToJSON,
     RegisterRequestFromJSON,
     RegisterRequestToJSON,
     ResendVerificationRequestFromJSON,
     ResendVerificationRequestToJSON,
+    ResetPasswordRequestFromJSON,
+    ResetPasswordRequestToJSON,
+    ResponseWrapperForgotPasswordResponseFromJSON,
+    ResponseWrapperForgotPasswordResponseToJSON,
+    ResponseWrapperLogoutResponseFromJSON,
+    ResponseWrapperLogoutResponseToJSON,
+    ResponseWrapperOAuthLoginUrlResponseFromJSON,
+    ResponseWrapperOAuthLoginUrlResponseToJSON,
     ResponseWrapperRegisterResponseFromJSON,
     ResponseWrapperRegisterResponseToJSON,
     ResponseWrapperResendVerificationResponseFromJSON,
     ResponseWrapperResendVerificationResponseToJSON,
+    ResponseWrapperResetPasswordResponseFromJSON,
+    ResponseWrapperResetPasswordResponseToJSON,
     ResponseWrapperTokenResponseFromJSON,
     ResponseWrapperTokenResponseToJSON,
     ResponseWrapperVerifyEmailResponseFromJSON,
     ResponseWrapperVerifyEmailResponseToJSON,
+    ResponseWrapperVerifyPasswordResetResponseFromJSON,
+    ResponseWrapperVerifyPasswordResetResponseToJSON,
     VerifyEmailRequestFromJSON,
     VerifyEmailRequestToJSON,
 } from '../models/index';
@@ -53,8 +71,12 @@ export interface CredentialLoginRequest {
     loginRequest: LoginRequest;
 }
 
-export interface LoginWithGoogleRequest {
-    googleLoginRequest: GoogleLoginRequest;
+export interface ForgotPasswordOperationRequest {
+    forgotPasswordRequest: ForgotPasswordRequest;
+}
+
+export interface GetOAuthLoginUrlRequest {
+    provider: string;
 }
 
 export interface RegisterOperationRequest {
@@ -65,8 +87,17 @@ export interface ResendEmailVerificationRequest {
     resendVerificationRequest: ResendVerificationRequest;
 }
 
+export interface ResetPasswordOperationRequest {
+    resetPasswordRequest: ResetPasswordRequest;
+}
+
 export interface VerifyEmailOperationRequest {
     verifyEmailRequest: VerifyEmailRequest;
+}
+
+export interface VerifyPasswordResetRequest {
+    email: string;
+    otp: string;
 }
 
 /**
@@ -111,13 +142,13 @@ export class AuthApi extends runtime.BaseAPI {
     }
 
     /**
-     * Google Login
+     * Forgot Password
      */
-    async loginWithGoogleRaw(requestParameters: LoginWithGoogleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperTokenResponse>> {
-        if (requestParameters['googleLoginRequest'] == null) {
+    async forgotPasswordRaw(requestParameters: ForgotPasswordOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperForgotPasswordResponse>> {
+        if (requestParameters['forgotPasswordRequest'] == null) {
             throw new runtime.RequiredError(
-                'googleLoginRequest',
-                'Required parameter "googleLoginRequest" was null or undefined when calling loginWithGoogle().'
+                'forgotPasswordRequest',
+                'Required parameter "forgotPasswordRequest" was null or undefined when calling forgotPassword().'
             );
         }
 
@@ -128,21 +159,88 @@ export class AuthApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/api/app/v1/auth/login/google`,
+            path: `/api/app/v1/auth/password/forgot`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: GoogleLoginRequestToJSON(requestParameters['googleLoginRequest']),
+            body: ForgotPasswordRequestToJSON(requestParameters['forgotPasswordRequest']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperTokenResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperForgotPasswordResponseFromJSON(jsonValue));
     }
 
     /**
-     * Google Login
+     * Forgot Password
      */
-    async loginWithGoogle(requestParameters: LoginWithGoogleRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperTokenResponse> {
-        const response = await this.loginWithGoogleRaw(requestParameters, initOverrides);
+    async forgotPassword(requestParameters: ForgotPasswordOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperForgotPasswordResponse> {
+        const response = await this.forgotPasswordRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Oauth Login Url
+     */
+    async getOAuthLoginUrlRaw(requestParameters: GetOAuthLoginUrlRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperOAuthLoginUrlResponse>> {
+        if (requestParameters['provider'] == null) {
+            throw new runtime.RequiredError(
+                'provider',
+                'Required parameter "provider" was null or undefined when calling getOAuthLoginUrl().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/app/v1/auth/oauth/{provider}/login`.replace(`{${"provider"}}`, encodeURIComponent(String(requestParameters['provider']))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperOAuthLoginUrlResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Oauth Login Url
+     */
+    async getOAuthLoginUrl(requestParameters: GetOAuthLoginUrlRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperOAuthLoginUrlResponse> {
+        const response = await this.getOAuthLoginUrlRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Logout
+     */
+    async logoutRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperLogoutResponse>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/app/v1/auth/logout`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperLogoutResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Logout
+     */
+    async logout(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperLogoutResponse> {
+        const response = await this.logoutRaw(initOverrides);
         return await response.value();
     }
 
@@ -219,6 +317,42 @@ export class AuthApi extends runtime.BaseAPI {
     }
 
     /**
+     * Reset Password
+     */
+    async resetPasswordRaw(requestParameters: ResetPasswordOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperResetPasswordResponse>> {
+        if (requestParameters['resetPasswordRequest'] == null) {
+            throw new runtime.RequiredError(
+                'resetPasswordRequest',
+                'Required parameter "resetPasswordRequest" was null or undefined when calling resetPassword().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/api/app/v1/auth/password/reset`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ResetPasswordRequestToJSON(requestParameters['resetPasswordRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperResetPasswordResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Reset Password
+     */
+    async resetPassword(requestParameters: ResetPasswordOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperResetPasswordResponse> {
+        const response = await this.resetPasswordRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Verify Email
      */
     async verifyEmailRaw(requestParameters: VerifyEmailOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperVerifyEmailResponse>> {
@@ -251,6 +385,54 @@ export class AuthApi extends runtime.BaseAPI {
      */
     async verifyEmail(requestParameters: VerifyEmailOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperVerifyEmailResponse> {
         const response = await this.verifyEmailRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Verify Password Reset
+     */
+    async verifyPasswordResetRaw(requestParameters: VerifyPasswordResetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperVerifyPasswordResetResponse>> {
+        if (requestParameters['email'] == null) {
+            throw new runtime.RequiredError(
+                'email',
+                'Required parameter "email" was null or undefined when calling verifyPasswordReset().'
+            );
+        }
+
+        if (requestParameters['otp'] == null) {
+            throw new runtime.RequiredError(
+                'otp',
+                'Required parameter "otp" was null or undefined when calling verifyPasswordReset().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['email'] != null) {
+            queryParameters['email'] = requestParameters['email'];
+        }
+
+        if (requestParameters['otp'] != null) {
+            queryParameters['otp'] = requestParameters['otp'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/app/v1/auth/password/reset/verify`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperVerifyPasswordResetResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Verify Password Reset
+     */
+    async verifyPasswordReset(requestParameters: VerifyPasswordResetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperVerifyPasswordResetResponse> {
+        const response = await this.verifyPasswordResetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

@@ -12,11 +12,13 @@ Auth routes:
 from __future__ import annotations
 
 from fastapi import APIRouter, Response
+from fastapi.responses import RedirectResponse
 from pydantic import EmailStr
 
 from app.application.dtos.auth_dto import (
     ForgotPasswordCommand,
     LogoutCommand,
+    OAuthCallbackCommand,
     RegisterCommand,
     ResendVerificationCommand,
     ResetPasswordCommand,
@@ -24,8 +26,10 @@ from app.application.dtos.auth_dto import (
     VerifyPasswordResetCommand,
 )
 from app.application.use_cases.auth.forgot_password import ForgotPasswordUseCase
+from app.application.use_cases.auth.get_oauth_login_url import GetOAuthLoginUrlUseCase
 from app.application.use_cases.auth.login import LoginUseCase
 from app.application.use_cases.auth.logout import LogoutUseCase
+from app.application.use_cases.auth.oauth_callback import OAuthCallbackUseCase
 from app.application.use_cases.auth.register_customer import RegisterCustomerUseCase
 from app.application.use_cases.auth.resend_email_verification import (
     ResendEmailVerificationUseCase,
@@ -35,25 +39,33 @@ from app.application.use_cases.auth.verify_email import VerifyEmailUseCase
 from app.application.use_cases.auth.verify_password_reset import (
     VerifyPasswordResetUseCase,
 )
+from app.core.config import get_configs
 from app.core.util import clear_auth_cookie, set_auth_cookie
+from app.domain.exceptions import DomainException
+from app.domain.exceptions.auth import (
+    OAuthProviderNotFoundError,
+    OAuthStateInvalidError,
+)
 from app.presentation.dependencies.deps import (
     AccountRepo,
+    CacheService,
     CredentialAuthFactory,
     DbSession,
     EmailNotificationService,
-    GoogleAuthFactory,
+    OAuthProviderRegistry,
     PasswordHasher,
     TokenPayload,
     TokenService,
     UserRepo,
     VerificationTokenRepo,
 )
+from app.presentation.http.exception_mapper import EXCEPTION_MAP
 from app.presentation.schemas.auth_schema import (
     ForgotPasswordRequest,
     ForgotPasswordResponse,
-    GoogleLoginRequest,
     LoginRequest,
     LogoutResponse,
+    OAuthLoginUrlResponse,
     RegisterRequest,
     RegisterResponse,
     ResendVerificationRequest,
@@ -67,6 +79,74 @@ from app.presentation.schemas.auth_schema import (
 )
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+@router.get(
+    "/oauth/{provider}/login",
+    response_model=OAuthLoginUrlResponse,
+    operation_id="getOAuthLoginUrl",
+)
+async def oauth_login_url(
+    provider: str,
+    registry: OAuthProviderRegistry,
+    db_session: DbSession,
+    cache_svc: CacheService,
+) -> OAuthLoginUrlResponse:
+    factory = registry.get(provider)
+    if not factory:
+        raise OAuthProviderNotFoundError(provider)
+    use_case = GetOAuthLoginUrlUseCase(
+        db_session=db_session,
+        cache_svc=cache_svc,
+        factory=factory,
+    )
+    result = await use_case.execute()
+    return OAuthLoginUrlResponse(url=result.url)
+
+
+@router.get("/oauth/{provider}/callback", include_in_schema=False)
+async def oauth_callback(
+    provider: str,
+    registry: OAuthProviderRegistry,
+    db_session: DbSession,
+    cache_svc: CacheService,
+    token_svc: TokenService,
+    code: str | None = None,
+    state: str | None = None,
+    error: str | None = None,
+) -> RedirectResponse:
+    configs = get_configs()
+    frontend_callback = f"{configs.FRONTEND_URL}/oauth/callback"
+
+    try:
+        if error or not code or not state:
+            raise OAuthStateInvalidError()
+
+        factory = registry.get(provider)
+        if not factory:
+            raise OAuthProviderNotFoundError(provider)
+
+        use_case = OAuthCallbackUseCase(
+            db_session=db_session,
+            cache_svc=cache_svc,
+            factory=factory,
+            token_svc=token_svc,
+        )
+        result = await use_case.execute(OAuthCallbackCommand(code=code, state=state))
+
+        # redirect = RedirectResponse(
+        #     url=f"{frontend_callback}#token={result.access_token}", status_code=302
+        # )
+        redirect = RedirectResponse(url=frontend_callback, status_code=302)
+        set_auth_cookie(redirect, result.access_token)
+        return redirect
+
+    except DomainException as exc:
+        mapping = EXCEPTION_MAP.get(type(exc))
+        error_code = mapping.code if mapping else "INTERNAL_ERROR"
+        return RedirectResponse(
+            url=f"{frontend_callback}?error={error_code}", status_code=302
+        )
 
 
 @router.post(
@@ -145,22 +225,22 @@ async def credential_login(
     return TokenResponse(access_token=result.access_token)
 
 
-@router.post(
-    "/login/google", response_model=TokenResponse, operation_id="loginWithGoogle"
-)
-async def google_login(
-    body: GoogleLoginRequest,
-    response: Response,
-    db_session: DbSession,
-    factory: GoogleAuthFactory,
-    token_svc: TokenService,
-) -> TokenResponse:
-    use_case = LoginUseCase(db_session=db_session, factory=factory, token_svc=token_svc)
-    result = await use_case.execute(
-        {"code": body.code, "redirect_uri": body.redirect_uri or ""}
-    )
-    set_auth_cookie(response, result.access_token)
-    return TokenResponse(access_token=result.access_token)
+# @router.post(
+#     "/login/google", response_model=TokenResponse, operation_id="loginWithGoogle"
+# )
+# async def google_login(
+#     body: GoogleLoginRequest,
+#     response: Response,
+#     db_session: DbSession,
+#     factory: GoogleAuthFactory,
+#     token_svc: TokenService,
+# ) -> TokenResponse:
+#     use_case = LoginUseCase(db_session=db_session, factory=factory, token_svc=token_svc)
+#     result = await use_case.execute(
+#         {"code": body.code, "redirect_uri": body.redirect_uri or ""}
+#     )
+#     set_auth_cookie(response, result.access_token)
+#     return TokenResponse(access_token=result.access_token)
 
 
 @router.post(

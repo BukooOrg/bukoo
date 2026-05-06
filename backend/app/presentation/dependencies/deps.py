@@ -31,6 +31,7 @@ from app.domain.repositories import (
 from app.infrastructure.auth import (
     BcryptPasswordHasher,
     CredentialAuthProviderFactory,
+    FacebookAuthProviderFactory,
     GoogleAuthProviderFactory,
     JWTService,
 )
@@ -93,24 +94,6 @@ PasswordHasher = Annotated[IPasswordHasher, Depends(get_password_hasher)]
 TokenService = Annotated[ITokenService, Depends(get_token_service)]
 
 
-# Factory Method pattern: auth provider factory selection
-def get_credential_factory(
-    user_repo: UserRepo,
-    hasher: PasswordHasher,
-) -> IAuthProviderFactory:
-    return CredentialAuthProviderFactory(user_repo=user_repo, hasher=hasher)
-
-
-def get_google_factory(
-    user_repo: UserRepo, account_repo: AccountRepo
-) -> IAuthProviderFactory:
-    return GoogleAuthProviderFactory(user_repo=user_repo, account_repo=account_repo)
-
-
-CredentialAuthFactory = Annotated[IAuthProviderFactory, Depends(get_credential_factory)]
-GoogleAuthFactory = Annotated[IAuthProviderFactory, Depends(get_google_factory)]
-
-
 # Storage
 def get_storage_service() -> IStorageService:
     configs = get_configs()
@@ -125,6 +108,60 @@ def get_storage_service() -> IStorageService:
 
 
 StorageService = Annotated[IStorageService, Depends(get_storage_service)]
+
+
+# Factory Method pattern: auth provider factory selection
+def get_credential_factory(
+    user_repo: UserRepo,
+    hasher: PasswordHasher,
+) -> IAuthProviderFactory:
+    return CredentialAuthProviderFactory(user_repo=user_repo, hasher=hasher)
+
+
+def get_google_factory(
+    user_repo: UserRepo, account_repo: AccountRepo, storage_svc: StorageService
+) -> IAuthProviderFactory:
+    configs = get_configs()
+    return GoogleAuthProviderFactory(
+        user_repo=user_repo,
+        account_repo=account_repo,
+        storage_svc=storage_svc,
+        client_id=configs.GOOGLE_CLIENT_ID.get_secret_value(),
+        client_secret=configs.GOOGLE_CLIENT_SECRET.get_secret_value(),
+        redirect_uri=configs.GOOGLE_REDIRECT_URI,
+    )
+
+
+def get_facebook_factory(
+    user_repo: UserRepo, account_repo: AccountRepo, storage_svc: StorageService
+) -> IAuthProviderFactory:
+    configs = get_configs()
+    return FacebookAuthProviderFactory(
+        user_repo=user_repo,
+        account_repo=account_repo,
+        storage_svc=storage_svc,
+        client_id=configs.FACEBOOK_CLIENT_ID.get_secret_value(),
+        client_secret=configs.FACEBOOK_CLIENT_SECRET.get_secret_value(),
+        redirect_uri=configs.FACEBOOK_REDIRECT_URI,
+    )
+
+
+CredentialAuthFactory = Annotated[IAuthProviderFactory, Depends(get_credential_factory)]
+GoogleAuthFactory = Annotated[IAuthProviderFactory, Depends(get_google_factory)]
+FacebookAuthFactory = Annotated[IAuthProviderFactory, Depends(get_facebook_factory)]
+
+
+# OAuth provider registry (factory method: maps provider name → IAuthProviderFactory)
+def get_oauth_provider_registry(
+    google_factory: GoogleAuthFactory,
+    facebook_factory: FacebookAuthFactory,
+) -> dict[str, IAuthProviderFactory]:
+    return {"google": google_factory, "facebook": facebook_factory}
+
+
+OAuthProviderRegistry = Annotated[
+    dict[str, IAuthProviderFactory], Depends(get_oauth_provider_registry)
+]
 
 
 # Email notification

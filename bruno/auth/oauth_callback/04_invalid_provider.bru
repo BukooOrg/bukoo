@@ -1,0 +1,23 @@
+meta {
+  name: invalid provider
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/auth/oauth/githubb/callback?code=some-code&state=some-state
+  body: none
+  auth: none
+}
+
+params:query {
+  code: some-code
+  state: some-state
+}
+
+tests {
+  test("redirects to frontend error callback", function() {
+    expect(res.url).to.include("/oauth/callback");
+    expect(res.url).to.include("error=");
+  });
+}

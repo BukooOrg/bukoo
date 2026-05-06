@@ -119,8 +119,15 @@ class ResponseFormatterMiddleware:
                     headers_dict = {k.lower(): v for k, v in headers}
                     content_type = headers_dict.get(b"content-type", b"").decode()
 
-                    # skip non-JSON
+                    # skip non-JSON — must send headers first since we buffered them
                     if "application/json" not in content_type:
+                        await send(
+                            {
+                                "type": "http.response.start",
+                                "status": status_code,
+                                "headers": headers,
+                            }
+                        )
                         await send(message)
                         return
 

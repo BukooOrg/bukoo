@@ -2,8 +2,12 @@ from __future__ import annotations
 
 from .admin import AdminAccessRequiredError
 from .auth import (
+    FacebookOAuthError,
+    GoogleOAuthError,
     InvalidCredentialsError,
     InvalidTokenError,
+    OAuthProviderNotFoundError,
+    OAuthStateInvalidError,
     TokenAlreadyRevokedError,
     TokenExpiredError,
     UserAlreadyExistsError,
@@ -33,8 +37,12 @@ from .storage import StorageNotFoundError, StorageUploadError
 
 __all__ = [
     "DomainException",
+    "FacebookOAuthError",
+    "GoogleOAuthError",
     "InvalidCredentialsError",
     "InvalidTokenError",
+    "OAuthProviderNotFoundError",
+    "OAuthStateInvalidError",
     "TokenAlreadyRevokedError",
     "TokenExpiredError",
     "UserAlreadyExistsError",

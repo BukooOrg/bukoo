@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import UTC
 
+import httpx
 from fastapi import Response
 
 
@@ -73,3 +74,33 @@ def _utc(dt: object) -> object:
     if isinstance(dt, datetime) and dt.tzinfo is None:
         return dt.replace(tzinfo=UTC)
     return dt
+
+
+async def download_content(
+    url: str,
+    *,
+    timeout: float = 15.0,
+    follow_redirects: bool = True,
+) -> tuple[bytes, str] | None:
+    """
+    Download content from a URL.
+
+    Returns:
+        (content_bytes, content_type) on success
+        None on failure
+    """
+    try:
+        async with httpx.AsyncClient(
+            timeout=timeout,
+            follow_redirects=follow_redirects,
+        ) as client:
+            resp = await client.get(url)
+            resp.raise_for_status()
+
+            content_type = resp.headers.get("content-type", "").split(";")[0].strip()
+
+            return resp.content, content_type or "application/octet-stream"
+
+    except Exception as exc:
+        print(f"Could not download from {url}: {exc}")
+        return None

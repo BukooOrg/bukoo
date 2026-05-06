@@ -38,19 +38,21 @@ use case to build). Existing auth endpoints (`POST /auth/register`,
 ### 1. Auth API Set
 
 > Reimplements existing scaffold endpoints. Covers account creation, verification,
-> credential and OAuth login, logout, and password recovery.
+> credential and OAuth login (provider authorization URL + server-side callback), logout,
+> and password recovery.
 
-| #   | Endpoint                      | Method | Access | Notes                                                                                              |
-| --- | ----------------------------- | ------ | ------ | -------------------------------------------------------------------------------------------------- |
-| 1.1 | `/auth/register`              | POST   | 🌐     | Create customer account; triggers verification email; status = PENDING. **Reimplemented.**         |
-| 1.2 | `/auth/verify-email`          | POST   | 🌐     | Verify email with OTP/token; transitions status PENDING → ACTIVE                                   |
-| 1.3 | `/auth/resend-verification`   | POST   | 🌐     | Resend verification email to unverified address                                                    |
-| 1.4 | `/auth/login`                 | POST   | 🌐     | Credential login (email + password); returns JWT. **Reimplemented.**                               |
-| 1.5 | `/auth/login/google`          | POST   | 🌐     | Google OAuth login (authorization code exchange); creates account on first use. **Reimplemented.** |
-| 1.6 | `/auth/logout`                | POST   | 👤🔑   | Invalidate / revoke current session token                                                          |
-| 1.7 | `/auth/password/forgot`       | POST   | 🌐     | Send password reset OTP/token to registered email                                                  |
-| 1.8 | `/auth/password/reset/verify` | GET    | 🌐     | Validate reset token is still valid (frontend UX: show reset form only if valid)                   |
-| 1.9 | `/auth/password/reset`        | POST   | 🌐     | Submit new password with valid reset token; token invalidated after use                            |
+| #    | Endpoint                          | Method | Access | Notes                                                                                                                                                                            |
+| ---- | --------------------------------- | ------ | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.1  | `/auth/register`                  | POST   | 🌐     | Create customer account; triggers verification email; status = PENDING. **Reimplemented.**                                                                                       |
+| 1.2  | `/auth/verify-email`              | POST   | 🌐     | Verify email with OTP/token; transitions status PENDING → ACTIVE                                                                                                                 |
+| 1.3  | `/auth/resend-verification`       | POST   | 🌐     | Resend verification email to unverified address                                                                                                                                  |
+| 1.4  | `/auth/login`                     | POST   | 🌐     | Credential login (email + password); returns JWT. **Reimplemented.**                                                                                                             |
+| 1.5a | `/auth/oauth/{provider}/login`    | GET    | 🌐     | Returns the authorization URL for the given OAuth provider as JSON; frontend redirects browser to it. Generates a CSRF state token stored in Redis (TTL 10 min).                 |
+| 1.5b | `/auth/oauth/{provider}/callback` | GET    | 🌐     | OAuth callback from provider; verifies CSRF state, exchanges code, finds or creates user, sets auth cookie, and redirects to frontend. All errors redirect with `?error=` param. |
+| 1.6  | `/auth/logout`                    | POST   | 👤🔑   | Invalidate / revoke current session token                                                                                                                                        |
+| 1.7  | `/auth/password/forgot`           | POST   | 🌐     | Send password reset OTP/token to registered email                                                                                                                                |
+| 1.8  | `/auth/password/reset/verify`     | GET    | 🌐     | Validate reset token is still valid (frontend UX: show reset form only if valid)                                                                                                 |
+| 1.9  | `/auth/password/reset`            | POST   | 🌐     | Submit new password with valid reset token; token invalidated after use                                                                                                          |
 
 ---
 
@@ -278,7 +280,7 @@ use case to build). Existing auth endpoints (`POST /auth/register`,
 
 | API Set                         | Endpoint Count | Primary Domain                     |
 | ------------------------------- | -------------- | ---------------------------------- |
-| 1. Auth                         | 9              | Authentication & account lifecycle |
+| 1. Auth                         | 10             | Authentication & account lifecycle |
 | 2. User Profile                 | 8              | Self-service account management    |
 | 3. Admin – User Management      | 7              | User account administration        |
 | 4. Book Catalog                 | 9              | Product browsing & admin CRUD      |
@@ -293,4 +295,4 @@ use case to build). Existing auth endpoints (`POST /auth/register`,
 | 13. Notification                | 5              | In-app inbox                       |
 | 14. Admin – Inventory Dashboard | 2              | Stock metrics                      |
 | 15. Admin – Reports & Analytics | 4              | Async report jobs                  |
-| **Total**                       | **86**         |                                    |
+| **Total**                       | **87**         |                                    |

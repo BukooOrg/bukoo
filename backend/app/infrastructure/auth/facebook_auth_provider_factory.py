@@ -7,10 +7,10 @@ from app.application.interfaces.auth_provider_factory import IAuthProviderFactor
 from app.application.interfaces.storage_service import IStorageService
 from app.domain.repositories.account_repository import IAccountRepository
 from app.domain.repositories.user_repository import IUserRepository
-from app.infrastructure.auth.google_auth_provider import GoogleAuthProvider
+from app.infrastructure.auth.facebook_auth_provider import FacebookAuthProvider
 
 
-class GoogleAuthProviderFactory(IAuthProviderFactory):
+class FacebookAuthProviderFactory(IAuthProviderFactory):
     def __init__(
         self,
         user_repo: IUserRepository,
@@ -29,7 +29,7 @@ class GoogleAuthProviderFactory(IAuthProviderFactory):
 
     @override
     def create_provider(self) -> IAuthProvider:
-        return GoogleAuthProvider(
+        return FacebookAuthProvider(
             user_repo=self._user_repo,
             account_repo=self._account_repo,
             storage_svc=self._storage_svc,

@@ -16,7 +16,7 @@ class UserEntity:
     _id: str
     _email: str
     _full_name: str
-    _date_of_birth: date
+    _date_of_birth: date | None
     _role: UserRole
     _status: UserStatus
     _hashed_password: str | None
@@ -43,7 +43,7 @@ class UserEntity:
         return self._full_name
 
     @property
-    def date_of_birth(self) -> date:
+    def date_of_birth(self) -> date | None:
         return self._date_of_birth
 
     @property
