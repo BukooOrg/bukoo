@@ -5,6 +5,7 @@ from app.domain.exceptions import (
     AdminAccessRequiredError,
     BookAlreadyExistsError,
     BookNotFoundError,
+    CustomerOnlyError,
     DomainException,
     EmptyOrderError,
     FacebookOAuthError,
@@ -128,6 +129,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_403_FORBIDDEN,
         ErrorCode.ADMIN_ACCESS_REQUIRED,
         "Admin access required.",
+    ),
+    CustomerOnlyError: HttpExceptionMapping(
+        status.HTTP_403_FORBIDDEN,
+        ErrorCode.FORBIDDEN,
+        "This action is not permitted for admin accounts.",
     ),
     # OAuth
     OAuthStateInvalidError: HttpExceptionMapping(

@@ -7,6 +7,17 @@ from app.core.constants import UserRole, UserStatus
 
 
 @dataclass(frozen=True)
+class SoftDeleteMeCommand:
+    user_id: str
+    token_payload: dict[str, object]
+
+
+@dataclass(frozen=True)
+class SoftDeleteMeResult:
+    message: str
+
+
+@dataclass(frozen=True)
 class UpdateProfileCommand:
     user_id: str
     full_name: str

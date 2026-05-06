@@ -2,13 +2,21 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 
-from app.application.dtos.user_dto import UpdateProfileCommand
+from app.application.dtos.user_dto import SoftDeleteMeCommand, UpdateProfileCommand
+from app.application.use_cases.user.soft_delete_me import SoftDeleteMeUseCase
 from app.application.use_cases.user.update_profile import UpdateProfileUseCase
-from app.core.util import build_public_url
-from app.presentation.dependencies.deps import CurrentUser, DbSession, UserRepo
+from app.core.util import build_public_url, clear_auth_cookie
+from app.presentation.dependencies.deps import (
+    CurrentUser,
+    DbSession,
+    TokenPayload,
+    TokenService,
+    UserRepo,
+)
 from app.presentation.schemas.user_schema import (
+    SoftDeleteMeResponse,
     UpdateProfileRequest,
     UserProfileResponse,
 )
@@ -31,6 +39,25 @@ async def get_me(current_user: CurrentUser) -> UserProfileResponse:
         created_at=current_user.created_at,
         updated_at=current_user.updated_at,
     )
+
+
+@router.delete("/me", response_model=SoftDeleteMeResponse, operation_id="softDeleteMe")
+async def soft_delete_me(
+    current_user: CurrentUser,
+    token_payload: TokenPayload,
+    token_svc: TokenService,
+    user_repo: UserRepo,
+    db_session: DbSession,
+    response: Response,
+) -> SoftDeleteMeResponse:
+    use_case = SoftDeleteMeUseCase(
+        db_session=db_session, user_repo=user_repo, token_svc=token_svc
+    )
+    result = await use_case.execute(
+        SoftDeleteMeCommand(user_id=current_user.id, token_payload=token_payload)
+    )
+    clear_auth_cookie(response)
+    return SoftDeleteMeResponse(message=result.message)
 
 
 @router.patch("/me", response_model=UserProfileResponse, operation_id="updateProfile")

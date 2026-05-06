@@ -234,10 +234,6 @@ CurrentUser = Annotated[UserEntity, Depends(get_current_user)]
 
 async def require_admin(current_user: CurrentUser) -> UserEntity:
     if current_user.role != UserRole.ADMIN:
-        # raise HTTPException(
-        #     status_code=status.HTTP_403_FORBIDDEN,
-        #     detail="Admin access required.",
-        # )
         raise AdminAccessRequiredError
     return current_user
 

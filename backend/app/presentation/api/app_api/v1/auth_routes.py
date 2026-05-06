@@ -1,13 +1,4 @@
-"""
-Auth routes:
-- register
-- verify email
-- credential login
-- Google OAuth login
-- logout
-- forgot password
-- verify password reset token.
-"""
+"""Authentication routes"""
 
 from __future__ import annotations
 
@@ -225,24 +216,6 @@ async def credential_login(
     return TokenResponse(access_token=result.access_token)
 
 
-# @router.post(
-#     "/login/google", response_model=TokenResponse, operation_id="loginWithGoogle"
-# )
-# async def google_login(
-#     body: GoogleLoginRequest,
-#     response: Response,
-#     db_session: DbSession,
-#     factory: GoogleAuthFactory,
-#     token_svc: TokenService,
-# ) -> TokenResponse:
-#     use_case = LoginUseCase(db_session=db_session, factory=factory, token_svc=token_svc)
-#     result = await use_case.execute(
-#         {"code": body.code, "redirect_uri": body.redirect_uri or ""}
-#     )
-#     set_auth_cookie(response, result.access_token)
-#     return TokenResponse(access_token=result.access_token)
-
-
 @router.post(
     "/resend-verification",
     response_model=ResendVerificationResponse,
@@ -294,9 +267,9 @@ async def forgot_password(
 @router.post("/logout", response_model=LogoutResponse, operation_id="logout")
 async def logout(
     token_payload: TokenPayload,
-    response: Response,
     db_session: DbSession,
     token_svc: TokenService,
+    response: Response,
 ) -> LogoutResponse:
     use_case = LogoutUseCase(db_session=db_session, token_svc=token_svc)
     result = await use_case.execute(LogoutCommand(token_payload=token_payload))

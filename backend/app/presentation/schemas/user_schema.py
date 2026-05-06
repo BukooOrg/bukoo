@@ -10,6 +10,10 @@ from app.application.validators import DateOfBirth
 from app.core.constants import UserRole, UserStatus
 
 
+class SoftDeleteMeResponse(BaseModel):
+    message: str
+
+
 class UpdateProfileRequest(BaseModel):
     full_name: str = Field(..., min_length=2, max_length=255)
     date_of_birth: DateOfBirth | None = Field(

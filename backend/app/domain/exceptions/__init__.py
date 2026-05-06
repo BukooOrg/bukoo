@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .admin import AdminAccessRequiredError
+from .admin import AdminAccessRequiredError, CustomerOnlyError
 from .auth import (
     FacebookOAuthError,
     GoogleOAuthError,
@@ -67,4 +67,5 @@ __all__ = [
     "CacheReadError",
     "CacheDeleteError",
     "AdminAccessRequiredError",
+    "CustomerOnlyError",
 ]
