@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import datetime
 
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field
 
-from app.application.validators import OTPStr, PasswordStr
+from app.application.validators import DateOfBirth, OTPStr, PasswordStr
 from app.core.constants import UserStatus
 
 
@@ -24,24 +24,7 @@ class RegisterRequest(LoginRequest):
         description="User password (plain text, will be hashed server-side)",
     )
     full_name: str = Field(..., min_length=2, max_length=100)
-    date_of_birth: date = Field(..., description="ISO 8601 date (YYYY-MM-DD)")
-
-    @field_validator("date_of_birth")
-    @classmethod
-    def validate_date_of_birth(cls, value: date) -> date:
-        from datetime import date as date_type
-
-        today = date_type.today()
-        if value >= today:
-            raise ValueError("date_of_birth must be in the past.")
-        age_years = (
-            today.year
-            - value.year
-            - ((today.month, today.day) < (value.month, value.day))
-        )
-        if age_years < 5:
-            raise ValueError("User must be at least 5 years old.")
-        return value
+    date_of_birth: DateOfBirth = Field(..., description="ISO 8601 date (YYYY-MM-DD)")
 
 
 class RegisterResponse(BaseModel):
