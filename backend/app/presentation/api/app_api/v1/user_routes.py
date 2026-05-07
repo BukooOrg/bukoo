@@ -5,11 +5,13 @@ from __future__ import annotations
 from fastapi import APIRouter, Response, UploadFile
 
 from app.application.dtos.user_dto import (
+    RemoveAvatarCommand,
     SoftDeleteMeCommand,
     UpdateAvatarCommand,
     UpdateProfileCommand,
     UpsertAddressCommand,
 )
+from app.application.use_cases.user.remove_avatar import RemoveAvatarUseCase
 from app.application.use_cases.user.soft_delete_me import SoftDeleteMeUseCase
 from app.application.use_cases.user.update_avatar import UpdateAvatarUseCase
 from app.application.use_cases.user.update_profile import UpdateProfileUseCase
@@ -81,7 +83,7 @@ async def update_avatar(
     file: UploadFile,
     current_user: CurrentUser,
     user_repo: UserRepo,
-    storage_service: StorageService,
+    storage_svc: StorageService,
     db_session: DbSession,
 ) -> UserProfileResponse:
     if file.content_type not in ALLOWED_AVATAR_TYPES:
@@ -95,7 +97,7 @@ async def update_avatar(
     use_case = UpdateAvatarUseCase(
         db_session=db_session,
         user_repo=user_repo,
-        storage_service=storage_service,
+        storage_svc=storage_svc,
     )
     result = await use_case.execute(
         UpdateAvatarCommand(
@@ -104,6 +106,34 @@ async def update_avatar(
             content_type=content_type,
         )
     )
+    return UserProfileResponse(
+        id=result.id,
+        email=result.email,
+        full_name=result.full_name,
+        date_of_birth=result.date_of_birth,
+        role=result.role,
+        status=result.status,
+        avatar_url=build_public_url(result.avatar_url),
+        have_password=result.have_password,
+        last_login_at=result.last_login_at,
+        created_at=result.created_at,
+        updated_at=result.updated_at,
+    )
+
+
+@router.delete(
+    "/me/avatar", response_model=UserProfileResponse, operation_id="removeAvatar"
+)
+async def remove_avatar(
+    current_user: CurrentUser,
+    user_repo: UserRepo,
+    storage_svc: StorageService,
+    db_session: DbSession,
+) -> UserProfileResponse:
+    use_case = RemoveAvatarUseCase(
+        db_session=db_session, user_repo=user_repo, storage_svc=storage_svc
+    )
+    result = await use_case.execute(RemoveAvatarCommand(user_id=current_user.id))
     return UserProfileResponse(
         id=result.id,
         email=result.email,

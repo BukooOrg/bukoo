@@ -115,7 +115,7 @@ class TestUpdateAvatarUseCase:
         repo = FakeUserRepository(user)
         storage = FakeStorageService()
         use_case = UpdateAvatarUseCase(
-            db_session=AsyncMock(), user_repo=repo, storage_service=storage
+            db_session=AsyncMock(), user_repo=repo, storage_svc=storage
         )
 
         result = await use_case.execute(
@@ -135,7 +135,7 @@ class TestUpdateAvatarUseCase:
         repo = FakeUserRepository(user)
         storage = FakeStorageService()
         use_case = UpdateAvatarUseCase(
-            db_session=AsyncMock(), user_repo=repo, storage_service=storage
+            db_session=AsyncMock(), user_repo=repo, storage_svc=storage
         )
 
         result = await use_case.execute(
@@ -153,7 +153,7 @@ class TestUpdateAvatarUseCase:
         repo = FakeUserRepository(user)
         storage = FakeStorageService()
         use_case = UpdateAvatarUseCase(
-            db_session=AsyncMock(), user_repo=repo, storage_service=storage
+            db_session=AsyncMock(), user_repo=repo, storage_svc=storage
         )
 
         await use_case.execute(
@@ -173,7 +173,7 @@ class TestUpdateAvatarUseCase:
         storage = FakeStorageService()
         db_session = AsyncMock()
         use_case = UpdateAvatarUseCase(
-            db_session=db_session, user_repo=repo, storage_service=storage
+            db_session=db_session, user_repo=repo, storage_svc=storage
         )
 
         await use_case.execute(
@@ -190,7 +190,7 @@ class TestUpdateAvatarUseCase:
         repo = FakeUserRepository()  # empty store
         storage = FakeStorageService()
         use_case = UpdateAvatarUseCase(
-            db_session=AsyncMock(), user_repo=repo, storage_service=storage
+            db_session=AsyncMock(), user_repo=repo, storage_svc=storage
         )
 
         with pytest.raises(UserNotFoundError):
@@ -207,7 +207,7 @@ class TestUpdateAvatarUseCase:
         repo = FakeUserRepository(user)
         storage = FakeStorageService(should_fail=True)
         use_case = UpdateAvatarUseCase(
-            db_session=AsyncMock(), user_repo=repo, storage_service=storage
+            db_session=AsyncMock(), user_repo=repo, storage_svc=storage
         )
 
         with pytest.raises(StorageUploadError):
@@ -224,7 +224,7 @@ class TestUpdateAvatarUseCase:
         repo = FakeUserRepository(user)
         storage = FakeStorageService()
         use_case = UpdateAvatarUseCase(
-            db_session=AsyncMock(), user_repo=repo, storage_service=storage
+            db_session=AsyncMock(), user_repo=repo, storage_svc=storage
         )
         expected_key = f"pub/avatars/{user.id}"
 

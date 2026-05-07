@@ -8,7 +8,7 @@
 | Use Case     | 5. Remove Avatar |
 | File Index   | 02_05            |
 | Access Level | 👤🔑 Both        |
-| Status       | Approved         |
+| Status       | Implemented      |
 
 ---
 
@@ -158,9 +158,7 @@ _(None)_
 
 **Error Cases:**
 
-- [ ] `02_no_auth_header.bru` — Status 401 when no Authorization header provided
-- [ ] `03_invalid_token.bru` — Status 401 when token is expired or invalid
-- [ ] `04_idempotent.bru` — Status 200 when avatar is already null (idempotent no-op, not an error)
+- [ ] **`02_idempotent.bru`** — Status 200 when avatar is already null (idempotent no-op, not an error)
 
 ### Pytest Unit Tests
 
@@ -184,19 +182,19 @@ _(None)_
 
 ## Implementation Checklist
 
-- [ ] 1. Domain entity (`app/domain/entities/user_entity.py`) — existing; `update_avatar(None)` already supports clearing
-- [ ] 2. Domain exceptions (`app/domain/exceptions/`) — none new
-- [ ] 3. Repository interface methods (`app/domain/repositories/`) — none new
-- [ ] 4. DTOs (`app/application/dtos/user_dto.py`) — add `RemoveAvatarCommand`, `RemoveAvatarResult`
-- [ ] 5. Use case (`app/application/use_cases/user/remove_avatar.py`) — new
-- [ ] 6. ORM model — no new table
-- [ ] 7. Mapper — no change
-- [ ] 8. Repository implementation — no change
-- [ ] 9. Exception mapping (`app/presentation/http/exception_mapper.py`) — no new entries
-- [ ] 10. Error codes (`app/application/errors/error_codes.py`) — no new entries
-- [ ] 11. Pydantic schemas (`app/presentation/schemas/user_schema.py`) — add `RemoveAvatarResponse`
-- [ ] 12. Route handler (`app/presentation/api/app_api/v1/user_routes.py`) — add `DELETE /users/me/avatar`
-- [ ] 13. Wire in `deps.py` — `StorageService` already wired; inject alongside `UserRepo` and `DbSession`
-- [ ] 14. Alembic migration — no schema change
-- [ ] 15. Bruno test files (`bruno/user_profile/remove_avatar/` — `folder.bru` + `01_success.bru` + one file per error case)
-- [ ] 16. Pytest unit tests (`backend/tests/unit/test_remove_avatar.py`)
+- [x] 1. Domain entity (`app/domain/entities/user_entity.py`) — existing; `update_avatar(None)` already supports clearing
+- [x] 2. Domain exceptions (`app/domain/exceptions/`) — none new
+- [x] 3. Repository interface methods (`app/domain/repositories/`) — none new
+- [x] 4. DTOs (`app/application/dtos/user_dto.py`) — add `RemoveAvatarCommand`, `RemoveAvatarResult`
+- [x] 5. Use case (`app/application/use_cases/user/remove_avatar.py`) — new
+- [x] 6. ORM model — no new table
+- [x] 7. Mapper — no change
+- [x] 8. Repository implementation — no change
+- [x] 9. Exception mapping (`app/presentation/http/exception_mapper.py`) — no new entries
+- [x] 10. Error codes (`app/application/errors/error_codes.py`) — no new entries
+- [x] 11. Pydantic schemas (`app/presentation/schemas/user_schema.py`) — existing `UserProfileResponse`
+- [x] 12. Route handler (`app/presentation/api/app_api/v1/user_routes.py`) — add `DELETE /users/me/avatar`
+- [x] 13. Wire in `deps.py` — `StorageService` already wired; inject alongside `UserRepo` and `DbSession`
+- [x] 14. Alembic migration — no schema change
+- [x] 15. Bruno test files (`bruno/user_profile/remove_avatar/` — `folder.bru` + `01_success.bru` + one file per error case)
+- [x] 16. Pytest unit tests (`backend/tests/unit/test_remove_avatar.py`)

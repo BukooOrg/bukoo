@@ -1,0 +1,33 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+delete {
+  url: {{baseUrl}}{{apiBase}}/users/me/avatar
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("data.avatarUrl is null", function() {
+    expect(res.body.data.avatarUrl).to.be.null;
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

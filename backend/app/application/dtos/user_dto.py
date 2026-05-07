@@ -58,6 +58,26 @@ class UpdateAvatarResult:
 
 
 @dataclass(frozen=True)
+class RemoveAvatarCommand:
+    user_id: str
+
+
+@dataclass(frozen=True)
+class RemoveAvatarResult:
+    id: str
+    email: str
+    full_name: str
+    date_of_birth: date | None
+    role: UserRole
+    status: UserStatus
+    avatar_url: str | None
+    have_password: bool
+    last_login_at: datetime | None
+    created_at: datetime
+    updated_at: datetime
+
+
+@dataclass(frozen=True)
 class SoftDeleteMeCommand:
     user_id: str
     token_payload: dict[str, object]
