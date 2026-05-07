@@ -78,3 +78,18 @@ class GoogleOAuthError(DomainException):
 class FacebookOAuthError(DomainException):
     def __init__(self) -> None:
         super().__init__("Facebook OAuth authentication failed.")
+
+
+class CurrentPasswordIncorrectError(DomainException):
+    def __init__(self) -> None:
+        super().__init__("Current password incorrect.")
+
+
+class PasswordNotSetError(DomainException):
+    def __init__(self) -> None:
+        super().__init__("User does not set the password for this account.")
+
+
+class NewPasswordSameAsCurrentError(DomainException):
+    def __init__(self) -> None:
+        super().__init__("New password cannot be same as the current password")

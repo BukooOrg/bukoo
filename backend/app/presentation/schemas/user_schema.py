@@ -6,7 +6,7 @@ from datetime import date, datetime
 
 from pydantic import BaseModel, Field, field_validator
 
-from app.application.validators import DateOfBirth, PhoneNumber
+from app.application.validators import DateOfBirth, PasswordStr, PhoneNumber
 from app.core.constants import UserRole, UserStatus
 
 
@@ -41,6 +41,21 @@ class UserProfileResponse(BaseModel):
     last_login_at: datetime | None
     created_at: datetime
     updated_at: datetime
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: PasswordStr = Field(
+        ...,
+        description="User current password",
+    )
+    new_password: PasswordStr = Field(
+        ...,
+        description="User new password to be set (plain text, will be hashed server-side)",
+    )
+
+
+class ChangePasswordResponse(BaseModel):
+    message: str
 
 
 class UpsertAddressRequest(BaseModel):

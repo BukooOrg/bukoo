@@ -3,13 +3,16 @@ from __future__ import annotations
 from .address import AddressNotFoundError
 from .admin import AdminAccessRequiredError
 from .auth import (
+    CurrentPasswordIncorrectError,
     FacebookOAuthError,
     GoogleOAuthError,
     InvalidCredentialsError,
     InvalidTokenError,
+    NewPasswordSameAsCurrentError,
     NoAuthHeaderError,
     OAuthProviderNotFoundError,
     OAuthStateInvalidError,
+    PasswordNotSetError,
     TokenAlreadyRevokedError,
     TokenExpiredError,
     UserAlreadyExistsError,
@@ -78,4 +81,7 @@ __all__ = [
     "AdminAccessRequiredError",
     "CustomerOnlyError",
     "AddressNotFoundError",
+    "CurrentPasswordIncorrectError",
+    "PasswordNotSetError",
+    "NewPasswordSameAsCurrentError",
 ]

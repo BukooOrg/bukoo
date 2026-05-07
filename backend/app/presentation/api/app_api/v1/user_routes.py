@@ -5,6 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Response, UploadFile
 
 from app.application.dtos.user_dto import (
+    ChangePasswordCommand,
     GetMyAddressCommand,
     RemoveAvatarCommand,
     SoftDeleteMeCommand,
@@ -12,6 +13,7 @@ from app.application.dtos.user_dto import (
     UpdateProfileCommand,
     UpsertAddressCommand,
 )
+from app.application.use_cases.user.change_password import ChangePasswordUseCase
 from app.application.use_cases.user.get_my_address import GetMyAddressUseCase
 from app.application.use_cases.user.remove_avatar import RemoveAvatarUseCase
 from app.application.use_cases.user.soft_delete_me import SoftDeleteMeUseCase
@@ -26,6 +28,7 @@ from app.presentation.dependencies.deps import (
     CurrentUser,
     CustomerUser,
     DbSession,
+    PasswordHasher,
     StorageService,
     TokenPayload,
     TokenService,
@@ -33,6 +36,8 @@ from app.presentation.dependencies.deps import (
 )
 from app.presentation.schemas.user_schema import (
     AddressResponse,
+    ChangePasswordRequest,
+    ChangePasswordResponse,
     SoftDeleteMeResponse,
     UpdateProfileRequest,
     UpsertAddressRequest,
@@ -179,6 +184,29 @@ async def remove_avatar(
         created_at=result.created_at,
         updated_at=result.updated_at,
     )
+
+
+@router.patch(
+    "/me/password", response_model=ChangePasswordResponse, operation_id="changePassword"
+)
+async def change_password(
+    body: ChangePasswordRequest,
+    current_user: CustomerUser,
+    user_repo: UserRepo,
+    hasher: PasswordHasher,
+    db_session: DbSession,
+) -> ChangePasswordResponse:
+    use_case = ChangePasswordUseCase(
+        db_session=db_session, user_repo=user_repo, hasher=hasher
+    )
+    result = await use_case.execute(
+        ChangePasswordCommand(
+            user_id=current_user.id,
+            current_password=body.current_password,
+            new_password=body.new_password,
+        )
+    )
+    return ChangePasswordResponse(message=result.message)
 
 
 @router.get("/me/address", response_model=AddressResponse, operation_id="getMyAddress")

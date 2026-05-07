@@ -82,16 +82,15 @@ class UpdateProfileResult:
 
 
 @dataclass(frozen=True)
-class UpsertAddressCommand:
+class ChangePasswordCommand:
     user_id: str
-    recipient_name: str
-    phone: str
-    address_line1: str
-    address_line2: str | None
-    city: str
-    state: str
-    postcode: str
-    country: str
+    current_password: str
+    new_password: str
+
+
+@dataclass(frozen=True)
+class ChangePasswordResult:
+    message: str
 
 
 @dataclass(frozen=True)
@@ -113,6 +112,19 @@ class GetMyAddressResult:
     country: str
     created_at: datetime
     updated_at: datetime
+
+
+@dataclass(frozen=True)
+class UpsertAddressCommand:
+    user_id: str
+    recipient_name: str
+    phone: str
+    address_line1: str
+    address_line2: str | None
+    city: str
+    state: str
+    postcode: str
+    country: str
 
 
 @dataclass(frozen=True)
