@@ -272,20 +272,23 @@ make api-test         # run Bruno API tests against local environment
 
 Loaded by the FastAPI app at runtime. Copy from `backend/.env.example`.
 
-| Variable            | Default                            | Description                            |
-| ------------------- | ---------------------------------- | -------------------------------------- |
-| `SECRET_KEY`        | `secret-key`                       | JWT signing secret — **change this**   |
-| `DATABASE_URL`      | \_(auto-built from POSTGRES\_\_)\* | Set individually via `POSTGRES_*` vars |
-| `POSTGRES_USER`     | `postgres`                         | PostgreSQL username                    |
-| `POSTGRES_PASSWORD` | `postgres`                         | PostgreSQL password                    |
-| `POSTGRES_DB`       | `bukoo`                            | Database name                          |
-| `BROKER_REDIS_URL`  | `redis://localhost:6379/0`         | Celery broker URL                      |
-| `CACHE_REDIS_URL`   | `redis://localhost:6379/1`         | Redis Cache URL                        |
-| `SMTP_HOST`         | `localhost`                        | SMTP server (Mailpit in dev)           |
-| `SMTP_PORT`         | `1025`                             | Mailpit SMTP port                      |
-| `MINIO_ENDPOINT`    | `localhost:9000`                   | MinIO server address                   |
-| `STORAGE_TYPE`      | `minio`                            | `minio` in dev, `s3` in production     |
-| `GOOGLE_CLIENT_ID`  | —                                  | Required only if using Google OAuth    |
+| Variable                 | Default                            | Description                            |
+| ------------------------ | ---------------------------------- | -------------------------------------- |
+| `SECRET_KEY`             | `secret-key`                       | JWT signing secret — **change this**   |
+| `DATABASE_URL`           | \_(auto-built from POSTGRES\_\_)\* | Set individually via `POSTGRES_*` vars |
+| `POSTGRES_USER`          | `postgres`                         | PostgreSQL username                    |
+| `POSTGRES_PASSWORD`      | `postgres`                         | PostgreSQL password                    |
+| `POSTGRES_DB`            | `bukoo`                            | Database name                          |
+| `BROKER_REDIS_URL`       | `redis://localhost:6379/0`         | Celery broker URL                      |
+| `CACHE_REDIS_URL`        | `redis://localhost:6379/1`         | Redis Cache URL                        |
+| `SMTP_HOST`              | `localhost`                        | SMTP server (Mailpit in dev)           |
+| `SMTP_PORT`              | `1025`                             | Mailpit SMTP port                      |
+| `MINIO_ENDPOINT`         | `localhost:9000`                   | MinIO server address                   |
+| `STORAGE_TYPE`           | `minio`                            | `minio` in dev, `s3` in production     |
+| `GOOGLE_CLIENT_ID`       | —                                  | Required only if using Google OAuth    |
+| `GOOGLE_CLIENT_SECRET`   | —                                  | Required only if using Google OAuth    |
+| `FACEBOOK_CLIENT_ID`     | —                                  | Required only if using Facebook OAuth  |
+| `FACEBOOK_CLIENT_SECRET` | —                                  | Required only if using Facebook OAuth  |
 
 ### `docker/.env.dev`
 

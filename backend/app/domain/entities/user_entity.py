@@ -135,7 +135,7 @@ class UserEntity:
         self._avatar_url = avatar_url
         self._updated_at = datetime.now(UTC)
 
-    def update_profile(self, full_name: str, date_of_birth: date) -> None:
+    def update_profile(self, full_name: str, date_of_birth: date | None) -> None:
         """Update basic profile fields."""
         self._full_name = full_name
         self._date_of_birth = date_of_birth

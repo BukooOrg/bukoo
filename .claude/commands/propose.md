@@ -84,7 +84,7 @@ Confirm the saved path to the user.
 | Field        | Value                                            |
 | ------------ | ------------------------------------------------ |
 | API Set      | [index]. [name]                                  |
-| Use Case     | [local index]. [name]                            |
+| Use Case     | [uc_idx]. [name]                                 |
 | File Index   | [api_set_idx]\_[uc_idx]                          |
 | Access Level | [🌐 Public / 👤 Customer / 🔑 Admin / 👤🔑 Both] |
 | Status       | Draft                                            |

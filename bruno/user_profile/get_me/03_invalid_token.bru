@@ -1,0 +1,25 @@
+meta {
+  name: invalid token
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/users/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: not.a.valid.jwt
+}
+
+tests {
+  test("status 401", function() {
+    expect(res.status).to.equal(401);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+}

@@ -1,0 +1,45 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/users/me/avatar
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:multipart-form {
+  file: @file(C:\Users\hp\Downloads\nicolas-horn-MTZTGvDsHFY-unsplash.jpg)
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.avatar_url is a non-null string", function() {
+    expect(res.body.data.avatar_url).to.be.a("string");
+  });
+  
+  test("data.avatar_url contains the user id", function() {
+    expect(res.body.data.avatar_url).to.include(res.body.data.id);
+  });
+  
+  test("data.updated_at is a string", function() {
+    expect(res.body.data.updated_at).to.be.a("string");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

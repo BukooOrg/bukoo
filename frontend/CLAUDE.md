@@ -22,7 +22,7 @@ frontend/src/
 ├── components/
 │   ├── 3d-book/        ← Three.js / R3F 3D book visualization
 │   ├── cart/           ← cart context, cart modal, add-to-cart button
-│   ├── layout/         ← header, footer, page-layout wrapper
+│   ├── layout/         ← header, footer, PageLayout wrapper
 │   ├── products/       ← product cards, variant selector
 │   └── ui/             ← design system primitives
 │       ├── forms/      ← button, input, field, select, checkbox
@@ -45,7 +45,7 @@ frontend/src/
 1. Create `src/pages/<PageName>.jsx`:
 
 ```jsx
-import { PageLayout } from "@/components/layout/page-layout";
+import { PageLayout } from "@/components/layout/PageLayout";
 
 export default function PageName() {
   return <PageLayout>{/* content */}</PageLayout>;

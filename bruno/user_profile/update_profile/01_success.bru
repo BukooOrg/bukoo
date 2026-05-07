@@ -1,0 +1,53 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/users/me
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // happy path — update full name and date of birth
+  {
+    "full_name": "Jane Doe Updated",
+    "date_of_birth": "1990-06-15"
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.full_name matches submitted value", function() {
+    expect(res.body.data.full_name).to.equal("Jane Doe Updated");
+  });
+  
+  test("data.date_of_birth matches submitted value", function() {
+    expect(res.body.data.date_of_birth).to.equal("1990-06-15");
+  });
+  
+  test("data.updated_at is a string", function() {
+    expect(res.body.data.updated_at).to.be.a("string");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

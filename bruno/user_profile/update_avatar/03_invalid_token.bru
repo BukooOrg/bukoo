@@ -1,0 +1,29 @@
+meta {
+  name: invalid token
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/users/me/avatar
+  body: multipart-form
+  auth: bearer
+}
+
+auth:bearer {
+  token: this.is.not.a.valid.token
+}
+
+body:multipart-form {
+  file: @file("avatar.jpg"); type=image/jpeg
+}
+
+tests {
+  test("status 401", function() {
+    expect(res.status).to.equal(401);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+}

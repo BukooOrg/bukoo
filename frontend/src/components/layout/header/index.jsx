@@ -1,17 +1,27 @@
 import { UserIcon } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-import CartModal from '@/components/cart/modal';
+import CartModal from '@/components/cart/CartModal';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/data-display/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/overlays/dropdown-menu';
+import { useAuth } from '@/context/AuthContext';
 import { getCollections } from '@/lib/sfcc';
 import { cn } from '@/lib/utils';
 
-import MobileMenu from './mobile-menu';
-import Search from './search';
+import MobileMenu from './MobileMenu';
+import Search from './Search';
 
 export function Header() {
   const { pathname } = useLocation();
   const [collections, setCollections] = useState([]);
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     async function loadCollections() {
@@ -22,43 +32,82 @@ export function Header() {
   }, []);
 
   return (
-    <header className='fixed top-0 left-0 w-full z-50 transition-all duration-300'>
+    <header className='fixed top-0 left-0 z-50 w-full transition-all duration-300'>
       {/* Primary Header Row */}
-      <div className='p-sides bg-background/80 backdrop-blur-2xl border-b border-secondary/20 h-24 md:h-32 flex items-center gap-sides'>
-        <div className='flex-none md:hidden mr-4'>
+      <div className='flex items-center h-24 border-b p-sides bg-background/80 backdrop-blur-2xl border-secondary/20 md:h-32 gap-sides'>
+        <div className='flex-none mr-4 md:hidden'>
           <MobileMenu collections={collections} />
         </div>
 
         {/* Large Logo */}
         <Link to='/' className='flex-none'>
-          <span className='text-5xl md:text-7xl font-serif font-black tracking-tighter text-primary'>
+          <span className='font-serif text-5xl font-black tracking-tighter md:text-7xl text-primary'>
             Bukoo
           </span>
         </Link>
 
         {/* Wide Search Bar (Centered/Expanded) */}
-        <div className='flex-1 md:px-12 flex justify-center max-md:hidden'>
-          <div className='w-full max-w-3xl px-6 py-2 bg-secondary/80 rounded-full border border-secondary/30 backdrop-blur-md'>
+        <div className='flex justify-center flex-1 md:px-12 max-md:hidden'>
+          <div className='w-full max-w-3xl px-6 py-2 border rounded-full bg-secondary/80 border-secondary/30 backdrop-blur-md'>
             <Search />
           </div>
         </div>
 
         {/* Action Buttons (Right) */}
-        <nav className='flex items-center gap-4 md:gap-8 ml-auto'>
+        <nav className='flex items-center gap-4 ml-auto md:gap-8'>
           <CartModal />
 
-          <Link
-            to='/login'
-            className='flex items-center gap-2 px-8 py-4 bg-primary text-background rounded-full font-sans font-bold text-[10px] uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl'>
-            <UserIcon className='size-4' />
-            <span className='hidden lg:inline'>Login / Sign Up</span>
-          </Link>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className='transition-all rounded-full outline-none ring-offset-background hover:scale-105 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2'>
+                  <Avatar className='border shadow-lg size-12 border-secondary/30'>
+                    <AvatarImage src={user.avatarUrl} alt={user.fullName} />
+
+                    <AvatarFallback className='font-bold bg-primary text-background'>
+                      {user.fullName?.charAt(0)?.toUpperCase() ?? 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                </button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent
+                align='end'
+                className='w-56 mt-2 rounded-2xl border-secondary/20 backdrop-blur-xl'>
+                <div className='px-3 py-2 border-b border-secondary/10'>
+                  <p className='text-sm font-semibold'>{user.fullName}</p>
+                  <p className='text-xs truncate text-muted-foreground'>{user.email}</p>
+                </div>
+
+                <DropdownMenuItem asChild className='cursor-pointer'>
+                  <Link to='/account/profile'>
+                    <UserIcon className='mr-2 size-4' />
+                    Profile
+                  </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                  onClick={logout}
+                  className='cursor-pointer text-destructive focus:text-destructive'>
+                  <LogOut className='mr-2 size-4' />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link
+              to='/login'
+              className='flex items-center gap-2 px-8 py-4 bg-primary text-background rounded-full font-sans font-bold text-[10px] uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl'>
+              <UserIcon className='size-4' />
+              <span className='hidden lg:inline'>Login / Sign Up</span>
+            </Link>
+          )}
         </nav>
       </div>
 
       {/* Genre Header Row */}
-      <div className='bg-background/60 backdrop-blur-xl border-b border-secondary/15 h-12 md:h-16 flex items-center justify-center'>
-        <ul className='flex gap-10 md:gap-16 items-center overflow-x-auto no-scrollbar px-sides'>
+      <div className='flex items-center justify-center h-12 border-b bg-background/60 backdrop-blur-xl border-secondary/15 md:h-16'>
+        <ul className='flex items-center gap-10 overflow-x-auto md:gap-16 no-scrollbar px-sides'>
           {collections
             .filter((c) => c.handle !== 'joyco-root')
             .map((item) => (

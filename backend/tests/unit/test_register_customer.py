@@ -15,7 +15,7 @@ from app.domain.entities.user_entity import UserEntity
 from app.domain.entities.verification_token_entity import VerificationTokenEntity
 from app.domain.exceptions import UserAlreadyExistsError
 from app.domain.repositories import IUserRepository, IVerificationTokenRepository
-from app.presentation.schemas.auth_schema import RegisterRequest
+from app.presentation.schemas.auth_schema import RegisterCustomerRequest
 
 
 class FakeUserRepository(IUserRepository):
@@ -261,22 +261,36 @@ class TestRegisterRequestValidation:
         dob = date(today.year - 5, today.month, today.day) + timedelta(days=1)
 
         with pytest.raises(ValidationError):
-            RegisterRequest(
+            RegisterCustomerRequest(
                 email="reader@example.com",
                 password="Secure@123",
                 full_name="Ada Lovelace",
                 date_of_birth=dob,
+                confirm_password="Secure@123",
             )
 
     def test_password_exactly_8_chars_with_all_required_types_is_accepted(
         self,
     ) -> None:
         """Boundary: minimum-length password satisfying all character requirements is accepted."""
-        req = RegisterRequest(
+        req = RegisterCustomerRequest(
             email="reader@example.com",
-            password="Secure@1",
+            password="Secure@123",
             full_name="Ada Lovelace",
             date_of_birth=date(1990, 5, 15),
+            confirm_password="Secure@123",
         )
 
-        assert req.password == "Secure@1"
+        assert req.password == "Secure@123"
+
+    def test_password_and_confirm_password_does_not_match_is_rejected(self) -> None:
+        """Boundary: user who provide the mismatch password is rejected by the schema validator"""
+
+        with pytest.raises(ValidationError):
+            RegisterCustomerRequest(
+                email="reader@example.com",
+                password="Secure@123",
+                full_name="Ada Lovelace",
+                date_of_birth=date(1990, 5, 15),
+                confirm_password="PasswordDoesNotWord",
+            )
