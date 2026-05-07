@@ -1,0 +1,37 @@
+meta {
+  name: oauth only user
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/users/me/password
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // oauth only user without credential login account
+  {
+    "current_password": "OldP@ssw0rd!",
+    "new_password": "N3wSecur3P@ss!"
+  }
+}
+
+tests {
+  test("status 400", function() {
+    expect(res.status).to.equal(400);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is PASSWORD_NOT_SET", function() {
+    expect(res.body.error.code).to.equal("PASSWORD_NOT_SET");
+  });
+}

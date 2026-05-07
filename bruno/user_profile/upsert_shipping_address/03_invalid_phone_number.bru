@@ -1,0 +1,40 @@
+meta {
+  name: invalid phone number
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}{{apiBase}}/users/me/address
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // invalid phone number
+  {
+    "recipient_name": "Jane Doe",
+    "phone": "a0123456789",
+    "address_line1": "12 Jalan Bukit Bintang",
+    "city": "Kuala Lumpur",
+    "state": "Wilayah Persekutuan",
+    "postcode": "55100",
+    "country": "Malaysia"
+  }
+  
+}
+
+tests {
+  test("status 403", function() {
+    expect(res.status).to.equal(422);
+    
+  });
+  
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+}

@@ -1,0 +1,49 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/users/me/password
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // happy path — change password with correct current password
+  {
+    "current_password": "{{password}}",
+    "new_password": "N3wSecur3P@ss!"
+  }
+  // {
+  //   "current_password": "N3wSecur3P@ss!",
+  //   "new_password": "{{password}}"
+  // }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.message equals success text", function() {
+    expect(res.body.data.message).to.equal("Password changed successfully.");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

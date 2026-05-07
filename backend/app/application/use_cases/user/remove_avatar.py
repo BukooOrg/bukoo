@@ -4,15 +4,17 @@ from typing import override
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.application.dtos.user_dto import UpdateAvatarCommand, UpdateAvatarResult
+from app.application.dtos.user_dto import RemoveAvatarCommand, RemoveAvatarResult
 from app.application.interfaces.storage_service import IStorageService
-from app.domain.exceptions.auth import UserNotFoundError
+from app.domain.exceptions import UserNotFoundError
 from app.domain.repositories.user_repository import IUserRepository
 
 from ..base import BaseUseCase
 
 
-class UpdateAvatarUseCase(BaseUseCase):
+class RemoveAvatarUseCase(BaseUseCase):
+    """Idempotent deletion of the avatar. If the avatar is already deleted, simply return the result."""
+
     def __init__(
         self,
         db_session: AsyncSession,
@@ -24,21 +26,20 @@ class UpdateAvatarUseCase(BaseUseCase):
         self._storage_svc = storage_svc
 
     @override
-    async def execute(self, command: UpdateAvatarCommand) -> UpdateAvatarResult:
+    async def execute(self, command: RemoveAvatarCommand) -> RemoveAvatarResult:
         user = await self._user_repo.find_by_id(command.user_id)
         if user is None:
             raise UserNotFoundError(command.user_id)
 
-        # todo: refactor public and private bucket
-        # add a @classmethod for IStorageService that decide whether the object is public or private
-        key = f"pub/avatars/{user.id}"
-        await self._storage_svc.upload(key, command.file_data, command.content_type)
+        avatar_key = user.avatar_url
+        if avatar_key is not None:
+            user.update_avatar(None)
+            await self._user_repo.save(user)
+            await self._db_session.commit()
 
-        user.update_avatar(avatar_url=key)
-        await self._user_repo.save(user)
-        await self._db_session.commit()
+            await self._storage_svc.delete(avatar_key)
 
-        return UpdateAvatarResult(
+        return RemoveAvatarResult(
             id=user.id,
             email=user.email,
             full_name=user.full_name,

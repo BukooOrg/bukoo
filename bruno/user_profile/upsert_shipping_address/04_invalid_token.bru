@@ -1,0 +1,42 @@
+meta {
+  name: invalid token
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}{{apiBase}}/users/me/address
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: invalid.jwt.token
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // expired or malformed token
+  {
+    "recipient_name": "Jane Doe",
+    "phone": "+60123456789",
+    "address_line1": "12 Jalan Bukit Bintang",
+    "city": "Kuala Lumpur",
+    "state": "Wilayah Persekutuan",
+    "postcode": "55100",
+    "country": "Malaysia"
+  }
+}
+
+tests {
+  test("status 401", function() {
+    expect(res.status).to.equal(401);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+}

@@ -5,6 +5,9 @@ src/apis/HealthApi.ts
 src/apis/UsersApi.ts
 src/apis/index.ts
 src/index.ts
+src/models/AddressResponse.ts
+src/models/ChangePasswordRequest.ts
+src/models/ChangePasswordResponse.ts
 src/models/ErrorBody.ts
 src/models/ErrorResponse.ts
 src/models/ForgotPasswordRequest.ts
@@ -21,6 +24,8 @@ src/models/ResendVerificationResponse.ts
 src/models/ResetPasswordRequest.ts
 src/models/ResetPasswordResponse.ts
 src/models/ResponseMeta.ts
+src/models/ResponseWrapperAddressResponse.ts
+src/models/ResponseWrapperChangePasswordResponse.ts
 src/models/ResponseWrapperForgotPasswordResponse.ts
 src/models/ResponseWrapperHealthCheckResponse.ts
 src/models/ResponseWrapperLogoutResponse.ts
@@ -36,6 +41,7 @@ src/models/ResponseWrapperVerifyPasswordResetResponse.ts
 src/models/SoftDeleteMeResponse.ts
 src/models/TokenResponse.ts
 src/models/UpdateProfileRequest.ts
+src/models/UpsertAddressRequest.ts
 src/models/UserProfileResponse.ts
 src/models/UserRole.ts
 src/models/UserStatus.ts

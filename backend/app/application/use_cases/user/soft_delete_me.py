@@ -7,8 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.application.dtos.user_dto import SoftDeleteMeCommand, SoftDeleteMeResult
 from app.application.interfaces.token_service import ITokenService
 from app.core.constants import UserRole
-from app.domain.exceptions.admin import CustomerOnlyError
-from app.domain.exceptions.auth import UserNotFoundError
+from app.domain.exceptions import CustomerOnlyError, UserNotFoundError
 from app.domain.repositories.user_repository import IUserRepository
 
 from ..base import BaseUseCase

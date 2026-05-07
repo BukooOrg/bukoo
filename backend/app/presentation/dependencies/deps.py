@@ -20,6 +20,7 @@ from app.core.constants import ObjectStorageType, UserRole
 from app.domain.entities import UserEntity
 from app.domain.exceptions import (
     AdminAccessRequiredError,
+    CustomerOnlyError,
     InvalidCredentialsError,
     InvalidTokenError,
     NoAuthHeaderError,
@@ -27,6 +28,7 @@ from app.domain.exceptions import (
 )
 from app.domain.repositories import (
     IAccountRepository,
+    IAddressRepository,
     IUserRepository,
     IVerificationTokenRepository,
 )
@@ -40,6 +42,7 @@ from app.infrastructure.auth import (
 from app.infrastructure.cache import RedisCacheService
 from app.infrastructure.db.repositories import (
     AccountRepositoryImpl,
+    AddressRepositoryImpl,
     UserRepositoryImpl,
     VerificationTokenRepositoryImpl,
 )
@@ -70,11 +73,16 @@ def get_verification_token_repository(
     return VerificationTokenRepositoryImpl(session)
 
 
+def get_address_repository(session: DbSession) -> IAddressRepository:
+    return AddressRepositoryImpl(session)
+
+
 UserRepo = Annotated[IUserRepository, Depends(get_user_repository)]
 AccountRepo = Annotated[IAccountRepository, Depends(get_account_repository)]
 VerificationTokenRepo = Annotated[
     IVerificationTokenRepository, Depends(get_verification_token_repository)
 ]
+AddressRepo = Annotated[IAddressRepository, Depends(get_address_repository)]
 
 
 # Cache
@@ -239,3 +247,12 @@ async def require_admin(current_user: CurrentUser) -> UserEntity:
 
 
 AdminUser = Annotated[UserEntity, Depends(require_admin)]
+
+
+async def require_customer(current_user: CurrentUser) -> UserEntity:
+    if current_user.role != UserRole.USER:
+        raise CustomerOnlyError
+    return current_user
+
+
+CustomerUser = Annotated[UserEntity, Depends(require_customer)]

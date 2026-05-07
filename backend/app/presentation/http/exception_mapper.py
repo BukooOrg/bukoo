@@ -4,9 +4,11 @@ from fastapi import status
 
 from app.application.errors.error_codes import ErrorCode
 from app.domain.exceptions import (
+    AddressNotFoundError,
     AdminAccessRequiredError,
     BookAlreadyExistsError,
     BookNotFoundError,
+    CurrentPasswordIncorrectError,
     CustomerOnlyError,
     DomainException,
     EmptyOrderError,
@@ -17,12 +19,14 @@ from app.domain.exceptions import (
     InvalidFileTypeError,
     InvalidISBNError,
     InvalidTokenError,
+    NewPasswordSameAsCurrentError,
     NoAuthHeaderError,
     OAuthProviderNotFoundError,
     OAuthStateInvalidError,
     OrderAlreadyPaidError,
     OrderNotFoundError,
     OutOfStockError,
+    PasswordNotSetError,
     StorageUploadError,
     TokenAlreadyRevokedError,
     TokenExpiredError,
@@ -91,12 +95,27 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
     NoAuthHeaderError: HttpExceptionMapping(
         status.HTTP_403_FORBIDDEN,
         ErrorCode.NOT_AUTH_HEADER,
-        NoAuthHeaderError().message,
+        lambda exc: exc.message,
     ),
     UserSuspendedError: HttpExceptionMapping(
         status.HTTP_403_FORBIDDEN,
         ErrorCode.USER_SUSPENDED,
         "Account is suspended",
+    ),
+    CurrentPasswordIncorrectError: HttpExceptionMapping(
+        status.HTTP_400_BAD_REQUEST,
+        ErrorCode.CURRENT_PASSWORD_INCORRECT,
+        "The current password you entered is incorrect. Please double-check and try again.",
+    ),
+    PasswordNotSetError: HttpExceptionMapping(
+        status.HTTP_400_BAD_REQUEST,
+        ErrorCode.PASSWORD_NOT_SET,
+        "Your account is linked to a social login (like Google or Facebook) and does not have a password. Please sign in with email and try again.",
+    ),
+    NewPasswordSameAsCurrentError: HttpExceptionMapping(
+        status.HTTP_400_BAD_REQUEST,
+        ErrorCode.NEW_PASSWORD_SAME_AS_CURRENT,
+        "Your new password must be different from your current one. Please choose a new, unique password.",
     ),
     # Book
     BookNotFoundError: HttpExceptionMapping(
@@ -181,5 +200,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_422_UNPROCESSABLE_CONTENT,
         ErrorCode.INVALID_FILE_TYPE,
         lambda exc: exc.message,
+    ),
+    # address
+    AddressNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.ADDRESS_NOT_FOUND,
+        "You do not have address",
     ),
 }

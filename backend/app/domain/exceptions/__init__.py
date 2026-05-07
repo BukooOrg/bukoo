@@ -1,14 +1,18 @@
 from __future__ import annotations
 
-from .admin import AdminAccessRequiredError, CustomerOnlyError
+from .address import AddressNotFoundError
+from .admin import AdminAccessRequiredError
 from .auth import (
+    CurrentPasswordIncorrectError,
     FacebookOAuthError,
     GoogleOAuthError,
     InvalidCredentialsError,
     InvalidTokenError,
+    NewPasswordSameAsCurrentError,
     NoAuthHeaderError,
     OAuthProviderNotFoundError,
     OAuthStateInvalidError,
+    PasswordNotSetError,
     TokenAlreadyRevokedError,
     TokenExpiredError,
     UserAlreadyExistsError,
@@ -40,6 +44,7 @@ from .storage import (
     StorageNotFoundError,
     StorageUploadError,
 )
+from .user import CustomerOnlyError
 
 __all__ = [
     "DomainException",
@@ -75,4 +80,8 @@ __all__ = [
     "CacheDeleteError",
     "AdminAccessRequiredError",
     "CustomerOnlyError",
+    "AddressNotFoundError",
+    "CurrentPasswordIncorrectError",
+    "PasswordNotSetError",
+    "NewPasswordSameAsCurrentError",
 ]

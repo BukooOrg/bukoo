@@ -1,0 +1,60 @@
+meta {
+  name: success update
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}{{apiBase}}/users/me/address
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // update existing address — depends on 01_success_create.bru having run first
+  {
+    "recipient_name": "John Smith",
+    "phone": "+60198765432",
+    "address_line1": "99 Jalan Ampang",
+    "address_line2": null,
+    "city": "Petaling Jaya",
+    "state": "Selangor",
+    "postcode": "47800",
+    "country": "Malaysia"
+  }
+  
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.recipient_name reflects new value", function() {
+    expect(res.body.data.recipient_name).to.equal("John Smith");
+  });
+  
+  test("data.city reflects new value", function() {
+    expect(res.body.data.city).to.equal("Petaling Jaya");
+  });
+  
+  test("data.address_line2 is null", function() {
+    expect(res.body.data.address_line2).to.be.null;
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

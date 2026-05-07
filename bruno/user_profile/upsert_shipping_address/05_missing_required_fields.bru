@@ -1,0 +1,36 @@
+meta {
+  name: missing required fields
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}{{apiBase}}/users/me/address
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // omitting required fields: recipient_name, phone, address_line1, city, state, postcode, country
+  {
+    "address_line2": "Unit 5A"
+  }
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+}
