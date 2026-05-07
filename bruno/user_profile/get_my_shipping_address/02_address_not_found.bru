@@ -1,0 +1,29 @@
+meta {
+  name: address not found
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/users/me/address
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+  
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+  
+  test("error code is ADDRESS_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("ADDRESS_NOT_FOUND");
+  });
+}

@@ -1,0 +1,61 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/users/me/address
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.id is a string", function() {
+    expect(res.body.data.id).to.be.a("string");
+  });
+  
+  test("data.userId is a string", function() {
+    expect(res.body.data.user_id).to.be.a("string");
+  });
+  
+  test("data.recipientName is a string", function() {
+    expect(res.body.data.recipient_name).to.be.a("string");
+  });
+  
+  test("data.phone is a string", function() {
+    expect(res.body.data.phone).to.be.a("string");
+  });
+  
+  test("data.addressLine1 is a string", function() {
+    expect(res.body.data.address_line1).to.be.a("string");
+    
+    
+  });
+  
+  test("data.city is a string", function() {
+    expect(res.body.data.city).to.be.a("string");
+  });
+  
+  test("data.country is a string", function() {
+    expect(res.body.data.country).to.be.a("string");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+  
+  
+}

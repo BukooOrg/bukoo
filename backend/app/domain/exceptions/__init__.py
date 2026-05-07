@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from .address import AddressNotFoundError
 from .admin import AdminAccessRequiredError
 from .auth import (
     FacebookOAuthError,
@@ -76,4 +77,5 @@ __all__ = [
     "CacheDeleteError",
     "AdminAccessRequiredError",
     "CustomerOnlyError",
+    "AddressNotFoundError",
 ]

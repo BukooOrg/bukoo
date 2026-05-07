@@ -5,12 +5,14 @@ from __future__ import annotations
 from fastapi import APIRouter, Response, UploadFile
 
 from app.application.dtos.user_dto import (
+    GetMyAddressCommand,
     RemoveAvatarCommand,
     SoftDeleteMeCommand,
     UpdateAvatarCommand,
     UpdateProfileCommand,
     UpsertAddressCommand,
 )
+from app.application.use_cases.user.get_my_address import GetMyAddressUseCase
 from app.application.use_cases.user.remove_avatar import RemoveAvatarUseCase
 from app.application.use_cases.user.soft_delete_me import SoftDeleteMeUseCase
 from app.application.use_cases.user.update_avatar import UpdateAvatarUseCase
@@ -54,6 +56,36 @@ async def get_me(current_user: CurrentUser) -> UserProfileResponse:
         last_login_at=current_user.last_login_at,
         created_at=current_user.created_at,
         updated_at=current_user.updated_at,
+    )
+
+
+@router.patch("/me", response_model=UserProfileResponse, operation_id="updateProfile")
+async def update_profile(
+    body: UpdateProfileRequest,
+    current_user: CurrentUser,
+    user_repo: UserRepo,
+    db_session: DbSession,
+) -> UserProfileResponse:
+    use_case = UpdateProfileUseCase(db_session=db_session, user_repo=user_repo)
+    result = await use_case.execute(
+        UpdateProfileCommand(
+            user_id=current_user.id,
+            full_name=body.full_name,
+            date_of_birth=body.date_of_birth,
+        )
+    )
+    return UserProfileResponse(
+        id=result.id,
+        email=result.email,
+        full_name=result.full_name,
+        date_of_birth=result.date_of_birth,
+        role=result.role,
+        status=result.status,
+        avatar_url=build_public_url(result.avatar_url),
+        have_password=result.have_password,
+        last_login_at=result.last_login_at,
+        created_at=result.created_at,
+        updated_at=result.updated_at,
     )
 
 
@@ -149,31 +181,23 @@ async def remove_avatar(
     )
 
 
-@router.patch("/me", response_model=UserProfileResponse, operation_id="updateProfile")
-async def update_profile(
-    body: UpdateProfileRequest,
-    current_user: CurrentUser,
-    user_repo: UserRepo,
-    db_session: DbSession,
-) -> UserProfileResponse:
-    use_case = UpdateProfileUseCase(db_session=db_session, user_repo=user_repo)
-    result = await use_case.execute(
-        UpdateProfileCommand(
-            user_id=current_user.id,
-            full_name=body.full_name,
-            date_of_birth=body.date_of_birth,
-        )
-    )
-    return UserProfileResponse(
+@router.get("/me/address", response_model=AddressResponse, operation_id="getMyAddress")
+async def get_my_address(
+    current_user: CustomerUser, user_repo: UserRepo, db_session: DbSession
+) -> AddressResponse:
+    use_case = GetMyAddressUseCase(db_session=db_session, user_repo=user_repo)
+    result = await use_case.execute(GetMyAddressCommand(current_user.id))
+    return AddressResponse(
         id=result.id,
-        email=result.email,
-        full_name=result.full_name,
-        date_of_birth=result.date_of_birth,
-        role=result.role,
-        status=result.status,
-        avatar_url=build_public_url(result.avatar_url),
-        have_password=result.have_password,
-        last_login_at=result.last_login_at,
+        user_id=result.user_id,
+        recipient_name=result.recipient_name,
+        phone=result.phone,
+        address_line1=result.address_line1,
+        address_line2=result.address_line2,
+        city=result.city,
+        state=result.state,
+        postcode=result.postcode,
+        country=result.country,
         created_at=result.created_at,
         updated_at=result.updated_at,
     )

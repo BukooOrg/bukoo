@@ -4,6 +4,7 @@ from fastapi import status
 
 from app.application.errors.error_codes import ErrorCode
 from app.domain.exceptions import (
+    AddressNotFoundError,
     AdminAccessRequiredError,
     BookAlreadyExistsError,
     BookNotFoundError,
@@ -91,7 +92,7 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
     NoAuthHeaderError: HttpExceptionMapping(
         status.HTTP_403_FORBIDDEN,
         ErrorCode.NOT_AUTH_HEADER,
-        NoAuthHeaderError().message,
+        lambda exc: exc.message,
     ),
     UserSuspendedError: HttpExceptionMapping(
         status.HTTP_403_FORBIDDEN,
@@ -181,5 +182,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_422_UNPROCESSABLE_CONTENT,
         ErrorCode.INVALID_FILE_TYPE,
         lambda exc: exc.message,
+    ),
+    # address
+    AddressNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.ADDRESS_NOT_FOUND,
+        "You do not have address",
     ),
 }
