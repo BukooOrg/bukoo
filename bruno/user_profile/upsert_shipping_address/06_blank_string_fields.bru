@@ -1,0 +1,42 @@
+meta {
+  name: blank string fields
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{baseUrl}}{{apiBase}}/users/me/address
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // whitespace-only strings should be rejected
+  {
+    "recipient_name": "   ",
+    "phone": "+60123456789",
+    "address_line1": "12 Jalan Bukit Bintang",
+    "city": "Kuala Lumpur",
+    "state": "Wilayah Persekutuan",
+    "postcode": "55100",
+    "country": "Malaysia"
+  }
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+}

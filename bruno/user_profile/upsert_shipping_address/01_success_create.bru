@@ -1,0 +1,71 @@
+meta {
+  name: success create
+  type: http
+  seq: 1
+}
+
+put {
+  url: {{baseUrl}}{{apiBase}}/users/me/address
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // create shipping address for authenticated user
+  {
+    "recipient_name": "Jane Doe",
+    "phone": "+60123456789",
+    "address_line1": "12 Jalan Bukit Bintang",
+    "address_line2": "Unit 5A",
+    "city": "Kuala Lumpur",
+    "state": "Wilayah Persekutuan",
+    "postcode": "55100",
+    "country": "Malaysia"
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.id is a string", function() {
+    expect(res.body.data.id).to.be.a("string");
+  });
+  
+  test("data.recipient_name matches", function() {
+    expect(res.body.data.recipient_name).to.equal("Jane Doe");
+  });
+  
+  test("data.address_line1 matches", function() {
+    expect(res.body.data.address_line1).to.equal("12 Jalan Bukit Bintang");
+  });
+  
+  test("data.city matches", function() {
+    expect(res.body.data.city).to.equal("Kuala Lumpur");
+  });
+  
+  test("data.country matches", function() {
+    expect(res.body.data.country).to.equal("Malaysia");
+  });
+  
+  test("data.user_id is a string", function() {
+    expect(res.body.data.user_id).to.be.a("string");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

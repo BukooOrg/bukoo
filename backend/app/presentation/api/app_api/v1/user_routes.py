@@ -8,15 +8,19 @@ from app.application.dtos.user_dto import (
     SoftDeleteMeCommand,
     UpdateAvatarCommand,
     UpdateProfileCommand,
+    UpsertAddressCommand,
 )
 from app.application.use_cases.user.soft_delete_me import SoftDeleteMeUseCase
 from app.application.use_cases.user.update_avatar import UpdateAvatarUseCase
 from app.application.use_cases.user.update_profile import UpdateProfileUseCase
+from app.application.use_cases.user.upsert_address import UpsertAddressUseCase
 from app.core.constants import ALLOWED_AVATAR_TYPES, MAX_AVATAR_BYTES
 from app.core.util import build_public_url, clear_auth_cookie
 from app.domain.exceptions import FileSizeExceededError, InvalidFileTypeError
 from app.presentation.dependencies.deps import (
+    AddressRepo,
     CurrentUser,
+    CustomerUser,
     DbSession,
     StorageService,
     TokenPayload,
@@ -24,8 +28,10 @@ from app.presentation.dependencies.deps import (
     UserRepo,
 )
 from app.presentation.schemas.user_schema import (
+    AddressResponse,
     SoftDeleteMeResponse,
     UpdateProfileRequest,
+    UpsertAddressRequest,
     UserProfileResponse,
 )
 
@@ -138,6 +144,48 @@ async def update_profile(
         avatar_url=build_public_url(result.avatar_url),
         have_password=result.have_password,
         last_login_at=result.last_login_at,
+        created_at=result.created_at,
+        updated_at=result.updated_at,
+    )
+
+
+@router.put("/me/address", response_model=AddressResponse, operation_id="upsertAddress")
+async def upsert_address(
+    body: UpsertAddressRequest,
+    current_user: CustomerUser,
+    user_repo: UserRepo,
+    address_repo: AddressRepo,
+    db_session: DbSession,
+) -> AddressResponse:
+    use_case = UpsertAddressUseCase(
+        db_session=db_session,
+        user_repo=user_repo,
+        address_repo=address_repo,
+    )
+    result = await use_case.execute(
+        UpsertAddressCommand(
+            user_id=current_user.id,
+            recipient_name=body.recipient_name,
+            phone=body.phone,
+            address_line1=body.address_line1,
+            address_line2=body.address_line2,
+            city=body.city,
+            state=body.state,
+            postcode=body.postcode,
+            country=body.country,
+        )
+    )
+    return AddressResponse(
+        id=result.id,
+        user_id=result.user_id,
+        recipient_name=result.recipient_name,
+        phone=result.phone,
+        address_line1=result.address_line1,
+        address_line2=result.address_line2,
+        city=result.city,
+        state=result.state,
+        postcode=result.postcode,
+        country=result.country,
         created_at=result.created_at,
         updated_at=result.updated_at,
     )

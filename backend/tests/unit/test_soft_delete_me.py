@@ -10,8 +10,7 @@ from app.application.dtos.user_dto import SoftDeleteMeCommand, SoftDeleteMeResul
 from app.application.use_cases.user.soft_delete_me import SoftDeleteMeUseCase
 from app.core.constants import UserRole, UserStatus
 from app.domain.entities.user_entity import UserEntity
-from app.domain.exceptions.admin import CustomerOnlyError
-from app.domain.exceptions.auth import UserNotFoundError
+from app.domain.exceptions import CustomerOnlyError, UserNotFoundError
 from app.domain.repositories import IUserRepository
 
 _DUMMY_PAYLOAD: dict[str, object] = {"sub": "test-user-id", "jti": "test-jti"}

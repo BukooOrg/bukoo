@@ -7,6 +7,35 @@ from app.core.constants import UserRole, UserStatus
 
 
 @dataclass(frozen=True)
+class UpsertAddressCommand:
+    user_id: str
+    recipient_name: str
+    phone: str
+    address_line1: str
+    address_line2: str | None
+    city: str
+    state: str
+    postcode: str
+    country: str
+
+
+@dataclass(frozen=True)
+class UpsertAddressResult:
+    id: str
+    user_id: str
+    recipient_name: str
+    phone: str
+    address_line1: str
+    address_line2: str | None
+    city: str
+    state: str
+    postcode: str
+    country: str
+    created_at: datetime
+    updated_at: datetime
+
+
+@dataclass(frozen=True)
 class UpdateAvatarCommand:
     user_id: str
     file_data: bytes

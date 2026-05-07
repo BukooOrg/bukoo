@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .admin import AdminAccessRequiredError, CustomerOnlyError
+from .admin import AdminAccessRequiredError
 from .auth import (
     FacebookOAuthError,
     GoogleOAuthError,
@@ -40,6 +40,7 @@ from .storage import (
     StorageNotFoundError,
     StorageUploadError,
 )
+from .user import CustomerOnlyError
 
 __all__ = [
     "DomainException",
