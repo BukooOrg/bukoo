@@ -15,21 +15,37 @@
 
 import * as runtime from '../runtime';
 import type {
+  ChangePasswordRequest,
   ErrorResponse,
+  ResponseWrapperAddressResponse,
+  ResponseWrapperChangePasswordResponse,
   ResponseWrapperSoftDeleteMeResponse,
   ResponseWrapperUserProfileResponse,
   UpdateProfileRequest,
+  UpsertAddressRequest,
 } from '../models/index';
 import {
+    ChangePasswordRequestFromJSON,
+    ChangePasswordRequestToJSON,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
+    ResponseWrapperAddressResponseFromJSON,
+    ResponseWrapperAddressResponseToJSON,
+    ResponseWrapperChangePasswordResponseFromJSON,
+    ResponseWrapperChangePasswordResponseToJSON,
     ResponseWrapperSoftDeleteMeResponseFromJSON,
     ResponseWrapperSoftDeleteMeResponseToJSON,
     ResponseWrapperUserProfileResponseFromJSON,
     ResponseWrapperUserProfileResponseToJSON,
     UpdateProfileRequestFromJSON,
     UpdateProfileRequestToJSON,
+    UpsertAddressRequestFromJSON,
+    UpsertAddressRequestToJSON,
 } from '../models/index';
+
+export interface ChangePasswordOperationRequest {
+    changePasswordRequest: ChangePasswordRequest;
+}
 
 export interface UpdateAvatarRequest {
     file: string;
@@ -39,10 +55,58 @@ export interface UpdateProfileOperationRequest {
     updateProfileRequest: UpdateProfileRequest;
 }
 
+export interface UpsertAddressOperationRequest {
+    upsertAddressRequest: UpsertAddressRequest;
+}
+
 /**
  * 
  */
 export class UsersApi extends runtime.BaseAPI {
+
+    /**
+     * Change Password
+     */
+    async changePasswordRaw(requestParameters: ChangePasswordOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperChangePasswordResponse>> {
+        if (requestParameters['changePasswordRequest'] == null) {
+            throw new runtime.RequiredError(
+                'changePasswordRequest',
+                'Required parameter "changePasswordRequest" was null or undefined when calling changePassword().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/app/v1/users/me/password`,
+            method: 'PATCH',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ChangePasswordRequestToJSON(requestParameters['changePasswordRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperChangePasswordResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Change Password
+     */
+    async changePassword(requestParameters: ChangePasswordOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperChangePasswordResponse> {
+        const response = await this.changePasswordRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Get Me
@@ -75,6 +139,74 @@ export class UsersApi extends runtime.BaseAPI {
      */
     async getMe(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperUserProfileResponse> {
         const response = await this.getMeRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get My Address
+     */
+    async getMyAddressRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperAddressResponse>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/app/v1/users/me/address`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperAddressResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Get My Address
+     */
+    async getMyAddress(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperAddressResponse> {
+        const response = await this.getMyAddressRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Remove Avatar
+     */
+    async removeAvatarRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperUserProfileResponse>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/app/v1/users/me/avatar`,
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperUserProfileResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Remove Avatar
+     */
+    async removeAvatar(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperUserProfileResponse> {
+        const response = await this.removeAvatarRaw(initOverrides);
         return await response.value();
     }
 
@@ -213,6 +345,50 @@ export class UsersApi extends runtime.BaseAPI {
      */
     async updateProfile(requestParameters: UpdateProfileOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperUserProfileResponse> {
         const response = await this.updateProfileRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Upsert Address
+     */
+    async upsertAddressRaw(requestParameters: UpsertAddressOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperAddressResponse>> {
+        if (requestParameters['upsertAddressRequest'] == null) {
+            throw new runtime.RequiredError(
+                'upsertAddressRequest',
+                'Required parameter "upsertAddressRequest" was null or undefined when calling upsertAddress().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/app/v1/users/me/address`,
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: UpsertAddressRequestToJSON(requestParameters['upsertAddressRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperAddressResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Upsert Address
+     */
+    async upsertAddress(requestParameters: UpsertAddressOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperAddressResponse> {
+        const response = await this.upsertAddressRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

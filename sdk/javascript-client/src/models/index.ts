@@ -1,5 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
+export * from './AddressResponse';
+export * from './ChangePasswordRequest';
+export * from './ChangePasswordResponse';
 export * from './ErrorBody';
 export * from './ErrorResponse';
 export * from './ForgotPasswordRequest';
@@ -16,6 +19,8 @@ export * from './ResendVerificationResponse';
 export * from './ResetPasswordRequest';
 export * from './ResetPasswordResponse';
 export * from './ResponseMeta';
+export * from './ResponseWrapperAddressResponse';
+export * from './ResponseWrapperChangePasswordResponse';
 export * from './ResponseWrapperForgotPasswordResponse';
 export * from './ResponseWrapperHealthCheckResponse';
 export * from './ResponseWrapperLogoutResponse';
@@ -31,6 +36,7 @@ export * from './ResponseWrapperVerifyPasswordResetResponse';
 export * from './SoftDeleteMeResponse';
 export * from './TokenResponse';
 export * from './UpdateProfileRequest';
+export * from './UpsertAddressRequest';
 export * from './UserProfileResponse';
 export * from './UserRole';
 export * from './UserStatus';
