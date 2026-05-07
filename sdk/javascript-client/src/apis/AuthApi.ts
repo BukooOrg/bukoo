@@ -18,7 +18,7 @@ import type {
   ErrorResponse,
   ForgotPasswordRequest,
   LoginRequest,
-  RegisterRequest,
+  RegisterCustomerRequest,
   ResendVerificationRequest,
   ResetPasswordRequest,
   ResponseWrapperForgotPasswordResponse,
@@ -39,8 +39,8 @@ import {
     ForgotPasswordRequestToJSON,
     LoginRequestFromJSON,
     LoginRequestToJSON,
-    RegisterRequestFromJSON,
-    RegisterRequestToJSON,
+    RegisterCustomerRequestFromJSON,
+    RegisterCustomerRequestToJSON,
     ResendVerificationRequestFromJSON,
     ResendVerificationRequestToJSON,
     ResetPasswordRequestFromJSON,
@@ -79,8 +79,8 @@ export interface GetOAuthLoginUrlRequest {
     provider: string;
 }
 
-export interface RegisterOperationRequest {
-    registerRequest: RegisterRequest;
+export interface RegisterRequest {
+    registerCustomerRequest: RegisterCustomerRequest;
 }
 
 export interface ResendEmailVerificationRequest {
@@ -247,11 +247,11 @@ export class AuthApi extends runtime.BaseAPI {
     /**
      * Register
      */
-    async registerRaw(requestParameters: RegisterOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperRegisterResponse>> {
-        if (requestParameters['registerRequest'] == null) {
+    async registerRaw(requestParameters: RegisterRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperRegisterResponse>> {
+        if (requestParameters['registerCustomerRequest'] == null) {
             throw new runtime.RequiredError(
-                'registerRequest',
-                'Required parameter "registerRequest" was null or undefined when calling register().'
+                'registerCustomerRequest',
+                'Required parameter "registerCustomerRequest" was null or undefined when calling register().'
             );
         }
 
@@ -266,7 +266,7 @@ export class AuthApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: RegisterRequestToJSON(requestParameters['registerRequest']),
+            body: RegisterCustomerRequestToJSON(requestParameters['registerCustomerRequest']),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperRegisterResponseFromJSON(jsonValue));
@@ -275,7 +275,7 @@ export class AuthApi extends runtime.BaseAPI {
     /**
      * Register
      */
-    async register(requestParameters: RegisterOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperRegisterResponse> {
+    async register(requestParameters: RegisterRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperRegisterResponse> {
         const response = await this.registerRaw(requestParameters, initOverrides);
         return await response.value();
     }

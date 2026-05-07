@@ -1,7 +1,6 @@
-import Cookies from 'js-cookie';
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
-import { apiFetch } from '../lib/api';
+import { authApi, usersApi } from '../lib/apiClient';
 
 const AuthContext = createContext();
 
@@ -11,25 +10,36 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     async function loadUser() {
-      const token = Cookies.get('jwt');
-      if (token) {
-        try {
-          const userData = await apiFetch('/api/auth/me');
-          setUser(userData);
-        } catch (error) {
-          console.error('Auth check failed', error);
-          Cookies.remove('jwt');
-        }
+      try {
+        const userData = await usersApi.getMe();
+        setUser(userData.data);
+      } catch (error) {
+        console.error('Auth check failed', error);
       }
       setLoading(false);
     }
     loadUser();
   }, []);
 
-  const login = (userData) => setUser(userData);
-  const logout = () => {
+  // Accepts a complete SDK response (has data.role) or incomplete data
+  // (OAuth callback, legacy login action). Falls back to re-fetching from API
+  // when the passed object does not contain a role.
+  const login = useCallback(async (userData) => {
+    if (userData?.role) {
+      setUser(userData);
+      return;
+    }
+    try {
+      const freshUser = await usersApi.getMe();
+      setUser(freshUser.data);
+    } catch {
+      setUser(null);
+    }
+  }, []);
+
+  const logout = async () => {
     setUser(null);
-    Cookies.remove('jwt');
+    await authApi.logout();
   };
 
   return (

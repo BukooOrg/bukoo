@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Self
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, model_validator
 
 from app.application.validators import DateOfBirth, OTPStr, PasswordStr
 from app.core.constants import UserStatus
@@ -18,13 +19,19 @@ class LoginRequest(BaseModel):
     )
 
 
-class RegisterRequest(LoginRequest):
-    password: PasswordStr = Field(
+class RegisterCustomerRequest(LoginRequest):
+    confirm_password: str = Field(
         ...,
-        description="User password (plain text, will be hashed server-side)",
+        description="Confirmed password",
     )
     full_name: str = Field(..., min_length=2, max_length=100)
     date_of_birth: DateOfBirth = Field(..., description="ISO 8601 date (YYYY-MM-DD)")
+
+    @model_validator(mode="after")
+    def check_password_match(self) -> Self:
+        if self.password != self.confirm_password:
+            raise ValueError("Password does not match")
+        return self
 
 
 class RegisterResponse(BaseModel):

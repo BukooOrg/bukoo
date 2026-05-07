@@ -57,7 +57,7 @@ from app.presentation.schemas.auth_schema import (
     LoginRequest,
     LogoutResponse,
     OAuthLoginUrlResponse,
-    RegisterRequest,
+    RegisterCustomerRequest,
     RegisterResponse,
     ResendVerificationRequest,
     ResendVerificationResponse,
@@ -147,7 +147,7 @@ async def oauth_callback(
     operation_id="register",
 )
 async def register(
-    body: RegisterRequest,
+    body: RegisterCustomerRequest,
     db_session: DbSession,
     user_repo: UserRepo,
     verification_token_repo: VerificationTokenRepo,

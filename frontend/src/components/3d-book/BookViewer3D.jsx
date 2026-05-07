@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-import { BookModel } from './book-canvas';
+import { BookCanvas } from './BookCanvas';
 
 export function BookViewer3D({ frontCoverUrl, backCoverUrl }) {
   const [bookReady, setBookReady] = useState(false);
@@ -91,7 +91,7 @@ export function BookViewer3D({ frontCoverUrl, backCoverUrl }) {
     <div
       className='w-full h-full min-h-[400px] lg:min-h-[600px] bg-transparent transition-opacity duration-1000'
       style={{ opacity: bookReady ? 1 : 0 }}>
-      <BookModel
+      <BookCanvas
         params={params}
         meshRef={meshRef}
         onReady={setBookReady}
