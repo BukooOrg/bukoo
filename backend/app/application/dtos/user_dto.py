@@ -7,6 +7,28 @@ from app.core.constants import UserRole, UserStatus
 
 
 @dataclass(frozen=True)
+class UpdateAvatarCommand:
+    user_id: str
+    file_data: bytes
+    content_type: str
+
+
+@dataclass(frozen=True)
+class UpdateAvatarResult:
+    id: str
+    email: str
+    full_name: str
+    date_of_birth: date | None
+    role: UserRole
+    status: UserStatus
+    avatar_url: str | None
+    have_password: bool
+    last_login_at: datetime | None
+    created_at: datetime
+    updated_at: datetime
+
+
+@dataclass(frozen=True)
 class SoftDeleteMeCommand:
     user_id: str
     token_payload: dict[str, object]

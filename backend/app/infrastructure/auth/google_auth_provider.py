@@ -172,7 +172,7 @@ class GoogleAuthProvider(IAuthProvider, IOAuthProvider):
                 avatar_data = await download_content(user_info.avatar_url)
                 if avatar_data:
                     avatar_bytes, content_type = avatar_data
-                    avatar_key = f"pub/avatar/{user_id}"
+                    avatar_key = f"pub/avatars/{user_id}"
                     try:
                         await self._storage_svc.upload(
                             avatar_key, avatar_bytes, content_type

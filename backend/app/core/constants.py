@@ -58,3 +58,7 @@ class NotificationStatus(StrEnum):
 class VerificationTokenType(StrEnum):
     EMAIL_VERIFY = "email_verify"
     PASSWORD_RESET = "password_reset"
+
+
+ALLOWED_AVATAR_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
+MAX_AVATAR_BYTES = 5 * 1024 * 1024  # 5MB

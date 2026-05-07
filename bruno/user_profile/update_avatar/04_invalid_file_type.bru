@@ -1,0 +1,29 @@
+meta {
+  name: invalid file type
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/users/me/avatar
+  body: multipart-form
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:multipart-form {
+  file: @file("test.txt"); type=text/plain
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+}

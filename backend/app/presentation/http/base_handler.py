@@ -16,8 +16,13 @@ async def domain_exception_handler(request: Request, exc: Exception) -> JSONResp
     mapping = EXCEPTION_MAP.get(type(exc))
 
     if mapping:
+        message = mapping.message
+
+        if callable(message):
+            message = message(exc)
+
         return build_error_response(
-            request, mapping.status_code, mapping.code, mapping.message, exc.context
+            request, mapping.status_code, mapping.code, message, exc.context
         )
 
     return build_error_response(request, 400, ErrorCode.BAD_REQUEST, exc.message, None)

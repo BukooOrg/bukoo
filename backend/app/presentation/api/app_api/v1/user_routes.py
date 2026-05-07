@@ -2,15 +2,23 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Response
+from fastapi import APIRouter, Response, UploadFile
 
-from app.application.dtos.user_dto import SoftDeleteMeCommand, UpdateProfileCommand
+from app.application.dtos.user_dto import (
+    SoftDeleteMeCommand,
+    UpdateAvatarCommand,
+    UpdateProfileCommand,
+)
 from app.application.use_cases.user.soft_delete_me import SoftDeleteMeUseCase
+from app.application.use_cases.user.update_avatar import UpdateAvatarUseCase
 from app.application.use_cases.user.update_profile import UpdateProfileUseCase
+from app.core.constants import ALLOWED_AVATAR_TYPES, MAX_AVATAR_BYTES
 from app.core.util import build_public_url, clear_auth_cookie
+from app.domain.exceptions import FileSizeExceededError, InvalidFileTypeError
 from app.presentation.dependencies.deps import (
     CurrentUser,
     DbSession,
+    StorageService,
     TokenPayload,
     TokenService,
     UserRepo,
@@ -58,6 +66,51 @@ async def soft_delete_me(
     )
     clear_auth_cookie(response)
     return SoftDeleteMeResponse(message=result.message)
+
+
+@router.post(
+    "/me/avatar", response_model=UserProfileResponse, operation_id="updateAvatar"
+)
+async def update_avatar(
+    file: UploadFile,
+    current_user: CurrentUser,
+    user_repo: UserRepo,
+    storage_service: StorageService,
+    db_session: DbSession,
+) -> UserProfileResponse:
+    if file.content_type not in ALLOWED_AVATAR_TYPES:
+        raise InvalidFileTypeError(ALLOWED_AVATAR_TYPES)
+
+    file_data = await file.read()
+    if len(file_data) > MAX_AVATAR_BYTES:
+        raise FileSizeExceededError(MAX_AVATAR_BYTES // 1024**2, "MB")
+
+    content_type = file.content_type or "application/octet-stream"
+    use_case = UpdateAvatarUseCase(
+        db_session=db_session,
+        user_repo=user_repo,
+        storage_service=storage_service,
+    )
+    result = await use_case.execute(
+        UpdateAvatarCommand(
+            user_id=current_user.id,
+            file_data=file_data,
+            content_type=content_type,
+        )
+    )
+    return UserProfileResponse(
+        id=result.id,
+        email=result.email,
+        full_name=result.full_name,
+        date_of_birth=result.date_of_birth,
+        role=result.role,
+        status=result.status,
+        avatar_url=build_public_url(result.avatar_url),
+        have_password=result.have_password,
+        last_login_at=result.last_login_at,
+        created_at=result.created_at,
+        updated_at=result.updated_at,
+    )
 
 
 @router.patch("/me", response_model=UserProfileResponse, operation_id="updateProfile")

@@ -1,0 +1,30 @@
+meta {
+  name: file too large
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/users/me/avatar
+  body: multipart-form
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:multipart-form {
+  // Provide a file exceeding 5 MB (5,242,880 bytes) to trigger the size limit.
+  file: @file("large_avatar.jpg"); type=image/jpeg
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+}
