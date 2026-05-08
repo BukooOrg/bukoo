@@ -25,5 +25,9 @@ class BaseCategoryResponse(BaseModel):
     created_at: datetime
 
 
+class ViewCategoryDetailResponse(BaseCategoryResponse):
+    pass
+
+
 class CreateCategoryResponse(BaseCategoryResponse):
     pass

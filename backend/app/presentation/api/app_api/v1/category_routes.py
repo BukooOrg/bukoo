@@ -4,8 +4,14 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from app.application.dtos.category_dto import CreateCategoryCommand
-from app.application.use_cases.category import CreateCategoryUseCase
+from app.application.dtos.category_dto import (
+    CreateCategoryCommand,
+    ViewCategoryDetailCommand,
+)
+from app.application.use_cases.category import (
+    CreateCategoryUseCase,
+    ViewCategoryDetailUseCase,
+)
 from app.presentation.dependencies.deps import (
     AdminUser,
     CategoryRepo,
@@ -15,9 +21,31 @@ from app.presentation.dependencies.deps import (
 from app.presentation.schemas.category_schema import (
     CreateCategoryRequest,
     CreateCategoryResponse,
+    ViewCategoryDetailResponse,
 )
 
 router = APIRouter(prefix="/categories", tags=["category"])
+
+
+@router.get(
+    "/{category_id}",
+    response_model=ViewCategoryDetailResponse,
+    operation_id="viewCategoryDetail",
+)
+async def view_category_detail(
+    category_id: str, category_repo: CategoryRepo, db_session: DbSession
+) -> ViewCategoryDetailResponse:
+    use_case = ViewCategoryDetailUseCase(
+        db_session=db_session, category_repo=category_repo
+    )
+    result = await use_case.execute(ViewCategoryDetailCommand(category_id=category_id))
+    return ViewCategoryDetailResponse(
+        id=result.id,
+        collection_id=result.collection_id,
+        name=result.name,
+        url_slug=result.url_slug,
+        created_at=result.created_at,
+    )
 
 
 @router.post(
