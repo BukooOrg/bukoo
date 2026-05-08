@@ -28,6 +28,7 @@ from .book import (
     InvalidISBNError,
 )
 from .cache import CacheDeleteError, CacheReadError, CacheWriteError
+from .category import CategoryAlreadyExistsError, CategoryNotFoundError
 from .collection import CollectionAlreadyExistsError, CollectionNotFoundError
 from .order import (
     EmptyOrderError,
@@ -66,6 +67,8 @@ __all__ = [
     "BookAlreadyExistsError",
     "BookNotFoundError",
     "InvalidISBNError",
+    "CategoryAlreadyExistsError",
+    "CategoryNotFoundError",
     "CollectionAlreadyExistsError",
     "CollectionNotFoundError",
     "OrderNotFoundError",
