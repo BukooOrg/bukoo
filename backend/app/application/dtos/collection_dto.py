@@ -39,3 +39,15 @@ class ViewCollectionDetailResult(BaseCollectionResult):
 @dataclass(frozen=True)
 class CreateCollectionResult(BaseCollectionResult):
     categories: list[BaseCategoryResult] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class UpdateCollectionCommand:
+    collection_id: str
+    name: str
+    url_slug: str
+
+
+@dataclass(frozen=True)
+class UpdateCollectionResult(BaseCollectionResult):
+    pass

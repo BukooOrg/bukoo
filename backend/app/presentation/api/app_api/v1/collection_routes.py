@@ -6,19 +6,23 @@ from fastapi import APIRouter
 
 from app.application.dtos.collection_dto import (
     CreateCollectionCommand,
+    UpdateCollectionCommand,
     ViewCollectionDetailCommand,
 )
 from app.application.use_cases.collection import (
     CreateCollectionUseCase,
     FindCollectionsUseCase,
+    UpdateCollectionUseCase,
     ViewCollectionDetailUseCase,
 )
 from app.presentation.dependencies.deps import AdminUser, CollectionRepo, DbSession
 from app.presentation.schemas.category_schema import CategoryResponse
 from app.presentation.schemas.collection_schema import (
     CollectionListItemResponse,
-    CollectionResponse,
     CreateCollectionRequest,
+    CreateCollectionResponse,
+    UpdateCollectionRequest,
+    UpdateCollectionResponse,
     ViewCollectionDetailResponse,
 )
 
@@ -87,7 +91,7 @@ async def view_collection_detail(
 
 @router.post(
     "",
-    response_model=CollectionResponse,
+    response_model=CreateCollectionResponse,
     status_code=201,
     operation_id="createCollection",
 )
@@ -96,14 +100,48 @@ async def create_collection(
     _admin: AdminUser,
     collection_repo: CollectionRepo,
     db_session: DbSession,
-) -> CollectionResponse:
+) -> CreateCollectionResponse:
     use_case = CreateCollectionUseCase(
         db_session=db_session, collection_repo=collection_repo
     )
     result = await use_case.execute(
         CreateCollectionCommand(name=body.name, url_slug=body.url_slug)
     )
-    return CollectionResponse(
+    return CreateCollectionResponse(
+        id=result.id,
+        name=result.name,
+        url_slug=result.url_slug,
+        categories=[
+            CategoryResponse(
+                id=cat.id,
+                collection_id=cat.collection_id,
+                name=cat.name,
+                url_slug=cat.url_slug,
+                created_at=cat.created_at,
+            )
+            for cat in result.categories
+        ],
+        created_at=result.created_at,
+    )
+
+
+@router.patch("/{collection_id}", response_model=UpdateCollectionResponse)
+async def update_collection(
+    collection_id: str,
+    body: UpdateCollectionRequest,
+    _admin: AdminUser,
+    collection_repo: CollectionRepo,
+    db_session: DbSession,
+) -> UpdateCollectionResponse:
+    use_case = UpdateCollectionUseCase(
+        db_session=db_session, collection_repo=collection_repo
+    )
+    result = await use_case.execute(
+        UpdateCollectionCommand(
+            collection_id=collection_id, name=body.name, url_slug=body.url_slug
+        )
+    )
+    return UpdateCollectionResponse(
         id=result.id,
         name=result.name,
         url_slug=result.url_slug,
