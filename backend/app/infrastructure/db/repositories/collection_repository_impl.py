@@ -27,6 +27,13 @@ class CollectionRepositoryImpl(ICollectionRepository):
         return CollectionMapper.to_entity(model) if model else None
 
     @override
+    async def find_all(self) -> list[CollectionEntity]:
+        stmt = select(CollectionModel).where(CollectionModel.deleted_at.is_(None))
+        result = await self._session.execute(stmt)
+        models = result.scalars().all()
+        return [CollectionMapper.to_entity(m) for m in models]
+
+    @override
     async def save(self, collection: CollectionEntity) -> None:
         model = CollectionMapper.to_model(collection)
         await self._session.merge(model)

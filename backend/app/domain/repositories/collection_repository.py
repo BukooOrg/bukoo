@@ -11,5 +11,9 @@ class ICollectionRepository(ABC):
         pass
 
     @abstractmethod
+    async def find_all(self) -> list[CollectionEntity]:
+        pass
+
+    @abstractmethod
     async def save(self, collection: CollectionEntity) -> None:
         pass

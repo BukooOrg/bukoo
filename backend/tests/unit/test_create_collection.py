@@ -34,6 +34,10 @@ class FakeCollectionRepository(ICollectionRepository):
     def __init__(self, existing: CollectionEntity | None = None) -> None:
         self._existing = existing
         self._saved: CollectionEntity | None = None
+        self._collections = []
+
+    async def find_all(self) -> list[CollectionEntity]:
+        return self._collections
 
     async def find_by_url_slug(self, url_slug: str) -> CollectionEntity | None:
         if self._existing and self._existing.url_slug == url_slug:
@@ -42,6 +46,7 @@ class FakeCollectionRepository(ICollectionRepository):
 
     async def save(self, collection: CollectionEntity) -> None:
         self._saved = collection
+        self._collections.append(collection)
 
 
 @pytest.mark.unit

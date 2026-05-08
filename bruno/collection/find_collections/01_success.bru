@@ -1,0 +1,51 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/collections
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("data is an array", function() {
+    expect(res.body.data).to.be.an("array");
+  });
+
+  test("each collection has required fields", function() {
+    res.body.data.forEach(function(collection) {
+      expect(collection.id).to.be.a("string");
+      expect(collection.name).to.be.a("string");
+      expect(collection.url_slug).to.be.a("string");
+      expect(collection.created_at).to.be.a("string");
+      expect(collection.categories).to.be.an("array");
+    });
+  });
+
+  test("each category has required fields", function() {
+    res.body.data.forEach(function(collection) {
+      collection.categories.forEach(function(cat) {
+        expect(cat.id).to.be.a("string");
+        expect(cat.collection_id).to.be.a("string");
+        expect(cat.name).to.be.a("string");
+        expect(cat.url_slug).to.be.a("string");
+        expect(cat.created_at).to.be.a("string");
+      });
+    });
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

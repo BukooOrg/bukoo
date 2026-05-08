@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 
+from app.application.dtos.category_dto import BaseCategoryResult
+
 
 @dataclass(frozen=True)
 class CreateCollectionCommand:
@@ -11,9 +13,19 @@ class CreateCollectionCommand:
 
 
 @dataclass(frozen=True)
-class CreateCollectionResult:
+class BaseCollectionResult:
     id: str
     name: str
     url_slug: str
     created_at: datetime
-    categories: list[object] = field(default_factory=list)
+    categories: list[BaseCategoryResult]
+
+
+@dataclass(frozen=True)
+class CreateCollectionResult(BaseCollectionResult):
+    categories: list[BaseCategoryResult] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class FindCollectionsResult:
+    collections: list[BaseCollectionResult]

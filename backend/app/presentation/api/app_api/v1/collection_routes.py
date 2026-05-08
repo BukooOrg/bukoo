@@ -8,13 +8,48 @@ from app.application.dtos.collection_dto import CreateCollectionCommand
 from app.application.use_cases.collection.create_collection import (
     CreateCollectionUseCase,
 )
+from app.application.use_cases.collection.find_collections import FindCollectionsUseCase
 from app.presentation.dependencies.deps import AdminUser, CollectionRepo, DbSession
+from app.presentation.schemas.category_schema import CategoryResponse
 from app.presentation.schemas.collection_schema import (
+    CollectionListItemResponse,
     CollectionResponse,
     CreateCollectionRequest,
 )
 
 router = APIRouter(prefix="/collections", tags=["collections"])
+
+
+@router.get(
+    "", response_model=list[CollectionListItemResponse], operation_id="findCollections"
+)
+async def find_collections(
+    collection_repo: CollectionRepo,
+    db_session: DbSession,
+) -> list[CollectionListItemResponse]:
+    use_case = FindCollectionsUseCase(
+        db_session=db_session, collection_repo=collection_repo
+    )
+    result = await use_case.execute()
+    return [
+        CollectionListItemResponse(
+            id=c.id,
+            name=c.name,
+            url_slug=c.url_slug,
+            created_at=c.created_at,
+            categories=[
+                CategoryResponse(
+                    id=cat.id,
+                    collection_id=cat.collection_id,
+                    name=cat.name,
+                    url_slug=cat.url_slug,
+                    created_at=cat.created_at,
+                )
+                for cat in c.categories
+            ],
+        )
+        for c in result.collections
+    ]
 
 
 @router.post(
