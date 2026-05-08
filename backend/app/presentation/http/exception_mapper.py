@@ -8,6 +8,7 @@ from app.domain.exceptions import (
     AdminAccessRequiredError,
     BookAlreadyExistsError,
     BookNotFoundError,
+    CollectionAlreadyExistsError,
     CurrentPasswordIncorrectError,
     CustomerOnlyError,
     DomainException,
@@ -199,6 +200,12 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
     InvalidFileTypeError: HttpExceptionMapping(
         status.HTTP_422_UNPROCESSABLE_CONTENT,
         ErrorCode.INVALID_FILE_TYPE,
+        lambda exc: exc.message,
+    ),
+    # Collection
+    CollectionAlreadyExistsError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.COLLECTION_ALREADY_EXISTS,
         lambda exc: exc.message,
     ),
     # address

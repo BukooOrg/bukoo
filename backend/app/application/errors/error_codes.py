@@ -63,3 +63,6 @@ class ErrorCode(StrEnum):
 
     # Address
     ADDRESS_NOT_FOUND = "ADDRESS_NOT_FOUND"
+
+    # Collection
+    COLLECTION_ALREADY_EXISTS = "COLLECTION_ALREADY_EXISTS"

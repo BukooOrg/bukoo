@@ -29,6 +29,7 @@ from app.domain.exceptions import (
 from app.domain.repositories import (
     IAccountRepository,
     IAddressRepository,
+    ICollectionRepository,
     IUserRepository,
     IVerificationTokenRepository,
 )
@@ -43,6 +44,7 @@ from app.infrastructure.cache import RedisCacheService
 from app.infrastructure.db.repositories import (
     AccountRepositoryImpl,
     AddressRepositoryImpl,
+    CollectionRepositoryImpl,
     UserRepositoryImpl,
     VerificationTokenRepositoryImpl,
 )
@@ -83,6 +85,13 @@ VerificationTokenRepo = Annotated[
     IVerificationTokenRepository, Depends(get_verification_token_repository)
 ]
 AddressRepo = Annotated[IAddressRepository, Depends(get_address_repository)]
+
+
+def get_collection_repository(session: DbSession) -> ICollectionRepository:
+    return CollectionRepositoryImpl(session)
+
+
+CollectionRepo = Annotated[ICollectionRepository, Depends(get_collection_repository)]
 
 
 # Cache
