@@ -1,0 +1,37 @@
+meta {
+  name: validation missing fields
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/collections
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // missing required url_slug field
+  {
+    "name": "Science & Technology"
+  }
+  
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+  
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+}

@@ -1,0 +1,57 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/collections
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // happy path — create a new collection with a unique url_slug
+  {
+    "name": "Science & Technology",
+    "url_slug": "science-and-technology"
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("data.id is a string", function() {
+    expect(res.body.data.id).to.be.a("string");
+  });
+
+  test("data.name equals input", function() {
+    expect(res.body.data.name).to.equal("Science & Technology");
+  });
+
+  test("data.url_slug equals input", function() {
+    expect(res.body.data.url_slug).to.equal("science-and-technology");
+  });
+
+  test("data.categories is an empty array", function() {
+    expect(res.body.data.categories).to.be.an("array").that.is.empty;
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

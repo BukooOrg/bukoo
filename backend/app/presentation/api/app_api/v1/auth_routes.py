@@ -72,6 +72,106 @@ from app.presentation.schemas.auth_schema import (
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
+@router.post(
+    "/register",
+    response_model=RegisterResponse,
+    status_code=201,
+    operation_id="register",
+)
+async def register(
+    body: RegisterCustomerRequest,
+    db_session: DbSession,
+    user_repo: UserRepo,
+    verification_token_repo: VerificationTokenRepo,
+    hasher: PasswordHasher,
+    email_svc: EmailNotificationService,
+) -> RegisterResponse:
+    use_case = RegisterCustomerUseCase(
+        db_session=db_session,
+        user_repo=user_repo,
+        verification_token_repo=verification_token_repo,
+        hasher=hasher,
+        email_svc=email_svc,
+    )
+    result = await use_case.execute(
+        RegisterCommand(
+            email=body.email,
+            password=body.password,
+            full_name=body.full_name,
+            date_of_birth=body.date_of_birth,
+        )
+    )
+    return RegisterResponse(
+        id=result.id,
+        email=result.email,
+        full_name=result.full_name,
+        status=result.status,
+        created_at=result.created_at,
+    )
+
+
+@router.post(
+    "/verify-email",
+    response_model=VerifyEmailResponse,
+    operation_id="verifyEmail",
+)
+async def verify_email(
+    body: VerifyEmailRequest,
+    db_session: DbSession,
+    user_repo: UserRepo,
+    verification_token_repo: VerificationTokenRepo,
+    account_repo: AccountRepo,
+    hasher: PasswordHasher,
+) -> VerifyEmailResponse:
+    use_case = VerifyEmailUseCase(
+        db_session=db_session,
+        user_repo=user_repo,
+        verification_token_repo=verification_token_repo,
+        account_repo=account_repo,
+        hasher=hasher,
+    )
+    result = await use_case.execute(VerifyEmailCommand(email=body.email, otp=body.otp))
+    return VerifyEmailResponse(email=result.email, message=result.message)
+
+
+@router.post(
+    "/resend-verification",
+    response_model=ResendVerificationResponse,
+    operation_id="resendEmailVerification",
+)
+async def resend_verification(
+    body: ResendVerificationRequest,
+    db_session: DbSession,
+    user_repo: UserRepo,
+    verification_token_repo: VerificationTokenRepo,
+    hasher: PasswordHasher,
+    email_svc: EmailNotificationService,
+) -> ResendVerificationResponse:
+    use_case = ResendEmailVerificationUseCase(
+        db_session=db_session,
+        user_repo=user_repo,
+        verification_token_repo=verification_token_repo,
+        hasher=hasher,
+        email_svc=email_svc,
+    )
+    result = await use_case.execute(ResendVerificationCommand(email=body.email))
+    return ResendVerificationResponse(email=result.email, message=result.message)
+
+
+@router.post("/login", response_model=TokenResponse, operation_id="credentialLogin")
+async def credential_login(
+    body: LoginRequest,
+    response: Response,
+    db_session: DbSession,
+    factory: CredentialAuthFactory,
+    token_svc: TokenService,
+) -> TokenResponse:
+    use_case = LoginUseCase(db_session=db_session, factory=factory, token_svc=token_svc)
+    result = await use_case.execute({"email": body.email, "password": body.password})
+    set_auth_cookie(response, result.access_token)
+    return TokenResponse(access_token=result.access_token)
+
+
 @router.get(
     "/oauth/{provider}/login",
     response_model=OAuthLoginUrlResponse,
@@ -140,104 +240,17 @@ async def oauth_callback(
         )
 
 
-@router.post(
-    "/register",
-    response_model=RegisterResponse,
-    status_code=201,
-    operation_id="register",
-)
-async def register(
-    body: RegisterCustomerRequest,
+@router.post("/logout", response_model=LogoutResponse, operation_id="logout")
+async def logout(
+    token_payload: TokenPayload,
     db_session: DbSession,
-    user_repo: UserRepo,
-    verification_token_repo: VerificationTokenRepo,
-    hasher: PasswordHasher,
-    email_svc: EmailNotificationService,
-) -> RegisterResponse:
-    use_case = RegisterCustomerUseCase(
-        db_session=db_session,
-        user_repo=user_repo,
-        verification_token_repo=verification_token_repo,
-        hasher=hasher,
-        email_svc=email_svc,
-    )
-    result = await use_case.execute(
-        RegisterCommand(
-            email=body.email,
-            password=body.password,
-            full_name=body.full_name,
-            date_of_birth=body.date_of_birth,
-        )
-    )
-    return RegisterResponse(
-        id=result.id,
-        email=result.email,
-        full_name=result.full_name,
-        status=result.status,
-        created_at=result.created_at,
-    )
-
-
-@router.post(
-    "/verify-email",
-    response_model=VerifyEmailResponse,
-    operation_id="verifyEmail",
-)
-async def verify_email(
-    body: VerifyEmailRequest,
-    db_session: DbSession,
-    user_repo: UserRepo,
-    verification_token_repo: VerificationTokenRepo,
-    account_repo: AccountRepo,
-    hasher: PasswordHasher,
-) -> VerifyEmailResponse:
-    use_case = VerifyEmailUseCase(
-        db_session=db_session,
-        user_repo=user_repo,
-        verification_token_repo=verification_token_repo,
-        account_repo=account_repo,
-        hasher=hasher,
-    )
-    result = await use_case.execute(VerifyEmailCommand(email=body.email, otp=body.otp))
-    return VerifyEmailResponse(email=result.email, message=result.message)
-
-
-@router.post("/login", response_model=TokenResponse, operation_id="credentialLogin")
-async def credential_login(
-    body: LoginRequest,
-    response: Response,
-    db_session: DbSession,
-    factory: CredentialAuthFactory,
     token_svc: TokenService,
-) -> TokenResponse:
-    use_case = LoginUseCase(db_session=db_session, factory=factory, token_svc=token_svc)
-    result = await use_case.execute({"email": body.email, "password": body.password})
-    set_auth_cookie(response, result.access_token)
-    return TokenResponse(access_token=result.access_token)
-
-
-@router.post(
-    "/resend-verification",
-    response_model=ResendVerificationResponse,
-    operation_id="resendEmailVerification",
-)
-async def resend_verification(
-    body: ResendVerificationRequest,
-    db_session: DbSession,
-    user_repo: UserRepo,
-    verification_token_repo: VerificationTokenRepo,
-    hasher: PasswordHasher,
-    email_svc: EmailNotificationService,
-) -> ResendVerificationResponse:
-    use_case = ResendEmailVerificationUseCase(
-        db_session=db_session,
-        user_repo=user_repo,
-        verification_token_repo=verification_token_repo,
-        hasher=hasher,
-        email_svc=email_svc,
-    )
-    result = await use_case.execute(ResendVerificationCommand(email=body.email))
-    return ResendVerificationResponse(email=result.email, message=result.message)
+    response: Response,
+) -> LogoutResponse:
+    use_case = LogoutUseCase(db_session=db_session, token_svc=token_svc)
+    result = await use_case.execute(LogoutCommand(token_payload=token_payload))
+    clear_auth_cookie(response)
+    return LogoutResponse(message=result.message)
 
 
 @router.post(
@@ -262,19 +275,6 @@ async def forgot_password(
     )
     result = await use_case.execute(ForgotPasswordCommand(email=body.email))
     return ForgotPasswordResponse(message=result.message)
-
-
-@router.post("/logout", response_model=LogoutResponse, operation_id="logout")
-async def logout(
-    token_payload: TokenPayload,
-    db_session: DbSession,
-    token_svc: TokenService,
-    response: Response,
-) -> LogoutResponse:
-    use_case = LogoutUseCase(db_session=db_session, token_svc=token_svc)
-    result = await use_case.execute(LogoutCommand(token_payload=token_payload))
-    clear_auth_cookie(response)
-    return LogoutResponse(message=result.message)
 
 
 @router.post(

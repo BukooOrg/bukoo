@@ -1,0 +1,43 @@
+meta {
+  name: slug conflict
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/collections/{{collectionId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // depends on create_collection/01_success.bru having created url_slug "science-and-technology"
+  // this attempts to claim that slug for a different collection — expects 409
+  {
+    "name": "Science & Technology",
+    "url_slug": "science-technology"
+    
+  }
+}
+
+tests {
+  test("status 409", function() {
+    expect(res.status).to.equal(409);
+  });
+  
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+  
+  test("error code is COLLECTION_ALREADY_EXISTS", function() {
+    expect(res.body.error.code).to.equal("COLLECTION_ALREADY_EXISTS");
+  });
+}

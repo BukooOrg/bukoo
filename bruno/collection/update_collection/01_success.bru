@@ -1,0 +1,57 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/collections/{{collectionId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // happy path — update name and url_slug on an existing collection
+  {
+    "name": "Science & Technology",
+    "url_slug": "sci-tech"
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.id matches the requested collection ID", function() {
+    expect(res.body.data.id).to.equal(bru.getEnvVar("collectionId"));
+  });
+  
+  test("data.name equals submitted name", function() {
+    expect(res.body.data.name).to.equal("Science & Technology");
+  });
+  
+  test("data.url_slug equals submitted url_slug", function() {
+    expect(res.body.data.url_slug).to.equal("sci-tech");
+  });
+  
+  test("data.categories is an array", function() {
+    expect(res.body.data.categories).to.be.an("array");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}
