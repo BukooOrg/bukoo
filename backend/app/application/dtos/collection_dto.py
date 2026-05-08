@@ -51,3 +51,13 @@ class UpdateCollectionCommand:
 @dataclass(frozen=True)
 class UpdateCollectionResult(BaseCollectionResult):
     pass
+
+
+@dataclass(frozen=True)
+class SoftDeleteCollectionCommand:
+    collection_id: str
+
+
+@dataclass(frozen=True)
+class SoftDeleteCollectionResult:
+    message: str

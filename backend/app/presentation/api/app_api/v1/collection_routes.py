@@ -6,12 +6,14 @@ from fastapi import APIRouter
 
 from app.application.dtos.collection_dto import (
     CreateCollectionCommand,
+    SoftDeleteCollectionCommand,
     UpdateCollectionCommand,
     ViewCollectionDetailCommand,
 )
 from app.application.use_cases.collection import (
     CreateCollectionUseCase,
     FindCollectionsUseCase,
+    SoftDeleteCollectionUseCase,
     UpdateCollectionUseCase,
     ViewCollectionDetailUseCase,
 )
@@ -21,6 +23,7 @@ from app.presentation.schemas.collection_schema import (
     CollectionListItemResponse,
     CreateCollectionRequest,
     CreateCollectionResponse,
+    SoftDeleteCollectionResponse,
     UpdateCollectionRequest,
     UpdateCollectionResponse,
     ViewCollectionDetailResponse,
@@ -157,3 +160,23 @@ async def update_collection(
         ],
         created_at=result.created_at,
     )
+
+
+@router.delete(
+    "/{collection_id}",
+    response_model=SoftDeleteCollectionResponse,
+    operation_id="softDeleteCollection",
+)
+async def soft_delete_collection(
+    collection_id: str,
+    _admin: AdminUser,
+    collection_repo: CollectionRepo,
+    db_session: DbSession,
+) -> SoftDeleteCollectionResponse:
+    use_case = SoftDeleteCollectionUseCase(
+        db_session=db_session, collection_repo=collection_repo
+    )
+    result = await use_case.execute(
+        SoftDeleteCollectionCommand(collection_id=collection_id)
+    )
+    return SoftDeleteCollectionResponse(message=result.message)

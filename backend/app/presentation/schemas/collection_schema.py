@@ -48,3 +48,7 @@ class CollectionListItemResponse(BaseModel):
 
 class UpdateCollectionResponse(BaseCollectionResponse):
     pass
+
+
+class SoftDeleteCollectionResponse(BaseModel):
+    message: str

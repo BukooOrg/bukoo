@@ -60,6 +60,9 @@ class FakeCollectionRepository(ICollectionRepository):
         self._by_id[collection.id] = collection
         self._by_slug[collection.url_slug] = collection
 
+    async def soft_delete_with_categories(self, collection_id: str) -> None:
+        pass
+
 
 @pytest.mark.unit
 class TestUpdateCollectionUseCase:

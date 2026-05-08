@@ -71,6 +71,9 @@ class FakeCollectionRepository(ICollectionRepository):
     async def save(self, collection: CollectionEntity) -> None:
         pass
 
+    async def soft_delete_with_categories(self, collection_id: str) -> None:
+        pass
+
 
 @pytest.mark.unit
 class TestViewCollectionDetailUseCase:

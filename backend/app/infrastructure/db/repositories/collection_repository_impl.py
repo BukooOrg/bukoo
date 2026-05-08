@@ -1,13 +1,15 @@
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from typing import override
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.entities.collection_entity import CollectionEntity
 from app.domain.repositories.collection_repository import ICollectionRepository
 from app.infrastructure.db.mappers.collection_mapper import CollectionMapper
+from app.infrastructure.db.models.category_model import CategoryModel
 from app.infrastructure.db.models.collection_model import CollectionModel
 
 
@@ -48,3 +50,14 @@ class CollectionRepositoryImpl(ICollectionRepository):
     async def save(self, collection: CollectionEntity) -> None:
         model = CollectionMapper.to_model(collection)
         await self._session.merge(model)
+
+    @override
+    async def soft_delete_with_categories(self, collection_id: str) -> None:
+        now = datetime.now(UTC)
+        stmt = (
+            update(CategoryModel)
+            .where(CategoryModel.collection_id == collection_id)
+            .where(CategoryModel.deleted_at.is_(None))
+            .values(deleted_at=now, updated_at=now)
+        )
+        await self._session.execute(stmt)

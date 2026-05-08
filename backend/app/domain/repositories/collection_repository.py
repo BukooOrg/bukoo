@@ -21,3 +21,7 @@ class ICollectionRepository(ABC):
     @abstractmethod
     async def save(self, collection: CollectionEntity) -> None:
         pass
+
+    @abstractmethod
+    async def soft_delete_with_categories(self, collection_id: str) -> None:
+        pass
