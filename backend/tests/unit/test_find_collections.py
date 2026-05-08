@@ -56,6 +56,9 @@ class FakeCollectionRepository(ICollectionRepository):
     def __init__(self, collections: list[CollectionEntity] | None = None) -> None:
         self._collections = collections or []
 
+    async def find_by_id(self, collection_id: str) -> CollectionEntity | None:
+        return next((c for c in self._collections if c.id == collection_id), None)
+
     async def find_all(self) -> list[CollectionEntity]:
         return self._collections
 

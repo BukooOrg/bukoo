@@ -20,6 +20,10 @@ class CollectionResponse(BaseModel):
     created_at: datetime
 
 
+class ViewCollectionDetailResponse(CollectionResponse):
+    pass
+
+
 class CollectionListItemResponse(BaseModel):
     id: str
     name: str

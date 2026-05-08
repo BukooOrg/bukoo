@@ -9,6 +9,7 @@ from app.domain.exceptions import (
     BookAlreadyExistsError,
     BookNotFoundError,
     CollectionAlreadyExistsError,
+    CollectionNotFoundError,
     CurrentPasswordIncorrectError,
     CustomerOnlyError,
     DomainException,
@@ -207,6 +208,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_409_CONFLICT,
         ErrorCode.COLLECTION_ALREADY_EXISTS,
         lambda exc: exc.message,
+    ),
+    CollectionNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.COLLECTION_NOT_FOUND,
+        "Collection not found.",
     ),
     # address
     AddressNotFoundError: HttpExceptionMapping(

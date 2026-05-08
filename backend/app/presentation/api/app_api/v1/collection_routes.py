@@ -4,17 +4,22 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from app.application.dtos.collection_dto import CreateCollectionCommand
-from app.application.use_cases.collection.create_collection import (
-    CreateCollectionUseCase,
+from app.application.dtos.collection_dto import (
+    CreateCollectionCommand,
+    ViewCollectionDetailCommand,
 )
-from app.application.use_cases.collection.find_collections import FindCollectionsUseCase
+from app.application.use_cases.collection import (
+    CreateCollectionUseCase,
+    FindCollectionsUseCase,
+    ViewCollectionDetailUseCase,
+)
 from app.presentation.dependencies.deps import AdminUser, CollectionRepo, DbSession
 from app.presentation.schemas.category_schema import CategoryResponse
 from app.presentation.schemas.collection_schema import (
     CollectionListItemResponse,
     CollectionResponse,
     CreateCollectionRequest,
+    ViewCollectionDetailResponse,
 )
 
 router = APIRouter(prefix="/collections", tags=["collections"])
@@ -52,6 +57,34 @@ async def find_collections(
     ]
 
 
+@router.get("/{collection_id}", response_model=ViewCollectionDetailResponse)
+async def view_collection_detail(
+    collection_id: str, collection_repo: CollectionRepo, db_session: DbSession
+) -> ViewCollectionDetailResponse:
+    use_case = ViewCollectionDetailUseCase(
+        db_session=db_session, collection_repo=collection_repo
+    )
+    result = await use_case.execute(
+        ViewCollectionDetailCommand(collection_id=collection_id)
+    )
+    return ViewCollectionDetailResponse(
+        id=result.id,
+        name=result.name,
+        url_slug=result.url_slug,
+        categories=[
+            CategoryResponse(
+                id=cat.id,
+                collection_id=cat.collection_id,
+                name=cat.name,
+                url_slug=cat.url_slug,
+                created_at=cat.created_at,
+            )
+            for cat in result.categories
+        ],
+        created_at=result.created_at,
+    )
+
+
 @router.post(
     "",
     response_model=CollectionResponse,
@@ -74,6 +107,15 @@ async def create_collection(
         id=result.id,
         name=result.name,
         url_slug=result.url_slug,
-        categories=result.categories,
+        categories=[
+            CategoryResponse(
+                id=cat.id,
+                collection_id=cat.collection_id,
+                name=cat.name,
+                url_slug=cat.url_slug,
+                created_at=cat.created_at,
+            )
+            for cat in result.categories
+        ],
         created_at=result.created_at,
     )

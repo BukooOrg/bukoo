@@ -7,6 +7,10 @@ from app.domain.entities.collection_entity import CollectionEntity
 
 class ICollectionRepository(ABC):
     @abstractmethod
+    async def find_by_id(self, collection_id: str) -> CollectionEntity | None:
+        pass
+
+    @abstractmethod
     async def find_by_url_slug(self, url_slug: str) -> CollectionEntity | None:
         pass
 

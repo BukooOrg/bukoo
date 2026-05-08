@@ -39,6 +39,9 @@ class FakeCollectionRepository(ICollectionRepository):
     async def find_all(self) -> list[CollectionEntity]:
         return self._collections
 
+    async def find_by_id(self, collection_id: str) -> CollectionEntity | None:
+        return None
+
     async def find_by_url_slug(self, url_slug: str) -> CollectionEntity | None:
         if self._existing and self._existing.url_slug == url_slug:
             return self._existing

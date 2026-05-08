@@ -22,10 +22,20 @@ class BaseCollectionResult:
 
 
 @dataclass(frozen=True)
-class CreateCollectionResult(BaseCollectionResult):
-    categories: list[BaseCategoryResult] = field(default_factory=list)
+class FindCollectionsResult:
+    collections: list[BaseCollectionResult]
 
 
 @dataclass(frozen=True)
-class FindCollectionsResult:
-    collections: list[BaseCollectionResult]
+class ViewCollectionDetailCommand:
+    collection_id: str
+
+
+@dataclass(frozen=True)
+class ViewCollectionDetailResult(BaseCollectionResult):
+    pass
+
+
+@dataclass(frozen=True)
+class CreateCollectionResult(BaseCollectionResult):
+    categories: list[BaseCategoryResult] = field(default_factory=list)

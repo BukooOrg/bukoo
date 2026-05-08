@@ -16,6 +16,17 @@ class CollectionRepositoryImpl(ICollectionRepository):
         self._session = session
 
     @override
+    async def find_by_id(self, collection_id: str) -> CollectionEntity | None:
+        stmt = (
+            select(CollectionModel)
+            .where(CollectionModel.id == collection_id)
+            .where(CollectionModel.deleted_at.is_(None))
+        )
+        result = await self._session.execute(stmt)
+        model = result.scalar_one_or_none()
+        return CollectionMapper.to_entity(model) if model else None
+
+    @override
     async def find_by_url_slug(self, url_slug: str) -> CollectionEntity | None:
         stmt = (
             select(CollectionModel)
