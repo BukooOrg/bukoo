@@ -31,3 +31,7 @@ class ViewCategoryDetailResponse(BaseCategoryResponse):
 
 class CreateCategoryResponse(BaseCategoryResponse):
     pass
+
+
+class CategoryListResponse(BaseCategoryResponse):
+    pass

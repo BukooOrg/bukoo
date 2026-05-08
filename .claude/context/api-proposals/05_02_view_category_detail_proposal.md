@@ -137,18 +137,18 @@ _(Check if `CATEGORY_NOT_FOUND` already exists in `app/application/errors/error_
 
 **`01_success.bru` — Happy Path:**
 
-- [ ] Status 200 OK
-- [ ] `res.body.success` is `true`
-- [ ] `res.body.data.id` equals the requested category_id
-- [ ] `res.body.data.collection_id` is a non-empty string
-- [ ] `res.body.data.name` is a non-empty string
-- [ ] `res.body.data.url_slug` is a non-empty string
-- [ ] `res.body.data.created_at` is a valid ISO 8601 timestamp
-- [ ] `res.body.meta.requestId` is a string
+- [x] Status 200 OK
+- [x] `res.body.success` is `true`
+- [x] `res.body.data.id` equals the requested category_id
+- [x] `res.body.data.collection_id` is a non-empty string
+- [x] `res.body.data.name` is a non-empty string
+- [x] `res.body.data.url_slug` is a non-empty string
+- [x] `res.body.data.created_at` is a valid ISO 8601 timestamp
+- [x] `res.body.meta.requestId` is a string
 
 **Error Cases:**
 
-- [ ] `02_not_found.bru` — Status 404 when category_id does not exist → error code `CATEGORY_NOT_FOUND`
+- [x] `02_not_found.bru` — Status 404 when category_id does not exist → error code `CATEGORY_NOT_FOUND`
 
 ### Pytest Unit Tests
 
@@ -156,15 +156,15 @@ _(Check if `CATEGORY_NOT_FOUND` already exists in `app/application/errors/error_
 
 **Happy Path:**
 
-- [ ] `ViewCategoryDetailUseCase.execute(valid_command)` returns `ViewCategoryDetailResult` with correct `id`, `collection_id`, `name`, `url_slug`, `created_at`
+- [x] `ViewCategoryDetailUseCase.execute(valid_command)` returns `ViewCategoryDetailResult` with correct `id`, `collection_id`, `name`, `url_slug`, `created_at`
 
 **Error Cases:**
 
-- [ ] Raises `CategoryNotFoundError` when `find_by_id` returns `None`
+- [x] Raises `CategoryNotFoundError` when `find_by_id` returns `None`
 
 **Edge Cases:**
 
-- [ ] A soft-deleted category (repo returns `None`) correctly raises `CategoryNotFoundError`
+- [x] A soft-deleted category (repo returns `None`) correctly raises `CategoryNotFoundError`
 
 ---
 

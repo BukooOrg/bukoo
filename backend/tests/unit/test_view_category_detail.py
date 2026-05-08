@@ -42,6 +42,9 @@ class FakeCategoryRepository(ICategoryRepository):
     async def find_by_url_slug(self, url_slug: str) -> CategoryEntity | None:
         return None
 
+    async def find_all(self, collection: str | None = None) -> list[CategoryEntity]:
+        return []
+
     async def save(self, category: CategoryEntity) -> None:
         pass
 

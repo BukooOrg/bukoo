@@ -79,6 +79,9 @@ class FakeCategoryRepository(ICategoryRepository):
             return self._existing
         return None
 
+    async def find_all(self, collection: str | None = None) -> list[CategoryEntity]:
+        return []
+
     async def save(self, category: CategoryEntity) -> None:
         self._saved = category
 

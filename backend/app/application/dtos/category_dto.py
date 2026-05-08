@@ -6,6 +6,11 @@ from datetime import datetime
 
 # commands
 @dataclass(frozen=True)
+class FindCategoriesCommand:
+    collection_id: str | None = None
+
+
+@dataclass(frozen=True)
 class ViewCategoryDetailCommand:
     category_id: str
 
@@ -35,3 +40,8 @@ class ViewCategoryDetailResult(BaseCategoryResult):
 @dataclass(frozen=True)
 class CreateCategoryResult(BaseCategoryResult):
     pass
+
+
+@dataclass(frozen=True)
+class FindCategoriesResult:
+    categories: list[BaseCategoryResult]

@@ -2,14 +2,18 @@
 
 from __future__ import annotations
 
+from uuid import UUID
+
 from fastapi import APIRouter
 
 from app.application.dtos.category_dto import (
     CreateCategoryCommand,
+    FindCategoriesCommand,
     ViewCategoryDetailCommand,
 )
 from app.application.use_cases.category import (
     CreateCategoryUseCase,
+    FindCategoriesUseCase,
     ViewCategoryDetailUseCase,
 )
 from app.presentation.dependencies.deps import (
@@ -19,12 +23,41 @@ from app.presentation.dependencies.deps import (
     DbSession,
 )
 from app.presentation.schemas.category_schema import (
+    CategoryListResponse,
     CreateCategoryRequest,
     CreateCategoryResponse,
     ViewCategoryDetailResponse,
 )
 
 router = APIRouter(prefix="/categories", tags=["category"])
+
+
+@router.get(
+    "",
+    response_model=list[CategoryListResponse],
+    operation_id="findCategories",
+)
+async def find_categories(
+    category_repo: CategoryRepo,
+    db_session: DbSession,
+    collection_id: UUID | None = None,
+) -> list[CategoryListResponse]:
+    use_case = FindCategoriesUseCase(db_session=db_session, category_repo=category_repo)
+    result = await use_case.execute(
+        FindCategoriesCommand(
+            collection_id=str(collection_id) if collection_id else None
+        )
+    )
+    return [
+        CategoryListResponse(
+            id=c.id,
+            collection_id=c.collection_id,
+            name=c.name,
+            url_slug=c.url_slug,
+            created_at=c.created_at,
+        )
+        for c in result.categories
+    ]
 
 
 @router.get(

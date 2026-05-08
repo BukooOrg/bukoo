@@ -38,6 +38,14 @@ class CategoryRepositoryImpl(ICategoryRepository):
         return CategoryMapper.to_entity(model) if model else None
 
     @override
+    async def find_all(self, collection_id: str | None = None) -> list[CategoryEntity]:
+        stmt = select(CategoryModel).where(CategoryModel.deleted_at.is_(None))
+        if collection_id is not None:
+            stmt = stmt.where(CategoryModel.collection_id == collection_id)
+        result = await self._session.execute(stmt)
+        return [CategoryMapper.to_entity(m) for m in result.scalars().all()]
+
+    @override
     async def save(self, category: CategoryEntity) -> None:
         model = CategoryMapper.to_model(category)
         await self._session.merge(model)

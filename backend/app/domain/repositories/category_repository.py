@@ -15,5 +15,9 @@ class ICategoryRepository(ABC):
         pass
 
     @abstractmethod
+    async def find_all(self, collection_id: str | None = None) -> list[CategoryEntity]:
+        pass
+
+    @abstractmethod
     async def save(self, category: CategoryEntity) -> None:
         pass
