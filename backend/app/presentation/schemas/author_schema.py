@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, field_validator
 
 
 # requests
-class CreateAuthorRequest(BaseModel):
+class BaseAuthorRequest(BaseModel):
     name: str = Field(..., min_length=2, max_length=255)
 
     @field_validator("name")
@@ -16,6 +16,14 @@ class CreateAuthorRequest(BaseModel):
         if not stripped:
             raise ValueError("name must not be empty or whitespace.")
         return stripped
+
+
+class CreateAuthorRequest(BaseAuthorRequest):
+    pass
+
+
+class UpdateAuthorRequest(BaseAuthorRequest):
+    pass
 
 
 # responses
@@ -30,4 +38,8 @@ class CreateAuthorResponse(BaseAuthorResponse):
 
 
 class ViewAuthorDetailResponse(BaseAuthorResponse):
+    pass
+
+
+class UpdateAuthorResponse(BaseAuthorResponse):
     pass

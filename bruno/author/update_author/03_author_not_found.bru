@@ -1,0 +1,40 @@
+meta {
+  name: author not found
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/authors/00000000-0000-0000-0000-000000000000
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // non-existent author_id — should return 404
+  {
+    "name": "Unknown Author"
+  }
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is AUTHOR_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("AUTHOR_NOT_FOUND");
+  });
+}

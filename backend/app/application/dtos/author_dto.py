@@ -15,6 +15,12 @@ class CreateAuthorCommand:
     name: str
 
 
+@dataclass(frozen=True)
+class UpdateAuthorCommand:
+    author_id: str
+    name: str
+
+
 # results
 @dataclass(frozen=True)
 class ViewAuthorDetailResult:
@@ -25,6 +31,13 @@ class ViewAuthorDetailResult:
 
 @dataclass(frozen=True)
 class CreateAuthorResult:
+    id: str
+    name: str
+    created_at: datetime
+
+
+@dataclass(frozen=True)
+class UpdateAuthorResult:
     id: str
     name: str
     created_at: datetime
