@@ -21,3 +21,7 @@ class ICategoryRepository(ABC):
     @abstractmethod
     async def save(self, category: CategoryEntity) -> None:
         pass
+
+    @abstractmethod
+    async def nullify_book_category(self, category_id: str) -> None:
+        pass

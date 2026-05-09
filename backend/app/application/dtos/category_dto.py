@@ -27,6 +27,11 @@ class UpdateCategoryCommand(CreateCategoryCommand):
     category_id: str
 
 
+@dataclass(frozen=True)
+class SoftDeleteCategoryCommand:
+    category_id: str
+
+
 # results
 @dataclass(frozen=True)
 class BaseCategoryResult:
@@ -55,3 +60,8 @@ class FindCategoriesResult:
 @dataclass(frozen=True)
 class UpdateCategoryResult(BaseCategoryResult):
     pass
+
+
+@dataclass(frozen=True)
+class SoftDeleteCategoryResult:
+    message: str

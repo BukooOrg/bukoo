@@ -48,6 +48,9 @@ class FakeCategoryRepository(ICategoryRepository):
     async def save(self, category: CategoryEntity) -> None:
         pass
 
+    async def nullify_book_category(self, category_id: str) -> None:
+        pass
+
 
 @pytest.mark.unit
 class TestViewCategoryDetailUseCase:

@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import override
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.entities import CategoryEntity
 from app.domain.repositories import ICategoryRepository
 from app.infrastructure.db.mappers import CategoryMapper
-from app.infrastructure.db.models import CategoryModel
+from app.infrastructure.db.models import BookModel, CategoryModel
 
 
 class CategoryRepositoryImpl(ICategoryRepository):
@@ -49,3 +49,13 @@ class CategoryRepositoryImpl(ICategoryRepository):
     async def save(self, category: CategoryEntity) -> None:
         model = CategoryMapper.to_model(category)
         await self._session.merge(model)
+
+    @override
+    async def nullify_book_category(self, category_id: str) -> None:
+        stmt = (
+            update(BookModel)
+            .where(BookModel.category_id == category_id)
+            .where(BookModel.deleted_at.is_(None))
+            .values(category_id=None)
+        )
+        await self._session.execute(stmt)

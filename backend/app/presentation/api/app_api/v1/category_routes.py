@@ -9,12 +9,14 @@ from fastapi import APIRouter
 from app.application.dtos.category_dto import (
     CreateCategoryCommand,
     FindCategoriesCommand,
+    SoftDeleteCategoryCommand,
     UpdateCategoryCommand,
     ViewCategoryDetailCommand,
 )
 from app.application.use_cases.category import (
     CreateCategoryUseCase,
     FindCategoriesUseCase,
+    SoftDeleteCategoryUseCase,
     UpdateCategoryUseCase,
     ViewCategoryDetailUseCase,
 )
@@ -28,6 +30,7 @@ from app.presentation.schemas.category_schema import (
     BaseCategoryResponse,
     CreateCategoryRequest,
     CreateCategoryResponse,
+    SoftDeleteCategoryResponse,
     UpdateCategoryResponse,
     ViewCategoryDetailResponse,
 )
@@ -149,3 +152,21 @@ async def update_category(
         url_slug=result.url_slug,
         created_at=result.created_at,
     )
+
+
+@router.delete(
+    "/{category_id}",
+    response_model=SoftDeleteCategoryResponse,
+    operation_id="softDeleteCategory",
+)
+async def soft_delete_category(
+    category_id: str,
+    _admin: AdminUser,
+    category_repo: CategoryRepo,
+    db_session: DbSession,
+) -> SoftDeleteCategoryResponse:
+    use_case = SoftDeleteCategoryUseCase(
+        db_session=db_session, category_repo=category_repo
+    )
+    result = await use_case.execute(SoftDeleteCategoryCommand(category_id=category_id))
+    return SoftDeleteCategoryResponse(message=result.message)

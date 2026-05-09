@@ -39,3 +39,7 @@ class CreateCategoryResponse(BaseCategoryResponse):
 
 class UpdateCategoryResponse(BaseCategoryResponse):
     pass
+
+
+class SoftDeleteCategoryResponse(BaseModel):
+    message: str
