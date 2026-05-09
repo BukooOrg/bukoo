@@ -29,7 +29,7 @@ from app.presentation.schemas.collection_schema import (
     ViewCollectionDetailResponse,
 )
 
-router = APIRouter(prefix="/collections", tags=["collections"])
+router = APIRouter(prefix="/collections", tags=["collection"])
 
 
 @router.get(

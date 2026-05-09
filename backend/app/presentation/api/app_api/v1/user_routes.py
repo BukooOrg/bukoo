@@ -44,7 +44,7 @@ from app.presentation.schemas.user_schema import (
     UserProfileResponse,
 )
 
-router = APIRouter(prefix="/users", tags=["users"])
+router = APIRouter(prefix="/users", tags=["user"])
 
 
 @router.get("/me", response_model=UserProfileResponse, operation_id="getMe")

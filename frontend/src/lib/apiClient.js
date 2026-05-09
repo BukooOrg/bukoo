@@ -1,4 +1,11 @@
-import { AuthApi, HealthApi, UsersApi, Configuration, CollectionsApi } from '@bukoo/api-client';
+import {
+  AuthApi,
+  HealthApi,
+  UserApi,
+  CategoryApi,
+  Configuration,
+  CollectionApi,
+} from '@bukoo/api-client';
 import Cookies from 'js-cookie';
 
 const configuration = new Configuration({
@@ -21,5 +28,6 @@ const configuration = new Configuration({
 
 export const authApi = new AuthApi(configuration);
 export const healthApi = new HealthApi(configuration);
-export const usersApi = new UsersApi(configuration);
-export const collectionsApi = new CollectionsApi(configuration);
+export const userApi = new UserApi(configuration);
+export const categoryApi = new CategoryApi(configuration);
+export const collectionApi = new CollectionApi(configuration);

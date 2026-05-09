@@ -2,9 +2,9 @@
 README.md
 src/apis/AuthApi.ts
 src/apis/CategoryApi.ts
-src/apis/CollectionsApi.ts
+src/apis/CollectionApi.ts
 src/apis/HealthApi.ts
-src/apis/UsersApi.ts
+src/apis/UserApi.ts
 src/apis/index.ts
 src/index.ts
 src/models/AddressResponse.ts

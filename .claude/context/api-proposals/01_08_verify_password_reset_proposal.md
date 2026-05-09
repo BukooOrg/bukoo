@@ -140,10 +140,10 @@ _(None — `INVALID_TOKEN` already exists in `app/application/errors/error_codes
 
 **`01_success.bru` — Happy Path checks:**
 
-- [ ] Status 200 OK
-- [ ] `res.body.success` is `true`
-- [ ] `res.body.data.valid` is `true`
-- [ ] `res.body.meta.requestId` is a string
+- [x] Status 200 OK
+- [x] `res.body.success` is `true`
+- [x] `res.body.data.valid` is `true`
+- [x] `res.body.meta.requestId` is a string
 
 ### Pytest Unit Tests
 

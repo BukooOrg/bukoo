@@ -2,6 +2,6 @@
 /* eslint-disable */
 export * from './AuthApi';
 export * from './CategoryApi';
-export * from './CollectionsApi';
+export * from './CollectionApi';
 export * from './HealthApi';
-export * from './UsersApi';
+export * from './UserApi';
