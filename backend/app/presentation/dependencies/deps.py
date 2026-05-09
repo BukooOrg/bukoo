@@ -29,6 +29,7 @@ from app.domain.exceptions import (
 from app.domain.repositories import (
     IAccountRepository,
     IAddressRepository,
+    ICategoryRepository,
     ICollectionRepository,
     IUserRepository,
     IVerificationTokenRepository,
@@ -44,6 +45,7 @@ from app.infrastructure.cache import RedisCacheService
 from app.infrastructure.db.repositories import (
     AccountRepositoryImpl,
     AddressRepositoryImpl,
+    CategoryRepositoryImpl,
     CollectionRepositoryImpl,
     UserRepositoryImpl,
     VerificationTokenRepositoryImpl,
@@ -65,8 +67,14 @@ def get_user_repository(session: DbSession) -> IUserRepository:
     return UserRepositoryImpl(session)
 
 
+UserRepo = Annotated[IUserRepository, Depends(get_user_repository)]
+
+
 def get_account_repository(session: DbSession) -> IAccountRepository:
     return AccountRepositoryImpl(session)
+
+
+AccountRepo = Annotated[IAccountRepository, Depends(get_account_repository)]
 
 
 def get_verification_token_repository(
@@ -75,16 +83,23 @@ def get_verification_token_repository(
     return VerificationTokenRepositoryImpl(session)
 
 
+VerificationTokenRepo = Annotated[
+    IVerificationTokenRepository, Depends(get_verification_token_repository)
+]
+
+
 def get_address_repository(session: DbSession) -> IAddressRepository:
     return AddressRepositoryImpl(session)
 
 
-UserRepo = Annotated[IUserRepository, Depends(get_user_repository)]
-AccountRepo = Annotated[IAccountRepository, Depends(get_account_repository)]
-VerificationTokenRepo = Annotated[
-    IVerificationTokenRepository, Depends(get_verification_token_repository)
-]
 AddressRepo = Annotated[IAddressRepository, Depends(get_address_repository)]
+
+
+def get_category_repository(session: DbSession) -> ICategoryRepository:
+    return CategoryRepositoryImpl(session)
+
+
+CategoryRepo = Annotated[ICategoryRepository, Depends(get_category_repository)]
 
 
 def get_collection_repository(session: DbSession) -> ICollectionRepository:

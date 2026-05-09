@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from typing import override
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid_extension import uuid7
@@ -25,6 +26,7 @@ class CreateCollectionUseCase(BaseUseCase):
         super().__init__(db_session)
         self._collection_repo = collection_repo
 
+    @override
     async def execute(self, cmd: CreateCollectionCommand) -> CreateCollectionResult:
         existing = await self._collection_repo.find_by_url_slug(cmd.url_slug)
         if existing is not None:

@@ -1,0 +1,59 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/categories/{{categoryId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // happy path — update name, url_slug, and collection of an existing category
+  {
+    "name": "Science Fiction",
+    "url_slug": "science-fiction-haha",
+    "collection_id": "{{collectionId}}"
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.id is a string", function() {
+    expect(res.body.data.id).to.be.a("string");
+  });
+  
+  test("data.name equals input", function() {
+    expect(res.body.data.name).to.equal("Science Fiction");
+  });
+  
+  test("data.url_slug equals input", function() {
+    expect(res.body.data.url_slug).to.equal("science-fiction-haha");
+    
+  });
+  
+  test("data.collection_id matches input", function() {
+    expect(res.body.data.collection_id).to.equal(bru.getEnvVar("collectionId"));
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

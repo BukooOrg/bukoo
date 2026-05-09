@@ -1,0 +1,35 @@
+meta {
+  name: filter by collection id
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/categories?collection_id={{collectionId}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data is an array", function() {
+    expect(res.body.data).to.be.an("array");
+  });
+  
+  test("all returned categories belong to the filtered collection", function() {
+    res.body.data.forEach(function(cat) {
+      expect(cat.collection_id).to.equal(bru.getEnvVar("collectionId"));
+    });
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

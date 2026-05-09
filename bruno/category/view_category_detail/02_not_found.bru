@@ -1,0 +1,25 @@
+meta {
+  name: not found
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/categories/00000000-0000-0000-0000-000000000000
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is CATEGORY_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("CATEGORY_NOT_FOUND");
+  });
+}

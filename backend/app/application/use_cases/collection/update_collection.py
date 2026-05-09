@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import override
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.dtos.category_dto import BaseCategoryResult
@@ -20,6 +22,7 @@ class UpdateCollectionUseCase(BaseUseCase):
         super().__init__(db_session)
         self._collection_repo = collection_repo
 
+    @override
     async def execute(self, cmd: UpdateCollectionCommand) -> UpdateCollectionResult:
         collection = await self._collection_repo.find_by_id(cmd.collection_id)
 

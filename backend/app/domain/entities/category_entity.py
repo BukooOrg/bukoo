@@ -49,8 +49,9 @@ class CategoryEntity:
         return self._deleted_at is not None
 
     # methods
-    def update(self, name: str, url_slug: str) -> None:
-        """Rename the category and/or change its URL slug."""
+    def update(self, collection_id: str, name: str, url_slug: str) -> None:
+        """Rename the category and/or change its URL slug. Optionally, reassign collection"""
+        self._collection_id = collection_id
         self._name = name
         self._url_slug = url_slug
         self._updated_at = datetime.now(UTC)

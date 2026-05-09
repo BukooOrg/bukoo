@@ -4,7 +4,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
-from app.presentation.schemas.category_schema import CategoryResponse
+from app.presentation.schemas.category_schema import BaseCategoryResponse
 
 
 # requests
@@ -26,7 +26,7 @@ class BaseCollectionResponse(BaseModel):
     id: str
     name: str
     url_slug: str
-    categories: list[CategoryResponse]
+    categories: list[BaseCategoryResponse]
     created_at: datetime
 
 
@@ -42,7 +42,7 @@ class CollectionListItemResponse(BaseModel):
     id: str
     name: str
     url_slug: str
-    categories: list[CategoryResponse]
+    categories: list[BaseCategoryResponse]
     created_at: datetime
 
 

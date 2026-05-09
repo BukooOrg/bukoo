@@ -1,0 +1,58 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/categories
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // happy path — create a new category under an existing collection
+  {
+    "collection_id": "{{collectionId}}",
+    "name": "Science Fiction",
+    "url_slug": "science-fiction-testing"
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.id is a string", function() {
+    expect(res.body.data.id).to.be.a("string");
+  });
+  
+  test("data.collection_id matches input", function() {
+    expect(res.body.data.collection_id).to.equal(bru.getVar("collectionId"));
+  });
+  
+  test("data.name equals input", function() {
+    expect(res.body.data.name).to.equal("Science Fiction");
+  });
+  
+  test("data.url_slug equals input", function() {
+    expect(res.body.data.url_slug).to.equal("science-fiction");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

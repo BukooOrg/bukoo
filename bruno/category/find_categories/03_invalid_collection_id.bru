@@ -1,0 +1,21 @@
+meta {
+  name: invalid collection id
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/categories?collection_id=not-a-uuid
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+}

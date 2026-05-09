@@ -1,0 +1,38 @@
+meta {
+  name: collection not found
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/categories
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // non-existent collection_id
+  {
+    "collection_id": "00000000-0000-7000-8000-000000000000",
+    "name": "Science Fiction",
+    "url_slug": "science-fiction-nonexistent"
+  }
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+
+  test("error code is COLLECTION_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("COLLECTION_NOT_FOUND");
+  });
+}

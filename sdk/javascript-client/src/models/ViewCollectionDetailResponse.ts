@@ -13,13 +13,13 @@
  */
 
 import { mapValues } from '../runtime';
-import type { CategoryResponse } from './CategoryResponse';
+import type { BaseCategoryResponse } from './BaseCategoryResponse';
 import {
-    CategoryResponseFromJSON,
-    CategoryResponseFromJSONTyped,
-    CategoryResponseToJSON,
-    CategoryResponseToJSONTyped,
-} from './CategoryResponse';
+    BaseCategoryResponseFromJSON,
+    BaseCategoryResponseFromJSONTyped,
+    BaseCategoryResponseToJSON,
+    BaseCategoryResponseToJSONTyped,
+} from './BaseCategoryResponse';
 
 /**
  * 
@@ -47,10 +47,10 @@ export interface ViewCollectionDetailResponse {
     urlSlug: string;
     /**
      * 
-     * @type {Array<CategoryResponse>}
+     * @type {Array<BaseCategoryResponse>}
      * @memberof ViewCollectionDetailResponse
      */
-    categories: Array<CategoryResponse>;
+    categories: Array<BaseCategoryResponse>;
     /**
      * 
      * @type {Date}
@@ -84,7 +84,7 @@ export function ViewCollectionDetailResponseFromJSONTyped(json: any, ignoreDiscr
         'id': json['id'],
         'name': json['name'],
         'urlSlug': json['url_slug'],
-        'categories': ((json['categories'] as Array<any>).map(CategoryResponseFromJSON)),
+        'categories': ((json['categories'] as Array<any>).map(BaseCategoryResponseFromJSON)),
         'createdAt': (new Date(json['created_at'])),
     };
 }
@@ -103,7 +103,7 @@ export function ViewCollectionDetailResponseToJSONTyped(value?: ViewCollectionDe
         'id': value['id'],
         'name': value['name'],
         'url_slug': value['urlSlug'],
-        'categories': ((value['categories'] as Array<any>).map(CategoryResponseToJSON)),
+        'categories': ((value['categories'] as Array<any>).map(BaseCategoryResponseToJSON)),
         'created_at': ((value['createdAt']).toISOString()),
     };
 }

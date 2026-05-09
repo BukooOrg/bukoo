@@ -6,12 +6,24 @@ from datetime import datetime
 from app.application.dtos.category_dto import BaseCategoryResult
 
 
+# commands
 @dataclass(frozen=True)
 class CreateCollectionCommand:
     name: str
     url_slug: str
 
 
+@dataclass(frozen=True)
+class ViewCollectionDetailCommand:
+    collection_id: str
+
+
+@dataclass(frozen=True)
+class SoftDeleteCollectionCommand:
+    collection_id: str
+
+
+# results
 @dataclass(frozen=True)
 class BaseCollectionResult:
     id: str
@@ -24,11 +36,6 @@ class BaseCollectionResult:
 @dataclass(frozen=True)
 class FindCollectionsResult:
     collections: list[BaseCollectionResult]
-
-
-@dataclass(frozen=True)
-class ViewCollectionDetailCommand:
-    collection_id: str
 
 
 @dataclass(frozen=True)
@@ -51,11 +58,6 @@ class UpdateCollectionCommand:
 @dataclass(frozen=True)
 class UpdateCollectionResult(BaseCollectionResult):
     pass
-
-
-@dataclass(frozen=True)
-class SoftDeleteCollectionCommand:
-    collection_id: str
 
 
 @dataclass(frozen=True)

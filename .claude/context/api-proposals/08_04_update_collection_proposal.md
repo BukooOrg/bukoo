@@ -157,19 +157,19 @@ Each test case is a separate `.bru` file.
 
 **`01_success.bru` — Happy Path:**
 
-- [ ] Status 200 OK
-- [ ] `res.body.success` is `true`
-- [ ] `res.body.data.name` equals the submitted name
-- [ ] `res.body.data.url_slug` equals the submitted url_slug
-- [ ] `res.body.data.id` matches the path `collection_id`
-- [ ] `res.body.meta.requestId` is a string
+- [x] Status 200 OK
+- [x] `res.body.success` is `true`
+- [x] `res.body.data.name` equals the submitted name
+- [x] `res.body.data.url_slug` equals the submitted url_slug
+- [x] `res.body.data.id` matches the path `collection_id`
+- [x] `res.body.meta.requestId` is a string
 
 **Error Cases:**
 
-- [ ] `02_admin_forbidden.bru` — Status 403 when authenticated as a non-admin user
-- [ ] `03_not_found.bru` — Status 404 when `collection_id` does not exist → error code `COLLECTION_NOT_FOUND`
-- [ ] `04_slug_conflict.bru` — Status 409 when submitted `url_slug` is already used by another collection → error code `COLLECTION_ALREADY_EXISTS`
-- [ ] `05_validation_error.bru` — Status 422 when `name` is missing from the request body
+- [x] `02_admin_forbidden.bru` — Status 403 when authenticated as a non-admin user
+- [x] `03_not_found.bru` — Status 404 when `collection_id` does not exist → error code `COLLECTION_NOT_FOUND`
+- [x] `04_slug_conflict.bru` — Status 409 when submitted `url_slug` is already used by another collection → error code `COLLECTION_ALREADY_EXISTS`
+- [x] `05_validation_error.bru` — Status 422 when `name` is missing from the request body
 
 ### Pytest Unit Tests
 

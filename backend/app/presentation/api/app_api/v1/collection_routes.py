@@ -18,7 +18,7 @@ from app.application.use_cases.collection import (
     ViewCollectionDetailUseCase,
 )
 from app.presentation.dependencies.deps import AdminUser, CollectionRepo, DbSession
-from app.presentation.schemas.category_schema import CategoryResponse
+from app.presentation.schemas.category_schema import BaseCategoryResponse
 from app.presentation.schemas.collection_schema import (
     CollectionListItemResponse,
     CreateCollectionRequest,
@@ -50,7 +50,7 @@ async def find_collections(
             url_slug=c.url_slug,
             created_at=c.created_at,
             categories=[
-                CategoryResponse(
+                BaseCategoryResponse(
                     id=cat.id,
                     collection_id=cat.collection_id,
                     name=cat.name,
@@ -79,7 +79,7 @@ async def view_collection_detail(
         name=result.name,
         url_slug=result.url_slug,
         categories=[
-            CategoryResponse(
+            BaseCategoryResponse(
                 id=cat.id,
                 collection_id=cat.collection_id,
                 name=cat.name,
@@ -115,7 +115,7 @@ async def create_collection(
         name=result.name,
         url_slug=result.url_slug,
         categories=[
-            CategoryResponse(
+            BaseCategoryResponse(
                 id=cat.id,
                 collection_id=cat.collection_id,
                 name=cat.name,
@@ -149,7 +149,7 @@ async def update_collection(
         name=result.name,
         url_slug=result.url_slug,
         categories=[
-            CategoryResponse(
+            BaseCategoryResponse(
                 id=cat.id,
                 collection_id=cat.collection_id,
                 name=cat.name,

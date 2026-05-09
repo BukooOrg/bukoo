@@ -9,8 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.domain.entities.collection_entity import CollectionEntity
 from app.domain.repositories.collection_repository import ICollectionRepository
 from app.infrastructure.db.mappers.collection_mapper import CollectionMapper
-from app.infrastructure.db.models.category_model import CategoryModel
-from app.infrastructure.db.models.collection_model import CollectionModel
+from app.infrastructure.db.models import CategoryModel, CollectionModel
 
 
 class CollectionRepositoryImpl(ICollectionRepository):
