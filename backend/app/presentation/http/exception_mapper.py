@@ -6,6 +6,7 @@ from app.application.errors.error_codes import ErrorCode
 from app.domain.exceptions import (
     AddressNotFoundError,
     AdminAccessRequiredError,
+    AuthorNotFoundError,
     BookAlreadyExistsError,
     BookNotFoundError,
     CategoryAlreadyExistsError,
@@ -232,5 +233,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_404_NOT_FOUND,
         ErrorCode.ADDRESS_NOT_FOUND,
         "You do not have address",
+    ),
+    # author
+    AuthorNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.AUTHOR_NOT_FOUND,
+        "You do not have author",
     ),
 }

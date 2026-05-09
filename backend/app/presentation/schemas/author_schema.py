@@ -27,3 +27,7 @@ class BaseAuthorResponse(BaseModel):
 
 class CreateAuthorResponse(BaseAuthorResponse):
     pass
+
+
+class ViewAuthorDetailResponse(BaseAuthorResponse):
+    pass
