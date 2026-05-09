@@ -9,11 +9,13 @@ from fastapi import APIRouter
 from app.application.dtos.category_dto import (
     CreateCategoryCommand,
     FindCategoriesCommand,
+    UpdateCategoryCommand,
     ViewCategoryDetailCommand,
 )
 from app.application.use_cases.category import (
     CreateCategoryUseCase,
     FindCategoriesUseCase,
+    UpdateCategoryUseCase,
     ViewCategoryDetailUseCase,
 )
 from app.presentation.dependencies.deps import (
@@ -23,9 +25,10 @@ from app.presentation.dependencies.deps import (
     DbSession,
 )
 from app.presentation.schemas.category_schema import (
-    CategoryListResponse,
+    BaseCategoryResponse,
     CreateCategoryRequest,
     CreateCategoryResponse,
+    UpdateCategoryResponse,
     ViewCategoryDetailResponse,
 )
 
@@ -34,14 +37,14 @@ router = APIRouter(prefix="/categories", tags=["category"])
 
 @router.get(
     "",
-    response_model=list[CategoryListResponse],
+    response_model=list[BaseCategoryResponse],
     operation_id="findCategories",
 )
 async def find_categories(
     category_repo: CategoryRepo,
     db_session: DbSession,
     collection_id: UUID | None = None,
-) -> list[CategoryListResponse]:
+) -> list[BaseCategoryResponse]:
     use_case = FindCategoriesUseCase(db_session=db_session, category_repo=category_repo)
     result = await use_case.execute(
         FindCategoriesCommand(
@@ -49,7 +52,7 @@ async def find_categories(
         )
     )
     return [
-        CategoryListResponse(
+        BaseCategoryResponse(
             id=c.id,
             collection_id=c.collection_id,
             name=c.name,
@@ -105,6 +108,41 @@ async def create_category(
         )
     )
     return CreateCategoryResponse(
+        id=result.id,
+        collection_id=result.collection_id,
+        name=result.name,
+        url_slug=result.url_slug,
+        created_at=result.created_at,
+    )
+
+
+@router.patch(
+    "/{category_id}",
+    response_model=UpdateCategoryResponse,
+    operation_id="updateCategory",
+)
+async def update_category(
+    category_id: str,
+    body: CreateCategoryRequest,
+    _admin: AdminUser,
+    collection_repo: CollectionRepo,
+    category_repo: CategoryRepo,
+    db_session: DbSession,
+) -> UpdateCategoryResponse:
+    use_case = UpdateCategoryUseCase(
+        db_session=db_session,
+        category_repo=category_repo,
+        collection_repo=collection_repo,
+    )
+    result = await use_case.execute(
+        UpdateCategoryCommand(
+            collection_id=body.collection_id,
+            category_id=category_id,
+            name=body.name,
+            url_slug=body.url_slug,
+        )
+    )
+    return UpdateCategoryResponse(
         id=result.id,
         collection_id=result.collection_id,
         name=result.name,

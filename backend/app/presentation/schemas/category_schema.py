@@ -16,6 +16,10 @@ class CreateCategoryRequest(BaseCategoryRequest):
     pass
 
 
+class UpdateCategoryRequest(BaseCategoryRequest):
+    pass
+
+
 # responses
 class BaseCategoryResponse(BaseModel):
     id: str
@@ -33,5 +37,5 @@ class CreateCategoryResponse(BaseCategoryResponse):
     pass
 
 
-class CategoryListResponse(BaseCategoryResponse):
+class UpdateCategoryResponse(BaseCategoryResponse):
     pass

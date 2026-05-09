@@ -2,23 +2,23 @@
 
 ## Overview
 
-| Field        | Value                           |
-| ------------ | ------------------------------- |
-| API Set      | 5. Category                     |
-| Use Case     | 5.1. Find Categories            |
-| File Index   | 05\_01                          |
-| Access Level | 🌐 Public                       |
-| Status       | Implemented                     |
+| Field        | Value              |
+| ------------ | ------------------ |
+| API Set      | 5. Category        |
+| Use Case     | 1. Find Categories |
+| File Index   | 05_01              |
+| Access Level | 🌐 Public          |
+| Status       | Implemented        |
 
 ---
 
 ## Endpoint
 
-| Field  | Value                          |
-| ------ | ------------------------------ |
-| Method | GET                            |
-| URL    | `/api/app/v1/categories`       |
-| Auth   | None                           |
+| Field  | Value                    |
+| ------ | ------------------------ |
+| Method | GET                      |
+| URL    | `/api/app/v1/categories` |
+| Auth   | None                     |
 
 ---
 
@@ -36,9 +36,9 @@ _(None)_
 
 ### Query Parameters
 
-| Parameter     | Type          | Required | Default | Description                                              |
-| ------------- | ------------- | -------- | ------- | -------------------------------------------------------- |
-| collection_id | string (UUID) | No       | —       | Filter categories to those belonging to this collection  |
+| Parameter     | Type          | Required | Default | Description                                             |
+| ------------- | ------------- | -------- | ------- | ------------------------------------------------------- |
+| collection_id | string (UUID) | No       | —       | Filter categories to those belonging to this collection |
 
 ### Request Body
 
@@ -73,8 +73,8 @@ _(None)_
 
 ### Error Responses
 
-| HTTP Status | Error Code           | Condition                                     |
-| ----------- | -------------------- | --------------------------------------------- |
+| HTTP Status | Error Code           | Condition                                       |
+| ----------- | -------------------- | ----------------------------------------------- |
 | 422         | UNPROCESSABLE_ENTITY | `collection_id` is present but not a valid UUID |
 
 ---
@@ -92,22 +92,22 @@ _(None)_
 
 ### Entities Involved
 
-| Entity           | Access | Notes                     |
-| ---------------- | ------ | ------------------------- |
-| `CategoryEntity` | Read   | Filtered by soft-delete   |
+| Entity           | Access | Notes                   |
+| ---------------- | ------ | ----------------------- |
+| `CategoryEntity` | Read   | Filtered by soft-delete |
 
 ### Repository Methods Required
 
-| Interface              | Method                                                         | New? |
-| ---------------------- | -------------------------------------------------------------- | ---- |
-| `ICategoryRepository`  | `find_all(collection_id: str \| None) -> list[CategoryEntity]` | Yes  |
+| Interface             | Method                                                         | New? |
+| --------------------- | -------------------------------------------------------------- | ---- |
+| `ICategoryRepository` | `find_all(collection_id: str \| None) -> list[CategoryEntity]` | Yes  |
 
 ### New DTOs
 
-| DTO Class               | Type            | Fields                                                    |
-| ----------------------- | --------------- | --------------------------------------------------------- |
-| `FindCategoryItemResult`| Result (output) | `id`, `collection_id`, `name`, `url_slug`, `created_at`  |
-| `FindCategoriesResult`  | Result (output) | `categories: list[FindCategoryItemResult]`                |
+| DTO Class                | Type            | Fields                                                  |
+| ------------------------ | --------------- | ------------------------------------------------------- |
+| `FindCategoryItemResult` | Result (output) | `id`, `collection_id`, `name`, `url_slug`, `created_at` |
+| `FindCategoriesResult`   | Result (output) | `categories: list[FindCategoryItemResult]`              |
 
 > Note: `FindCategoryItemResult` has the same fields as `BaseCategoryResult`. Consider reusing `BaseCategoryResult` and only adding `FindCategoriesResult` to keep the DTO file lean.
 

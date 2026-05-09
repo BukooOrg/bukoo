@@ -22,6 +22,11 @@ class CreateCategoryCommand:
     url_slug: str
 
 
+@dataclass(frozen=True)
+class UpdateCategoryCommand(CreateCategoryCommand):
+    category_id: str
+
+
 # results
 @dataclass(frozen=True)
 class BaseCategoryResult:
@@ -45,3 +50,8 @@ class CreateCategoryResult(BaseCategoryResult):
 @dataclass(frozen=True)
 class FindCategoriesResult:
     categories: list[BaseCategoryResult]
+
+
+@dataclass(frozen=True)
+class UpdateCategoryResult(BaseCategoryResult):
+    pass
