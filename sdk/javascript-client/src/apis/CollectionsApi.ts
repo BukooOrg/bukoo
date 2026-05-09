@@ -18,7 +18,7 @@ import type {
   CreateCollectionRequest,
   ErrorResponse,
   ResponseWrapperCreateCollectionResponse,
-  ResponseWrapperData,
+  ResponseWrapperData1,
   ResponseWrapperSoftDeleteCollectionResponse,
   ResponseWrapperUpdateCollectionResponse,
   ResponseWrapperViewCollectionDetailResponse,
@@ -31,8 +31,8 @@ import {
     ErrorResponseToJSON,
     ResponseWrapperCreateCollectionResponseFromJSON,
     ResponseWrapperCreateCollectionResponseToJSON,
-    ResponseWrapperDataFromJSON,
-    ResponseWrapperDataToJSON,
+    ResponseWrapperData1FromJSON,
+    ResponseWrapperData1ToJSON,
     ResponseWrapperSoftDeleteCollectionResponseFromJSON,
     ResponseWrapperSoftDeleteCollectionResponseToJSON,
     ResponseWrapperUpdateCollectionResponseFromJSON,
@@ -112,7 +112,7 @@ export class CollectionsApi extends runtime.BaseAPI {
     /**
      * Find Collections
      */
-    async findCollectionsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperData>> {
+    async findCollectionsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperData1>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -124,13 +124,13 @@ export class CollectionsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperDataFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperData1FromJSON(jsonValue));
     }
 
     /**
      * Find Collections
      */
-    async findCollections(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperData> {
+    async findCollections(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperData1> {
         const response = await this.findCollectionsRaw(initOverrides);
         return await response.value();
     }

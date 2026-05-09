@@ -20,13 +20,13 @@ import {
     ResponseMetaToJSON,
     ResponseMetaToJSONTyped,
 } from './ResponseMeta';
-import type { CollectionListItemResponse } from './CollectionListItemResponse';
+import type { BaseCategoryResponse } from './BaseCategoryResponse';
 import {
-    CollectionListItemResponseFromJSON,
-    CollectionListItemResponseFromJSONTyped,
-    CollectionListItemResponseToJSON,
-    CollectionListItemResponseToJSONTyped,
-} from './CollectionListItemResponse';
+    BaseCategoryResponseFromJSON,
+    BaseCategoryResponseFromJSONTyped,
+    BaseCategoryResponseToJSON,
+    BaseCategoryResponseToJSONTyped,
+} from './BaseCategoryResponse';
 
 /**
  * 
@@ -42,10 +42,10 @@ export interface ResponseWrapperData {
     success: boolean;
     /**
      * 
-     * @type {Array<CollectionListItemResponse>}
+     * @type {Array<BaseCategoryResponse>}
      * @memberof ResponseWrapperData
      */
-    data: Array<CollectionListItemResponse>;
+    data: Array<BaseCategoryResponse>;
     /**
      * 
      * @type {ResponseMeta}
@@ -75,7 +75,7 @@ export function ResponseWrapperDataFromJSONTyped(json: any, ignoreDiscriminator:
     return {
         
         'success': json['success'],
-        'data': ((json['data'] as Array<any>).map(CollectionListItemResponseFromJSON)),
+        'data': ((json['data'] as Array<any>).map(BaseCategoryResponseFromJSON)),
         'meta': ResponseMetaFromJSON(json['meta']),
     };
 }
@@ -92,7 +92,7 @@ export function ResponseWrapperDataToJSONTyped(value?: ResponseWrapperData | nul
     return {
         
         'success': value['success'],
-        'data': ((value['data'] as Array<any>).map(CollectionListItemResponseToJSON)),
+        'data': ((value['data'] as Array<any>).map(BaseCategoryResponseToJSON)),
         'meta': ResponseMetaToJSON(value['meta']),
     };
 }
