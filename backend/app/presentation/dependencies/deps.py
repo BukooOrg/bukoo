@@ -29,6 +29,7 @@ from app.domain.exceptions import (
 from app.domain.repositories import (
     IAccountRepository,
     IAddressRepository,
+    IAuthorRepository,
     ICategoryRepository,
     ICollectionRepository,
     IUserRepository,
@@ -45,6 +46,7 @@ from app.infrastructure.cache import RedisCacheService
 from app.infrastructure.db.repositories import (
     AccountRepositoryImpl,
     AddressRepositoryImpl,
+    AuthorRepositoryImpl,
     CategoryRepositoryImpl,
     CollectionRepositoryImpl,
     UserRepositoryImpl,
@@ -100,6 +102,13 @@ def get_category_repository(session: DbSession) -> ICategoryRepository:
 
 
 CategoryRepo = Annotated[ICategoryRepository, Depends(get_category_repository)]
+
+
+def get_author_repository(session: DbSession) -> IAuthorRepository:
+    return AuthorRepositoryImpl(session)
+
+
+AuthorRepo = Annotated[IAuthorRepository, Depends(get_author_repository)]
 
 
 def get_collection_repository(session: DbSession) -> ICollectionRepository:
