@@ -3,8 +3,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 
+from app.core.query_params import QueryParams
+
 
 # commands
+@dataclass(frozen=True)
+class FindAuthorsCommand:
+    query: QueryParams
+
+
 @dataclass(frozen=True)
 class ViewAuthorDetailCommand:
     author_id: str
@@ -27,6 +34,13 @@ class SoftDeleteAuthorCommand:
 
 
 # results
+@dataclass(frozen=True)
+class BaseAuthorResult:
+    id: str
+    name: str
+    created_at: datetime
+
+
 @dataclass(frozen=True)
 class ViewAuthorDetailResult:
     id: str

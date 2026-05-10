@@ -47,3 +47,7 @@ class UpdateAuthorResponse(BaseAuthorResponse):
 
 class SoftDeleteAuthorResponse(BaseModel):
     message: str
+
+
+class AuthorListItemResponse(BaseAuthorResponse):
+    pass

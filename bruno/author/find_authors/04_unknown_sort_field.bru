@@ -1,0 +1,33 @@
+meta {
+  name: unknown sort field falls back to default
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/authors?sort=-bogus
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("data.items is an array", function() {
+    expect(res.body.data.items).to.be.an("array");
+  });
+
+  test("data.pagination exists", function() {
+    expect(res.body.data.pagination).to.be.an("object");
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

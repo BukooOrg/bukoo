@@ -1,21 +1,26 @@
 from __future__ import annotations
 
-from fastapi import APIRouter
+from typing import Annotated
+
+from fastapi import APIRouter, Depends
 
 from app.application.dtos.author_dto import (
     CreateAuthorCommand,
+    FindAuthorsCommand,
     SoftDeleteAuthorCommand,
     UpdateAuthorCommand,
     ViewAuthorDetailCommand,
 )
 from app.application.use_cases.author import (
     CreateAuthorUseCase,
+    FindAuthorsUseCase,
     SoftDeleteAuthorUseCase,
     UpdateAuthorUseCase,
     ViewAuthorDetailUseCase,
 )
 from app.presentation.dependencies.deps import AdminUser, AuthorRepo, DbSession
 from app.presentation.schemas.author_schema import (
+    AuthorListItemResponse,
     CreateAuthorRequest,
     CreateAuthorResponse,
     SoftDeleteAuthorResponse,
@@ -23,8 +28,36 @@ from app.presentation.schemas.author_schema import (
     UpdateAuthorResponse,
     ViewAuthorDetailResponse,
 )
+from app.presentation.schemas.list_schema import (
+    ListQueryRequest,
+    PaginatedResponse,
+    PaginationMeta,
+)
 
 router = APIRouter(prefix="/authors", tags=["author"])
+
+
+@router.get(
+    "",
+    response_model=PaginatedResponse[AuthorListItemResponse],
+    operation_id="findAuthors",
+)
+async def find_authors(
+    author_repo: AuthorRepo,
+    db_session: DbSession,
+    list_params: Annotated[ListQueryRequest, Depends(ListQueryRequest)],
+) -> PaginatedResponse[AuthorListItemResponse]:
+    use_case = FindAuthorsUseCase(db_session=db_session, author_repo=author_repo)
+    result = await use_case.execute(
+        FindAuthorsCommand(query=list_params.to_query_params())
+    )
+    return PaginatedResponse(
+        items=[
+            AuthorListItemResponse(id=a.id, name=a.name, created_at=a.created_at)
+            for a in result.items
+        ],
+        pagination=PaginationMeta.from_result(result),
+    )
 
 
 @router.get(

@@ -6,6 +6,7 @@ import pytest
 
 from app.application.dtos.author_dto import CreateAuthorCommand, CreateAuthorResult
 from app.application.use_cases.author.create_author import CreateAuthorUseCase
+from app.core.query_params import PaginatedResult, QueryParams
 from app.domain.entities import AuthorEntity
 from app.domain.repositories.author_repository import IAuthorRepository
 
@@ -13,6 +14,14 @@ from app.domain.repositories.author_repository import IAuthorRepository
 class FakeAuthorRepository(IAuthorRepository):
     def __init__(self) -> None:
         self._saved: AuthorEntity | None = None
+
+    async def find_all(self, query: QueryParams) -> PaginatedResult[AuthorEntity]:
+        return PaginatedResult(
+            items=[],
+            total_items=0,
+            page=query.page.page,
+            page_size=query.page.page_size,
+        )
 
     async def find_by_id(self, author_id: str) -> AuthorEntity | None:
         return None

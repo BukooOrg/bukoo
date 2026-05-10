@@ -7,6 +7,7 @@ import pytest
 
 from app.application.dtos.author_dto import UpdateAuthorCommand, UpdateAuthorResult
 from app.application.use_cases.author.update_author import UpdateAuthorUseCase
+from app.core.query_params import PaginatedResult, QueryParams
 from app.domain.entities import AuthorEntity
 from app.domain.exceptions import AuthorNotFoundError
 from app.domain.repositories.author_repository import IAuthorRepository
@@ -26,6 +27,14 @@ def _make_author(author_id: str = "author-001") -> AuthorEntity:
 class FakeAuthorRepository(IAuthorRepository):
     def __init__(self, author: AuthorEntity | None = None) -> None:
         self._author: AuthorEntity | None = author
+
+    async def find_all(self, query: QueryParams) -> PaginatedResult[AuthorEntity]:
+        return PaginatedResult(
+            items=[],
+            total_items=0,
+            page=query.page.page,
+            page_size=query.page.page_size,
+        )
 
     async def find_by_id(self, author_id: str) -> AuthorEntity | None:
         if self._author and self._author.id == author_id:
