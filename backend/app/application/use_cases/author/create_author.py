@@ -24,7 +24,11 @@ class CreateAuthorUseCase(BaseUseCase):
     async def execute(self, cmd: CreateAuthorCommand) -> CreateAuthorResult:
         now = datetime.now(UTC)
         author = AuthorEntity(
-            _id=str(uuid7()), _name=cmd.name, _created_at=now, _updated_at=now
+            _id=str(uuid7()),
+            _name=cmd.name,
+            _created_at=now,
+            _updated_at=now,
+            _deleted_at=None,
         )
 
         await self._author_repo.save(author)

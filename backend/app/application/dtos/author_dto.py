@@ -21,6 +21,11 @@ class UpdateAuthorCommand:
     name: str
 
 
+@dataclass(frozen=True)
+class SoftDeleteAuthorCommand:
+    author_id: str
+
+
 # results
 @dataclass(frozen=True)
 class ViewAuthorDetailResult:
@@ -41,3 +46,8 @@ class UpdateAuthorResult:
     id: str
     name: str
     created_at: datetime
+
+
+@dataclass(frozen=True)
+class SoftDeleteAuthorResult:
+    message: str

@@ -4,11 +4,13 @@ from fastapi import APIRouter
 
 from app.application.dtos.author_dto import (
     CreateAuthorCommand,
+    SoftDeleteAuthorCommand,
     UpdateAuthorCommand,
     ViewAuthorDetailCommand,
 )
 from app.application.use_cases.author import (
     CreateAuthorUseCase,
+    SoftDeleteAuthorUseCase,
     UpdateAuthorUseCase,
     ViewAuthorDetailUseCase,
 )
@@ -16,6 +18,7 @@ from app.presentation.dependencies.deps import AdminUser, AuthorRepo, DbSession
 from app.presentation.schemas.author_schema import (
     CreateAuthorRequest,
     CreateAuthorResponse,
+    SoftDeleteAuthorResponse,
     UpdateAuthorRequest,
     UpdateAuthorResponse,
     ViewAuthorDetailResponse,
@@ -77,3 +80,19 @@ async def update_author(
     return UpdateAuthorResponse(
         id=result.id, name=result.name, created_at=result.created_at
     )
+
+
+@router.delete(
+    "/{author_id}",
+    response_model=SoftDeleteAuthorResponse,
+    operation_id="softDeleteAuthor",
+)
+async def soft_delete_author(
+    author_id: str,
+    _admin: AdminUser,
+    author_repo: AuthorRepo,
+    db_session: DbSession,
+) -> SoftDeleteAuthorResponse:
+    use_case = SoftDeleteAuthorUseCase(db_session=db_session, author_repo=author_repo)
+    result = await use_case.execute(SoftDeleteAuthorCommand(author_id=author_id))
+    return SoftDeleteAuthorResponse(message=result.message)

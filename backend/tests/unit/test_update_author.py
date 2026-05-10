@@ -19,6 +19,7 @@ def _make_author(author_id: str = "author-001") -> AuthorEntity:
         _name="George Orwell",
         _created_at=now,
         _updated_at=now,
+        _deleted_at=None,
     )
 
 

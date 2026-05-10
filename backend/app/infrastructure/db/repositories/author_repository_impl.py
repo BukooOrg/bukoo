@@ -17,7 +17,11 @@ class AuthorRepositoryImpl(IAuthorRepository):
 
     @override
     async def find_by_id(self, author_id: str) -> AuthorEntity | None:
-        stmt = select(AuthorModel).where(AuthorModel.id == author_id)
+        stmt = (
+            select(AuthorModel)
+            .where(AuthorModel.id == author_id)
+            .where(AuthorModel.deleted_at.is_(None))
+        )
         result = await self._session.execute(stmt)
         model = result.scalar_one_or_none()
         return AuthorMapper.to_entity(model) if model else None

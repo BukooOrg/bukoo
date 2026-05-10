@@ -43,3 +43,7 @@ class ViewAuthorDetailResponse(BaseAuthorResponse):
 
 class UpdateAuthorResponse(BaseAuthorResponse):
     pass
+
+
+class SoftDeleteAuthorResponse(BaseModel):
+    message: str
