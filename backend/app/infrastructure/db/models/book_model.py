@@ -63,7 +63,7 @@ class BookModel(DefaultFieldMixin, SoftDeleteMixin):
     page_count: Mapped[int | None] = mapped_column(
         Integer(), nullable=True, default=None
     )
-    language: Mapped[str] = mapped_column(String(50), nullable=False, default="english")
+    language: Mapped[str] = mapped_column(String(50), nullable=False, default="English")
     published_date: Mapped[date | None] = mapped_column(
         Date(), nullable=True, default=None
     )

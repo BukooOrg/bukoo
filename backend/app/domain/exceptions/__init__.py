@@ -21,6 +21,7 @@ from .auth import (
     UserNotVerifiedError,
     UserSuspendedError,
 )
+from .author import AuthorNotFoundError
 from .base import DomainException
 from .book import (
     BookAlreadyExistsError,
@@ -90,4 +91,5 @@ __all__ = [
     "CurrentPasswordIncorrectError",
     "PasswordNotSetError",
     "NewPasswordSameAsCurrentError",
+    "AuthorNotFoundError",
 ]

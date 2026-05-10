@@ -1,0 +1,37 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/authors/{{authorId}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("data.id equals requested author ID", function() {
+    expect(res.body.data.id).to.equal(bru.getEnvVar("authorId"));
+  });
+
+  test("data.name is a non-empty string", function() {
+    expect(res.body.data.name).to.be.a("string").and.not.empty;
+  });
+
+  test("data.created_at is a string", function() {
+    expect(res.body.data.created_at).to.be.a("string");
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}
