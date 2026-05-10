@@ -1,5 +1,6 @@
 import {
   AuthApi,
+  AuthorApi,
   HealthApi,
   UserApi,
   CategoryApi,
@@ -27,7 +28,8 @@ const configuration = new Configuration({
 });
 
 export const authApi = new AuthApi(configuration);
-export const healthApi = new HealthApi(configuration);
-export const userApi = new UserApi(configuration);
+export const authorApi = new AuthorApi(configuration);
 export const categoryApi = new CategoryApi(configuration);
 export const collectionApi = new CollectionApi(configuration);
+export const healthApi = new HealthApi(configuration);
+export const userApi = new UserApi(configuration);
