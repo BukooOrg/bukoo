@@ -62,6 +62,11 @@ class UpdateBookCommand:
 
 
 @dataclass(frozen=True)
+class SoftDeleteBookCommand:
+    book_id: str
+
+
+@dataclass(frozen=True)
 class DeactivateBookCommand:
     book_id: str
 
@@ -135,6 +140,10 @@ class CreateBookResult(BaseBookResult):
 
 
 class UpdateBookResult(BaseBookResult):
+    pass
+
+
+class SoftDeleteBookResult(BaseBookResult):
     pass
 
 

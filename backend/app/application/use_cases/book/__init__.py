@@ -2,6 +2,7 @@ from .activate_book import ActivateBookUseCase
 from .create_book import CreateBookUseCase
 from .deactivate_book import DeactivateBookUseCase
 from .find_books import FindBooksUseCase
+from .soft_delete_book import SoftDeleteBookUseCase
 from .update_book import UpdateBookUseCase
 from .update_book_stock_quantity import UpdateBookStockQuantityUseCase
 from .upload_book_cover import UploadBookCoverUseCase
@@ -12,6 +13,7 @@ __all__ = [
     "CreateBookUseCase",
     "DeactivateBookUseCase",
     "FindBooksUseCase",
+    "SoftDeleteBookUseCase",
     "UpdateBookUseCase",
     "UpdateBookStockQuantityUseCase",
     "UploadBookCoverUseCase",

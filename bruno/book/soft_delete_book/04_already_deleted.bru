@@ -1,0 +1,29 @@
+meta {
+  name: already deleted
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}{{apiBase}}/books/{{bookId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is BOOK_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("BOOK_NOT_FOUND");
+  });
+}

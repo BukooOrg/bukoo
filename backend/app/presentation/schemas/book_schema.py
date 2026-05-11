@@ -150,6 +150,10 @@ class UpdateBookResponse(BaseBookResponse):
     pass
 
 
+class SoftDeleteBookResponse(BaseBookResponse):
+    pass
+
+
 class DeactivateBookResponse(BaseBookResponse):
     pass
 

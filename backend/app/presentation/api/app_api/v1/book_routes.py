@@ -10,6 +10,7 @@ from app.application.dtos.book_dto import (
     BookAuthorItem,
     CreateBookCommand,
     DeactivateBookCommand,
+    SoftDeleteBookCommand,
     UpdateBookCommand,
     UpdateBookStockQuantityCommand,
     UploadBookCoverCommand,
@@ -20,6 +21,7 @@ from app.application.use_cases.book import (
     CreateBookUseCase,
     DeactivateBookUseCase,
     FindBooksUseCase,
+    SoftDeleteBookUseCase,
     UpdateBookStockQuantityUseCase,
     UpdateBookUseCase,
     UploadBookCoverUseCase,
@@ -48,6 +50,7 @@ from app.presentation.schemas.book_schema import (
     CreateBookRequest,
     CreateBookResponse,
     DeactivateBookResponse,
+    SoftDeleteBookResponse,
     UpdateBookRequest,
     UpdateBookResponse,
     UpdateBookStockQuantityRequest,
@@ -226,6 +229,22 @@ async def update_book(
         )
     )
     return build_base_book_response(result, UpdateBookResponse)
+
+
+@router.delete(
+    "/{book_id}",
+    response_model=SoftDeleteBookResponse,
+    operation_id="softDeleteBook",
+)
+async def soft_delete_book(
+    book_id: str,
+    _admin_user: AdminUser,
+    book_repo: BookRepo,
+    db_session: DbSession,
+) -> SoftDeleteBookResponse:
+    use_case = SoftDeleteBookUseCase(db_session=db_session, book_repo=book_repo)
+    result = await use_case.execute(SoftDeleteBookCommand(book_id=book_id))
+    return build_base_book_response(result, SoftDeleteBookResponse)
 
 
 @router.patch(
