@@ -1,0 +1,49 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/books/{{bookId}}/stock
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "stock_quantity": 11
+  }
+  
+  
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.id equals bookId", function() {
+    expect(res.body.data.id).to.equal(bru.getEnvVar("bookId"));
+  });
+  
+  test("data.stock_quantity equals requested quantity", function() {
+    expect(res.body.data.stock_quantity).to.equal(10);
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

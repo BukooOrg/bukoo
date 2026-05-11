@@ -11,6 +11,7 @@ from app.application.dtos.book_dto import (
     CreateBookCommand,
     DeactivateBookCommand,
     UpdateBookCommand,
+    UpdateBookStockQuantityCommand,
     ViewBookDetailCommand,
 )
 from app.application.use_cases.book import (
@@ -18,6 +19,7 @@ from app.application.use_cases.book import (
     CreateBookUseCase,
     DeactivateBookUseCase,
     FindBooksUseCase,
+    UpdateBookStockQuantityUseCase,
     UpdateBookUseCase,
     ViewBookDetailUseCase,
 )
@@ -43,6 +45,8 @@ from app.presentation.schemas.book_schema import (
     DeactivateBookResponse,
     UpdateBookRequest,
     UpdateBookResponse,
+    UpdateBookStockQuantityRequest,
+    UpdateBookStockQuantityResponse,
     ViewBookDetailQueryRequest,
     ViewBookDetailResponse,
 )
@@ -247,3 +251,26 @@ async def activate_book(
     use_case = ActivateBookUseCase(db_session=db_session, book_repo=book_repo)
     result = await use_case.execute(ActivateBookCommand(book_id=book_id))
     return build_base_book_response(result, ActivateBookResponse)
+
+
+@router.patch(
+    "/{book_id}/stock",
+    response_model=UpdateBookStockQuantityResponse,
+    operation_id="updateBookStockQuantity",
+)
+async def update_book_stock_quantity(
+    book_id: str,
+    body: UpdateBookStockQuantityRequest,
+    _admin_user: AdminUser,
+    book_repo: BookRepo,
+    db_session: DbSession,
+) -> UpdateBookStockQuantityResponse:
+    use_case = UpdateBookStockQuantityUseCase(
+        db_session=db_session, book_repo=book_repo
+    )
+    result = await use_case.execute(
+        UpdateBookStockQuantityCommand(
+            book_id=book_id, stock_quantity=body.stock_quantity
+        )
+    )
+    return build_base_book_response(result, UpdateBookStockQuantityResponse)

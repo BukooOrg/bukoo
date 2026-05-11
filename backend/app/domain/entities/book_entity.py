@@ -179,6 +179,10 @@ class BookEntity:
         self._authors.sort(key=lambda a: a.display_order)
         self._updated_at = datetime.now(UTC)
 
+    def set_stock(self, stock_quantity: int) -> None:
+        self._stock_quantity = stock_quantity
+        self._updated_at = datetime.now(UTC)
+
     def update(
         self,
         title: str,

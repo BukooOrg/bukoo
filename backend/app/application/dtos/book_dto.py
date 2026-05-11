@@ -70,6 +70,12 @@ class ActivateBookCommand:
     book_id: str
 
 
+@dataclass(frozen=True)
+class UpdateBookStockQuantityCommand:
+    book_id: str
+    stock_quantity: int
+
+
 # results
 @dataclass(frozen=True)
 class BookPublisherResult:
@@ -129,4 +135,8 @@ class DeactivateBookResult(BaseBookResult):
 
 
 class ActivateBookResult(BaseBookResult):
+    pass
+
+
+class UpdateBookStockQuantityResult(BaseBookResult):
     pass

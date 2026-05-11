@@ -97,6 +97,10 @@ class UpdateBookRequest(BaseModel):
     authors: list[BookAuthorItemRequest] | None | Literal["null"] = Field(default=None)
 
 
+class UpdateBookStockQuantityRequest(BaseModel):
+    stock_quantity: int = Field(ge=0)
+
+
 # responses
 class BookPublisherResponse(BaseModel):
     id: str
@@ -150,4 +154,8 @@ class DeactivateBookResponse(BaseBookResponse):
 
 
 class ActivateBookResponse(BaseBookResponse):
+    pass
+
+
+class UpdateBookStockQuantityResponse(BaseBookResponse):
     pass
