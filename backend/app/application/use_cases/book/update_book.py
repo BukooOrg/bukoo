@@ -61,6 +61,12 @@ class UpdateBookUseCase(BaseBookUseCase):
         if cmd.description is not None:
             description = None if cmd.description == "null" else cmd.description
 
+        # * only set the cover_url in db to None, the actual cover is still persisted in object storage
+        cover_url = book.cover_url
+        if cmd.cover_url is not None:
+            assert cmd.cover_url == "null"
+            cover_url = None
+
         page_count = book.page_count
         if cmd.page_count is not None:
             page_count = None if cmd.page_count == "null" else cmd.page_count
@@ -123,6 +129,7 @@ class UpdateBookUseCase(BaseBookUseCase):
             language=cmd.language or book.language,
             isbn=isbn,
             description=description,
+            cover_url=cover_url,
             page_count=page_count,
             published_date=published_date,
             publisher=publisher,

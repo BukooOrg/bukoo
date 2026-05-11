@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated, TypeVar
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile
 
 from app.application.dtos.book_dto import (
     ActivateBookCommand,
@@ -12,6 +12,7 @@ from app.application.dtos.book_dto import (
     DeactivateBookCommand,
     UpdateBookCommand,
     UpdateBookStockQuantityCommand,
+    UploadBookCoverCommand,
     ViewBookDetailCommand,
 )
 from app.application.use_cases.book import (
@@ -21,9 +22,12 @@ from app.application.use_cases.book import (
     FindBooksUseCase,
     UpdateBookStockQuantityUseCase,
     UpdateBookUseCase,
+    UploadBookCoverUseCase,
     ViewBookDetailUseCase,
 )
+from app.core.constants import ALLOWED_COVER_TYPES, MAX_COVER_BYTES
 from app.core.util import build_public_url
+from app.domain.exceptions import FileSizeExceededError, InvalidFileTypeError
 from app.domain.repositories.book_repository import BookStatusFilter
 from app.presentation.dependencies.deps import (
     AdminUser,
@@ -32,6 +36,7 @@ from app.presentation.dependencies.deps import (
     CategoryRepo,
     DbSession,
     PublisherRepo,
+    StorageService,
 )
 from app.presentation.schemas.book_schema import (
     ActivateBookResponse,
@@ -47,6 +52,7 @@ from app.presentation.schemas.book_schema import (
     UpdateBookResponse,
     UpdateBookStockQuantityRequest,
     UpdateBookStockQuantityResponse,
+    UploadBookCoverResponse,
     ViewBookDetailQueryRequest,
     ViewBookDetailResponse,
 )
@@ -206,6 +212,7 @@ async def update_book(
             language=body.language,
             isbn=body.isbn,
             description=body.description,
+            cover_url=body.cover_url,
             page_count=body.page_count,
             published_date=body.published_date,
             publisher_id=body.publisher_id,
@@ -274,3 +281,39 @@ async def update_book_stock_quantity(
         )
     )
     return build_base_book_response(result, UpdateBookStockQuantityResponse)
+
+
+@router.post(
+    "/{book_id}/cover",
+    response_model=UploadBookCoverResponse,
+    operation_id="uploadBookCover",
+)
+async def upload_book_cover(
+    book_id: str,
+    file: UploadFile,
+    _admin_user: AdminUser,
+    book_repo: BookRepo,
+    storage_svc: StorageService,
+    db_session: DbSession,
+) -> UploadBookCoverResponse:
+    if file.content_type not in ALLOWED_COVER_TYPES:
+        raise InvalidFileTypeError(ALLOWED_COVER_TYPES)
+
+    file_data = await file.read()
+    if len(file_data) > MAX_COVER_BYTES:
+        raise FileSizeExceededError(MAX_COVER_BYTES // 1024**2, "MB")
+
+    content_type = file.content_type or "application/octet-stream"
+    use_case = UploadBookCoverUseCase(
+        db_session=db_session,
+        book_repo=book_repo,
+        storage_svc=storage_svc,
+    )
+    result = await use_case.execute(
+        UploadBookCoverCommand(
+            book_id=book_id,
+            file_data=file_data,
+            content_type=content_type,
+        )
+    )
+    return build_base_book_response(result, UploadBookCoverResponse)

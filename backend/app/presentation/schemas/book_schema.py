@@ -90,6 +90,7 @@ class UpdateBookRequest(BaseModel):
     language: str | None = Field(min_length=1, max_length=100, default=None)
     isbn: Isbn13Str | None | Literal["null"] = Field(default=None)
     description: str | None | Literal["null"] = Field(default=None, max_length=5000)
+    cover_url: None | Literal["null"] = None
     page_count: int | None | Literal["null"] = Field(default=None, ge=1)
     published_date: date | None | Literal["null"] = None
     publisher_id: str | None | Literal["null"] = None
@@ -158,4 +159,8 @@ class ActivateBookResponse(BaseBookResponse):
 
 
 class UpdateBookStockQuantityResponse(BaseBookResponse):
+    pass
+
+
+class UploadBookCoverResponse(BaseBookResponse):
     pass

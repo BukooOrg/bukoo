@@ -53,6 +53,7 @@ class UpdateBookCommand:
     language: str | None
     isbn: str | None | Literal["null"] = None
     description: str | None | Literal["null"] = None
+    cover_url: None | Literal["null"] = None
     page_count: int | None | Literal["null"] = None
     published_date: date | None | Literal["null"] = None
     publisher_id: str | None | Literal["null"] = None
@@ -74,6 +75,13 @@ class ActivateBookCommand:
 class UpdateBookStockQuantityCommand:
     book_id: str
     stock_quantity: int
+
+
+@dataclass(frozen=True)
+class UploadBookCoverCommand:
+    book_id: str
+    file_data: bytes
+    content_type: str
 
 
 # results
@@ -139,4 +147,8 @@ class ActivateBookResult(BaseBookResult):
 
 
 class UpdateBookStockQuantityResult(BaseBookResult):
+    pass
+
+
+class UploadBookCoverResult(BaseBookResult):
     pass

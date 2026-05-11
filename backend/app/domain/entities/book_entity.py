@@ -183,6 +183,10 @@ class BookEntity:
         self._stock_quantity = stock_quantity
         self._updated_at = datetime.now(UTC)
 
+    def set_cover_url(self, cover_url: str) -> None:
+        self._cover_url = cover_url
+        self._updated_at = datetime.now(UTC)
+
     def update(
         self,
         title: str,
@@ -191,6 +195,7 @@ class BookEntity:
         language: str,
         isbn: str | None,
         description: str | None,
+        cover_url: str | None,
         page_count: int | None,
         published_date: date | None,
         publisher: PublisherEntity | None,
@@ -203,6 +208,7 @@ class BookEntity:
         self._language = language
         self._isbn = isbn
         self._description = description
+        self._cover_url = cover_url
         self._page_count = page_count
         self._published_date = published_date
         self._publisher = publisher
