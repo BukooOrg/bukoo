@@ -29,6 +29,7 @@ class PageParams:
 class QueryParams:
     page: PageParams = field(default_factory=PageParams)
     sorts: list[SortOrder] = field(default_factory=list)
+    search: str | None = None
 
 
 @dataclass(frozen=True)

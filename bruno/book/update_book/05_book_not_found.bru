@@ -1,0 +1,40 @@
+meta {
+  name: book not found
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/books/00000000-0000-7000-0000-000000000000
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // book_id does not exist
+  {
+    "title": "Ghost Book"
+  }
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is BOOK_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("BOOK_NOT_FOUND");
+  });
+}

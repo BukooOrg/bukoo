@@ -7,6 +7,8 @@ from app.domain.exceptions import (
     AddressNotFoundError,
     AdminAccessRequiredError,
     AuthorNotFoundError,
+    BookAlreadyActivatedError,
+    BookAlreadyDeactivatedError,
     BookAlreadyExistsError,
     BookNotFoundError,
     CategoryAlreadyExistsError,
@@ -32,6 +34,7 @@ from app.domain.exceptions import (
     OrderNotFoundError,
     OutOfStockError,
     PasswordNotSetError,
+    PublisherNotFoundError,
     StorageUploadError,
     TokenAlreadyRevokedError,
     TokenExpiredError,
@@ -123,6 +126,16 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         "Your new password must be different from your current one. Please choose a new, unique password.",
     ),
     # Book
+    BookAlreadyActivatedError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.BOOK_ALREADY_ACTIVATED,
+        "Book already activated",
+    ),
+    BookAlreadyDeactivatedError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.BOOK_ALREADY_DEACTIVATED,
+        "Book already deactivated",
+    ),
     BookNotFoundError: HttpExceptionMapping(
         status.HTTP_404_NOT_FOUND,
         ErrorCode.BOOK_NOT_FOUND,
@@ -239,5 +252,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_404_NOT_FOUND,
         ErrorCode.AUTHOR_NOT_FOUND,
         "You do not have author",
+    ),
+    # publisher
+    PublisherNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.PUBLISHER_NOT_FOUND,
+        "Publisher not found.",
     ),
 }

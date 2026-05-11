@@ -24,6 +24,8 @@ from .auth import (
 from .author import AuthorNotFoundError
 from .base import DomainException
 from .book import (
+    BookAlreadyActivatedError,
+    BookAlreadyDeactivatedError,
     BookAlreadyExistsError,
     BookNotFoundError,
     InvalidISBNError,
@@ -41,6 +43,7 @@ from .payment import (
     PaymentCreationError,
     PaymentVerificationError,
 )
+from .publisher import PublisherNotFoundError
 from .storage import (
     FileSizeExceededError,
     InvalidFileTypeError,
@@ -65,6 +68,8 @@ __all__ = [
     "UserNotFoundError",
     "UserNotVerifiedError",
     "UserSuspendedError",
+    "BookAlreadyActivatedError",
+    "BookAlreadyDeactivatedError",
     "BookAlreadyExistsError",
     "BookNotFoundError",
     "InvalidISBNError",
@@ -92,4 +97,5 @@ __all__ = [
     "PasswordNotSetError",
     "NewPasswordSameAsCurrentError",
     "AuthorNotFoundError",
+    "PublisherNotFoundError",
 ]

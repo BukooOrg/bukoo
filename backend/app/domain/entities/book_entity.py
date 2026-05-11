@@ -160,6 +160,14 @@ class BookEntity:
         self._stock_quantity -= qty
         self._updated_at = datetime.now(UTC)
 
+    def set_publisher(self, publisher: PublisherEntity) -> None:
+        self._publisher = publisher
+        self._publisher_id = publisher.id
+
+    def set_category(self, category: CategoryEntity) -> None:
+        self._category = category
+        self._category_id = category.id
+
     def set_author(self, author: BookAuthorEntity) -> None:
         """
         Add or replace an author association by author_id.
@@ -169,4 +177,43 @@ class BookEntity:
         self._authors = [a for a in self._authors if a.author_id != author.author_id]
         self._authors.append(author)
         self._authors.sort(key=lambda a: a.display_order)
+        self._updated_at = datetime.now(UTC)
+
+    def set_stock(self, stock_quantity: int) -> None:
+        self._stock_quantity = stock_quantity
+        self._updated_at = datetime.now(UTC)
+
+    def set_cover_url(self, cover_url: str) -> None:
+        self._cover_url = cover_url
+        self._updated_at = datetime.now(UTC)
+
+    def update(
+        self,
+        title: str,
+        price: Decimal,
+        stock_quantity: int,
+        language: str,
+        isbn: str | None,
+        description: str | None,
+        cover_url: str | None,
+        page_count: int | None,
+        published_date: date | None,
+        publisher: PublisherEntity | None,
+        category: CategoryEntity | None,
+        authors: list[BookAuthorEntity],
+    ) -> None:
+        self._title = title
+        self._price = price
+        self._stock_quantity = stock_quantity
+        self._language = language
+        self._isbn = isbn
+        self._description = description
+        self._cover_url = cover_url
+        self._page_count = page_count
+        self._published_date = published_date
+        self._publisher = publisher
+        self._publisher_id = None if publisher is None else publisher.id
+        self._category = category
+        self._category_id = None if category is None else category.id
+        self._authors = authors
         self._updated_at = datetime.now(UTC)

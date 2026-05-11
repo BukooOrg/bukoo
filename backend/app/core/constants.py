@@ -62,3 +62,6 @@ class VerificationTokenType(StrEnum):
 
 ALLOWED_AVATAR_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
 MAX_AVATAR_BYTES = 5 * 1024 * 1024  # 5MB
+
+ALLOWED_COVER_TYPES = {"image/jpeg", "image/png", "image/webp"}
+MAX_COVER_BYTES = 1 * 1024 * 1024  # 10MB

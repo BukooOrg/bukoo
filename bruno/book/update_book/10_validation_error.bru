@@ -1,0 +1,37 @@
+meta {
+  name: validation error
+  type: http
+  seq: 10
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/books/{{bookId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // price must be > 0; zero fails Pydantic validation
+  {
+    "title": "",
+    "price": 0
+  }
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+}
