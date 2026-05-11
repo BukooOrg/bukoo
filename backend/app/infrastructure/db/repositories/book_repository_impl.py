@@ -9,7 +9,7 @@ from sqlalchemy.orm import InstrumentedAttribute, selectinload
 from app.core.query_params import PaginatedResult, QueryParams
 from app.domain.entities import BookEntity
 from app.domain.repositories import IBookRepository
-from app.domain.repositories.book_repository import BookFilters
+from app.domain.repositories.book_repository import BookFilters, BookStatusFilter
 from app.infrastructure.db.mappers import BookMapper
 from app.infrastructure.db.models import AuthorModel, BookAuthorModel, BookModel
 from app.infrastructure.db.models.category_model import CategoryModel
@@ -144,11 +144,24 @@ class BookRepositoryImpl(IBookRepository):
         )
 
     @override
-    async def find_by_id(self, book_id: str) -> BookEntity | None:
+    async def find_by_id(
+        self, book_id: str, filters: BookStatusFilter
+    ) -> BookEntity | None:
+        conditions: list[ColumnElement[bool]] = [
+            BookModel.deleted_at.is_(None),
+        ]
+
+        if filters.status == "activate":
+            conditions.append(BookModel.deactivated_at.is_(None))
+        elif filters.status == "deactivate":
+            conditions.append(BookModel.deactivated_at.is_not(None))
+
+        where_clause = and_(*conditions)
+
         stmt = (
             select(BookModel)
             .where(BookModel.id == book_id)
-            .where(BookModel.deleted_at.is_(None))
+            .where(where_clause)
             .options(
                 selectinload(BookModel.publisher),
                 selectinload(BookModel.category),

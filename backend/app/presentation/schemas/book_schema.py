@@ -13,7 +13,15 @@ from app.presentation.schemas.list_schema import ListQueryRequest
 
 
 # requests
-class BookListQueryRequest(ListQueryRequest):
+class ViewBookDetailQueryRequest(BaseModel):
+    status: Literal["activate", "deactivate", "all"] = Field(
+        default="activate",
+        description="Filter books by their current operational status.",
+        examples=["activate", "all"],
+    )
+
+
+class BookListQueryRequest(ListQueryRequest, ViewBookDetailQueryRequest):
     category_id: str | None = None
     author_id: str | None = None
     publisher_id: str | None = None
@@ -22,7 +30,6 @@ class BookListQueryRequest(ListQueryRequest):
     price_min: Decimal | None = Field(default=None, ge=0)
     price_max: Decimal | None = Field(default=None, ge=0)
     in_stock: bool | None = None
-    status: Literal["activate", "deactivate", "all"] = "activate"
 
     @model_validator(mode="after")
     def validate_price_range(self) -> Self:
@@ -90,3 +97,7 @@ class BaseBookResponse(BaseModel):
     authors: list[BookAuthorItemResponse]
     created_at: datetime
     updated_at: datetime
+
+
+class ViewBookDetailResponse(BaseBookResponse):
+    pass

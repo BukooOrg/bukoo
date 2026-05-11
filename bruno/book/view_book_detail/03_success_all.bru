@@ -1,0 +1,29 @@
+meta {
+  name: success all books regardless of status
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/books/{{deactivatedBookId}}?status=all
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("data.id equals requested book ID", function() {
+    expect(res.body.data.id).to.equal(bru.getEnvVar("deactivatedBookId"));
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

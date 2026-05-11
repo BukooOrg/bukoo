@@ -10,7 +10,12 @@ from app.domain.entities import BookEntity
 
 
 @dataclass(frozen=True)
-class BookFilters:
+class BookStatusFilter:
+    status: Literal["activate", "deactivate", "all"] = "activate"
+
+
+@dataclass(frozen=True)
+class BookFilters(BookStatusFilter):
     search: str | None = None
     category_id: str | None = None
     author_id: str | None = None
@@ -20,7 +25,6 @@ class BookFilters:
     price_min: Decimal | None = None
     price_max: Decimal | None = None
     in_stock: bool | None = None
-    status: Literal["activate", "deactivate", "all"] = "activate"
 
 
 class IBookRepository(ABC):
@@ -31,7 +35,9 @@ class IBookRepository(ABC):
         pass
 
     @abstractmethod
-    async def find_by_id(self, book_id: str) -> BookEntity | None:
+    async def find_by_id(
+        self, book_id: str, filters: BookStatusFilter
+    ) -> BookEntity | None:
         pass
 
     @abstractmethod

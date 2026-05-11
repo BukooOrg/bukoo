@@ -1,0 +1,33 @@
+meta {
+  name: success deactivated book
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/books/{{deactivatedBookId}}?status=deactivate
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("data.is_active is false", function() {
+    expect(res.body.data.is_active).to.be.false;
+  });
+
+  test("data.id equals requested book ID", function() {
+    expect(res.body.data.id).to.equal(bru.getEnvVar("deactivatedBookId"));
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

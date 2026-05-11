@@ -5,7 +5,7 @@ from datetime import date, datetime
 from decimal import Decimal
 
 from app.core.query_params import QueryParams
-from app.domain.repositories.book_repository import BookFilters
+from app.domain.repositories.book_repository import BookFilters, BookStatusFilter
 
 
 # commands
@@ -13,6 +13,12 @@ from app.domain.repositories.book_repository import BookFilters
 class FindBooksCommand:
     query: QueryParams
     filters: BookFilters = field(default_factory=BookFilters)
+
+
+@dataclass(frozen=True)
+class ViewBookDetailCommand:
+    book_id: str
+    filters: BookStatusFilter = field(default_factory=BookStatusFilter)
 
 
 # results
@@ -53,3 +59,8 @@ class BaseBookResult:
     authors: list[BookAuthorItemResult]
     created_at: datetime
     updated_at: datetime
+
+
+@dataclass(frozen=True)
+class ViewBookDetailResult(BaseBookResult):
+    pass

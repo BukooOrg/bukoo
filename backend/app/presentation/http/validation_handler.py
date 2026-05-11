@@ -6,6 +6,7 @@ Other response envelopes are handled by ResponseFormatterMiddleware in backend/a
 from datetime import UTC, datetime
 
 from fastapi import Request, status
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
@@ -13,7 +14,7 @@ from app.application.errors.error_codes import ErrorCode
 
 
 def validation_exception_handler(request: Request, exc: Exception) -> JSONResponse:
-    if not isinstance(exc, ValidationError):
+    if not isinstance(exc, ValidationError | RequestValidationError):
         raise exc
 
     request_id = getattr(request.state, "request_id", None)
