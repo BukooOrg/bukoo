@@ -16,11 +16,13 @@ class ListQueryRequest(BaseModel):
     sort: str | None = None
     page: int = Field(default=1, ge=1)
     page_size: int = Field(default=20, ge=1, le=100)
+    search: str | None = None
 
     def to_query_params(self) -> QueryParams:
         return QueryParams(
             page=PageParams(page=self.page, page_size=self.page_size),
             sorts=parse_sort(self.sort),
+            search=self.search,
         )
 
 

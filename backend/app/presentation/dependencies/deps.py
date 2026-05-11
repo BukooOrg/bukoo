@@ -30,6 +30,7 @@ from app.domain.repositories import (
     IAccountRepository,
     IAddressRepository,
     IAuthorRepository,
+    IBookRepository,
     ICategoryRepository,
     ICollectionRepository,
     IUserRepository,
@@ -47,6 +48,7 @@ from app.infrastructure.db.repositories import (
     AccountRepositoryImpl,
     AddressRepositoryImpl,
     AuthorRepositoryImpl,
+    BookRepositoryImpl,
     CategoryRepositoryImpl,
     CollectionRepositoryImpl,
     UserRepositoryImpl,
@@ -109,6 +111,13 @@ def get_author_repository(session: DbSession) -> IAuthorRepository:
 
 
 AuthorRepo = Annotated[IAuthorRepository, Depends(get_author_repository)]
+
+
+def get_book_repository(session: DbSession) -> IBookRepository:
+    return BookRepositoryImpl(session)
+
+
+BookRepo = Annotated[IBookRepository, Depends(get_book_repository)]
 
 
 def get_collection_repository(session: DbSession) -> ICollectionRepository:
