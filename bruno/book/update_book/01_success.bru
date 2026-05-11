@@ -1,0 +1,63 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/books/{{bookId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // partial update — title and price only; other fields left unchanged
+  // {
+  //   "title": "The Pragmatic Programmer (20th Anniversary Edition)",
+  //   "price": 59.99
+  // }
+  {
+  //   "title": "The Pragmatic Programmer (20th Anniversary Edition)",
+    "description": "Your journey to mastery. The only to become a Pragmatic Programmer from now without procratinating any time in this 21th century.🔥🔥"
+    
+  //   "price": 59.99
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.id equals bookId", function() {
+    expect(res.body.data.id).to.equal(bru.getEnvVar("bookId"));
+  });
+  
+  test("data.title is updated", function() {
+    expect(res.body.data.title).to.equal("The Pragmatic Programmer (20th Anniversary Edition)");
+  });
+  
+  test("data.price is updated", function() {
+    expect(res.body.data.price).to.equal("59.99");
+  });
+  
+  test("data.is_active is a boolean", function() {
+    expect(res.body.data.is_active).to.be.a("boolean");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

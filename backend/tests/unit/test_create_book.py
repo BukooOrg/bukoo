@@ -7,7 +7,9 @@ from unittest.mock import AsyncMock
 import pytest
 
 from app.application.dtos.book_dto import (
-    CreateBookAuthorItem,
+    BookAuthorItem as CreateBookAuthorItem,
+)
+from app.application.dtos.book_dto import (
     CreateBookCommand,
     CreateBookResult,
 )

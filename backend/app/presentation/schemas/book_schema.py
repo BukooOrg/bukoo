@@ -64,7 +64,7 @@ class BookListQueryRequest(ListQueryRequest, ViewBookDetailQueryRequest):
         )
 
 
-class CreateBookAuthorItemRequest(BaseModel):
+class BookAuthorItemRequest(BaseModel):
     author_id: str
     display_order: int = Field(ge=1)
 
@@ -80,7 +80,21 @@ class CreateBookRequest(BaseModel):
     published_date: date | None = None
     publisher_id: str | None = None
     category_id: str | None = None
-    authors: list[CreateBookAuthorItemRequest] = Field(default_factory=list)
+    authors: list[BookAuthorItemRequest] = Field(default_factory=list)
+
+
+class UpdateBookRequest(BaseModel):
+    title: str | None = Field(min_length=1, max_length=500, default=None)
+    price: Decimal | None = Field(gt=0, decimal_places=2, default=None)
+    stock_quantity: int | None = Field(ge=0, default=None)
+    language: str | None = Field(min_length=1, max_length=100, default=None)
+    isbn: Isbn13Str | None | Literal["null"] = Field(default=None)
+    description: str | None | Literal["null"] = Field(default=None, max_length=5000)
+    page_count: int | None | Literal["null"] = Field(default=None, ge=1)
+    published_date: date | None | Literal["null"] = None
+    publisher_id: str | None | Literal["null"] = None
+    category_id: str | None | Literal["null"] = None
+    authors: list[BookAuthorItemRequest] | None | Literal["null"] = Field(default=None)
 
 
 # responses
@@ -124,4 +138,8 @@ class ViewBookDetailResponse(BaseBookResponse):
 
 
 class CreateBookResponse(BaseBookResponse):
+    pass
+
+
+class UpdateBookResponse(BaseBookResponse):
     pass

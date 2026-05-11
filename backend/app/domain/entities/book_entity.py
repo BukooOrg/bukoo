@@ -178,3 +178,32 @@ class BookEntity:
         self._authors.append(author)
         self._authors.sort(key=lambda a: a.display_order)
         self._updated_at = datetime.now(UTC)
+
+    def update(
+        self,
+        title: str,
+        price: Decimal,
+        stock_quantity: int,
+        language: str,
+        isbn: str | None,
+        description: str | None,
+        page_count: int | None,
+        published_date: date | None,
+        publisher: PublisherEntity | None,
+        category: CategoryEntity | None,
+        authors: list[BookAuthorEntity],
+    ) -> None:
+        self._title = title
+        self._price = price
+        self._stock_quantity = stock_quantity
+        self._language = language
+        self._isbn = isbn
+        self._description = description
+        self._page_count = page_count
+        self._published_date = published_date
+        self._publisher = publisher
+        self._publisher_id = None if publisher is None else publisher.id
+        self._category = category
+        self._category_id = None if category is None else category.id
+        self._authors = authors
+        self._updated_at = datetime.now(UTC)

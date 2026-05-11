@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, ClassVar, override
 
-from sqlalchemy import ColumnElement, and_, exists, func, or_, select
+from sqlalchemy import ColumnElement, and_, delete, exists, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute, selectinload
 
@@ -197,6 +197,9 @@ class BookRepositoryImpl(IBookRepository):
         model = BookMapper.to_model(book)
         await self._session.merge(model)
 
+        await self._session.execute(
+            delete(BookAuthorModel).where(BookAuthorModel.book_id == book.id)
+        )
         for book_author_entity in book.authors:
             book_author_model = BookAuthorMapper.to_model(book_author_entity)
-            await self._session.merge(book_author_model)
+            self._session.add(book_author_model)

@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from decimal import Decimal
+from typing import Literal
 
 from app.core.query_params import QueryParams
 from app.domain.repositories.book_repository import BookFilters, BookStatusFilter
@@ -23,7 +24,7 @@ class ViewBookDetailCommand:
 
 # create book
 @dataclass(frozen=True)
-class CreateBookAuthorItem:
+class BookAuthorItem:
     author_id: str
     display_order: int
 
@@ -40,7 +41,23 @@ class CreateBookCommand:
     published_date: date | None = None
     publisher_id: str | None = None
     category_id: str | None = None
-    authors: list[CreateBookAuthorItem] = field(default_factory=list)
+    authors: list[BookAuthorItem] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class UpdateBookCommand:
+    book_id: str
+    title: str | None
+    price: Decimal | None
+    stock_quantity: int | None
+    language: str | None
+    isbn: str | None | Literal["null"] = None
+    description: str | None | Literal["null"] = None
+    page_count: int | None | Literal["null"] = None
+    published_date: date | None | Literal["null"] = None
+    publisher_id: str | None | Literal["null"] = None
+    category_id: str | None | Literal["null"] = None
+    authors: list[BookAuthorItem] | None | Literal["null"] = None
 
 
 # results
@@ -90,4 +107,8 @@ class ViewBookDetailResult(BaseBookResult):
 
 @dataclass(frozen=True)
 class CreateBookResult(BaseBookResult):
+    pass
+
+
+class UpdateBookResult(BaseBookResult):
     pass
