@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from datetime import date, datetime
 from decimal import Decimal
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import (
+    Computed,
     Date,
     DateTime,
     ForeignKey,
@@ -14,7 +15,9 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    text,
 )
+from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
 from .base import DefaultFieldMixin, SoftDeleteMixin
@@ -50,9 +53,20 @@ class BookModel(DefaultFieldMixin, SoftDeleteMixin):
         Index("idx_books_publisher_id", "publisher_id"),
         Index("idx_books_title", "title"),
         Index("idx_books_deleted_at", "deleted_at"),
+        Index("idx_books_search_vector", text("search_vector"), postgresql_using="gin"),
     )
 
     title: Mapped[str] = mapped_column(String(500), nullable=False)
+    search_vector: Mapped[Any] = mapped_column(
+        TSVECTOR,
+        Computed(
+            "to_tsvector('english', coalesce(title, '') || ' ' || coalesce(description, ''))",
+            persisted=True,
+        ),
+        nullable=True,
+        init=False,
+        repr=False,
+    )
     price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     isbn: Mapped[str | None] = mapped_column(String(20), nullable=True, default=None)
     description: Mapped[str | None] = mapped_column(Text(), nullable=True, default=None)
