@@ -21,6 +21,28 @@ class ViewBookDetailCommand:
     filters: BookStatusFilter = field(default_factory=BookStatusFilter)
 
 
+# create book
+@dataclass(frozen=True)
+class CreateBookAuthorItem:
+    author_id: str
+    display_order: int
+
+
+@dataclass(frozen=True)
+class CreateBookCommand:
+    title: str
+    price: Decimal
+    stock_quantity: int
+    language: str
+    isbn: str | None = None
+    description: str | None = None
+    page_count: int | None = None
+    published_date: date | None = None
+    publisher_id: str | None = None
+    category_id: str | None = None
+    authors: list[CreateBookAuthorItem] = field(default_factory=list)
+
+
 # results
 @dataclass(frozen=True)
 class BookPublisherResult:
@@ -63,4 +85,9 @@ class BaseBookResult:
 
 @dataclass(frozen=True)
 class ViewBookDetailResult(BaseBookResult):
+    pass
+
+
+@dataclass(frozen=True)
+class CreateBookResult(BaseBookResult):
     pass

@@ -160,6 +160,14 @@ class BookEntity:
         self._stock_quantity -= qty
         self._updated_at = datetime.now(UTC)
 
+    def set_publisher(self, publisher: PublisherEntity) -> None:
+        self._publisher = publisher
+        self._publisher_id = publisher.id
+
+    def set_category(self, category: CategoryEntity) -> None:
+        self._category = category
+        self._category_id = category.id
+
     def set_author(self, author: BookAuthorEntity) -> None:
         """
         Add or replace an author association by author_id.

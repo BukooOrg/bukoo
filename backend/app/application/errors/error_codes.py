@@ -74,3 +74,6 @@ class ErrorCode(StrEnum):
 
     # Author
     AUTHOR_NOT_FOUND = "AUTHOR_NOT_FOUND"
+
+    # Publisher
+    PUBLISHER_NOT_FOUND = "PUBLISHER_NOT_FOUND"

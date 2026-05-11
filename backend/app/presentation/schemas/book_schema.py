@@ -7,6 +7,7 @@ from typing import Literal, Self
 from pydantic import BaseModel, Field, model_validator
 
 from app.application.dtos.book_dto import FindBooksCommand
+from app.application.validators import Isbn13Str
 from app.core.query_params import PageParams, QueryParams, parse_sort
 from app.domain.repositories.book_repository import BookFilters
 from app.presentation.schemas.list_schema import ListQueryRequest
@@ -63,6 +64,25 @@ class BookListQueryRequest(ListQueryRequest, ViewBookDetailQueryRequest):
         )
 
 
+class CreateBookAuthorItemRequest(BaseModel):
+    author_id: str
+    display_order: int = Field(ge=1)
+
+
+class CreateBookRequest(BaseModel):
+    title: str = Field(min_length=1, max_length=500)
+    price: Decimal = Field(gt=0, decimal_places=2)
+    stock_quantity: int = Field(ge=0)
+    language: str = Field(min_length=1, max_length=100)
+    isbn: Isbn13Str | None = Field(default=None)
+    description: str | None = Field(default=None, max_length=5000)
+    page_count: int | None = Field(default=None, ge=1)
+    published_date: date | None = None
+    publisher_id: str | None = None
+    category_id: str | None = None
+    authors: list[CreateBookAuthorItemRequest] = Field(default_factory=list)
+
+
 # responses
 class BookPublisherResponse(BaseModel):
     id: str
@@ -100,4 +120,8 @@ class BaseBookResponse(BaseModel):
 
 
 class ViewBookDetailResponse(BaseBookResponse):
+    pass
+
+
+class CreateBookResponse(BaseBookResponse):
     pass

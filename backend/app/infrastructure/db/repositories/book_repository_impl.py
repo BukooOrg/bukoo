@@ -10,7 +10,7 @@ from app.core.query_params import PaginatedResult, QueryParams
 from app.domain.entities import BookEntity
 from app.domain.repositories import IBookRepository
 from app.domain.repositories.book_repository import BookFilters, BookStatusFilter
-from app.infrastructure.db.mappers import BookMapper
+from app.infrastructure.db.mappers import BookAuthorMapper, BookMapper
 from app.infrastructure.db.models import AuthorModel, BookAuthorModel, BookModel
 from app.infrastructure.db.models.category_model import CategoryModel
 
@@ -175,6 +175,28 @@ class BookRepositoryImpl(IBookRepository):
         return BookMapper.to_entity(model) if model else None
 
     @override
+    async def find_by_isbn(self, isbn: str) -> BookEntity | None:
+        stmt = (
+            select(BookModel)
+            .where(BookModel.isbn == isbn)
+            .where(BookModel.deleted_at.is_(None))
+            .options(
+                selectinload(BookModel.publisher),
+                selectinload(BookModel.category),
+                selectinload(BookModel.author_associations).selectinload(
+                    BookAuthorModel.author
+                ),
+            )
+        )
+        result = await self._session.execute(stmt)
+        model = result.scalar_one_or_none()
+        return BookMapper.to_entity(model) if model else None
+
+    @override
     async def save(self, book: BookEntity) -> None:
         model = BookMapper.to_model(book)
         await self._session.merge(model)
+
+        for book_author_entity in book.authors:
+            book_author_model = BookAuthorMapper.to_model(book_author_entity)
+            await self._session.merge(book_author_model)

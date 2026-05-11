@@ -41,5 +41,9 @@ class IBookRepository(ABC):
         pass
 
     @abstractmethod
+    async def find_by_isbn(self, isbn: str) -> BookEntity | None:
+        pass
+
+    @abstractmethod
     async def save(self, book: BookEntity) -> None:
         pass

@@ -1,0 +1,39 @@
+meta {
+  name: missing required fields
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/books
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // missing title, price, stock_quantity, language
+  {}
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+  
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+  
+  test("error code is UNPROCESSABLE_ENTITY", function() {
+    expect(res.body.error.code).to.equal("VALIDATION_ERROR");
+    
+  });
+}

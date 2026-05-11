@@ -4,17 +4,35 @@ from typing import Annotated, TypeVar
 
 from fastapi import APIRouter, Depends
 
-from app.application.dtos.book_dto import BaseBookResult, ViewBookDetailCommand
-from app.application.use_cases.book import FindBooksUseCase, ViewBookDetailUseCase
+from app.application.dtos.book_dto import (
+    BaseBookResult,
+    CreateBookAuthorItem,
+    CreateBookCommand,
+    ViewBookDetailCommand,
+)
+from app.application.use_cases.book import (
+    CreateBookUseCase,
+    FindBooksUseCase,
+    ViewBookDetailUseCase,
+)
 from app.core.util import build_public_url
 from app.domain.repositories.book_repository import BookStatusFilter
-from app.presentation.dependencies.deps import BookRepo, DbSession
+from app.presentation.dependencies.deps import (
+    AdminUser,
+    AuthorRepo,
+    BookRepo,
+    CategoryRepo,
+    DbSession,
+    PublisherRepo,
+)
 from app.presentation.schemas.book_schema import (
     BaseBookResponse,
     BookAuthorItemResponse,
     BookCategoryResponse,
     BookListQueryRequest,
     BookPublisherResponse,
+    CreateBookRequest,
+    CreateBookResponse,
     ViewBookDetailQueryRequest,
     ViewBookDetailResponse,
 )
@@ -98,3 +116,48 @@ async def view_book_detail(
         )
     )
     return build_base_book_response(result, ViewBookDetailResponse)
+
+
+@router.post(
+    "",
+    response_model=CreateBookResponse,
+    status_code=201,
+    operation_id="createBook",
+)
+async def create_book(
+    body: CreateBookRequest,
+    _admin_user: AdminUser,
+    book_repo: BookRepo,
+    publisher_repo: PublisherRepo,
+    category_repo: CategoryRepo,
+    author_repo: AuthorRepo,
+    db_session: DbSession,
+) -> CreateBookResponse:
+    use_case = CreateBookUseCase(
+        db_session=db_session,
+        book_repo=book_repo,
+        publisher_repo=publisher_repo,
+        category_repo=category_repo,
+        author_repo=author_repo,
+    )
+    result = await use_case.execute(
+        CreateBookCommand(
+            title=body.title,
+            price=body.price,
+            stock_quantity=body.stock_quantity,
+            language=body.language,
+            isbn=body.isbn,
+            description=body.description,
+            page_count=body.page_count,
+            published_date=body.published_date,
+            publisher_id=body.publisher_id,
+            category_id=body.category_id,
+            authors=[
+                CreateBookAuthorItem(
+                    author_id=a.author_id, display_order=a.display_order
+                )
+                for a in body.authors
+            ],
+        )
+    )
+    return build_base_book_response(result, CreateBookResponse)

@@ -20,7 +20,11 @@ from app.domain.entities.book_author_entity import BookAuthorEntity
 from app.domain.entities.book_entity import BookEntity
 from app.domain.entities.category_entity import CategoryEntity
 from app.domain.entities.publisher_entity import PublisherEntity
-from app.domain.repositories.book_repository import BookFilters, IBookRepository
+from app.domain.repositories.book_repository import (
+    BookFilters,
+    BookStatusFilter,
+    IBookRepository,
+)
 
 
 def _now() -> datetime:
@@ -140,7 +144,12 @@ class FakeBookRepository(IBookRepository):
         self.last_filters = filters
         return self._result
 
-    async def find_by_id(self, book_id: str) -> BookEntity | None:
+    async def find_by_id(
+        self, book_id: str, filters: BookStatusFilter
+    ) -> BookEntity | None:
+        return None
+
+    async def find_by_isbn(self, isbn: str) -> BookEntity | None:
         return None
 
     async def save(self, book: BookEntity) -> None:

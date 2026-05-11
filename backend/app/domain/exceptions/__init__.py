@@ -41,6 +41,7 @@ from .payment import (
     PaymentCreationError,
     PaymentVerificationError,
 )
+from .publisher import PublisherNotFoundError
 from .storage import (
     FileSizeExceededError,
     InvalidFileTypeError,
@@ -92,4 +93,5 @@ __all__ = [
     "PasswordNotSetError",
     "NewPasswordSameAsCurrentError",
     "AuthorNotFoundError",
+    "PublisherNotFoundError",
 ]

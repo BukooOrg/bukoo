@@ -32,6 +32,7 @@ from app.domain.exceptions import (
     OrderNotFoundError,
     OutOfStockError,
     PasswordNotSetError,
+    PublisherNotFoundError,
     StorageUploadError,
     TokenAlreadyRevokedError,
     TokenExpiredError,
@@ -239,5 +240,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_404_NOT_FOUND,
         ErrorCode.AUTHOR_NOT_FOUND,
         "You do not have author",
+    ),
+    # publisher
+    PublisherNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.PUBLISHER_NOT_FOUND,
+        "Publisher not found.",
     ),
 }
