@@ -51,6 +51,7 @@ export interface FindAuthorsRequest {
     sort?: string | null;
     page?: number;
     pageSize?: number;
+    search?: string | null;
 }
 
 export interface SoftDeleteAuthorRequest {
@@ -131,6 +132,10 @@ export class AuthorApi extends runtime.BaseAPI {
 
         if (requestParameters['pageSize'] != null) {
             queryParameters['page_size'] = requestParameters['pageSize'];
+        }
+
+        if (requestParameters['search'] != null) {
+            queryParameters['search'] = requestParameters['search'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};

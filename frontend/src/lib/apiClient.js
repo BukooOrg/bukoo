@@ -6,6 +6,7 @@ import {
   CategoryApi,
   Configuration,
   CollectionApi,
+  BookApi,
 } from '@bukoo/api-client';
 import Cookies from 'js-cookie';
 
@@ -29,6 +30,7 @@ const configuration = new Configuration({
 
 export const authApi = new AuthApi(configuration);
 export const authorApi = new AuthorApi(configuration);
+export const bookApi = new BookApi(configuration);
 export const categoryApi = new CategoryApi(configuration);
 export const collectionApi = new CollectionApi(configuration);
 export const healthApi = new HealthApi(configuration);
