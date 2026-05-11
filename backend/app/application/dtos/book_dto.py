@@ -60,6 +60,11 @@ class UpdateBookCommand:
     authors: list[BookAuthorItem] | None | Literal["null"] = None
 
 
+@dataclass(frozen=True)
+class DeactivateBookCommand:
+    book_id: str
+
+
 # results
 @dataclass(frozen=True)
 class BookPublisherResult:
@@ -111,4 +116,8 @@ class CreateBookResult(BaseBookResult):
 
 
 class UpdateBookResult(BaseBookResult):
+    pass
+
+
+class DeactivateBookResult(BaseBookResult):
     pass

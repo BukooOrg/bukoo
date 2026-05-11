@@ -99,7 +99,7 @@ class CreateBookUseCase(BaseBookUseCase):
             book_author.set_author(author_entities[item.author_id])
             book.set_author(book_author)
 
-        await self._book_repo.save(book)
+        await self._book_repo.save(book, False)
         await self._db_session.commit()
 
         return self._to_result(book, CreateBookResult)

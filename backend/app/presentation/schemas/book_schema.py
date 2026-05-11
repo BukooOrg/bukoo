@@ -143,3 +143,7 @@ class CreateBookResponse(BaseBookResponse):
 
 class UpdateBookResponse(BaseBookResponse):
     pass
+
+
+class DeactivateBookResponse(BaseBookResponse):
+    pass

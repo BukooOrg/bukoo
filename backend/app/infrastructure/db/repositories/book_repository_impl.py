@@ -193,13 +193,16 @@ class BookRepositoryImpl(IBookRepository):
         return BookMapper.to_entity(model) if model else None
 
     @override
-    async def save(self, book: BookEntity) -> None:
+    async def save(
+        self, book: BookEntity, should_skip_book_authors: bool = True
+    ) -> None:
         model = BookMapper.to_model(book)
         await self._session.merge(model)
 
-        await self._session.execute(
-            delete(BookAuthorModel).where(BookAuthorModel.book_id == book.id)
-        )
-        for book_author_entity in book.authors:
-            book_author_model = BookAuthorMapper.to_model(book_author_entity)
-            self._session.add(book_author_model)
+        if not should_skip_book_authors:
+            await self._session.execute(
+                delete(BookAuthorModel).where(BookAuthorModel.book_id == book.id)
+            )
+            for book_author_entity in book.authors:
+                book_author_model = BookAuthorMapper.to_model(book_author_entity)
+                self._session.add(book_author_model)

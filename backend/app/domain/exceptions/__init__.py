@@ -24,6 +24,7 @@ from .auth import (
 from .author import AuthorNotFoundError
 from .base import DomainException
 from .book import (
+    BookAlreadyDeactivatedError,
     BookAlreadyExistsError,
     BookNotFoundError,
     InvalidISBNError,
@@ -66,6 +67,7 @@ __all__ = [
     "UserNotFoundError",
     "UserNotVerifiedError",
     "UserSuspendedError",
+    "BookAlreadyDeactivatedError",
     "BookAlreadyExistsError",
     "BookNotFoundError",
     "InvalidISBNError",

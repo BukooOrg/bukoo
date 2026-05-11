@@ -8,11 +8,13 @@ from app.application.dtos.book_dto import (
     BaseBookResult,
     BookAuthorItem,
     CreateBookCommand,
+    DeactivateBookCommand,
     UpdateBookCommand,
     ViewBookDetailCommand,
 )
 from app.application.use_cases.book import (
     CreateBookUseCase,
+    DeactivateBookUseCase,
     FindBooksUseCase,
     UpdateBookUseCase,
     ViewBookDetailUseCase,
@@ -35,6 +37,7 @@ from app.presentation.schemas.book_schema import (
     BookPublisherResponse,
     CreateBookRequest,
     CreateBookResponse,
+    DeactivateBookResponse,
     UpdateBookRequest,
     UpdateBookResponse,
     ViewBookDetailQueryRequest,
@@ -209,3 +212,19 @@ async def update_book(
         )
     )
     return build_base_book_response(result, UpdateBookResponse)
+
+
+@router.patch(
+    "/{book_id}/deactivate",
+    response_model=DeactivateBookResponse,
+    operation_id="deactivateBook",
+)
+async def deactivate_book(
+    book_id: str,
+    _admin_user: AdminUser,
+    book_repo: BookRepo,
+    db_session: DbSession,
+) -> DeactivateBookResponse:
+    use_case = DeactivateBookUseCase(db_session=db_session, book_repo=book_repo)
+    result = await use_case.execute(DeactivateBookCommand(book_id=book_id))
+    return build_base_book_response(result, DeactivateBookResponse)

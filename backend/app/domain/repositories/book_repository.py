@@ -45,5 +45,7 @@ class IBookRepository(ABC):
         pass
 
     @abstractmethod
-    async def save(self, book: BookEntity) -> None:
+    async def save(
+        self, book: BookEntity, should_skip_book_authors: bool = False
+    ) -> None:
         pass
