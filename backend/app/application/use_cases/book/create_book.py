@@ -9,10 +9,12 @@ from uuid_extension import uuid7
 from app.application.dtos.book_dto import CreateBookCommand, CreateBookResult
 from app.domain.entities.book_author_entity import BookAuthorEntity
 from app.domain.entities.book_entity import BookEntity
-from app.domain.exceptions.author import AuthorNotFoundError
-from app.domain.exceptions.book import BookAlreadyExistsError
-from app.domain.exceptions.category import CategoryNotFoundError
-from app.domain.exceptions.publisher import PublisherNotFoundError
+from app.domain.exceptions import (
+    AuthorNotFoundError,
+    BookAlreadyExistsError,
+    CategoryNotFoundError,
+    PublisherNotFoundError,
+)
 from app.domain.repositories import (
     IAuthorRepository,
     IBookRepository,

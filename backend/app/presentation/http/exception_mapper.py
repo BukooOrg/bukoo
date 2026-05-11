@@ -7,6 +7,7 @@ from app.domain.exceptions import (
     AddressNotFoundError,
     AdminAccessRequiredError,
     AuthorNotFoundError,
+    BookAlreadyActivatedError,
     BookAlreadyDeactivatedError,
     BookAlreadyExistsError,
     BookNotFoundError,
@@ -125,6 +126,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         "Your new password must be different from your current one. Please choose a new, unique password.",
     ),
     # Book
+    BookAlreadyActivatedError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.BOOK_ALREADY_ACTIVATED,
+        "Book already activated",
+    ),
     BookAlreadyDeactivatedError: HttpExceptionMapping(
         status.HTTP_409_CONFLICT,
         ErrorCode.BOOK_ALREADY_DEACTIVATED,

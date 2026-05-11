@@ -5,6 +5,7 @@ from typing import Annotated, TypeVar
 from fastapi import APIRouter, Depends
 
 from app.application.dtos.book_dto import (
+    ActivateBookCommand,
     BaseBookResult,
     BookAuthorItem,
     CreateBookCommand,
@@ -13,6 +14,7 @@ from app.application.dtos.book_dto import (
     ViewBookDetailCommand,
 )
 from app.application.use_cases.book import (
+    ActivateBookUseCase,
     CreateBookUseCase,
     DeactivateBookUseCase,
     FindBooksUseCase,
@@ -30,6 +32,7 @@ from app.presentation.dependencies.deps import (
     PublisherRepo,
 )
 from app.presentation.schemas.book_schema import (
+    ActivateBookResponse,
     BaseBookResponse,
     BookAuthorItemResponse,
     BookCategoryResponse,
@@ -228,3 +231,19 @@ async def deactivate_book(
     use_case = DeactivateBookUseCase(db_session=db_session, book_repo=book_repo)
     result = await use_case.execute(DeactivateBookCommand(book_id=book_id))
     return build_base_book_response(result, DeactivateBookResponse)
+
+
+@router.patch(
+    "/{book_id}/activate",
+    response_model=ActivateBookResponse,
+    operation_id="activateBook",
+)
+async def activate_book(
+    book_id: str,
+    _admin_user: AdminUser,
+    book_repo: BookRepo,
+    db_session: DbSession,
+) -> ActivateBookResponse:
+    use_case = ActivateBookUseCase(db_session=db_session, book_repo=book_repo)
+    result = await use_case.execute(ActivateBookCommand(book_id=book_id))
+    return build_base_book_response(result, ActivateBookResponse)

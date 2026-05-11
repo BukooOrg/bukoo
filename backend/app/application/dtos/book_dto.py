@@ -65,6 +65,11 @@ class DeactivateBookCommand:
     book_id: str
 
 
+@dataclass(frozen=True)
+class ActivateBookCommand:
+    book_id: str
+
+
 # results
 @dataclass(frozen=True)
 class BookPublisherResult:
@@ -120,4 +125,8 @@ class UpdateBookResult(BaseBookResult):
 
 
 class DeactivateBookResult(BaseBookResult):
+    pass
+
+
+class ActivateBookResult(BaseBookResult):
     pass

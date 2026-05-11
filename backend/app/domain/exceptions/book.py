@@ -22,3 +22,8 @@ class InvalidISBNError(DomainException):
 class BookAlreadyDeactivatedError(DomainException):
     def __init__(self, book_id: str) -> None:
         super().__init__(f"Book {book_id} already deactivated.")
+
+
+class BookAlreadyActivatedError(DomainException):
+    def __init__(self, book_id: str) -> None:
+        super().__init__(f"Book {book_id} already Activated.")

@@ -9,10 +9,13 @@ from app.application.dtos.book_dto import UpdateBookCommand, UpdateBookResult
 from app.domain.entities.book_author_entity import BookAuthorEntity
 from app.domain.entities.category_entity import CategoryEntity
 from app.domain.entities.publisher_entity import PublisherEntity
-from app.domain.exceptions.author import AuthorNotFoundError
-from app.domain.exceptions.book import BookAlreadyExistsError, BookNotFoundError
-from app.domain.exceptions.category import CategoryNotFoundError
-from app.domain.exceptions.publisher import PublisherNotFoundError
+from app.domain.exceptions import (
+    AuthorNotFoundError,
+    BookAlreadyExistsError,
+    BookNotFoundError,
+    CategoryNotFoundError,
+    PublisherNotFoundError,
+)
 from app.domain.repositories import (
     BookStatusFilter,
     IAuthorRepository,
@@ -126,7 +129,7 @@ class UpdateBookUseCase(BaseBookUseCase):
             category=category,
             authors=authors,
         )
-        await self._book_repo.save(book)
+        await self._book_repo.save(book, False)
         await self._db_session.commit()
 
         return self._to_result(book, UpdateBookResult)

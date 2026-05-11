@@ -95,7 +95,7 @@ class FakeBookRepository(IBookRepository):
             return next(iter(self._store.values()), None) or _make_dummy_book()
         return None
 
-    async def save(self, book: BookEntity) -> None:
+    async def save(self, book: BookEntity, should_skip_book_authors: bool) -> None:
         self._store[book.id] = book
 
 

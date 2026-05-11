@@ -147,3 +147,7 @@ class UpdateBookResponse(BaseBookResponse):
 
 class DeactivateBookResponse(BaseBookResponse):
     pass
+
+
+class ActivateBookResponse(BaseBookResponse):
+    pass

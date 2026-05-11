@@ -151,7 +151,7 @@ class FakeBookRepository(IBookRepository):
     async def find_by_isbn(self, isbn: str) -> BookEntity | None:
         return self._isbn_index.get(isbn)
 
-    async def save(self, book: BookEntity) -> None:
+    async def save(self, book: BookEntity, should_skip_book_authors: bool) -> None:
         self._books[book.id] = book
         self.saved = book
 

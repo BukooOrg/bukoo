@@ -8,7 +8,7 @@ from app.application.dtos.book_dto import (
     ViewBookDetailCommand,
     ViewBookDetailResult,
 )
-from app.domain.exceptions.book import BookNotFoundError
+from app.domain.exceptions import BookNotFoundError
 from app.domain.repositories import IBookRepository
 
 from .base import BaseBookUseCase
