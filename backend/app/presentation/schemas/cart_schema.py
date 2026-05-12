@@ -30,6 +30,11 @@ class BaseCartItemResponse(BaseModel):
     book: CartItemBookResponse
 
 
+class GetMyCartResponse(BaseModel):
+    id: str
+    items: list[BaseCartItemResponse]
+
+
 class AddCartItemResponse(BaseCartItemResponse):
     pass
 

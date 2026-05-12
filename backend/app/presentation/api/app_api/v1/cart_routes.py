@@ -7,10 +7,12 @@ from fastapi import APIRouter
 from app.application.dtos.cart_dtos import (
     AddCartItemCommand,
     BaseCartItemResult,
+    GetMyCartCommand,
     UpdateCartItemQuantityCommand,
 )
 from app.application.use_cases.cart import (
     AddCartItemUseCase,
+    GetMyCartUseCase,
     UpdateCartItemQuantityUseCase,
 )
 from app.core.util import build_public_url
@@ -25,6 +27,7 @@ from app.presentation.schemas.cart_schema import (
     AddCartItemResponse,
     BaseCartItemResponse,
     CartItemBookResponse,
+    GetMyCartResponse,
     UpdateCartItemQuantityRequest,
     UpdateCartItemQuantityResponse,
 )
@@ -47,6 +50,21 @@ def build_base_cart_item_response(result: T, response_cls: type[P]) -> P:  # noq
             price=result.book.price,
             cover_url=build_public_url(result.book.cover_url),
         ),
+    )
+
+
+@router.get("", response_model=GetMyCartResponse, operation_id="getMyCart")
+async def get_my_cart(
+    customer_user: CustomerUser, cart_repo: CartRepo, db_session: DbSession
+) -> GetMyCartResponse:
+    use_case = GetMyCartUseCase(db_session=db_session, cart_repo=cart_repo)
+    result = await use_case.execute(GetMyCartCommand(user_id=customer_user.id))
+    return GetMyCartResponse(
+        id=result.id,
+        items=[
+            build_base_cart_item_response(item, BaseCartItemResponse)
+            for item in result.items
+        ],
     )
 
 

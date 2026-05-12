@@ -6,6 +6,11 @@ from decimal import Decimal
 
 # commands
 @dataclass(frozen=True)
+class GetMyCartCommand:
+    user_id: str
+
+
+@dataclass(frozen=True)
 class AddCartItemCommand:
     book_id: str
     user_id: str
@@ -35,6 +40,12 @@ class BaseCartItemResult:
     book_id: str
     quantity: int
     book: CartItemBookResult
+
+
+@dataclass(frozen=True)
+class GetMyCartResult:
+    id: str
+    items: list[BaseCartItemResult]
 
 
 @dataclass(frozen=True)
