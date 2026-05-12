@@ -71,13 +71,13 @@ class CartEntity:
 
         self._updated_at = datetime.now(UTC)
 
-    def remove_item(self, book_id: str) -> None:
+    def remove_item(self, cart_item_id: str) -> None:
         """Remove a line item from the cart by book_id."""
         before = len(self._cart_items)
-        self._cart_items = [i for i in self._cart_items if i.book_id != book_id]
+        self._cart_items = [i for i in self._cart_items if i.id != cart_item_id]
 
         if len(self._cart_items) == before:
-            raise ValueError(f"Book {book_id!r} is not in the cart.")
+            raise ValueError(f"Item {cart_item_id!r} is not in the cart.")
 
         self._updated_at = datetime.now(UTC)
 

@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import override
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.entities import CartEntity
 from app.domain.repositories import ICartRepository
 from app.infrastructure.db.mappers.cart_item_mapper import CartItemMapper
 from app.infrastructure.db.mappers.cart_mapper import CartMapper
-from app.infrastructure.db.models.cart_model import CartModel
+from app.infrastructure.db.models import CartItemModel, CartModel
 
 
 class CartRepositoryImpl(ICartRepository):
@@ -22,6 +22,11 @@ class CartRepositoryImpl(ICartRepository):
         result = await self._session.execute(stmt)
         model = result.scalar_one_or_none()
         return CartMapper.to_entity(model) if model else None
+
+    @override
+    async def delete_item_by_item_id(self, item_id: str) -> None:
+        stmt = delete(CartItemModel).where(CartItemModel.id == item_id)
+        await self._session.execute(stmt)
 
     @override
     async def save(self, cart: CartEntity) -> None:

@@ -24,6 +24,12 @@ class UpdateCartItemQuantityCommand:
     quantity: int
 
 
+@dataclass(frozen=True)
+class RemoveCartItemCommand:
+    item_id: str
+    user_id: str
+
+
 # results
 @dataclass(frozen=True)
 class CartItemBookResult:

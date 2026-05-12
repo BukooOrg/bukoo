@@ -6,13 +6,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from app.application.dtos.cart_dtos import (
-    UpdateCartItemQuantityCommand,
-    UpdateCartItemQuantityResult,
-)
-from app.application.use_cases.cart.update_cart_item_quantity import (
-    UpdateCartItemQuantityUseCase,
-)
+from app.application.dtos.cart_dtos import RemoveCartItemCommand
+from app.application.use_cases.cart.remove_cart_item import RemoveCartItemUseCase
 from app.domain.entities.book_entity import BookEntity
 from app.domain.entities.cart_entity import CartEntity
 from app.domain.entities.cart_item_entity import CartItemEntity
@@ -93,38 +88,28 @@ class FakeCartRepository(ICartRepository):
 
 
 @pytest.mark.unit
-class TestUpdateCartItemQuantityUseCase:
-    async def test_success_returns_updated_quantity(self) -> None:
+class TestRemoveCartItemUseCase:
+    async def test_success_removes_item_from_cart(self) -> None:
         db_session = AsyncMock()
         book = _make_book()
-        item = _make_cart_item(quantity=2, book=book)
+        item = _make_cart_item(book=book)
         cart = _make_cart(items=[item])
         cart_repo = FakeCartRepository(cart=cart)
-        use_case = UpdateCartItemQuantityUseCase(
-            db_session=db_session, cart_repo=cart_repo
-        )
-        cmd = UpdateCartItemQuantityCommand(
-            item_id="item-001", quantity=5, user_id="user-001"
-        )
+        use_case = RemoveCartItemUseCase(db_session=db_session, cart_repo=cart_repo)
+        cmd = RemoveCartItemCommand(item_id="item-001", user_id="user-001")
 
         result = await use_case.execute(cmd)
 
-        assert isinstance(result, UpdateCartItemQuantityResult)
-        assert result.quantity == 5
-        assert result.id == "item-001"
-        assert result.book_id == "book-001"
-        assert result.book.title == "Test Book"
+        assert result is None
+        assert cart_repo.saved is not None
+        assert len(cart_repo.saved.cart_items) == 0
         db_session.commit.assert_called_once()
 
     async def test_raises_cart_not_found_when_user_has_no_cart(self) -> None:
         db_session = AsyncMock()
         cart_repo = FakeCartRepository(cart=None)
-        use_case = UpdateCartItemQuantityUseCase(
-            db_session=db_session, cart_repo=cart_repo
-        )
-        cmd = UpdateCartItemQuantityCommand(
-            item_id="item-001", quantity=3, user_id="user-001"
-        )
+        use_case = RemoveCartItemUseCase(db_session=db_session, cart_repo=cart_repo)
+        cmd = RemoveCartItemCommand(item_id="item-001", user_id="user-001")
 
         with pytest.raises(CartNotFoundError):
             await use_case.execute(cmd)
@@ -135,29 +120,21 @@ class TestUpdateCartItemQuantityUseCase:
         item = _make_cart_item(item_id="item-001", book=book)
         cart = _make_cart(items=[item])
         cart_repo = FakeCartRepository(cart=cart)
-        use_case = UpdateCartItemQuantityUseCase(
-            db_session=db_session, cart_repo=cart_repo
-        )
-        cmd = UpdateCartItemQuantityCommand(
-            item_id="nonexistent-item", quantity=3, user_id="user-001"
-        )
+        use_case = RemoveCartItemUseCase(db_session=db_session, cart_repo=cart_repo)
+        cmd = RemoveCartItemCommand(item_id="nonexistent-item", user_id="user-001")
 
         with pytest.raises(CartItemNotFoundError):
             await use_case.execute(cmd)
 
-    async def test_quantity_minimum_boundary_succeeds(self) -> None:
+    async def test_item_from_other_user_cart_cannot_be_removed(self) -> None:
         db_session = AsyncMock()
         book = _make_book()
-        item = _make_cart_item(quantity=5, book=book)
-        cart = _make_cart(items=[item])
+        item = _make_cart_item(item_id="item-001", book=book)
+        # Cart belongs to user-001, but we request as user-002
+        cart = _make_cart(user_id="user-001", items=[item])
         cart_repo = FakeCartRepository(cart=cart)
-        use_case = UpdateCartItemQuantityUseCase(
-            db_session=db_session, cart_repo=cart_repo
-        )
-        cmd = UpdateCartItemQuantityCommand(
-            item_id="item-001", quantity=1, user_id="user-001"
-        )
+        use_case = RemoveCartItemUseCase(db_session=db_session, cart_repo=cart_repo)
+        cmd = RemoveCartItemCommand(item_id="item-001", user_id="user-002")
 
-        result = await use_case.execute(cmd)
-
-        assert result.quantity == 1
+        with pytest.raises(CartNotFoundError):
+            await use_case.execute(cmd)

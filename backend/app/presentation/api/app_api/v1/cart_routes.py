@@ -2,17 +2,19 @@ from __future__ import annotations
 
 from typing import TypeVar
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 
 from app.application.dtos.cart_dtos import (
     AddCartItemCommand,
     BaseCartItemResult,
     GetMyCartCommand,
+    RemoveCartItemCommand,
     UpdateCartItemQuantityCommand,
 )
 from app.application.use_cases.cart import (
     AddCartItemUseCase,
     GetMyCartUseCase,
+    RemoveCartItemUseCase,
     UpdateCartItemQuantityUseCase,
 )
 from app.core.util import build_public_url
@@ -115,3 +117,22 @@ async def update_cart_item_quantity(
         )
     )
     return build_base_cart_item_response(result, UpdateCartItemQuantityResponse)
+
+
+@router.delete(
+    "/items/{item_id}",
+    status_code=204,
+    response_model=None,
+    operation_id="removeCartItem",
+)
+async def remove_cart_item(
+    item_id: str,
+    customer_user: CustomerUser,
+    cart_repo: CartRepo,
+    db_session: DbSession,
+) -> Response:
+    use_case = RemoveCartItemUseCase(db_session=db_session, cart_repo=cart_repo)
+    await use_case.execute(
+        RemoveCartItemCommand(item_id=item_id, user_id=customer_user.id)
+    )
+    return Response(status_code=204)
