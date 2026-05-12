@@ -11,12 +11,13 @@ from app.application.dtos.cart_dtos import (
     AddCartItemResult,
     CartItemBookResult,
 )
-from app.application.use_cases.base import BaseUseCase
 from app.domain.entities.cart_entity import CartEntity
 from app.domain.entities.cart_item_entity import CartItemEntity
 from app.domain.exceptions import BookNotFoundError, OutOfStockError
 from app.domain.repositories import IBookRepository, ICartRepository
 from app.domain.repositories.book_repository import BookStatusFilter
+
+from ..base import BaseUseCase
 
 
 class AddCartItemUseCase(BaseUseCase):
@@ -56,9 +57,7 @@ class AddCartItemUseCase(BaseUseCase):
 
         existing = cart.find_item_by_book_id(book.id)
 
-        if existing is not None:
-            cart.add_item(book, cmd.quantity)
-        else:
+        if existing is None:
             now = datetime.now(UTC)
             new_item = CartItemEntity(
                 _id=str(uuid7()),
@@ -70,8 +69,8 @@ class AddCartItemUseCase(BaseUseCase):
                 _book=book,
             )
             cart.append_item(new_item)
-
-        print(cart)
+        else:
+            cart.add_item(book, cmd.quantity)
 
         await self._cart_repo.save(cart)
         await self._db_session.commit()

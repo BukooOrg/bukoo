@@ -45,6 +45,9 @@ from app.domain.exceptions import (
     UserNotFoundError,
     UserNotVerifiedError,
     UserSuspendedError,
+    WishlistItemAlreadyExistsError,
+    WishlistItemNotFoundError,
+    WishlistNotFoundError,
 )
 
 
@@ -269,5 +272,21 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_404_NOT_FOUND,
         ErrorCode.CART_ITEM_NOT_FOUND,
         "Cart item not found.",
+    ),
+    # wishlist
+    WishlistItemAlreadyExistsError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.WISHLIST_ITEM_ALREADY_EXISTS_FOUND,
+        "Wishlist item already exists",
+    ),
+    WishlistNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.WISHLIST_NOT_FOUND,
+        "Wishlist not found.",
+    ),
+    WishlistItemNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.WISHLIST_ITEM_NOT_FOUND,
+        "Wishlist item not found.",
     ),
 }

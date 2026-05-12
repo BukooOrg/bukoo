@@ -8,6 +8,7 @@ from .collection_repository import ICollectionRepository
 from .publisher_repository import IPublisherRepository
 from .user_repository import IUserRepository
 from .verification_token_repository import IVerificationTokenRepository
+from .wishlist_repository import IWishlistRepository
 
 __all__ = [
     "IAccountRepository",
@@ -22,4 +23,5 @@ __all__ = [
     "IPublisherRepository",
     "IUserRepository",
     "IVerificationTokenRepository",
+    "IWishlistRepository",
 ]

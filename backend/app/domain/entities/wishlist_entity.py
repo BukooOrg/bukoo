@@ -38,16 +38,18 @@ class WishlistEntity:
     def wishlist_items(self) -> list[WishlistItemEntity]:
         return list(self._wishlist_items)
 
-    # ------------------------------------------------------------------
-    # Methods
-    # ------------------------------------------------------------------
+    # methods
+    def find_item_by_book_id(self, book_id: str) -> WishlistItemEntity | None:
+        return next(
+            (item for item in self._wishlist_items if item.book_id == book_id), None
+        )
 
     def add_wishlist_item(self, wishlist_item: WishlistItemEntity) -> None:
         """
         Append a pre-built WishlistItemEntity.
         Raises if the same book_id is already present.
         """
-        if any(i.book_id == wishlist_item.book_id for i in self._wishlist_items):
+        if self.find_item_by_book_id(wishlist_item.book_id) is not None:
             raise ValueError(
                 f"Book {wishlist_item.book_id!r} is already in the wishlist."
             )
