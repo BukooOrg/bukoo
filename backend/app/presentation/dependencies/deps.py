@@ -31,6 +31,7 @@ from app.domain.repositories import (
     IAddressRepository,
     IAuthorRepository,
     IBookRepository,
+    ICartRepository,
     ICategoryRepository,
     ICollectionRepository,
     IPublisherRepository,
@@ -50,6 +51,7 @@ from app.infrastructure.db.repositories import (
     AddressRepositoryImpl,
     AuthorRepositoryImpl,
     BookRepositoryImpl,
+    CartRepositoryImpl,
     CategoryRepositoryImpl,
     CollectionRepositoryImpl,
     PublisherRepositoryImpl,
@@ -134,6 +136,13 @@ def get_collection_repository(session: DbSession) -> ICollectionRepository:
 
 
 CollectionRepo = Annotated[ICollectionRepository, Depends(get_collection_repository)]
+
+
+def get_cart_repository(session: DbSession) -> ICartRepository:
+    return CartRepositoryImpl(session)
+
+
+CartRepo = Annotated[ICartRepository, Depends(get_cart_repository)]
 
 
 # Cache

@@ -1,0 +1,42 @@
+meta {
+  name: success duplicate quantity incremented
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/cart/items
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // depends on 01_success_new_item.bru having run first (added qty 2); total should become 5
+  {
+    "book_id": "{{bookId}}",
+    "quantity": 1
+  }
+  
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.quantity equals prior qty plus requested qty", function() {
+    expect(res.body.data.quantity).to.equal(5);
+  });
+}

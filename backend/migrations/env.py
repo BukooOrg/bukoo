@@ -26,9 +26,25 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from app.infrastructure.db.models import (
-    AccountModel,               # noqa: F401
-    UserModel,                  # noqa: F401
-    VerificationTokenModel,     # noqa: F401
+    UserModel, # noqa: F401
+    AccountModel, # noqa: F401
+    AddressModel, # noqa: F401
+    CollectionModel, # noqa: F401
+    CategoryModel, # noqa: F401
+    PublisherModel, # noqa: F401
+    AuthorModel, # noqa: F401
+    BookModel, # noqa: F401
+    BookAuthorModel, # noqa: F401
+    WishlistModel, # noqa: F401
+    WishlistItemModel, # noqa: F401
+    CartModel, # noqa: F401
+    CartItemModel, # noqa: F401
+    OrderModel, # noqa: F401
+    OrderItemModel, # noqa: F401
+    PaymentModel, # noqa: F401
+    ReviewModel, # noqa: F401
+    NotificationModel, # noqa: F401
+    VerificationTokenModel, # noqa: F401
 )
 target_metadata = Base.metadata
 

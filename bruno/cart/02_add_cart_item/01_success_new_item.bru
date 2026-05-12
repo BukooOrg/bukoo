@@ -1,0 +1,58 @@
+meta {
+  name: success new item
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/cart/items
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "book_id": "{{bookId}}",
+    "quantity": 2
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("cartItemId", res.body.data.id);
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.quantity equals requested quantity", function() {
+    expect(res.body.data.quantity).to.equal(2);
+  });
+  
+  test("data.book.id matches requested book_id", function() {
+    expect(res.body.data.book.id).to.equal(bru.getEnvVar("bookId"));
+  });
+  
+  test("data.id is a non-empty string", function() {
+    expect(res.body.data.id).to.be.a("string").and.not.empty;
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

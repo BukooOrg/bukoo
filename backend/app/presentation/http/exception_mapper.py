@@ -11,6 +11,8 @@ from app.domain.exceptions import (
     BookAlreadyDeactivatedError,
     BookAlreadyExistsError,
     BookNotFoundError,
+    CartItemNotFoundError,
+    CartNotFoundError,
     CategoryAlreadyExistsError,
     CategoryNotFoundError,
     CollectionAlreadyExistsError,
@@ -163,9 +165,7 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         "Order already paid",
     ),
     OutOfStockError: HttpExceptionMapping(
-        status.HTTP_409_CONFLICT,
-        ErrorCode.OUT_OF_STOCK,
-        "Out of stock",
+        status.HTTP_409_CONFLICT, ErrorCode.OUT_OF_STOCK, "Out of stock."
     ),
     EmptyOrderError: HttpExceptionMapping(
         status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -258,5 +258,16 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_404_NOT_FOUND,
         ErrorCode.PUBLISHER_NOT_FOUND,
         "Publisher not found.",
+    ),
+    # cart
+    CartNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.CART_NOT_FOUND,
+        "Cart not found.",
+    ),
+    CartItemNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.CART_ITEM_NOT_FOUND,
+        "Cart item not found.",
     ),
 }
