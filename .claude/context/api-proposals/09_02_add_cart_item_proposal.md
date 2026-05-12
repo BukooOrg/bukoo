@@ -172,23 +172,23 @@ _(None — `BOOK_NOT_FOUND` and `OUT_OF_STOCK` already exist in `ErrorCode`.)_
 
 **`01_success_new_item.bru` — Happy Path (new book added):**
 
-- [ ] Status 201 Created
-- [ ] `res.body.success` is `true`
-- [ ] `res.body.data.quantity` equals the requested quantity
-- [ ] `res.body.data.book.id` matches the requested `book_id`
-- [ ] `res.body.meta.requestId` is a string
+- [x] Status 201 Created
+- [x] `res.body.success` is `true`
+- [x] `res.body.data.quantity` equals the requested quantity
+- [x] `res.body.data.book.id` matches the requested `book_id`
+- [x] `res.body.meta.requestId` is a string
 
 **`02_success_duplicate.bru` — Happy Path (duplicate book, quantity incremented):**
 
-- [ ] Status 201 Created
-- [ ] `res.body.data.quantity` equals the sum of prior quantity + requested quantity
+- [x] Status 201 Created
+- [x] `res.body.data.quantity` equals the sum of prior quantity + requested quantity
 
 **Error Cases:**
 
-- [ ] `03_book_not_found.bru` — Status 404 when `book_id` does not exist → error code `BOOK_NOT_FOUND`
-- [ ] `04_book_deactivated.bru` — Status 404 when book is deactivated → error code `BOOK_NOT_FOUND`
-- [ ] `05_out_of_stock.bru` — Status 409 when book has `stock_quantity == 0` → error code `OUT_OF_STOCK`
-- [ ] `06_invalid_quantity.bru` — Status 422 when `quantity < 1` → error code `VALIDATION_ERROR`
+- [x] `03_book_not_found.bru` — Status 404 when `book_id` does not exist → error code `BOOK_NOT_FOUND`
+- [x] `04_book_deactivated.bru` — Status 404 when book is deactivated → error code `BOOK_NOT_FOUND`
+- [x] `05_out_of_stock.bru` — Status 409 when book has `stock_quantity == 0` → error code `OUT_OF_STOCK`
+- [x] `06_invalid_quantity.bru` — Status 422 when `quantity < 1` → error code `VALIDATION_ERROR`
 
 ### Pytest Unit Tests
 
@@ -196,18 +196,18 @@ _(None — `BOOK_NOT_FOUND` and `OUT_OF_STOCK` already exist in `ErrorCode`.)_
 
 **Happy Path:**
 
-- [ ] `AddCartItemUseCase.execute(valid_command)` with no existing cart returns `AddCartItemResult` with `quantity == command.quantity`
-- [ ] `AddCartItemUseCase.execute(valid_command)` with existing cart and duplicate book returns `AddCartItemResult` with `quantity == existing_quantity + command.quantity`
+- [x] `AddCartItemUseCase.execute(valid_command)` with no existing cart returns `AddCartItemResult` with `quantity == command.quantity`
+- [x] `AddCartItemUseCase.execute(valid_command)` with existing cart and duplicate book returns `AddCartItemResult` with `quantity == existing_quantity + command.quantity`
 
 **Error Cases:**
 
-- [ ] Raises `BookNotFoundError` when book repo returns `None`
-- [ ] Raises `OutOfStockError` when `book.stock_quantity == 0`
+- [x] Raises `BookNotFoundError` when book repo returns `None`
+- [x] Raises `OutOfStockError` when `book.stock_quantity == 0`
 
 **Edge Cases:**
 
-- [ ] Cart is auto-created (persisted via `cart_repo.save`) when user has no existing cart
-- [ ] Adding to an existing cart with multiple items only modifies the targeted book's line item
+- [x] Cart is auto-created (persisted via `cart_repo.save`) when user has no existing cart
+- [x] Adding to an existing cart with multiple items only modifies the targeted book's line item
 
 ---
 

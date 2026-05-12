@@ -31,6 +31,7 @@ from .book import (
     InvalidISBNError,
 )
 from .cache import CacheDeleteError, CacheReadError, CacheWriteError
+from .cart import CartItemNotFoundError, CartNotFoundError
 from .category import CategoryAlreadyExistsError, CategoryNotFoundError
 from .collection import CollectionAlreadyExistsError, CollectionNotFoundError
 from .order import (
@@ -98,4 +99,6 @@ __all__ = [
     "NewPasswordSameAsCurrentError",
     "AuthorNotFoundError",
     "PublisherNotFoundError",
+    "CartNotFoundError",
+    "CartItemNotFoundError",
 ]

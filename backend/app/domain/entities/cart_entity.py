@@ -40,9 +40,14 @@ class CartEntity:
         return list(self._cart_items)
 
     # methods
-    def find_item(self, book_id: str) -> CartItemEntity | None:
+    def find_item_by_book_id(self, book_id: str) -> CartItemEntity | None:
         return next(
             (item for item in self._cart_items if item.book_id == book_id), None
+        )
+
+    def find_item_by_cart_item_id(self, cart_item_id: str) -> CartItemEntity | None:
+        return next(
+            (item for item in self._cart_items if item.id == cart_item_id), None
         )
 
     def add_item(self, book: BookEntity, qty: int) -> None:
@@ -54,7 +59,7 @@ class CartEntity:
         if qty < 1:
             raise ValueError(f"qty must be >= 1, got {qty}.")
 
-        existing = self.find_item(book.id)
+        existing = self.find_item_by_book_id(book.id)
 
         if existing:
             existing.increase_quantity(qty)
@@ -76,12 +81,12 @@ class CartEntity:
 
         self._updated_at = datetime.now(UTC)
 
-    def update_quantity(self, book_id: str, qty: int) -> None:
+    def update_item_quantity(self, cart_item_id: str, qty: int) -> None:
         """Set an absolute quantity for an existing cart line."""
-        item = next((i for i in self._cart_items if i.book_id == book_id), None)
+        item = self.find_item_by_cart_item_id(cart_item_id)
 
         if item is None:
-            raise ValueError(f"Book {book_id!r} is not in the cart.")
+            raise ValueError(f"Cart item {cart_item_id!r} is not in the cart.")
 
         item.change_quantity(qty)
         self._updated_at = datetime.now(UTC)

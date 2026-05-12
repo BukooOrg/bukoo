@@ -79,3 +79,7 @@ class ErrorCode(StrEnum):
 
     # Publisher
     PUBLISHER_NOT_FOUND = "PUBLISHER_NOT_FOUND"
+
+    # Cart
+    CART_NOT_FOUND = "CART_NOT_FOUND"
+    CART_ITEM_NOT_FOUND = "CART_ITEM_NOT_FOUND"

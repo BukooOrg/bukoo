@@ -1,0 +1,44 @@
+meta {
+  name: invalid quantity
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/cart/items/{{cartItemId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // quantity 0 is below the minimum of 1
+  {
+    "quantity": 0
+  }
+}
+
+vars:pre-request {
+  cartItemId: 019e1b2a-9fe5-773c-bece-8ddc6381481b
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+  
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+  
+  test("error code is VALIDATION_ERROR", function() {
+    expect(res.body.error.code).to.equal("VALIDATION_ERROR");
+  });
+}

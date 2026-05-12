@@ -8,10 +8,18 @@ from decimal import Decimal
 @dataclass(frozen=True)
 class AddCartItemCommand:
     book_id: str
-    quantity: int
     user_id: str
+    quantity: int
 
 
+@dataclass(frozen=True)
+class UpdateCartItemQuantityCommand:
+    item_id: str
+    user_id: str
+    quantity: int
+
+
+# results
 @dataclass(frozen=True)
 class CartItemBookResult:
     id: str
@@ -20,11 +28,20 @@ class CartItemBookResult:
     cover_url: str | None
 
 
-# results
 @dataclass(frozen=True)
-class AddCartItemResult:
+class BaseCartItemResult:
     id: str
     cart_id: str
     book_id: str
     quantity: int
     book: CartItemBookResult
+
+
+@dataclass(frozen=True)
+class AddCartItemResult(BaseCartItemResult):
+    pass
+
+
+@dataclass(frozen=True)
+class UpdateCartItemQuantityResult(BaseCartItemResult):
+    pass

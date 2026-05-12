@@ -6,9 +6,12 @@ from pydantic import BaseModel, Field
 
 
 # requests
-class AddCartItemRequest(BaseModel):
-    book_id: str
+class UpdateCartItemQuantityRequest(BaseModel):
     quantity: int = Field(ge=1)
+
+
+class AddCartItemRequest(UpdateCartItemQuantityRequest):
+    book_id: str
 
 
 # responses
@@ -28,4 +31,8 @@ class BaseCartItemResponse(BaseModel):
 
 
 class AddCartItemResponse(BaseCartItemResponse):
+    pass
+
+
+class UpdateCartItemQuantityResponse(BaseCartItemResponse):
     pass

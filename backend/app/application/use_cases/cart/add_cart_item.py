@@ -54,7 +54,7 @@ class AddCartItemUseCase(BaseUseCase):
                 _cart_items=[],
             )
 
-        existing = cart.find_item(book.id)
+        existing = cart.find_item_by_book_id(book.id)
 
         if existing is not None:
             cart.add_item(book, cmd.quantity)
@@ -76,7 +76,7 @@ class AddCartItemUseCase(BaseUseCase):
         await self._cart_repo.save(cart)
         await self._db_session.commit()
 
-        final_item = cart.find_item(book.id)
+        final_item = cart.find_item_by_book_id(book.id)
         assert final_item is not None
 
         return AddCartItemResult(

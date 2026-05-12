@@ -11,6 +11,12 @@ from .publisher_mapper import PublisherMapper
 class BookMapper(BaseMapper[BookModel, BookEntity]):
     @staticmethod
     def to_entity(model: BookModel) -> BookEntity:
+        publisher = None
+        if is_loaded(model, "publisher"):
+            publisher = (
+                PublisherMapper.to_entity(model.publisher) if model.publisher else None
+            )
+
         category = None
         if is_loaded(model, "category"):
             category = (
@@ -39,11 +45,7 @@ class BookMapper(BaseMapper[BookModel, BookEntity]):
             _updated_at=model.updated_at,
             _deleted_at=model.deleted_at,
             # selectin-loaded — resolve to nested entities when present.
-            _publisher=(
-                PublisherMapper.to_entity(model.publisher)
-                if model.publisher is not None
-                else None
-            ),
+            _publisher=publisher,
             _category=category,
             # selectin-loaded and ordered by display_order on the ORM side.
             _authors=authors,
