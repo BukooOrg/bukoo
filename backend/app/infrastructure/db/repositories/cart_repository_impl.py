@@ -29,6 +29,11 @@ class CartRepositoryImpl(ICartRepository):
         await self._session.execute(stmt)
 
     @override
+    async def delete_items_by_cart_id(self, cart_id: str) -> None:
+        stmt = delete(CartItemModel).where(CartItemModel.cart_id == cart_id)
+        await self._session.execute(stmt)
+
+    @override
     async def save(self, cart: CartEntity) -> None:
         existing = await self._session.get(CartModel, cart.id)
 

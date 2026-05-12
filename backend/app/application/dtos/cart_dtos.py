@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from decimal import Decimal
+from typing import Any
 
 
 # commands
@@ -27,6 +28,11 @@ class UpdateCartItemQuantityCommand:
 @dataclass(frozen=True)
 class RemoveCartItemCommand:
     item_id: str
+    user_id: str
+
+
+@dataclass(frozen=True)
+class ClearAllCartItemsCommand:
     user_id: str
 
 
@@ -62,3 +68,9 @@ class AddCartItemResult(BaseCartItemResult):
 @dataclass(frozen=True)
 class UpdateCartItemQuantityResult(BaseCartItemResult):
     pass
+
+
+@dataclass(frozen=True)
+class ClearAllCartItemsResult:
+    id: str
+    items: list[Any] = field(default_factory=list)

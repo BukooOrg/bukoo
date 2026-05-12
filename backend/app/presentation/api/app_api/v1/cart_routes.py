@@ -7,12 +7,14 @@ from fastapi import APIRouter, Response
 from app.application.dtos.cart_dtos import (
     AddCartItemCommand,
     BaseCartItemResult,
+    ClearAllCartItemsCommand,
     GetMyCartCommand,
     RemoveCartItemCommand,
     UpdateCartItemQuantityCommand,
 )
 from app.application.use_cases.cart import (
     AddCartItemUseCase,
+    ClearAllCartItemsUseCase,
     GetMyCartUseCase,
     RemoveCartItemUseCase,
     UpdateCartItemQuantityUseCase,
@@ -29,6 +31,7 @@ from app.presentation.schemas.cart_schema import (
     AddCartItemResponse,
     BaseCartItemResponse,
     CartItemBookResponse,
+    ClearAllCartItemsResponse,
     GetMyCartResponse,
     UpdateCartItemQuantityRequest,
     UpdateCartItemQuantityResponse,
@@ -136,3 +139,18 @@ async def remove_cart_item(
         RemoveCartItemCommand(item_id=item_id, user_id=customer_user.id)
     )
     return Response(status_code=204)
+
+
+@router.delete(
+    "",
+    response_model=ClearAllCartItemsResponse,
+    operation_id="clearAllCartItems",
+)
+async def clear_all_cart_items(
+    customer_user: CustomerUser,
+    cart_repo: CartRepo,
+    db_session: DbSession,
+) -> ClearAllCartItemsResponse:
+    use_case = ClearAllCartItemsUseCase(db_session=db_session, cart_repo=cart_repo)
+    result = await use_case.execute(ClearAllCartItemsCommand(user_id=customer_user.id))
+    return ClearAllCartItemsResponse(id=result.id, items=result.items)

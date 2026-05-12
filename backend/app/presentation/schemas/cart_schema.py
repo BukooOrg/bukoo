@@ -41,3 +41,8 @@ class AddCartItemResponse(BaseCartItemResponse):
 
 class UpdateCartItemQuantityResponse(BaseCartItemResponse):
     pass
+
+
+class ClearAllCartItemsResponse(BaseModel):
+    id: str
+    items: list[BaseCartItemResponse]

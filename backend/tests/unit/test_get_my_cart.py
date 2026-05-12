@@ -79,6 +79,9 @@ class FakeCartRepository(ICartRepository):
     async def delete_item_by_item_id(self, item_id: str) -> None:
         pass
 
+    async def delete_items_by_cart_id(self, cart_id: str) -> None:
+        pass
+
     async def save(self, cart: CartEntity) -> None:
         pass
 
