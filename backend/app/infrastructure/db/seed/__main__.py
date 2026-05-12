@@ -360,7 +360,7 @@ async def main() -> None:
 
     async with session_scope() as session:
         # Step 1 — Truncate
-        # await truncate_all_tables(session)
+        await truncate_all_tables(session)
 
         # Step 2 — Collections
         collection_map = await seed_collections(session)
