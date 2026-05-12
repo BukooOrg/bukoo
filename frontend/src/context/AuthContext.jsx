@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
-import { authApi, usersApi } from '../lib/apiClient';
+import { authApi, userApi } from '@/lib/apiClient';
 
 const AuthContext = createContext();
 
@@ -11,7 +11,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     async function loadUser() {
       try {
-        const userData = await usersApi.getMe();
+        const userData = await userApi.getMe();
         setUser(userData.data);
       } catch (error) {
         console.error('Auth check failed', error);
@@ -30,7 +30,7 @@ export function AuthProvider({ children }) {
       return;
     }
     try {
-      const freshUser = await usersApi.getMe();
+      const freshUser = await userApi.getMe();
       setUser(freshUser.data);
     } catch {
       setUser(null);
