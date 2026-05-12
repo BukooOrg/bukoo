@@ -163,9 +163,7 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         "Order already paid",
     ),
     OutOfStockError: HttpExceptionMapping(
-        status.HTTP_409_CONFLICT,
-        ErrorCode.OUT_OF_STOCK,
-        "Out of stock",
+        status.HTTP_409_CONFLICT, ErrorCode.OUT_OF_STOCK, "Out of stock."
     ),
     EmptyOrderError: HttpExceptionMapping(
         status.HTTP_422_UNPROCESSABLE_ENTITY,

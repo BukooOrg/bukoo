@@ -1,3 +1,4 @@
+from app.core.util import is_loaded
 from app.domain.entities import BookEntity
 from app.infrastructure.db.models import BookModel
 
@@ -10,6 +11,16 @@ from .publisher_mapper import PublisherMapper
 class BookMapper(BaseMapper[BookModel, BookEntity]):
     @staticmethod
     def to_entity(model: BookModel) -> BookEntity:
+        category = None
+        if is_loaded(model, "category"):
+            category = (
+                CategoryMapper.to_entity(model.category) if model.category else None
+            )
+
+        authors = []
+        if is_loaded(model, "author_associations"):
+            authors = [BookAuthorMapper.to_entity(a) for a in model.author_associations]
+
         return BookEntity(
             _id=model.id,
             _title=model.title,
@@ -33,13 +44,9 @@ class BookMapper(BaseMapper[BookModel, BookEntity]):
                 if model.publisher is not None
                 else None
             ),
-            _category=(
-                CategoryMapper.to_entity(model.category)
-                if model.category is not None
-                else None
-            ),
+            _category=category,
             # selectin-loaded and ordered by display_order on the ORM side.
-            _authors=[BookAuthorMapper.to_entity(a) for a in model.author_associations],
+            _authors=authors,
         )
 
     @staticmethod

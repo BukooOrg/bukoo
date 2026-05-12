@@ -40,6 +40,11 @@ class CartEntity:
         return list(self._cart_items)
 
     # methods
+    def find_item(self, book_id: str) -> CartItemEntity | None:
+        return next(
+            (item for item in self._cart_items if item.book_id == book_id), None
+        )
+
     def add_item(self, book: BookEntity, qty: int) -> None:
         """
         Add qty copies of a book to the cart.
@@ -49,9 +54,7 @@ class CartEntity:
         if qty < 1:
             raise ValueError(f"qty must be >= 1, got {qty}.")
 
-        existing = next(
-            (item for item in self._cart_items if item.book_id == book.id), None
-        )
+        existing = self.find_item(book.id)
 
         if existing:
             existing.increase_quantity(qty)
@@ -81,6 +84,11 @@ class CartEntity:
             raise ValueError(f"Book {book_id!r} is not in the cart.")
 
         item.change_quantity(qty)
+        self._updated_at = datetime.now(UTC)
+
+    def append_item(self, item: CartItemEntity) -> None:
+        """Append a pre-built CartItemEntity to the cart."""
+        self._cart_items.append(item)
         self._updated_at = datetime.now(UTC)
 
     def clear(self) -> None:
