@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 import { PageLayout } from '@/components/layout/PageLayout';
 import { LatestProductCard } from '@/components/products/LatestProductCard';
-import { healthApi, usersApi } from '@/lib/apiClient';
+import { healthApi, userApi } from '@/lib/apiClient';
 import { getCollectionProducts, getCollections } from '@/lib/sfcc';
 
 export default function HomePage() {
@@ -29,7 +29,7 @@ export default function HomePage() {
   useEffect(() => {
     async function getMe() {
       try {
-        const res = await usersApi.getMe();
+        const res = await userApi.getMe();
         console.log(res);
       } catch (err) {
         if (err instanceof ResponseError) {
