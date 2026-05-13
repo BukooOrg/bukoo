@@ -53,8 +53,10 @@ class PlaceOrderUseCase(BaseUseCase):
         if cart is None:
             raise CartNotFoundError(cmd.user_id)
 
+        # edge case: remove duplicate cart items
+        cart_item_ids = list(set(cmd.cart_item_ids))
         selected_items: list[tuple[CartItemEntity, BookEntity]] = []
-        for item_id in cmd.cart_item_ids:
+        for item_id in cart_item_ids:
             item = cart.find_item_by_cart_item_id(item_id)
             if item is None:
                 raise CartItemNotFoundError(item_id)
@@ -108,7 +110,7 @@ class PlaceOrderUseCase(BaseUseCase):
             await self._book_repo.save(book)
             await self._cart_repo.delete_item_by_item_id(item.id)
 
-        await self._order_repo.save(order)
+        await self._order_repo.save(order, False)
         await self._db_session.commit()
 
         item_results: list[BaseOrderItemResult] = []

@@ -1,0 +1,55 @@
+meta {
+  name: failure online banking
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/orders/{{orderId}}/payment
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // Prerequisite: {{orderId}} must be a PENDING order belonging to the authenticated user.
+  {
+    "payment_method": "online_banking",
+    "outcome": "failure",
+    "bank_name": "CIMB",
+    "account_number": "9876543210"
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("order_status is cancelled", function() {
+    expect(res.body.data.order_status).to.equal("cancelled");
+  });
+
+  test("payment.status is failed", function() {
+    expect(res.body.data.payment.status).to.equal("failed");
+  });
+
+  test("payment.simulated_ref is null", function() {
+    expect(res.body.data.payment.simulated_ref).to.be.null;
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

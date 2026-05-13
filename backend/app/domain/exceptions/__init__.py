@@ -38,6 +38,7 @@ from .order import (
     EmptyOrderError,
     OrderAlreadyPaidError,
     OrderNotFoundError,
+    OrderNotPayableError,
     OutOfStockError,
 )
 from .payment import (
@@ -85,6 +86,7 @@ __all__ = [
     "CollectionNotFoundError",
     "OrderNotFoundError",
     "OrderAlreadyPaidError",
+    "OrderNotPayableError",
     "OutOfStockError",
     "EmptyOrderError",
     "PaymentCreationError",

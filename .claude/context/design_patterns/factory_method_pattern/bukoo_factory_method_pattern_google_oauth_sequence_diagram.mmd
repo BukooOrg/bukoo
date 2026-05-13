@@ -1,0 +1,58 @@
+---
+config:
+  theme: white
+  themeVariables:
+    background: '#ffffff'
+    primaryColor: '#ffffff'
+    primaryTextColor: '#000000'
+    lineColor: '#000000'
+    secondaryColor: '#ffffff'
+    tertiaryColor: '#ffffff'
+    actorBorder: '#000000'
+    actorTextColor: '#000000'
+  look: classic
+  mirrorActors: true
+---
+sequenceDiagram
+    actor Client as Client
+    participant Route as AuthRoute
+    participant Factory as GoogleAuthProviderFactory
+    participant UC as LoginUseCase
+    participant Provider as GoogleAuthProvider
+    participant Google as Google OAuth Service
+    participant DB as UserRepo / AccountRepo
+    Client->>Route: POST /auth/login/google (code, redirect_uri)
+    activate Route
+    Route->>Factory: GoogleAuthProviderFactory(user_repo, account_repo, <br>storage_svc, client_id, client_secret, redirect_uri)
+    Note right of Factory: Concrete factory instantiated<br>at the route layer
+    Route->>UC: LoginUseCase(db_session, factory, token_svc)
+    activate UC
+    Route->>UC: await execute(payload)
+    UC->>Factory: create_provider() [factory method]
+    activate Factory
+    Factory->>Provider: GoogleAuthProvider(user_repo, account_repo, storage_svc, client_id, client_secret, redirect_uri)
+    Note right of Provider: Implements IAuthProvider + IOAuthProvider.<br>UseCase receives IAuthProvider only.
+    Factory-->>UC: IAuthProvider
+    deactivate Factory
+    UC->>Provider: await authenticate(payload)
+    activate Provider
+    Note over Provider,Google: IOAuthProvider steps — encapsulated inside authenticate()
+    Provider->>Google: get_access_token(code, redirect_uri)
+    activate Google
+    Google-->>Provider: access_token
+    deactivate Google
+    Provider->>Google: get_user_info(access_token)
+    activate Google
+    Google-->>Provider: OAuthUserInfo (google_id, email, name, avatar)
+    deactivate Google
+    Provider->>DB: resolve or create user + account record
+    activate DB
+    DB-->>Provider: user record
+    deactivate DB
+    Provider-->>UC: AuthResult(user_id, email, provider="google")
+    deactivate Provider
+    UC->>UC: await db_session.commit()
+    UC-->>Route: AuthResult
+    deactivate UC
+    Route-->>Client: 200 OK
+    deactivate Route

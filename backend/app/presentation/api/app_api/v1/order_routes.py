@@ -3,17 +3,31 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from app.application.dtos.order_dto import PlaceOrderCommand
-from app.application.use_cases.order import PlaceOrderUseCase
+from app.application.dtos.payment_dto import (
+    CardDetails,
+    OnlineBankingDetails,
+    PayOrderCommand,
+)
+from app.application.use_cases.order import PayOrderUseCase, PlaceOrderUseCase
 from app.presentation.dependencies.deps import (
     AddressRepo,
     BookRepo,
     CartRepo,
     CustomerUser,
     DbSession,
+    EmailNotificationService,
+    NotificationRepo,
     OrderRepo,
+    PaymentRepo,
+    PaymentSvc,
 )
 from app.presentation.schemas.order_schema import (
     BaseOrderItemResponse,
+    CardPaymentRequest,
+    OnlineBankingPaymentRequest,
+    PaymentSummaryResponse,
+    PayOrderRequest,
+    PayOrderResponse,
     PlaceOrderRequest,
     PlaceOrderResponse,
 )
@@ -62,4 +76,72 @@ async def place_order(
             for item in result.items
         ],
         created_at=result.created_at,
+    )
+
+
+@router.post(
+    "/{order_id}/payment",
+    status_code=200,
+    response_model=PayOrderResponse,
+    operation_id="payOrder",
+)
+async def pay_order(
+    order_id: str,
+    body: PayOrderRequest,
+    customer_user: CustomerUser,
+    order_repo: OrderRepo,
+    payment_repo: PaymentRepo,
+    notification_repo: NotificationRepo,
+    payment_svc: PaymentSvc,
+    book_repo: BookRepo,
+    email_notification_service: EmailNotificationService,
+    db_session: DbSession,
+) -> PayOrderResponse:
+    online_banking_details: OnlineBankingDetails | None = None
+    card_details: CardDetails | None = None
+
+    if isinstance(body, OnlineBankingPaymentRequest):
+        online_banking_details = OnlineBankingDetails(
+            bank_name=body.bank_name,
+            account_number=body.account_number,
+        )
+    elif isinstance(body, CardPaymentRequest):
+        card_details = CardDetails(
+            card_number=body.card_number,
+            expiry_date=body.expiry_date,
+            cvv=body.cvv,
+        )
+
+    use_case = PayOrderUseCase(
+        db_session=db_session,
+        order_repo=order_repo,
+        payment_repo=payment_repo,
+        notification_repo=notification_repo,
+        payment_service=payment_svc,
+        book_repo=book_repo,
+        email_notification_service=email_notification_service,
+    )
+    result = await use_case.execute(
+        PayOrderCommand(
+            order_id=order_id,
+            user_id=customer_user.id,
+            user_email=customer_user.email,
+            user_full_name=customer_user.full_name,
+            payment_method=body.payment_method,
+            outcome=body.outcome,
+            online_banking_details=online_banking_details,
+            card_details=card_details,
+        )
+    )
+    return PayOrderResponse(
+        order_id=result.order_id,
+        order_status=result.order_status,
+        payment=PaymentSummaryResponse(
+            id=result.payment.id,
+            method=result.payment.method,
+            amount=result.payment.amount,
+            status=result.payment.status,
+            simulated_ref=result.payment.simulated_ref,
+            created_at=result.payment.created_at,
+        ),
     )

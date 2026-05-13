@@ -33,6 +33,11 @@ class PaymentStatus(StrEnum):
     FAILED = "failed"
 
 
+class PaymentMethod(StrEnum):
+    ONLINE_BANKING = "online_banking"
+    CARD = "card"
+
+
 class PaymentProvider(StrEnum):
     # RAZORPAY = "razorpay"
     pass
@@ -58,6 +63,10 @@ class NotificationStatus(StrEnum):
 class VerificationTokenType(StrEnum):
     EMAIL_VERIFY = "email_verify"
     PASSWORD_RESET = "password_reset"
+
+
+class NotificationType(StrEnum):
+    PAYMENT_SUCCESS = "payment_success"
 
 
 ALLOWED_AVATAR_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}

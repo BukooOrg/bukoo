@@ -27,3 +27,12 @@ class OutOfStockError(DomainException):
 class EmptyOrderError(DomainException):
     def __init__(self) -> None:
         super().__init__("An order must contain at least one item.")
+
+
+class OrderNotPayableError(DomainException):
+    def __init__(self, order_id: str, current_status: str) -> None:
+        self.order_id = order_id
+        self.current_status = current_status
+        super().__init__(
+            f"Order '{order_id}' cannot be paid because its status is '{current_status}'."
+        )

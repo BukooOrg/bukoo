@@ -1,0 +1,61 @@
+meta {
+  name: success card
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/orders/{{orderId}}/payment
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // Prerequisite: {{orderId}} must be a PENDING order belonging to the authenticated user.
+  {
+    "payment_method": "card",
+    "outcome": "success",
+    "card_number": "4111111111111111",
+    "expiry_date": "08/2027",
+    "cvv": "123"
+  }
+  
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("order_status is paid", function() {
+    expect(res.body.data.order_status).to.equal("paid");
+  });
+  
+  test("payment.status is success", function() {
+    expect(res.body.data.payment.status).to.equal("success");
+  });
+  
+  test("payment.method is card", function() {
+    expect(res.body.data.payment.method).to.equal("card");
+  });
+  
+  test("payment.simulated_ref starts with CARD-AUTH-", function() {
+    expect(res.body.data.payment.simulated_ref).to.match(/^CARD-AUTH-/);
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

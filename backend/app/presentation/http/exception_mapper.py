@@ -34,6 +34,7 @@ from app.domain.exceptions import (
     OAuthStateInvalidError,
     OrderAlreadyPaidError,
     OrderNotFoundError,
+    OrderNotPayableError,
     OutOfStockError,
     PasswordNotSetError,
     PublisherNotFoundError,
@@ -166,6 +167,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_409_CONFLICT,
         ErrorCode.ORDER_ALREADY_PAID,
         "Order already paid",
+    ),
+    OrderNotPayableError: HttpExceptionMapping(
+        status.HTTP_400_BAD_REQUEST,
+        ErrorCode.ORDER_NOT_PAYABLE,
+        lambda exc: exc.message,
     ),
     OutOfStockError: HttpExceptionMapping(
         status.HTTP_409_CONFLICT, ErrorCode.OUT_OF_STOCK, "Out of stock."

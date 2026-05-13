@@ -173,7 +173,10 @@ class FakeOrderRepository(IOrderRepository):
     def __init__(self) -> None:
         self.saved_order: OrderEntity | None = None
 
-    async def save(self, order: OrderEntity) -> None:
+    async def find_by_id(self, order_id: str) -> OrderEntity | None:
+        pass
+
+    async def save(self, order: OrderEntity, should_skip_items: bool = True) -> None:
         self.saved_order = order
 
 
