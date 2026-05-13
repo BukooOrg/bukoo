@@ -7,6 +7,11 @@ from decimal import Decimal
 
 # commands
 @dataclass(frozen=True)
+class GetMyWishlistCommand:
+    user_id: str
+
+
+@dataclass(frozen=True)
 class AddWishlistItemCommand:
     book_id: str
     user_id: str
@@ -28,6 +33,12 @@ class BaseWishlistItemResult:
     book_id: str
     added_at: datetime
     book: WishlistItemBookResult
+
+
+@dataclass(frozen=True)
+class GetMyWishlistResult:
+    id: str
+    items: list[BaseWishlistItemResult]
 
 
 @dataclass(frozen=True)

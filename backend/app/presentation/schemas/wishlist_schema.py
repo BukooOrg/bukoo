@@ -27,5 +27,10 @@ class BaseWishlistItemResponse(BaseModel):
     book: WishlistItemBookResponse
 
 
+class GetMyWishlistResponse(BaseModel):
+    id: str
+    items: list[BaseWishlistItemResponse]
+
+
 class AddWishlistItemResponse(BaseWishlistItemResponse):
     pass

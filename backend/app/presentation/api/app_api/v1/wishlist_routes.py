@@ -7,8 +7,12 @@ from fastapi import APIRouter
 from app.application.dtos.wishlist_dto import (
     AddWishlistItemCommand,
     BaseWishlistItemResult,
+    GetMyWishlistCommand,
 )
-from app.application.use_cases.wishlist import AddWishlistItemUseCase
+from app.application.use_cases.wishlist import (
+    AddWishlistItemUseCase,
+    GetMyWishlistUseCase,
+)
 from app.core.util import build_public_url
 from app.presentation.dependencies.deps import (
     BookRepo,
@@ -20,6 +24,7 @@ from app.presentation.schemas.wishlist_schema import (
     AddWishlistItemRequest,
     AddWishlistItemResponse,
     BaseWishlistItemResponse,
+    GetMyWishlistResponse,
     WishlistItemBookResponse,
 )
 
@@ -42,6 +47,21 @@ def build_base_cart_item_response(result: T, response_cls: type[P]) -> P:  # noq
             price=result.book.price,
             cover_url=build_public_url(result.book.cover_url),
         ),
+    )
+
+
+@router.get("", response_model=GetMyWishlistResponse, operation_id="getMyWishlist")
+async def get_my_wishlist(
+    customer_user: CustomerUser, wishlist_repo: WishlistRepo, db_session: DbSession
+) -> GetMyWishlistResponse:
+    use_case = GetMyWishlistUseCase(db_session=db_session, wishlist_repo=wishlist_repo)
+    result = await use_case.execute(GetMyWishlistCommand(user_id=customer_user.id))
+    return GetMyWishlistResponse(
+        id=result.id,
+        items=[
+            build_base_cart_item_response(item, BaseWishlistItemResponse)
+            for item in result.items
+        ],
     )
 
 
