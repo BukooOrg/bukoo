@@ -22,9 +22,6 @@ class RemoveCartItemUseCase(BaseUseCase):
     @override
     async def execute(self, cmd: RemoveCartItemCommand) -> None:
         cart = await self._cart_repo.find_by_user_id(cmd.user_id)
-        print(f"user id: {cmd.user_id}")
-        print(cart)
-
         if cart is None:
             raise CartNotFoundError(cmd.user_id)
 

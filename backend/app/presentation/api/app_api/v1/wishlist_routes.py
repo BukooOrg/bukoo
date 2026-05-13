@@ -2,16 +2,18 @@ from __future__ import annotations
 
 from typing import TypeVar
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 
 from app.application.dtos.wishlist_dto import (
     AddWishlistItemCommand,
     BaseWishlistItemResult,
     GetMyWishlistCommand,
+    RemoveWishlistItemCommand,
 )
 from app.application.use_cases.wishlist import (
     AddWishlistItemUseCase,
     GetMyWishlistUseCase,
+    RemoveWishlistItemUseCase,
 )
 from app.core.util import build_public_url
 from app.presentation.dependencies.deps import (
@@ -90,3 +92,24 @@ async def add_wishlist_item(
         )
     )
     return build_base_cart_item_response(result, AddWishlistItemResponse)
+
+
+@router.delete(
+    "/items/{item_id}",
+    status_code=204,
+    response_model=None,
+    operation_id="removeWishlistItem",
+)
+async def remove_wishlist_item(
+    item_id: str,
+    customer_user: CustomerUser,
+    wishlist_repo: WishlistRepo,
+    db_session: DbSession,
+) -> Response:
+    use_case = RemoveWishlistItemUseCase(
+        db_session=db_session, wishlist_repo=wishlist_repo
+    )
+    await use_case.execute(
+        RemoveWishlistItemCommand(item_id=item_id, user_id=customer_user.id)
+    )
+    return Response(status_code=204)

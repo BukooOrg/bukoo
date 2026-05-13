@@ -17,6 +17,12 @@ class AddWishlistItemCommand:
     user_id: str
 
 
+@dataclass(frozen=True)
+class RemoveWishlistItemCommand:
+    user_id: str
+    item_id: str
+
+
 # results
 @dataclass(frozen=True)
 class WishlistItemBookResult:

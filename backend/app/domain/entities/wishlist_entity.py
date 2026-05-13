@@ -44,6 +44,9 @@ class WishlistEntity:
             (item for item in self._wishlist_items if item.book_id == book_id), None
         )
 
+    def find_item_by_item_id(self, item_id: str) -> WishlistItemEntity | None:
+        return next((item for item in self._wishlist_items if item.id == item_id), None)
+
     def add_wishlist_item(self, wishlist_item: WishlistItemEntity) -> None:
         """
         Append a pre-built WishlistItemEntity.

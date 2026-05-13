@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import override
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.entities import WishlistEntity
 from app.domain.repositories import IWishlistRepository
 from app.infrastructure.db.mappers.wishlist_item_mapper import WishlistItemMapper
 from app.infrastructure.db.mappers.wishlist_mapper import WishlistMapper
-from app.infrastructure.db.models import WishlistModel
+from app.infrastructure.db.models import WishlistItemModel, WishlistModel
 
 
 class WishlistRepositoryImpl(IWishlistRepository):
@@ -22,6 +22,11 @@ class WishlistRepositoryImpl(IWishlistRepository):
         result = await self._session.execute(stmt)
         model = result.scalar_one_or_none()
         return WishlistMapper.to_entity(model) if model else None
+
+    @override
+    async def delete_item_by_item_id(self, item_id: str) -> None:
+        stmt = delete(WishlistItemModel).where(WishlistItemModel.id == item_id)
+        await self._session.execute(stmt)
 
     @override
     async def save(self, wishlist: WishlistEntity) -> None:

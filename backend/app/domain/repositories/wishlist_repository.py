@@ -11,5 +11,9 @@ class IWishlistRepository(ABC):
         pass
 
     @abstractmethod
+    async def delete_item_by_item_id(self, item_id: str) -> None:
+        pass
+
+    @abstractmethod
     async def save(self, wishlist: WishlistEntity) -> None:
         pass

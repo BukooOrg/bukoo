@@ -83,6 +83,9 @@ class FakeWishlistRepository(IWishlistRepository):
             return self._wishlist
         return None
 
+    async def delete_item_by_item_id(self, item_id: str) -> None:
+        pass
+
     async def save(self, wishlist: WishlistEntity) -> None:
         pass
 
