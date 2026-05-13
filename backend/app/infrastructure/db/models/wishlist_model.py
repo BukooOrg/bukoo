@@ -43,4 +43,5 @@ class WishlistModel(DefaultFieldMixin):
         cascade="all, delete-orphan",
         lazy="selectin",
         init=False,
+        order_by="WishlistItemModel.added_at",
     )

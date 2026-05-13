@@ -52,6 +52,11 @@ from .storage import (
     StorageUploadError,
 )
 from .user import CustomerOnlyError
+from .wishlist import (
+    WishlistItemAlreadyExistsError,
+    WishlistItemNotFoundError,
+    WishlistNotFoundError,
+)
 
 __all__ = [
     "DomainException",
@@ -101,4 +106,7 @@ __all__ = [
     "PublisherNotFoundError",
     "CartNotFoundError",
     "CartItemNotFoundError",
+    "WishlistItemAlreadyExistsError",
+    "WishlistNotFoundError",
+    "WishlistItemNotFoundError",
 ]

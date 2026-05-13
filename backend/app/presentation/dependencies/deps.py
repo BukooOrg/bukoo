@@ -37,6 +37,7 @@ from app.domain.repositories import (
     IPublisherRepository,
     IUserRepository,
     IVerificationTokenRepository,
+    IWishlistRepository,
 )
 from app.infrastructure.auth import (
     BcryptPasswordHasher,
@@ -57,6 +58,7 @@ from app.infrastructure.db.repositories import (
     PublisherRepositoryImpl,
     UserRepositoryImpl,
     VerificationTokenRepositoryImpl,
+    WishlistRepositoryImpl,
 )
 from app.infrastructure.db.session import get_db_session
 from app.infrastructure.storage import MinIOStorage, S3Storage
@@ -143,6 +145,13 @@ def get_cart_repository(session: DbSession) -> ICartRepository:
 
 
 CartRepo = Annotated[ICartRepository, Depends(get_cart_repository)]
+
+
+def get_wishlist_repository(session: DbSession) -> IWishlistRepository:
+    return WishlistRepositoryImpl(session)
+
+
+WishlistRepo = Annotated[IWishlistRepository, Depends(get_wishlist_repository)]
 
 
 # Cache

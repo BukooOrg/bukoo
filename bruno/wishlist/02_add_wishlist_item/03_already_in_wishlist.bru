@@ -1,0 +1,40 @@
+meta {
+  name: already in wishlist
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/wishlist/items
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // same book_id as 01_success — requires that test to have run first
+  {
+    "book_id": "{{bookId}}"
+  }
+}
+
+tests {
+  test("status 409", function() {
+    expect(res.status).to.equal(409);
+  });
+
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is WISHLIST_ITEM_ALREADY_EXISTS", function() {
+    expect(res.body.error.code).to.equal("WISHLIST_ITEM_ALREADY_EXISTS");
+  });
+}

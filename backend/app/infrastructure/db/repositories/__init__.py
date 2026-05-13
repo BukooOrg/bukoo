@@ -8,6 +8,7 @@ from .collection_repository_impl import CollectionRepositoryImpl
 from .publisher_repository_impl import PublisherRepositoryImpl
 from .user_repository_impl import UserRepositoryImpl
 from .verification_token_repository_impl import VerificationTokenRepositoryImpl
+from .wishlist_repository_impl import WishlistRepositoryImpl
 
 __all__ = [
     "AccountRepositoryImpl",
@@ -20,4 +21,5 @@ __all__ = [
     "PublisherRepositoryImpl",
     "UserRepositoryImpl",
     "VerificationTokenRepositoryImpl",
+    "WishlistRepositoryImpl",
 ]

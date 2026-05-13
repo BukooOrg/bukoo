@@ -1,0 +1,30 @@
+meta {
+  name: wishlist not found
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/wishlist
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  // requires a token for a user who has never added a wishlist item
+  token: {{token}}
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is WISHLIST_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("WISHLIST_NOT_FOUND");
+  });
+}
