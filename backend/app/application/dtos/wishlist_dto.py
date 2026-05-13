@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
 
+from .cart_dtos import BaseCartItemResult
+
 
 # commands
 @dataclass(frozen=True)
@@ -19,6 +21,12 @@ class AddWishlistItemCommand:
 
 @dataclass(frozen=True)
 class RemoveWishlistItemCommand:
+    user_id: str
+    item_id: str
+
+
+@dataclass(frozen=True)
+class MoveWishlistItemToCartCommand:
     user_id: str
     item_id: str
 
@@ -49,4 +57,9 @@ class GetMyWishlistResult:
 
 @dataclass(frozen=True)
 class AddWishlistItemResult(BaseWishlistItemResult):
+    pass
+
+
+@dataclass(frozen=True)
+class MoveWishlistItemToCartResult(BaseCartItemResult):
     pass

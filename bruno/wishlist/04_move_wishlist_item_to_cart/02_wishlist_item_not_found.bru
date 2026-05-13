@@ -1,0 +1,29 @@
+meta {
+  name: wishlist item not found
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/wishlist/items/00000000-0000-0000-0000-000000000000/move-to-cart
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is WISHLIST_ITEM_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("WISHLIST_ITEM_NOT_FOUND");
+  });
+}

@@ -8,16 +8,19 @@ from app.application.dtos.wishlist_dto import (
     AddWishlistItemCommand,
     BaseWishlistItemResult,
     GetMyWishlistCommand,
+    MoveWishlistItemToCartCommand,
     RemoveWishlistItemCommand,
 )
 from app.application.use_cases.wishlist import (
     AddWishlistItemUseCase,
     GetMyWishlistUseCase,
+    MoveWishlistItemToCartUseCase,
     RemoveWishlistItemUseCase,
 )
 from app.core.util import build_public_url
 from app.presentation.dependencies.deps import (
     BookRepo,
+    CartRepo,
     CustomerUser,
     DbSession,
     WishlistRepo,
@@ -27,8 +30,11 @@ from app.presentation.schemas.wishlist_schema import (
     AddWishlistItemResponse,
     BaseWishlistItemResponse,
     GetMyWishlistResponse,
+    MoveWishlistItemToCartResponse,
     WishlistItemBookResponse,
 )
+
+from .cart_routes import build_base_cart_item_response
 
 router = APIRouter(prefix="/wishlist", tags=["wishlist"])
 
@@ -37,7 +43,7 @@ T = TypeVar("T", bound=BaseWishlistItemResult)
 P = TypeVar("P", bound=BaseWishlistItemResponse)
 
 
-def build_base_cart_item_response(result: T, response_cls: type[P]) -> P:  # noqa: UP047 # type: ignore
+def build_base_wishlist_item_response(result: T, response_cls: type[P]) -> P:  # noqa: UP047 # type: ignore
     return response_cls(
         id=result.id,
         wishlist_id=result.wishlist_id,
@@ -61,7 +67,7 @@ async def get_my_wishlist(
     return GetMyWishlistResponse(
         id=result.id,
         items=[
-            build_base_cart_item_response(item, BaseWishlistItemResponse)
+            build_base_wishlist_item_response(item, BaseWishlistItemResponse)
             for item in result.items
         ],
     )
@@ -91,7 +97,7 @@ async def add_wishlist_item(
             user_id=customer_user.id,
         )
     )
-    return build_base_cart_item_response(result, AddWishlistItemResponse)
+    return build_base_wishlist_item_response(result, AddWishlistItemResponse)
 
 
 @router.delete(
@@ -113,3 +119,29 @@ async def remove_wishlist_item(
         RemoveWishlistItemCommand(item_id=item_id, user_id=customer_user.id)
     )
     return Response(status_code=204)
+
+
+@router.post(
+    "/items/{item_id}/move-to-cart",
+    status_code=201,
+    response_model=MoveWishlistItemToCartResponse,
+    operation_id="moveWishlistItemToCart",
+)
+async def move_wishlist_item_to_cart(
+    item_id: str,
+    customer_user: CustomerUser,
+    wishlist_repo: WishlistRepo,
+    book_repo: BookRepo,
+    cart_repo: CartRepo,
+    db_session: DbSession,
+) -> MoveWishlistItemToCartResponse:
+    use_case = MoveWishlistItemToCartUseCase(
+        db_session=db_session,
+        book_repo=book_repo,
+        cart_repo=cart_repo,
+        wishlist_repo=wishlist_repo,
+    )
+    result = await use_case.execute(
+        MoveWishlistItemToCartCommand(user_id=customer_user.id, item_id=item_id)
+    )
+    return build_base_cart_item_response(result, MoveWishlistItemToCartResponse)

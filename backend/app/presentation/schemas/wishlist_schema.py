@@ -5,6 +5,8 @@ from decimal import Decimal
 
 from pydantic import BaseModel
 
+from .cart_schema import BaseCartItemResponse
+
 
 # requests
 class AddWishlistItemRequest(BaseModel):
@@ -33,4 +35,8 @@ class GetMyWishlistResponse(BaseModel):
 
 
 class AddWishlistItemResponse(BaseWishlistItemResponse):
+    pass
+
+
+class MoveWishlistItemToCartResponse(BaseCartItemResponse):
     pass

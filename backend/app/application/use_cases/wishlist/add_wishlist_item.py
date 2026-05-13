@@ -11,8 +11,7 @@ from app.application.dtos.wishlist_dto import (
     AddWishlistItemResult,
     WishlistItemBookResult,
 )
-from app.domain.entities.wishlist_entity import WishlistEntity
-from app.domain.entities.wishlist_item_entity import WishlistItemEntity
+from app.domain.entities import WishlistEntity, WishlistItemEntity
 from app.domain.exceptions import BookNotFoundError, WishlistItemAlreadyExistsError
 from app.domain.repositories import IBookRepository, IWishlistRepository
 from app.domain.repositories.book_repository import BookStatusFilter
