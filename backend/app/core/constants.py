@@ -65,3 +65,5 @@ MAX_AVATAR_BYTES = 5 * 1024 * 1024  # 5MB
 
 ALLOWED_COVER_TYPES = {"image/jpeg", "image/png", "image/webp"}
 MAX_COVER_BYTES = 1 * 1024 * 1024  # 10MB
+
+EAST_MALAYSIA_STATES = ["sabah", "sarawak"]

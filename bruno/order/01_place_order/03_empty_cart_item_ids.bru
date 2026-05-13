@@ -1,0 +1,40 @@
+meta {
+  name: empty cart item ids
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/orders
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // cart_item_ids must have at least one item — empty array triggers Pydantic 422
+  {
+    "cart_item_ids": []
+  }
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

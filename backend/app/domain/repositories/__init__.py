@@ -5,6 +5,7 @@ from .book_repository import BookFilters, BookStatusFilter, IBookRepository
 from .cart_repository import ICartRepository
 from .category_repository import ICategoryRepository
 from .collection_repository import ICollectionRepository
+from .order_repository import IOrderRepository
 from .publisher_repository import IPublisherRepository
 from .user_repository import IUserRepository
 from .verification_token_repository import IVerificationTokenRepository
@@ -24,4 +25,5 @@ __all__ = [
     "IUserRepository",
     "IVerificationTokenRepository",
     "IWishlistRepository",
+    "IOrderRepository",
 ]

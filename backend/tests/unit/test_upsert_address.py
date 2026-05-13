@@ -109,6 +109,10 @@ class FakeAddressRepository(IAddressRepository):
     async def save(self, address: AddressEntity) -> None:
         self.saved = address
 
+    @override
+    async def find_address_by_user_id(self, user_id: str) -> AddressEntity | None:
+        return None
+
 
 @pytest.mark.unit
 class TestUpsertAddressUseCase:

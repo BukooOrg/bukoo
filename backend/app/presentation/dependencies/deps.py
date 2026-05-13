@@ -34,6 +34,7 @@ from app.domain.repositories import (
     ICartRepository,
     ICategoryRepository,
     ICollectionRepository,
+    IOrderRepository,
     IPublisherRepository,
     IUserRepository,
     IVerificationTokenRepository,
@@ -55,6 +56,7 @@ from app.infrastructure.db.repositories import (
     CartRepositoryImpl,
     CategoryRepositoryImpl,
     CollectionRepositoryImpl,
+    OrderRepositoryImpl,
     PublisherRepositoryImpl,
     UserRepositoryImpl,
     VerificationTokenRepositoryImpl,
@@ -152,6 +154,13 @@ def get_wishlist_repository(session: DbSession) -> IWishlistRepository:
 
 
 WishlistRepo = Annotated[IWishlistRepository, Depends(get_wishlist_repository)]
+
+
+def get_order_repository(session: DbSession) -> IOrderRepository:
+    return OrderRepositoryImpl(session)
+
+
+OrderRepo = Annotated[IOrderRepository, Depends(get_order_repository)]
 
 
 # Cache

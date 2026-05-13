@@ -5,6 +5,7 @@ from .book_repository_impl import BookRepositoryImpl
 from .cart_repository_impl import CartRepositoryImpl
 from .category_repository_impl import CategoryRepositoryImpl
 from .collection_repository_impl import CollectionRepositoryImpl
+from .order_repository_impl import OrderRepositoryImpl
 from .publisher_repository_impl import PublisherRepositoryImpl
 from .user_repository_impl import UserRepositoryImpl
 from .verification_token_repository_impl import VerificationTokenRepositoryImpl
@@ -18,6 +19,7 @@ __all__ = [
     "CartRepositoryImpl",
     "CategoryRepositoryImpl",
     "CollectionRepositoryImpl",
+    "OrderRepositoryImpl",
     "PublisherRepositoryImpl",
     "UserRepositoryImpl",
     "VerificationTokenRepositoryImpl",
