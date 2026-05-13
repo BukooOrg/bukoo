@@ -18,7 +18,7 @@ describe('useApiMutation', () => {
       expect(result.current.loading).toBe(false);
       expect(result.current.data).toEqual({ id: 1 });
     });
-    
+
     expect(mutationFn).toHaveBeenCalledWith({ name: 'test' });
   });
 
