@@ -26,6 +26,7 @@ from app.core.constants import (
     PaymentMethod,
     PaymentStatus,
 )
+from app.core.util import construct_order_ref
 from app.domain.entities import NotificationEntity, PaymentEntity
 from app.domain.exceptions import OrderNotFoundError, OrderNotPayableError
 from app.domain.repositories import (
@@ -50,17 +51,17 @@ class PayOrderUseCase(BaseUseCase):
         order_repo: IOrderRepository,
         payment_repo: IPaymentRepository,
         notification_repo: INotificationRepository,
-        payment_service: IPaymentService,
+        payment_svc: IPaymentService,
         book_repo: IBookRepository,
-        email_notification_service: IEmailNotificationService,
+        email_notification_svc: IEmailNotificationService,
     ) -> None:
         super().__init__(db_session=db_session)
         self._order_repo = order_repo
         self._payment_repo = payment_repo
         self._notification_repo = notification_repo
-        self._payment_service = payment_service
+        self._payment_svc = payment_svc
         self._book_repo = book_repo
-        self._email_notification_service = email_notification_service
+        self._email_notification_svc = email_notification_svc
 
     async def _process_payment(
         self, cmd: ProcessPaymentCommand
@@ -80,8 +81,8 @@ class PayOrderUseCase(BaseUseCase):
                 cvv=cmd.card_details.cvv,
             )
 
-        self._payment_service.set_strategy(strategy)
-        return await self._payment_service.execute_payment(cmd)
+        self._payment_svc.set_strategy(strategy)
+        return await self._payment_svc.execute_payment(cmd)
 
     @override
     async def execute(self, cmd: PayOrderCommand) -> PayOrderResult:
@@ -130,7 +131,7 @@ class PayOrderUseCase(BaseUseCase):
                 _type=NotificationType.PAYMENT_SUCCESS,
                 _subject="Payment Confirmed",
                 _body=(
-                    f"Your payment for order #{order.id[:8].upper()} "
+                    f"Your payment for order {construct_order_ref(order.id)} "
                     f"has been confirmed. Total paid: RM {order.total:.2f}."
                 ),
                 _status=NotificationStatus.PENDING,
@@ -170,7 +171,7 @@ class PayOrderUseCase(BaseUseCase):
                 if result.method == PaymentMethod.ONLINE_BANKING
                 else "Card"
             )
-            self._email_notification_service.send_payment_receipt(
+            self._email_notification_svc.send_payment_receipt(
                 to=cmd.user_email,
                 full_name=cmd.user_full_name,
                 order_id=order.id,

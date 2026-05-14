@@ -96,7 +96,12 @@ class FakeEmailNotificationService(IEmailNotificationService):
     def send_password_reset_email(self, to: str, otp: str) -> None:
         pass
 
+    @override
     def send_payment_receipt(self, *args: Any, **kwargs: Any) -> None:
+        pass
+
+    @override
+    def send_order_cancellation(self, *args: Any, **kwargs: Any) -> None:
         pass
 
 

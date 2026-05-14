@@ -206,9 +206,9 @@ def _make_use_case(
         order_repo=order_repo,
         payment_repo=payment_repo,
         notification_repo=notification_repo,
-        payment_service=payment_service,  # type: ignore[arg-type]
+        payment_svc=payment_service,  # type: ignore[arg-type]
         book_repo=book_repo,  # type: ignore[arg-type]
-        email_notification_service=email_svc,
+        email_notification_svc=email_svc,
     )
     return use_case, order_repo, payment_repo, notification_repo
 
@@ -327,9 +327,9 @@ class TestPayOrderUseCase:
             order_repo=order_repo,
             payment_repo=FakePaymentRepository(),
             notification_repo=FakeNotificationRepository(),
-            payment_service=FakePaymentService(success=True),  # type: ignore[arg-type]
+            payment_svc=FakePaymentService(success=True),  # type: ignore[arg-type]
             book_repo=FakeBookRepository(),  # type: ignore[arg-type]
-            email_notification_service=MagicMock(),
+            email_notification_svc=MagicMock(),
         )
 
         await use_case.execute(_make_command())

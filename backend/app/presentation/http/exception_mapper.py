@@ -3,6 +3,7 @@ from collections.abc import Callable
 from fastapi import status
 
 from app.application.errors.error_codes import ErrorCode
+from app.core.constants import OrderStatus
 from app.domain.exceptions import (
     AddressNotFoundError,
     AdminAccessRequiredError,
@@ -34,6 +35,7 @@ from app.domain.exceptions import (
     OAuthStateInvalidError,
     OrderAccessDeniedError,
     OrderAlreadyPaidError,
+    OrderNotCancellableError,
     OrderNotFoundError,
     OrderNotPayableError,
     OutOfStockError,
@@ -63,6 +65,22 @@ class HttpExceptionMapping:
         self.status_code = status_code
         self.code = code
         self.message = message
+
+
+def get_order_not_cancellable_message(exc: DomainException) -> str:
+    """
+    Constructs a contextual error message for order cancellation failures.
+    Provides additional debugging metadata for administrators.
+    """
+    if exc.context.get("is_admin"):
+        allowed: list[OrderStatus] = exc.context.get(
+            "allowed_cancelled_status_for_admin", "None"
+        )
+        return (
+            f"{exc.message} Allowed cancelled statuses for admin: {', '.join(allowed)}"
+        )
+
+    return exc.message
 
 
 EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
@@ -181,6 +199,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_403_FORBIDDEN,
         ErrorCode.ORDER_ACCESS_DENIED,
         "You do not have permission to access this order.",
+    ),
+    OrderNotCancellableError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.ORDER_NOT_CANCELLABLE,
+        get_order_not_cancellable_message,
     ),
     EmptyOrderError: HttpExceptionMapping(
         status.HTTP_422_UNPROCESSABLE_ENTITY,

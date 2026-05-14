@@ -67,6 +67,7 @@ class VerificationTokenType(StrEnum):
 
 class NotificationType(StrEnum):
     PAYMENT_SUCCESS = "payment_success"
+    ORDER_CANCELLED = "order_cancelled"
 
 
 ALLOWED_AVATAR_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
@@ -76,3 +77,4 @@ ALLOWED_COVER_TYPES = {"image/jpeg", "image/png", "image/webp"}
 MAX_COVER_BYTES = 1 * 1024 * 1024  # 10MB
 
 EAST_MALAYSIA_STATES = ["sabah", "sarawak"]
+ALLOWED_CANCELLED_STATUS_FOR_ADMIN = [OrderStatus.PENDING, OrderStatus.PAID]

@@ -2,13 +2,18 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from app.application.dtos.order_dto import PlaceOrderCommand, ViewOrderDetailCommand
+from app.application.dtos.order_dto import (
+    CancelOrderCommand,
+    PlaceOrderCommand,
+    ViewOrderDetailCommand,
+)
 from app.application.dtos.payment_dto import (
     CardDetails,
     OnlineBankingDetails,
     PayOrderCommand,
 )
 from app.application.use_cases.order import (
+    CancelOrderUseCase,
     PayOrderUseCase,
     PlaceOrderUseCase,
     ViewOrderDetailUseCase,
@@ -25,9 +30,11 @@ from app.presentation.dependencies.deps import (
     OrderRepo,
     PaymentRepo,
     PaymentSvc,
+    UserRepo,
 )
 from app.presentation.schemas.order_schema import (
     BaseOrderItemResponse,
+    CancelOrderResponse,
     CardPaymentRequest,
     OnlineBankingPaymentRequest,
     PaymentSummaryResponse,
@@ -100,7 +107,7 @@ async def pay_order(
     notification_repo: NotificationRepo,
     payment_svc: PaymentSvc,
     book_repo: BookRepo,
-    email_notification_service: EmailNotificationService,
+    email_notification_svc: EmailNotificationService,
     db_session: DbSession,
 ) -> PayOrderResponse:
     online_banking_details: OnlineBankingDetails | None = None
@@ -123,9 +130,9 @@ async def pay_order(
         order_repo=order_repo,
         payment_repo=payment_repo,
         notification_repo=notification_repo,
-        payment_service=payment_svc,
+        payment_svc=payment_svc,
         book_repo=book_repo,
-        email_notification_service=email_notification_service,
+        email_notification_svc=email_notification_svc,
     )
     result = await use_case.execute(
         PayOrderCommand(
@@ -202,4 +209,35 @@ async def view_order_detail(
         payment=payment,
         created_at=result.created_at,
         updated_at=result.updated_at,
+    )
+
+
+@router.post(
+    "/{order_id}/cancel", response_model=CancelOrderResponse, operation_id="cancelOrder"
+)
+async def cancel_order(
+    order_id: str,
+    current_user: CurrentUser,
+    order_repo: OrderRepo,
+    notification_repo: NotificationRepo,
+    book_repo: BookRepo,
+    user_repo: UserRepo,
+    email_notification_svc: EmailNotificationService,
+    db_session: DbSession,
+) -> CancelOrderResponse:
+    use_case = CancelOrderUseCase(
+        db_session=db_session,
+        order_repo=order_repo,
+        notification_repo=notification_repo,
+        book_repo=book_repo,
+        user_repo=user_repo,
+        email_notification_svc=email_notification_svc,
+    )
+    result = await use_case.execute(
+        CancelOrderCommand(
+            order_id=order_id, user_id=current_user.id, user_role=current_user.role
+        )
+    )
+    return CancelOrderResponse(
+        id=result.id, status=result.status, updated_at=result.updated_at
     )

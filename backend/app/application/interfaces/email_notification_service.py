@@ -37,3 +37,15 @@ class IEmailNotificationService(ABC):
         paid_at: datetime,
     ) -> None:
         pass
+
+    @abstractmethod
+    def send_order_cancellation(
+        self,
+        to: str,
+        full_name: str,
+        order_id: str,
+        items: list[PaymentReceiptItem],
+        total: Decimal,
+        cancelled_at: datetime,
+    ) -> None:
+        pass

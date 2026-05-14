@@ -1,3 +1,5 @@
+from app.core.constants import ALLOWED_CANCELLED_STATUS_FOR_ADMIN, OrderStatus
+
 from .base import DomainException
 
 
@@ -41,3 +43,23 @@ class OrderNotPayableError(DomainException):
 class OrderAccessDeniedError(DomainException):
     def __init__(self) -> None:
         super().__init__("Order access denied.")
+
+
+class OrderNotCancellableError(DomainException):
+    def __init__(
+        self,
+        order_id: str,
+        order_status: OrderStatus,
+        is_admin: bool = False,
+    ) -> None:
+        self._order_id = order_id
+        self._order_status = order_status
+        self._allowed_cancelled_status_for_admin = ALLOWED_CANCELLED_STATUS_FOR_ADMIN
+        self._is_admin = is_admin
+        context = {
+            "order_id": order_id,
+            "order_status": order_status,
+            "allowed_cancelled_status_for_admin": ALLOWED_CANCELLED_STATUS_FOR_ADMIN,
+            "is_admin": is_admin,
+        }
+        super().__init__(f"Order '{order_id}' cannot be cancelled.", context=context)

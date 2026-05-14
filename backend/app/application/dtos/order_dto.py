@@ -24,6 +24,13 @@ class ViewOrderDetailCommand:
     user_role: UserRole
 
 
+@dataclass(frozen=True)
+class CancelOrderCommand:
+    order_id: str
+    user_id: str
+    user_role: UserRole
+
+
 # requests
 @dataclass(frozen=True)
 class BaseOrderResult:
@@ -56,4 +63,11 @@ class PlaceOrderResult(BaseOrderResult):
 class ViewOrderDetailResult(BaseOrderResult):
     user_id: str
     payment: PaymentSummaryResult | None
+    updated_at: datetime
+
+
+@dataclass(frozen=True)
+class CancelOrderResult:
+    id: str
+    status: OrderStatus
     updated_at: datetime

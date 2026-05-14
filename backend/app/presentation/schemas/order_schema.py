@@ -79,3 +79,9 @@ class ViewOrderDetailResponse(BaseOrderResponse):
     user_id: str
     payment: PaymentSummaryResponse | None
     updated_at: datetime
+
+
+class CancelOrderResponse(BaseModel):
+    id: str
+    status: OrderStatus
+    updated_at: datetime
