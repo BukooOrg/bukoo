@@ -1,6 +1,6 @@
 import { Key, CheckCircle, AlertCircle, Loader2, ArrowLeft } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { OtpInput } from '@/components/auth/otp-input';
@@ -9,10 +9,11 @@ import { authApi } from '@/lib/apiClient';
 
 export default function VerifyPasswordResetOtpPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
   const [verified, setVerified] = useState(false);
-  const email = history.state?.email || '';
+  const email = location.state?.email || '';
 
   const { mutate: verifyReset, loading: isVerifying } = useApiMutation(
     (variables) => authApi.verifyPasswordReset(variables),
