@@ -101,6 +101,7 @@ import OAuthCallbackPage from './pages/auth/OAuthCallbackPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import VerifyEmailPage from './pages/auth/VerifyEmailPage';
+import VerifyPasswordResetOtpPage from './pages/auth/VerifyPasswordResetOtpPage';
 // ─── Shopping pages ──────────────────────────────────────────────────────────
 import CartPage from './pages/shopping/CartPage';
 import CheckoutConfirmationPage from './pages/shopping/CheckoutConfirmationPage';
@@ -126,6 +127,7 @@ function App() {
               <Route path='/oauth/callback' element={<OAuthCallbackPage />} />
               <Route path='/verify-email' element={<VerifyEmailPage />} />
               <Route path='/forgot-password' element={<ForgotPasswordPage />} />
+              <Route path='/verify-password-reset-otp' element={<VerifyPasswordResetOtpPage />} />
               <Route path='/reset-password' element={<ResetPasswordPage />} />
             </Route>
 

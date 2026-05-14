@@ -1,6 +1,7 @@
 import { ResponseError } from '@bukoo/api-client';
 import { Key, Mail, Send, CheckCircle, AlertCircle, Loader2, ArrowLeft } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Link, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -8,6 +9,7 @@ import { useApiMutation } from '@/hooks/useApiMutation';
 import { authApi } from '@/lib/apiClient';
 
 export default function ForgotPasswordPage() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [email, setEmail] = useState(searchParams.get('email') || '');
   const [error, setError] = useState('');
@@ -30,6 +32,9 @@ export default function ForgotPasswordPage() {
         toast.success('Password reset email sent! Check your inbox.');
         setCooldown(30);
         setError('');
+        setTimeout(() => {
+          navigate('/verify-password-reset-otp', { state: { email: email.trim() } });
+        }, 2000);
       },
       onError: (err) => {
         if (err instanceof ResponseError) {
