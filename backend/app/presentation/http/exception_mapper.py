@@ -38,6 +38,7 @@ from app.domain.exceptions import (
     OrderNotCancellableError,
     OrderNotFoundError,
     OrderNotPayableError,
+    OrderStatusTransitionInvalidError,
     OutOfStockError,
     PasswordNotSetError,
     PublisherNotFoundError,
@@ -204,6 +205,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_409_CONFLICT,
         ErrorCode.ORDER_NOT_CANCELLABLE,
         get_order_not_cancellable_message,
+    ),
+    OrderStatusTransitionInvalidError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.ORDER_STATUS_TRANSITION_INVALID,
+        lambda exc: exc.message,
     ),
     EmptyOrderError: HttpExceptionMapping(
         status.HTTP_422_UNPROCESSABLE_ENTITY,

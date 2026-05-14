@@ -37,7 +37,9 @@ from app.domain.repositories.book_repository import BookStatusFilter
 NOW = datetime(2026, 1, 15, 10, 30, 0, tzinfo=UTC)
 
 
-def _make_item(book_id: str | None = "book-001") -> OrderItemEntity:
+def _make_item(
+    book_id: str | None = "book-001", book: BookEntity | None = None
+) -> OrderItemEntity:
     return OrderItemEntity(
         _id="item-001",
         _order_id="order-001",
@@ -48,6 +50,7 @@ def _make_item(book_id: str | None = "book-001") -> OrderItemEntity:
         _line_total=Decimal("39.98"),
         _created_at=NOW,
         _updated_at=NOW,
+        _book=book,
     )
 
 
@@ -55,6 +58,7 @@ def _make_order(
     user_id: str | None = "user-001",
     status: OrderStatus = OrderStatus.PENDING,
     book_id: str | None = "book-001",
+    book: BookEntity | None = None,
 ) -> OrderEntity:
     return OrderEntity(
         _id="order-001",
@@ -72,7 +76,7 @@ def _make_order(
         _status=status,
         _created_at=NOW,
         _updated_at=NOW,
-        _order_items=[_make_item(book_id=book_id)],
+        _order_items=[_make_item(book_id=book_id, book=book)],
     )
 
 
@@ -323,8 +327,8 @@ class TestCancelOrderUseCase:
             await use_case.execute(_admin_cmd())
 
     async def test_stock_restored_for_all_items(self) -> None:
-        order = _make_order(user_id="user-001", status=OrderStatus.PENDING)
         book = _make_book()
+        order = _make_order(user_id="user-001", status=OrderStatus.PENDING, book=book)
         use_case, _, book_repo, _ = _make_use_case(
             order=order, book=book, user=_make_user()
         )

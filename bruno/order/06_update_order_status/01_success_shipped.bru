@@ -1,0 +1,49 @@
+meta {
+  name: success shipped
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/orders/{{orderId}}/status
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // advance a PAID order to SHIPPED
+  {
+    "status": "delivered"
+    
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.status is shipped", function() {
+    expect(res.body.data.status).to.equal("shipped");
+  });
+  
+  test("data.updated_at is a valid ISO timestamp", function() {
+    expect(res.body.data.updated_at).to.be.a("string").and.not.empty;
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

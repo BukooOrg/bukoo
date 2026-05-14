@@ -63,3 +63,8 @@ class OrderNotCancellableError(DomainException):
             "is_admin": is_admin,
         }
         super().__init__(f"Order '{order_id}' cannot be cancelled.", context=context)
+
+
+class OrderStatusTransitionInvalidError(DomainException):
+    def __init__(self) -> None:
+        super().__init__("Invalid order status transition.")

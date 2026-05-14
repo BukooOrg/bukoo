@@ -122,7 +122,7 @@ class PayOrderUseCase(BaseUseCase):
         if result.success:
             assert result.simulated_ref is not None
             payment.mark_success(result.simulated_ref)
-            order.mark_paid()
+            order.update_status(OrderStatus.PAID)
 
             # todo: decide when to update sent_at
             notification = NotificationEntity(

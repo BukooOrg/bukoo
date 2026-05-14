@@ -1,6 +1,7 @@
 from .cancel_order import CancelOrderUseCase
 from .pay_order import PayOrderUseCase
 from .place_order import PlaceOrderUseCase
+from .update_order_status import UpdateOrderStatusUseCase
 from .view_order_detail import ViewOrderDetailUseCase
 
 __all__ = [
@@ -8,4 +9,5 @@ __all__ = [
     "PlaceOrderUseCase",
     "ViewOrderDetailUseCase",
     "CancelOrderUseCase",
+    "UpdateOrderStatusUseCase",
 ]

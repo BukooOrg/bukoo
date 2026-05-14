@@ -86,19 +86,9 @@ class OrderEntity:
         self._total = self._subtotal + self._shipping_cost
 
     # methods
-    def mark_paid(self) -> None:
-        """Transition order status to paid after a successful payment."""
-        self._status = OrderStatus.PAID
-        self._updated_at = datetime.now(UTC)
-
-    def mark_shipped(self) -> None:
-        """Transition order status to shipped."""
-        self._status = OrderStatus.SHIPPED
-        self._updated_at = datetime.now(UTC)
-
-    def mark_delivered(self) -> None:
-        """Transition order status to delivered."""
-        self._status = OrderStatus.DELIVERED
+    def update_status(self, status: OrderStatus) -> None:
+        """Update the order status."""
+        self._status = status
         self._updated_at = datetime.now(UTC)
 
     def cancel(self) -> None:

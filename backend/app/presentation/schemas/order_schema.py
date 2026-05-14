@@ -85,3 +85,13 @@ class CancelOrderResponse(BaseModel):
     id: str
     status: OrderStatus
     updated_at: datetime
+
+
+class UpdateOrderStatusRequest(BaseModel):
+    status: Literal[OrderStatus.SHIPPED, OrderStatus.DELIVERED]
+
+
+class UpdateOrderStatusResponse(BaseModel):
+    id: str
+    status: OrderStatus
+    updated_at: datetime

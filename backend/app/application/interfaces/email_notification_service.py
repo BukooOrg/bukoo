@@ -49,3 +49,27 @@ class IEmailNotificationService(ABC):
         cancelled_at: datetime,
     ) -> None:
         pass
+
+    @abstractmethod
+    def send_order_shipped(
+        self,
+        to: str,
+        full_name: str,
+        order_id: str,
+        items: list[PaymentReceiptItem],
+        total: Decimal,
+        shipped_at: datetime,
+    ) -> None:
+        pass
+
+    @abstractmethod
+    def send_order_delivered(
+        self,
+        to: str,
+        full_name: str,
+        order_id: str,
+        items: list[PaymentReceiptItem],
+        total: Decimal,
+        delivered_at: datetime,
+    ) -> None:
+        pass

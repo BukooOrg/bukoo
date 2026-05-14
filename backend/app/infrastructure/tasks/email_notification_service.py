@@ -15,6 +15,72 @@ from app.infrastructure.tasks.email_tasks import send_mail
 _HEADER_BG = "#1a1a2e"
 _CANCEL_ACCENT = "#c0392b"
 _CANCEL_BG = "#fff5f5"
+_SHIP_ACCENT = "#2980b9"
+_SHIP_BG = "#f0f7ff"
+_DELIVER_ACCENT = "#27ae60"
+_DELIVER_BG = "#f0faf4"
+
+
+def _header_html(brand_name: str) -> str:
+    return (
+        f'<div style="background:{_HEADER_BG};padding:28px 24px;text-align:center;">'
+        f'<h1 style="color:#fff;margin:0;font-size:26px;letter-spacing:1px;">{brand_name}</h1>'
+        f'<p style="color:#aaa;margin:4px 0 0;font-size:13px;">Your Premium Bookstore</p>'
+        f"</div>"
+    )
+
+
+def _footer_html(brand_name: str) -> str:
+    return (
+        f'<div style="background:#f5f5f5;padding:20px 24px;text-align:center;font-size:12px;color:#888;'
+        f'border-top:1px solid #e0e0e0;">'
+        f'<p style="margin:0 0 4px;">Questions? Contact us at '
+        f'<a href="mailto:support@bukoo.com" style="color:{_HEADER_BG};">support@bukoo.com</a></p>'
+        f'<p style="margin:0;">&copy; 2026 {brand_name}. All rights reserved.</p>'
+        f"</div>"
+    )
+
+
+def _item_rows_html(items: list[PaymentReceiptItem]) -> str:
+    return "".join(
+        f"<tr>"
+        f'<td style="padding:8px 6px;border-bottom:1px solid #eee;">{item.book_title}</td>'
+        f'<td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;">{item.quantity}</td>'
+        f'<td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:right;">RM {item.unit_price:.2f}</td>'
+        f'<td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:right;">RM {item.line_total:.2f}</td>'
+        f"</tr>"
+        for item in items
+    )
+
+
+def _item_table_html(items: list[PaymentReceiptItem], section_title: str) -> str:
+    return (
+        f'<h3 style="font-size:15px;border-bottom:2px solid #eee;padding-bottom:8px;margin-bottom:12px;">'
+        f"{section_title}</h3>"
+        f'<table width="100%" cellpadding="0" cellspacing="0" style="font-size:13px;border-collapse:collapse;">'
+        f"<thead>"
+        f'<tr style="background:#f5f5f5;">'
+        f'<th style="padding:8px 6px;text-align:left;font-weight:600;">Title</th>'
+        f'<th style="padding:8px 6px;text-align:center;font-weight:600;">Qty</th>'
+        f'<th style="padding:8px 6px;text-align:right;font-weight:600;">Unit Price</th>'
+        f'<th style="padding:8px 6px;text-align:right;font-weight:600;">Subtotal</th>'
+        f"</tr>"
+        f"</thead>"
+        f"<tbody>{_item_rows_html(items)}</tbody>"
+        f"</table>"
+    )
+
+
+def _total_row_html(label: str, total: Decimal) -> str:
+    return (
+        f'<table width="100%" cellpadding="0" cellspacing="0"'
+        f' style="font-size:14px;margin-top:16px;border-collapse:collapse;">'
+        f'<tr style="border-top:2px solid #333;">'
+        f'<td style="padding:10px 0;font-size:16px;font-weight:bold;">{label}</td>'
+        f'<td style="padding:10px 0;text-align:right;font-size:16px;font-weight:bold;">RM {total:.2f}</td>'
+        f"</tr>"
+        f"</table>"
+    )
 
 
 class CeleryEmailNotificationService(IEmailNotificationService):
@@ -71,18 +137,8 @@ class CeleryEmailNotificationService(IEmailNotificationService):
     ) -> None:
         configs = get_configs()
         brand_name = configs.APP_NAME.capitalize()
-        order_ref = f"BKO-{order_id[:8].upper()}"
+        order_ref = construct_order_ref(order_id)
         paid_at_str = paid_at.strftime("%d %b %Y, %I:%M %p UTC")
-
-        item_rows = "".join(
-            f"<tr>"
-            f'<td style="padding:8px 6px;border-bottom:1px solid #eee;">{item.book_title}</td>'
-            f'<td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;">{item.quantity}</td>'
-            f'<td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:right;">RM {item.unit_price:.2f}</td>'
-            f'<td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:right;">RM {item.line_total:.2f}</td>'
-            f"</tr>"
-            for item in items
-        )
 
         addr = address_snapshot
         address_lines = "<br>".join(
@@ -100,13 +156,10 @@ class CeleryEmailNotificationService(IEmailNotificationService):
         body_html = f"""
 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333;background:#fff;">
 
-  <div style="background:#1a1a2e;padding:28px 24px;text-align:center;">
-    <h1 style="color:#fff;margin:0;font-size:26px;letter-spacing:1px;">{brand_name}</h1>
-    <p style="color:#aaa;margin:4px 0 0;font-size:13px;">Your Premium Bookstore</p>
-  </div>
+  {_header_html(brand_name)}
 
-  <div style="background:#f0faf4;padding:24px;border-left:4px solid #27ae60;">
-    <h2 style="color:#27ae60;margin:0 0 8px;">&#10003; Payment Confirmed</h2>
+  <div style="background:{_DELIVER_BG};padding:24px;border-left:4px solid {_DELIVER_ACCENT};">
+    <h2 style="color:{_DELIVER_ACCENT};margin:0 0 8px;">&#10003; Payment Confirmed</h2>
     <p style="margin:0;font-size:15px;">Hi <strong>{full_name}</strong>,</p>
     <p style="margin:8px 0 0;font-size:14px;color:#555;">
       Thank you for your purchase! We have received your payment and your order
@@ -138,23 +191,9 @@ class CeleryEmailNotificationService(IEmailNotificationService):
       </tr>
     </table>
 
-    <h3 style="font-size:15px;border-bottom:2px solid #eee;padding-bottom:8px;margin:24px 0 12px;">
-      Items Ordered
-    </h3>
-    <table width="100%" cellpadding="0" cellspacing="0"
-           style="font-size:13px;border-collapse:collapse;">
-      <thead>
-        <tr style="background:#f5f5f5;">
-          <th style="padding:8px 6px;text-align:left;font-weight:600;">Title</th>
-          <th style="padding:8px 6px;text-align:center;font-weight:600;">Qty</th>
-          <th style="padding:8px 6px;text-align:right;font-weight:600;">Unit Price</th>
-          <th style="padding:8px 6px;text-align:right;font-weight:600;">Subtotal</th>
-        </tr>
-      </thead>
-      <tbody>
-        {item_rows}
-      </tbody>
-    </table>
+    <div style="margin-top:24px;">
+      {_item_table_html(items, "Items Ordered")}
+    </div>
 
     <table width="100%" cellpadding="0" cellspacing="0"
            style="font-size:14px;margin-top:16px;border-collapse:collapse;">
@@ -180,14 +219,7 @@ class CeleryEmailNotificationService(IEmailNotificationService):
     <p style="font-size:14px;line-height:1.7;margin:0;">{address_lines}</p>
   </div>
 
-  <div style="background:#f5f5f5;padding:20px 24px;text-align:center;font-size:12px;color:#888;
-              border-top:1px solid #e0e0e0;">
-    <p style="margin:0 0 4px;">
-      Questions? Contact us at
-      <a href="mailto:support@bukoo.com" style="color:#1a1a2e;">support@bukoo.com</a>
-    </p>
-    <p style="margin:0;">&copy; 2026 {brand_name}. All rights reserved.</p>
-  </div>
+  {_footer_html(brand_name)}
 
 </div>
 """
@@ -212,23 +244,10 @@ class CeleryEmailNotificationService(IEmailNotificationService):
         order_ref = construct_order_ref(order_id)
         cancelled_at_str = cancelled_at.strftime("%d %b %Y, %I:%M %p UTC")
 
-        item_rows = "".join(
-            f"<tr>"
-            f'<td style="padding:8px 6px;border-bottom:1px solid #eee;">{item.book_title}</td>'
-            f'<td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;">{item.quantity}</td>'
-            f'<td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:right;">RM {item.unit_price:.2f}</td>'
-            f'<td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:right;">RM {item.line_total:.2f}</td>'
-            f"</tr>"
-            for item in items
-        )
-
         body_html = f"""
 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333;background:#fff;">
 
-  <div style="background:{_HEADER_BG};padding:28px 24px;text-align:center;">
-    <h1 style="color:#fff;margin:0;font-size:26px;letter-spacing:1px;">{brand_name}</h1>
-    <p style="color:#aaa;margin:4px 0 0;font-size:13px;">Your Premium Bookstore</p>
-  </div>
+  {_header_html(brand_name)}
 
   <div style="background:{_CANCEL_BG};padding:24px;border-left:4px solid {_CANCEL_ACCENT};">
     <h2 style="color:{_CANCEL_ACCENT};margin:0 0 8px;">&#10007; Order Cancelled</h2>
@@ -240,33 +259,8 @@ class CeleryEmailNotificationService(IEmailNotificationService):
   </div>
 
   <div style="padding:24px;">
-    <h3 style="font-size:15px;border-bottom:2px solid #eee;padding-bottom:8px;margin-bottom:12px;">
-      Cancelled Items
-    </h3>
-    <table width="100%" cellpadding="0" cellspacing="0"
-           style="font-size:13px;border-collapse:collapse;">
-      <thead>
-        <tr style="background:#f5f5f5;">
-          <th style="padding:8px 6px;text-align:left;font-weight:600;">Title</th>
-          <th style="padding:8px 6px;text-align:center;font-weight:600;">Qty</th>
-          <th style="padding:8px 6px;text-align:right;font-weight:600;">Unit Price</th>
-          <th style="padding:8px 6px;text-align:right;font-weight:600;">Subtotal</th>
-        </tr>
-      </thead>
-      <tbody>
-        {item_rows}
-      </tbody>
-    </table>
-
-    <table width="100%" cellpadding="0" cellspacing="0"
-           style="font-size:14px;margin-top:16px;border-collapse:collapse;">
-      <tr style="border-top:2px solid #333;">
-        <td style="padding:10px 0;font-size:16px;font-weight:bold;">Order Total</td>
-        <td style="padding:10px 0;text-align:right;font-size:16px;font-weight:bold;">
-          RM {total:.2f}
-        </td>
-      </tr>
-    </table>
+    {_item_table_html(items, "Cancelled Items")}
+    {_total_row_html("Order Total", total)}
 
     <div style="margin-top:24px;padding:16px;background:#f9f9f9;border:1px solid #e0e0e0;
                 border-radius:4px;font-size:13px;color:#666;line-height:1.6;">
@@ -278,19 +272,100 @@ class CeleryEmailNotificationService(IEmailNotificationService):
     </div>
   </div>
 
-  <div style="background:#f5f5f5;padding:20px 24px;text-align:center;font-size:12px;color:#888;
-              border-top:1px solid #e0e0e0;">
-    <p style="margin:0 0 4px;">
-      Questions? Contact us at
-      <a href="mailto:support@bukoo.com" style="color:{_HEADER_BG};">support@bukoo.com</a>
-    </p>
-    <p style="margin:0;">&copy; 2026 {brand_name}. All rights reserved.</p>
-  </div>
+  {_footer_html(brand_name)}
 
 </div>
 """
         send_mail.delay(
             to=to,
             subject=f"Your {brand_name} Order {order_ref} Has Been Cancelled",
+            body_html=body_html,
+        )
+
+    @override
+    def send_order_shipped(
+        self,
+        to: str,
+        full_name: str,
+        order_id: str,
+        items: list[PaymentReceiptItem],
+        total: Decimal,
+        shipped_at: datetime,
+    ) -> None:
+        configs = get_configs()
+        brand_name = configs.APP_NAME.capitalize()
+        order_ref = construct_order_ref(order_id)
+        shipped_at_str = shipped_at.strftime("%d %b %Y, %I:%M %p UTC")
+
+        body_html = f"""
+<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333;background:#fff;">
+
+  {_header_html(brand_name)}
+
+  <div style="background:{_SHIP_BG};padding:24px;border-left:4px solid {_SHIP_ACCENT};">
+    <h2 style="color:{_SHIP_ACCENT};margin:0 0 8px;">&#128666; Order Shipped</h2>
+    <p style="margin:0;font-size:15px;">Hi <strong>{full_name}</strong>,</p>
+    <p style="margin:8px 0 0;font-size:14px;color:#555;">
+      Great news! Your order <strong>{order_ref}</strong> was shipped on {shipped_at_str}
+      and is now on its way to you.
+    </p>
+  </div>
+
+  <div style="padding:24px;">
+    {_item_table_html(items, "Shipped Items")}
+    {_total_row_html("Order Total", total)}
+  </div>
+
+  {_footer_html(brand_name)}
+
+</div>
+"""
+        send_mail.delay(
+            to=to,
+            subject=f"Your {brand_name} Order {order_ref} Has Been Shipped",
+            body_html=body_html,
+        )
+
+    @override
+    def send_order_delivered(
+        self,
+        to: str,
+        full_name: str,
+        order_id: str,
+        items: list[PaymentReceiptItem],
+        total: Decimal,
+        delivered_at: datetime,
+    ) -> None:
+        configs = get_configs()
+        brand_name = configs.APP_NAME.capitalize()
+        order_ref = construct_order_ref(order_id)
+        delivered_at_str = delivered_at.strftime("%d %b %Y, %I:%M %p UTC")
+
+        body_html = f"""
+<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#333;background:#fff;">
+
+  {_header_html(brand_name)}
+
+  <div style="background:{_DELIVER_BG};padding:24px;border-left:4px solid {_DELIVER_ACCENT};">
+    <h2 style="color:{_DELIVER_ACCENT};margin:0 0 8px;">&#10003; Order Delivered</h2>
+    <p style="margin:0;font-size:15px;">Hi <strong>{full_name}</strong>,</p>
+    <p style="margin:8px 0 0;font-size:14px;color:#555;">
+      Your order <strong>{order_ref}</strong> was delivered on {delivered_at_str}.
+      We hope you enjoy your books!
+    </p>
+  </div>
+
+  <div style="padding:24px;">
+    {_item_table_html(items, "Delivered Items")}
+    {_total_row_html("Order Total", total)}
+  </div>
+
+  {_footer_html(brand_name)}
+
+</div>
+"""
+        send_mail.delay(
+            to=to,
+            subject=f"Your {brand_name} Order {order_ref} Has Been Delivered",
             body_html=body_html,
         )

@@ -104,6 +104,14 @@ class FakeEmailNotificationService(IEmailNotificationService):
     def send_order_cancellation(self, *args: Any, **kwargs: Any) -> None:
         pass
 
+    @override
+    def send_order_shipped(self, *args: Any, **kwargs: Any) -> None:
+        pass
+
+    @override
+    def send_order_delivered(self, *args: Any, **kwargs: Any) -> None:
+        pass
+
 
 def _make_valid_command(
     email: str = "reader@example.com",

@@ -41,6 +41,7 @@ from .order import (
     OrderNotCancellableError,
     OrderNotFoundError,
     OrderNotPayableError,
+    OrderStatusTransitionInvalidError,
     OutOfStockError,
 )
 from .payment import (
@@ -92,6 +93,7 @@ __all__ = [
     "OutOfStockError",
     "OrderAccessDeniedError",
     "OrderNotCancellableError",
+    "OrderStatusTransitionInvalidError",
     "EmptyOrderError",
     "PaymentCreationError",
     "PaymentVerificationError",

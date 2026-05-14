@@ -5,6 +5,7 @@ from fastapi import APIRouter
 from app.application.dtos.order_dto import (
     CancelOrderCommand,
     PlaceOrderCommand,
+    UpdateOrderStatusCommand,
     ViewOrderDetailCommand,
 )
 from app.application.dtos.payment_dto import (
@@ -16,10 +17,12 @@ from app.application.use_cases.order import (
     CancelOrderUseCase,
     PayOrderUseCase,
     PlaceOrderUseCase,
+    UpdateOrderStatusUseCase,
     ViewOrderDetailUseCase,
 )
 from app.presentation.dependencies.deps import (
     AddressRepo,
+    AdminUser,
     BookRepo,
     CartRepo,
     CurrentUser,
@@ -42,6 +45,8 @@ from app.presentation.schemas.order_schema import (
     PayOrderResponse,
     PlaceOrderRequest,
     PlaceOrderResponse,
+    UpdateOrderStatusRequest,
+    UpdateOrderStatusResponse,
     ViewOrderDetailResponse,
 )
 
@@ -239,5 +244,35 @@ async def cancel_order(
         )
     )
     return CancelOrderResponse(
+        id=result.id, status=result.status, updated_at=result.updated_at
+    )
+
+
+@router.patch(
+    "/{order_id}/status",
+    response_model=UpdateOrderStatusResponse,
+    operation_id="updateOrderStatus",
+)
+async def update_order_status(
+    order_id: str,
+    body: UpdateOrderStatusRequest,
+    _admin: AdminUser,
+    order_repo: OrderRepo,
+    notification_repo: NotificationRepo,
+    user_repo: UserRepo,
+    email_notification_svc: EmailNotificationService,
+    db_session: DbSession,
+) -> UpdateOrderStatusResponse:
+    use_case = UpdateOrderStatusUseCase(
+        db_session=db_session,
+        order_repo=order_repo,
+        user_repo=user_repo,
+        notification_repo=notification_repo,
+        email_notification_svc=email_notification_svc,
+    )
+    result = await use_case.execute(
+        UpdateOrderStatusCommand(order_id=order_id, status=body.status)
+    )
+    return UpdateOrderStatusResponse(
         id=result.id, status=result.status, updated_at=result.updated_at
     )

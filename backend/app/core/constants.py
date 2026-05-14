@@ -68,6 +68,8 @@ class VerificationTokenType(StrEnum):
 class NotificationType(StrEnum):
     PAYMENT_SUCCESS = "payment_success"
     ORDER_CANCELLED = "order_cancelled"
+    ORDER_SHIPPED = "order_shipped"
+    ORDER_DELIVERED = "order_delivered"
 
 
 ALLOWED_AVATAR_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
@@ -78,3 +80,12 @@ MAX_COVER_BYTES = 1 * 1024 * 1024  # 10MB
 
 EAST_MALAYSIA_STATES = ["sabah", "sarawak"]
 ALLOWED_CANCELLED_STATUS_FOR_ADMIN = [OrderStatus.PENDING, OrderStatus.PAID]
+
+
+ALLOWED_UPDATE_STATUS_FOR_ADMIN = [OrderStatus.SHIPPED, OrderStatus.DELIVERED]
+
+ORDER_STATUS_TRANSITION_MAP: dict[OrderStatus, OrderStatus] = {
+    OrderStatus.PENDING: OrderStatus.PAID,
+    OrderStatus.PAID: OrderStatus.SHIPPED,
+    OrderStatus.SHIPPED: OrderStatus.DELIVERED,
+}
