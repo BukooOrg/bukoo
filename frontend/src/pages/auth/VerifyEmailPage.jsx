@@ -1,6 +1,7 @@
 import { Mail, CheckCircle, AlertCircle, Loader2, ArrowLeft } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { OtpInput } from '@/components/auth/otp-input';
@@ -9,12 +10,13 @@ import { authApi } from '@/lib/apiClient';
 
 export default function VerifyEmailPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [cooldown, setCooldown] = useState(0);
-  const email = searchParams.get('email') || '';
+  const email = location.state?.email || searchParams.get('email') || '';
 
   const prefillTimerRef = useRef(null);
 
@@ -84,8 +86,10 @@ export default function VerifyEmailPage() {
     }
 
     setError('');
-    verifyEmail({ verifyEmailRequest: { otp } });
+    verifyEmail({ verifyEmailRequest: { otp, email: location.state.email } });
   };
+
+  console.log(location.state);
 
   const handleResend = () => {
     if (cooldown > 0) return;
