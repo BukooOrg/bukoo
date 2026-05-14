@@ -36,8 +36,12 @@ from .category import CategoryAlreadyExistsError, CategoryNotFoundError
 from .collection import CollectionAlreadyExistsError, CollectionNotFoundError
 from .order import (
     EmptyOrderError,
+    OrderAccessDeniedError,
     OrderAlreadyPaidError,
+    OrderNotCancellableError,
     OrderNotFoundError,
+    OrderNotPayableError,
+    OrderStatusTransitionInvalidError,
     OutOfStockError,
 )
 from .payment import (
@@ -85,7 +89,11 @@ __all__ = [
     "CollectionNotFoundError",
     "OrderNotFoundError",
     "OrderAlreadyPaidError",
+    "OrderNotPayableError",
     "OutOfStockError",
+    "OrderAccessDeniedError",
+    "OrderNotCancellableError",
+    "OrderStatusTransitionInvalidError",
     "EmptyOrderError",
     "PaymentCreationError",
     "PaymentVerificationError",

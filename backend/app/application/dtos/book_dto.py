@@ -12,7 +12,7 @@ from app.domain.repositories.book_repository import BookFilters, BookStatusFilte
 # commands
 @dataclass(frozen=True)
 class FindBooksCommand:
-    query: QueryParams
+    query_params: QueryParams
     filters: BookFilters = field(default_factory=BookFilters)
 
 

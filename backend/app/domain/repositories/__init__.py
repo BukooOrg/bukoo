@@ -5,6 +5,9 @@ from .book_repository import BookFilters, BookStatusFilter, IBookRepository
 from .cart_repository import ICartRepository
 from .category_repository import ICategoryRepository
 from .collection_repository import ICollectionRepository
+from .notification_repository import INotificationRepository
+from .order_repository import IOrderRepository
+from .payment_repository import IPaymentRepository
 from .publisher_repository import IPublisherRepository
 from .user_repository import IUserRepository
 from .verification_token_repository import IVerificationTokenRepository
@@ -20,6 +23,9 @@ __all__ = [
     "ICartRepository",
     "ICategoryRepository",
     "ICollectionRepository",
+    "INotificationRepository",
+    "IOrderRepository",
+    "IPaymentRepository",
     "IPublisherRepository",
     "IUserRepository",
     "IVerificationTokenRepository",

@@ -20,7 +20,7 @@ class FindBooksUseCase(BaseBookUseCase):
 
     @override
     async def execute(self, cmd: FindBooksCommand) -> PaginatedResult[BaseBookResult]:
-        result = await self._book_repo.find_all(cmd.query, cmd.filters)
+        result = await self._book_repo.find_all(cmd.query_params, cmd.filters)
         return PaginatedResult(
             items=[self._to_result(b, BaseBookResult) for b in result.items],
             total_items=result.total_items,

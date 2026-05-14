@@ -15,6 +15,7 @@ from app.application.interfaces import (
     IStorageService,
     ITokenService,
 )
+from app.application.interfaces.payment_service import IPaymentService
 from app.core.config import get_configs
 from app.core.constants import ObjectStorageType, UserRole
 from app.domain.entities import UserEntity
@@ -34,6 +35,9 @@ from app.domain.repositories import (
     ICartRepository,
     ICategoryRepository,
     ICollectionRepository,
+    INotificationRepository,
+    IOrderRepository,
+    IPaymentRepository,
     IPublisherRepository,
     IUserRepository,
     IVerificationTokenRepository,
@@ -55,12 +59,16 @@ from app.infrastructure.db.repositories import (
     CartRepositoryImpl,
     CategoryRepositoryImpl,
     CollectionRepositoryImpl,
+    NotificationRepositoryImpl,
+    OrderRepositoryImpl,
+    PaymentRepositoryImpl,
     PublisherRepositoryImpl,
     UserRepositoryImpl,
     VerificationTokenRepositoryImpl,
     WishlistRepositoryImpl,
 )
 from app.infrastructure.db.session import get_db_session
+from app.infrastructure.payment.payment_service_impl import PaymentServiceImpl
 from app.infrastructure.storage import MinIOStorage, S3Storage
 from app.infrastructure.tasks.email_notification_service import (
     CeleryEmailNotificationService,
@@ -152,6 +160,36 @@ def get_wishlist_repository(session: DbSession) -> IWishlistRepository:
 
 
 WishlistRepo = Annotated[IWishlistRepository, Depends(get_wishlist_repository)]
+
+
+def get_order_repository(session: DbSession) -> IOrderRepository:
+    return OrderRepositoryImpl(session)
+
+
+OrderRepo = Annotated[IOrderRepository, Depends(get_order_repository)]
+
+
+def get_payment_repository(session: DbSession) -> IPaymentRepository:
+    return PaymentRepositoryImpl(session)
+
+
+PaymentRepo = Annotated[IPaymentRepository, Depends(get_payment_repository)]
+
+
+def get_notification_repository(session: DbSession) -> INotificationRepository:
+    return NotificationRepositoryImpl(session)
+
+
+NotificationRepo = Annotated[
+    INotificationRepository, Depends(get_notification_repository)
+]
+
+
+def get_payment_service() -> IPaymentService:
+    return PaymentServiceImpl()
+
+
+PaymentSvc = Annotated[IPaymentService, Depends(get_payment_service)]
 
 
 # Cache

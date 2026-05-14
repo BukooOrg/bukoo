@@ -1,0 +1,40 @@
+meta {
+  name: cart item not found
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/orders
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // UUID that does not belong to this user's cart
+  {
+    "cart_item_ids": ["00000000-0000-0000-0000-000000000000"]
+  }
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is CART_ITEM_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("CART_ITEM_NOT_FOUND");
+  });
+}

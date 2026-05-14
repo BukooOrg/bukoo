@@ -1,0 +1,53 @@
+meta {
+  name: success east malaysia
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/orders
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // Prerequisite: update the user's shipping address state to "Sabah" or "Sarawak"
+  // via PUT /api/app/v1/users/me/address before running this test.
+  // Also ensure the cart has at least one item ({{cartItemId}}).
+  {
+    "cart_item_ids": ["{{cartItemId}}"]
+  }
+  
+  
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.shipping_cost is 10.00 for East Malaysia", function() {
+    expect(res.body.data.shipping_cost).to.equal("10.00");
+  });
+  
+  test("data.address_snapshot.state is Sabah or Sarawak", function() {
+    const state = res.body.data.address_snapshot.state.toLowerCase();
+    expect(["sabah", "sarawak"]).to.include(state);
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

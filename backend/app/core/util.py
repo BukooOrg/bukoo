@@ -140,3 +140,7 @@ async def download_content(
 def is_loaded(model: Any, field_name: str) -> bool:
     """Returns True if the field is already loaded on the model."""
     return field_name not in inspect(model).unloaded
+
+
+def construct_order_ref(order_id: str) -> str:
+    return f"BKO-{order_id[:8].upper()}"

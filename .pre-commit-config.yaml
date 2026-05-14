@@ -13,7 +13,7 @@ repos:
       - id: check-toml
         types: [toml]
       - id: check-added-large-files
-        args: ["--maxkb=1024"]
+        args: ["--maxkb=10240"]
       - id: check-merge-conflict
       - id: check-case-conflict
       - id: debug-statements

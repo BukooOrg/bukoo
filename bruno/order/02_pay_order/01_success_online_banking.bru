@@ -1,0 +1,68 @@
+meta {
+  name: success online banking
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/orders/{{orderId}}/payment
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // Prerequisite: {{orderId}} must be a PENDING order belonging to the authenticated user.
+  {
+    "payment_method": "online_banking",
+    "outcome": "success",
+    "bank_name": "Maybank",
+    "account_number": "1234567890"
+  }
+  
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("order_status is paid", function() {
+    expect(res.body.data.order_status).to.equal("paid");
+  });
+  
+  test("payment.status is success", function() {
+    expect(res.body.data.payment.status).to.equal("success");
+  });
+  
+  test("payment.method is online_banking", function() {
+    expect(res.body.data.payment.method).to.equal("online_banking");
+  });
+  
+  test("payment.simulated_ref starts with BANK-TXN-", function() {
+    expect(res.body.data.payment.simulated_ref).to.match(/^BANK-TXN-/);
+  });
+  
+  test("payment.amount is a string number", function() {
+    expect(parseFloat(res.body.data.payment.amount)).to.be.above(0);
+  });
+  
+  test("order_id is present", function() {
+    expect(res.body.data.order_id).to.be.a("string").and.not.empty;
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

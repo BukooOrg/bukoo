@@ -1,0 +1,56 @@
+---
+config:
+  theme: white
+  themeVariables:
+    background: '#ffffff'
+    primaryColor: '#ffffff'
+    primaryTextColor: '#000000'
+    lineColor: '#000000'
+    secondaryColor: '#ffffff'
+    tertiaryColor: '#ffffff'
+    actorBorder: '#000000'
+    actorTextColor: '#000000'
+  look: classic
+  mirrorActors: true
+---
+sequenceDiagram
+    actor Client as Client
+    participant Route as CheckoutRoute
+    participant PS as PaymentService
+    participant Strategy as ConcreteStrategy
+    Client->>Route: POST /checkout (payment_method, credentials, order_id, amount)
+    activate Route
+    Route->>Route: inspect payload.payment_method
+    alt payment_method == "online_banking"
+        Route->>Strategy: OnlineBankingPaymentStrategy(bank_name, account_number)
+    else payment_method == "card"
+        Route->>Strategy: CardPaymentStrategy(card_number, expiry_date, cvv)
+    end
+    Route->>PS: set_strategy(strategy)
+    activate PS
+    PS->>PS: self._strategy = strategy
+    Note right of PS: Strategy swapped at runtime. PaymentService holds new strategy.
+    PS-->>Route: strategy set
+    deactivate PS
+    Route->>PS: execute_payment(order_id, amount)
+    activate PS
+    PS->>Strategy: processPayment(order_id, amount)
+    activate Strategy
+    alt OnlineBankingPaymentStrategy
+        Strategy->>Strategy: simulate bank transfer
+        Strategy->>Strategy: generate simulated_ref (bank transaction ID)
+        Strategy-->>PS: PaymentResult(success=True, method="online_banking", simulated_ref)
+    else CardPaymentStrategy
+        Strategy->>Strategy: simulate card authorisation
+        Strategy->>Strategy: generate simulated_ref (authorisation code)
+        Strategy-->>PS: PaymentResult(success=True, method="card", simulated_ref)
+    end
+    deactivate Strategy
+    PS-->>Route: PaymentResult
+    deactivate PS
+    alt PaymentResult.success == True
+        Route-->>Client: 200 OK (order confirmed, simulated_ref)
+    else PaymentResult.success == False
+        Route-->>Client: 402 Payment Required
+    end
+    deactivate Route

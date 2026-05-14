@@ -1,0 +1,37 @@
+---
+config:
+  theme: white
+  themeVariables:
+    background: '#ffffff'
+    primaryColor: '#ffffff'
+    primaryTextColor: '#000000'
+    lineColor: '#000000'
+    secondaryColor: '#ffffff'
+    tertiaryColor: '#ffffff'
+    actorBorder: '#000000'
+    actorTextColor: '#000000'
+  look: classic
+  mirrorActors: true
+---
+sequenceDiagram
+    actor App as Application (Startup)
+    participant DCM as DatabaseManager
+    participant DB@{ "type": "database" } as Database
+
+    App->>DCM: get_instance()
+    activate DCM
+    DCM->>DCM: shared instance exists?
+    Note right of DCM: No instance found.
+    DCM->>DCM: run creation procedure
+    activate DCM
+    DCM->>DCM: read connection configuration
+    DCM->>DB: establish connection pool
+    activate DB
+    DB-->>DCM: connection pool ready
+    deactivate DB
+    DCM->>DCM: configure session factory
+    DCM->>DCM: store object in shared variable
+    deactivate DCM
+    DCM-->>App: return instance (new DatabaseConnectionManager)
+    deactivate DCM
+    Note right of App: Singleton created and cached. Engine and session factory are ready.

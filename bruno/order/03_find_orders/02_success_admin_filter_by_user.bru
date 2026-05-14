@@ -1,0 +1,40 @@
+meta {
+  name: success admin filters by user_id
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/orders?user_id={{userId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+vars:pre-request {
+  userId: 019df0a8-843f-71df-bf80-918191e1a231
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("all items belong to the specified user", function() {
+    const items = res.body.data.items;
+    items.forEach(function(item) {
+      expect(item.user_id).to.equal(bru.getEnvVar("userId"));
+    });
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

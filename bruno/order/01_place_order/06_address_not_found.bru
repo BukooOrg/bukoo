@@ -1,0 +1,42 @@
+meta {
+  name: address not found
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/orders
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // Prerequisite: the authenticated user must have a cart with {{cartItemId}}
+  // but NO saved shipping address (never called PUT /users/me/address).
+  {
+    "cart_item_ids": ["{{cartItemId}}"]
+  }
+  
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+  
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+  
+  test("error code is ADDRESS_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("ADDRESS_NOT_FOUND");
+  });
+}

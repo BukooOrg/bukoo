@@ -27,6 +27,7 @@ class OrderEntity:
     _user_id: str | None = None
     # Eagerly loaded (lazy="selectin" on OrderModel).
     _order_items: list[OrderItemEntity] = field(default_factory=list)
+    # order by payment.updated_at desc: the first payment is the latest
     _payments: list[PaymentEntity] = field(default_factory=list)
 
     # getters
@@ -74,6 +75,10 @@ class OrderEntity:
     def payments(self) -> list[PaymentEntity]:
         return self._payments
 
+    @property
+    def latest_payment(self) -> PaymentEntity | None:
+        return self._payments[0] if len(self._payments) > 0 else None
+
     # helper methods
     def _calculate_totals(self) -> None:
         """Recompute subtotal and total from current line items."""
@@ -81,19 +86,9 @@ class OrderEntity:
         self._total = self._subtotal + self._shipping_cost
 
     # methods
-    def mark_paid(self) -> None:
-        """Transition order status to paid after a successful payment."""
-        self._status = OrderStatus.PAID
-        self._updated_at = datetime.now(UTC)
-
-    def mark_shipped(self) -> None:
-        """Transition order status to shipped."""
-        self._status = OrderStatus.SHIPPED
-        self._updated_at = datetime.now(UTC)
-
-    def mark_delivered(self) -> None:
-        """Transition order status to delivered."""
-        self._status = OrderStatus.DELIVERED
+    def update_status(self, status: OrderStatus) -> None:
+        """Update the order status."""
+        self._status = status
         self._updated_at = datetime.now(UTC)
 
     def cancel(self) -> None:

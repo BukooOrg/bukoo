@@ -1,0 +1,86 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/orders
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // Prerequisite: user must have an active cart with at least one item ({{cartItemId}})
+  // and a saved shipping address in a Peninsular Malaysia state.
+  // {
+  //   "cart_item_ids":  ["{{cartItemId}}", "019e218b-5ab6-7d56-bd4e-9f0002cf14c9"]
+  // }
+  {
+    "cart_item_ids":  ["019e244a-475c-7360-a8ac-70130dc64612"]
+  }
+  
+  
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("orderId", res.body.data.id);
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.status is pending", function() {
+    expect(res.body.data.status).to.equal("pending");
+  });
+  
+  test("data.shipping_cost is 5.00 for Peninsular Malaysia", function() {
+    expect(res.body.data.shipping_cost).to.equal("5.00");
+  });
+  
+  test("data.total equals subtotal plus shipping cost", function() {
+    const subtotal = parseFloat(res.body.data.subtotal);
+    const shipping = parseFloat(res.body.data.shipping_cost);
+    const total = parseFloat(res.body.data.total);
+    expect(total).to.equal(parseFloat((subtotal + shipping).toFixed(2)));
+  });
+  
+  test("data.items is a non-empty array", function() {
+    expect(res.body.data.items).to.be.an("array").and.not.empty;
+  });
+  
+  test("data.items[0].book_title is a non-empty string", function() {
+    expect(res.body.data.items[0].book_title).to.be.a("string").and.not.empty;
+  });
+  
+  test("data.address_snapshot contains required fields", function() {
+    const snap = res.body.data.address_snapshot;
+    expect(snap).to.have.property("recipient_name");
+    expect(snap).to.have.property("state");
+    expect(snap).to.have.property("country");
+  });
+  
+  test("data.id is a non-empty string", function() {
+    expect(res.body.data.id).to.be.a("string").and.not.empty;
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}
