@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from decimal import Decimal
+from typing import Any
 from unittest.mock import AsyncMock
 
 import pytest
@@ -83,6 +84,9 @@ class FakeOrderRepository(IOrderRepository):
 
     async def save(self, order: OrderEntity, should_skip_items: bool = True) -> None:
         pass
+
+    async def find_all(self, *args: Any, **kwargs: Any) -> Any:
+        return []
 
 
 # fixtures

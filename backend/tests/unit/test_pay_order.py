@@ -97,6 +97,9 @@ class FakeOrderRepository(IOrderRepository):
     async def save(self, order: OrderEntity, should_skip_items: bool = True) -> None:
         self.saved.append(order)
 
+    async def find_all(self, *args: Any, **kwargs: Any) -> Any:
+        return []
+
 
 class FakePaymentRepository(IPaymentRepository):
     def __init__(self) -> None:

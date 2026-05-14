@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, Field
 
 from app.core.constants import OrderStatus, PaymentStatus
+from app.presentation.schemas.list_schema import ListQueryRequest
 
 
 # requests
@@ -94,4 +95,21 @@ class UpdateOrderStatusRequest(BaseModel):
 class UpdateOrderStatusResponse(BaseModel):
     id: str
     status: OrderStatus
+    updated_at: datetime
+
+
+class OrderListQueryRequest(ListQueryRequest):
+    status: OrderStatus | None = None
+    user_id: str | None = None
+    date_from: date | None = None
+    date_to: date | None = None
+
+
+class OrderSummaryResponse(BaseModel):
+    id: str
+    user_id: str | None
+    status: OrderStatus
+    total: Decimal
+    item_count: int
+    created_at: datetime
     updated_at: datetime

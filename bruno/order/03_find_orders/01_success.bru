@@ -1,0 +1,40 @@
+meta {
+  name: success customer views own orders
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/orders
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("data.items is an array", function() {
+    expect(res.body.data.items).to.be.an("array");
+  });
+
+  test("pagination fields are present", function() {
+    expect(res.body.data).to.have.property("total");
+    expect(res.body.data).to.have.property("page");
+    expect(res.body.data).to.have.property("limit");
+    expect(res.body.data).to.have.property("pages");
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

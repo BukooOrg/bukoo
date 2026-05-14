@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from decimal import Decimal
 from typing import Any
 
 from app.core.constants import OrderStatus, UserRole
+from app.core.query_params import QueryParams
+from app.domain.repositories.order_repository import OrderFilters
 
 from .payment_dto import PaymentSummaryResult
 
@@ -83,4 +85,21 @@ class CancelOrderResult:
 class UpdateOrderStatusResult:
     id: str
     status: OrderStatus
+    updated_at: datetime
+
+
+@dataclass(frozen=True)
+class FindOrdersCommand:
+    query_params: QueryParams
+    filters: OrderFilters = field(default_factory=OrderFilters)
+
+
+@dataclass(frozen=True)
+class OrderSummaryResult:
+    id: str
+    user_id: str | None
+    status: OrderStatus
+    total: Decimal
+    item_count: int
+    created_at: datetime
     updated_at: datetime

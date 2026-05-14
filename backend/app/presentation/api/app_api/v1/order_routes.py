@@ -1,9 +1,12 @@
 from __future__ import annotations
 
-from fastapi import APIRouter
+from typing import Annotated
+
+from fastapi import APIRouter, Depends
 
 from app.application.dtos.order_dto import (
     CancelOrderCommand,
+    FindOrdersCommand,
     PlaceOrderCommand,
     UpdateOrderStatusCommand,
     ViewOrderDetailCommand,
@@ -15,11 +18,14 @@ from app.application.dtos.payment_dto import (
 )
 from app.application.use_cases.order import (
     CancelOrderUseCase,
+    FindOrdersUseCase,
     PayOrderUseCase,
     PlaceOrderUseCase,
     UpdateOrderStatusUseCase,
     ViewOrderDetailUseCase,
 )
+from app.core.constants import UserRole
+from app.domain.repositories.order_repository import OrderFilters
 from app.presentation.dependencies.deps import (
     AddressRepo,
     AdminUser,
@@ -35,11 +41,14 @@ from app.presentation.dependencies.deps import (
     PaymentSvc,
     UserRepo,
 )
+from app.presentation.schemas.list_schema import PaginatedResponse, PaginationMeta
 from app.presentation.schemas.order_schema import (
     BaseOrderItemResponse,
     CancelOrderResponse,
     CardPaymentRequest,
     OnlineBankingPaymentRequest,
+    OrderListQueryRequest,
+    OrderSummaryResponse,
     PaymentSummaryResponse,
     PayOrderRequest,
     PayOrderResponse,
@@ -162,6 +171,49 @@ async def pay_order(
             simulated_ref=result.payment.simulated_ref,
             created_at=result.payment.created_at,
         ),
+    )
+
+
+@router.get(
+    "",
+    response_model=PaginatedResponse[OrderSummaryResponse],
+    operation_id="findOrders",
+)
+async def find_orders(
+    query_params: Annotated[OrderListQueryRequest, Depends(OrderListQueryRequest)],
+    current_user: CurrentUser,
+    order_repo: OrderRepo,
+    db_session: DbSession,
+) -> PaginatedResponse[OrderSummaryResponse]:
+    effective_user_id = (
+        current_user.id if current_user.role == UserRole.USER else query_params.user_id
+    )
+    use_case = FindOrdersUseCase(db_session=db_session, order_repo=order_repo)
+    result = await use_case.execute(
+        FindOrdersCommand(
+            query_params=query_params.to_query_params(),
+            filters=OrderFilters(
+                user_id=effective_user_id,
+                status=query_params.status,
+                date_from=query_params.date_from,
+                date_to=query_params.date_to,
+            ),
+        )
+    )
+    return PaginatedResponse(
+        items=[
+            OrderSummaryResponse(
+                id=item.id,
+                user_id=item.user_id,
+                status=item.status,
+                total=item.total,
+                item_count=item.item_count,
+                created_at=item.created_at,
+                updated_at=item.updated_at,
+            )
+            for item in result.items
+        ],
+        pagination=PaginationMeta.from_result(result),
     )
 
 

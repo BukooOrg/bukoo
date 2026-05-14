@@ -44,7 +44,7 @@ class BookListQueryRequest(ListQueryRequest, ViewBookDetailQueryRequest):
 
     def to_command(self) -> FindBooksCommand:
         return FindBooksCommand(
-            query=QueryParams(
+            query_params=QueryParams(
                 page=PageParams(page=self.page, page_size=self.page_size),
                 sorts=parse_sort(self.sort),
                 search=self.search,

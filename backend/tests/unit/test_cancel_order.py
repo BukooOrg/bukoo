@@ -134,6 +134,9 @@ class FakeOrderRepository(IOrderRepository):
     async def save(self, order: OrderEntity, should_skip_items: bool = True) -> None:
         self.saved.append(order)
 
+    async def find_all(self, *args: Any, **kwargs: Any) -> Any:
+        return []
+
 
 class FakeBookRepository(IBookRepository):
     def __init__(self, book: BookEntity | None = None) -> None:

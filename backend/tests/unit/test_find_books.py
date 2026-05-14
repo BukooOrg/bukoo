@@ -164,7 +164,7 @@ class TestFindBooksUseCase:
         use_case = FindBooksUseCase(db_session=db_session, book_repo=repo)
 
         result = await use_case.execute(
-            FindBooksCommand(query=QueryParams(), filters=BookFilters())
+            FindBooksCommand(query_params=QueryParams(), filters=BookFilters())
         )
 
         assert isinstance(result, PaginatedResult)
@@ -178,7 +178,7 @@ class TestFindBooksUseCase:
         use_case = FindBooksUseCase(db_session=db_session, book_repo=repo)
 
         result = await use_case.execute(
-            FindBooksCommand(query=QueryParams(), filters=BookFilters())
+            FindBooksCommand(query_params=QueryParams(), filters=BookFilters())
         )
 
         assert len(result.items) == 2
@@ -193,7 +193,9 @@ class TestFindBooksUseCase:
         use_case = FindBooksUseCase(db_session=db_session, book_repo=repo)
         filters = BookFilters(search="harry")
 
-        await use_case.execute(FindBooksCommand(query=QueryParams(), filters=filters))
+        await use_case.execute(
+            FindBooksCommand(query_params=QueryParams(), filters=filters)
+        )
 
         assert repo.last_filters is not None
         assert repo.last_filters.search == "harry"
@@ -204,7 +206,9 @@ class TestFindBooksUseCase:
         use_case = FindBooksUseCase(db_session=db_session, book_repo=repo)
         filters = BookFilters(category_id="cat-123")
 
-        await use_case.execute(FindBooksCommand(query=QueryParams(), filters=filters))
+        await use_case.execute(
+            FindBooksCommand(query_params=QueryParams(), filters=filters)
+        )
 
         assert repo.last_filters is not None
         assert repo.last_filters.category_id == "cat-123"
@@ -215,7 +219,9 @@ class TestFindBooksUseCase:
         use_case = FindBooksUseCase(db_session=db_session, book_repo=repo)
         filters = BookFilters(in_stock=True)
 
-        await use_case.execute(FindBooksCommand(query=QueryParams(), filters=filters))
+        await use_case.execute(
+            FindBooksCommand(query_params=QueryParams(), filters=filters)
+        )
 
         assert repo.last_filters is not None
         assert repo.last_filters.in_stock is True
@@ -245,7 +251,7 @@ class TestFindBooksUseCase:
         use_case = FindBooksUseCase(db_session=db_session, book_repo=repo)
 
         result = await use_case.execute(
-            FindBooksCommand(query=QueryParams(), filters=BookFilters())
+            FindBooksCommand(query_params=QueryParams(), filters=BookFilters())
         )
 
         item = result.items[0]
@@ -273,7 +279,7 @@ class TestFindBooksUseCase:
         use_case = FindBooksUseCase(db_session=db_session, book_repo=repo)
 
         result = await use_case.execute(
-            FindBooksCommand(query=QueryParams(), filters=BookFilters())
+            FindBooksCommand(query_params=QueryParams(), filters=BookFilters())
         )
 
         item = result.items[0]
@@ -289,7 +295,7 @@ class TestFindBooksUseCase:
         use_case = FindBooksUseCase(db_session=db_session, book_repo=repo)
 
         result = await use_case.execute(
-            FindBooksCommand(query=QueryParams(), filters=BookFilters())
+            FindBooksCommand(query_params=QueryParams(), filters=BookFilters())
         )
 
         item = result.items[0]
@@ -308,7 +314,7 @@ class TestFindBooksUseCase:
         use_case = FindBooksUseCase(db_session=db_session, book_repo=repo)
 
         result = await use_case.execute(
-            FindBooksCommand(query=QueryParams(), filters=BookFilters())
+            FindBooksCommand(query_params=QueryParams(), filters=BookFilters())
         )
 
         item = result.items[0]
