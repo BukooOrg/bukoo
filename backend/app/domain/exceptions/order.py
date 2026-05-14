@@ -36,3 +36,8 @@ class OrderNotPayableError(DomainException):
         super().__init__(
             f"Order '{order_id}' cannot be paid because its status is '{current_status}'."
         )
+
+
+class OrderAccessDeniedError(DomainException):
+    def __init__(self) -> None:
+        super().__init__("Order access denied.")

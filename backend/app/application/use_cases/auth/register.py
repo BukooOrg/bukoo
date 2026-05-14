@@ -44,7 +44,8 @@ class RegisterUseCase(BaseUseCase):
 
     @override
     async def execute(self, cmd: RegisterCommand) -> TokenDTO:
-        if await self._user_repo.exists_by_email(cmd.email):
+        user = await self._user_repo.find_by_email(cmd.email)
+        if user and user.status != UserStatus.PENDING:
             raise UserAlreadyExistsError(cmd.email)
 
         now = datetime.now(UTC)

@@ -36,6 +36,7 @@ from .category import CategoryAlreadyExistsError, CategoryNotFoundError
 from .collection import CollectionAlreadyExistsError, CollectionNotFoundError
 from .order import (
     EmptyOrderError,
+    OrderAccessDeniedError,
     OrderAlreadyPaidError,
     OrderNotFoundError,
     OrderNotPayableError,
@@ -88,6 +89,7 @@ __all__ = [
     "OrderAlreadyPaidError",
     "OrderNotPayableError",
     "OutOfStockError",
+    "OrderAccessDeniedError",
     "EmptyOrderError",
     "PaymentCreationError",
     "PaymentVerificationError",

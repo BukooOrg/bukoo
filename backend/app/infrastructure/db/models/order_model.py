@@ -82,6 +82,7 @@ class OrderModel(DefaultFieldMixin):
         cascade="all, delete-orphan",
         lazy="selectin",
         init=False,
+        order_by="desc(PaymentModel.updated_at)",
     )
 
     @validates("subtotal")

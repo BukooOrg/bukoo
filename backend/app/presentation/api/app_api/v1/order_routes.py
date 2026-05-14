@@ -2,17 +2,22 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from app.application.dtos.order_dto import PlaceOrderCommand
+from app.application.dtos.order_dto import PlaceOrderCommand, ViewOrderDetailCommand
 from app.application.dtos.payment_dto import (
     CardDetails,
     OnlineBankingDetails,
     PayOrderCommand,
 )
-from app.application.use_cases.order import PayOrderUseCase, PlaceOrderUseCase
+from app.application.use_cases.order import (
+    PayOrderUseCase,
+    PlaceOrderUseCase,
+    ViewOrderDetailUseCase,
+)
 from app.presentation.dependencies.deps import (
     AddressRepo,
     BookRepo,
     CartRepo,
+    CurrentUser,
     CustomerUser,
     DbSession,
     EmailNotificationService,
@@ -30,6 +35,7 @@ from app.presentation.schemas.order_schema import (
     PayOrderResponse,
     PlaceOrderRequest,
     PlaceOrderResponse,
+    ViewOrderDetailResponse,
 )
 
 router = APIRouter(prefix="/orders", tags=["order"])
@@ -144,4 +150,56 @@ async def pay_order(
             simulated_ref=result.payment.simulated_ref,
             created_at=result.payment.created_at,
         ),
+    )
+
+
+@router.get(
+    "/{order_id}",
+    response_model=ViewOrderDetailResponse,
+    operation_id="viewOrderDetail",
+)
+async def view_order_detail(
+    order_id: str,
+    current_user: CurrentUser,
+    order_repo: OrderRepo,
+    db_session: DbSession,
+) -> ViewOrderDetailResponse:
+    use_case = ViewOrderDetailUseCase(db_session=db_session, order_repo=order_repo)
+    result = await use_case.execute(
+        ViewOrderDetailCommand(
+            order_id=order_id, user_id=current_user.id, user_role=current_user.role
+        )
+    )
+    payment: PaymentSummaryResponse | None = None
+    if result.payment is not None:
+        payment = PaymentSummaryResponse(
+            id=result.payment.id,
+            method=result.payment.method,
+            amount=result.payment.amount,
+            status=result.payment.status,
+            simulated_ref=result.payment.simulated_ref,
+            created_at=result.payment.created_at,
+        )
+    return ViewOrderDetailResponse(
+        id=result.id,
+        user_id=result.user_id,
+        status=result.status,
+        subtotal=result.subtotal,
+        shipping_cost=result.shipping_cost,
+        total=result.total,
+        address_snapshot=result.address_snapshot,
+        items=[
+            BaseOrderItemResponse(
+                id=item.id,
+                book_id=item.book_id,
+                book_title=item.book_title,
+                unit_price=item.unit_price,
+                quantity=item.quantity,
+                line_total=item.line_total,
+            )
+            for item in result.items
+        ],
+        payment=payment,
+        created_at=result.created_at,
+        updated_at=result.updated_at,
     )

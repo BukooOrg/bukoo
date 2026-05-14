@@ -5,7 +5,9 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Any
 
-from app.core.constants import OrderStatus
+from app.core.constants import OrderStatus, UserRole
+
+from .payment_dto import PaymentSummaryResult
 
 
 # commands
@@ -15,7 +17,26 @@ class PlaceOrderCommand:
     cart_item_ids: list[str]
 
 
+@dataclass(frozen=True)
+class ViewOrderDetailCommand:
+    order_id: str
+    user_id: str
+    user_role: UserRole
+
+
 # requests
+@dataclass(frozen=True)
+class BaseOrderResult:
+    id: str
+    status: OrderStatus
+    subtotal: Decimal
+    shipping_cost: Decimal
+    total: Decimal
+    address_snapshot: dict[str, Any]
+    items: list[BaseOrderItemResult]
+    created_at: datetime
+
+
 @dataclass(frozen=True)
 class BaseOrderItemResult:
     id: str
@@ -27,12 +48,12 @@ class BaseOrderItemResult:
 
 
 @dataclass(frozen=True)
-class PlaceOrderResult:
-    id: str
-    status: OrderStatus
-    subtotal: Decimal
-    shipping_cost: Decimal
-    total: Decimal
-    address_snapshot: dict[str, Any]
-    items: list[BaseOrderItemResult]
-    created_at: datetime
+class PlaceOrderResult(BaseOrderResult):
+    pass
+
+
+@dataclass(frozen=True)
+class ViewOrderDetailResult(BaseOrderResult):
+    user_id: str
+    payment: PaymentSummaryResult | None
+    updated_at: datetime

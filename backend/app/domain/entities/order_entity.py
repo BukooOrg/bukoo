@@ -27,6 +27,7 @@ class OrderEntity:
     _user_id: str | None = None
     # Eagerly loaded (lazy="selectin" on OrderModel).
     _order_items: list[OrderItemEntity] = field(default_factory=list)
+    # order by payment.updated_at desc: the first payment is the latest
     _payments: list[PaymentEntity] = field(default_factory=list)
 
     # getters
@@ -73,6 +74,10 @@ class OrderEntity:
     @property
     def payments(self) -> list[PaymentEntity]:
         return self._payments
+
+    @property
+    def latest_payment(self) -> PaymentEntity | None:
+        return self._payments[0] if len(self._payments) > 0 else None
 
     # helper methods
     def _calculate_totals(self) -> None:

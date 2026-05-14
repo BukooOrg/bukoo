@@ -45,7 +45,7 @@ class BaseOrderItemResponse(BaseModel):
     line_total: Decimal
 
 
-class PlaceOrderResponse(BaseModel):
+class BaseOrderResponse(BaseModel):
     id: str
     status: OrderStatus
     subtotal: Decimal
@@ -54,6 +54,10 @@ class PlaceOrderResponse(BaseModel):
     address_snapshot: dict[str, Any]
     items: list[BaseOrderItemResponse]
     created_at: datetime
+
+
+class PlaceOrderResponse(BaseOrderResponse):
+    pass
 
 
 class PaymentSummaryResponse(BaseModel):
@@ -69,3 +73,9 @@ class PayOrderResponse(BaseModel):
     order_id: str
     order_status: OrderStatus
     payment: PaymentSummaryResponse
+
+
+class ViewOrderDetailResponse(BaseOrderResponse):
+    user_id: str
+    payment: PaymentSummaryResponse | None
+    updated_at: datetime

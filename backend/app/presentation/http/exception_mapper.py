@@ -32,6 +32,7 @@ from app.domain.exceptions import (
     NoAuthHeaderError,
     OAuthProviderNotFoundError,
     OAuthStateInvalidError,
+    OrderAccessDeniedError,
     OrderAlreadyPaidError,
     OrderNotFoundError,
     OrderNotPayableError,
@@ -175,6 +176,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
     ),
     OutOfStockError: HttpExceptionMapping(
         status.HTTP_409_CONFLICT, ErrorCode.OUT_OF_STOCK, "Out of stock."
+    ),
+    OrderAccessDeniedError: HttpExceptionMapping(
+        status.HTTP_403_FORBIDDEN,
+        ErrorCode.ORDER_ACCESS_DENIED,
+        "You do not have permission to access this order.",
     ),
     EmptyOrderError: HttpExceptionMapping(
         status.HTTP_422_UNPROCESSABLE_ENTITY,
