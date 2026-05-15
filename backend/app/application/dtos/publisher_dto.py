@@ -3,8 +3,16 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 
+from app.core.query_params import QueryParams
 
 # commands
+
+
+@dataclass(frozen=True)
+class FindPublishersCommand:
+    query_params: QueryParams
+
+
 @dataclass(frozen=True)
 class ViewPublisherDetailCommand:
     publisher_id: str
@@ -30,7 +38,7 @@ class SoftDeletePublisherCommand:
 
 # results
 @dataclass(frozen=True)
-class BasePublisherDetailResult:
+class BasePublisherResult:
     id: str
     name: str
     website: str | None
@@ -38,17 +46,17 @@ class BasePublisherDetailResult:
 
 
 @dataclass(frozen=True)
-class ViewPublisherDetailResult(BasePublisherDetailResult):
+class ViewPublisherDetailResult(BasePublisherResult):
     pass
 
 
 @dataclass(frozen=True)
-class CreatePublisherResult(BasePublisherDetailResult):
+class CreatePublisherResult(BasePublisherResult):
     pass
 
 
 @dataclass(frozen=True)
-class UpdatePublisherResult(BasePublisherDetailResult):
+class UpdatePublisherResult(BasePublisherResult):
     pass
 
 

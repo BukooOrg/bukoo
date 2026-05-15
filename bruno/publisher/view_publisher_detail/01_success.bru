@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}{{apiBase}}/publishers/01932abc-dead-beef-0000-111122223333
+  url: {{baseUrl}}{{apiBase}}/publishers/{{publisherId}}
   body: none
   auth: none
 }
@@ -14,29 +14,29 @@ tests {
   test("status 200", function() {
     expect(res.status).to.equal(200);
   });
-
+  
   test("success flag is true", function() {
     expect(res.body.success).to.be.true;
   });
-
+  
   test("data.id equals requested publisher id", function() {
     expect(res.body.data.id).to.equal("01932abc-dead-beef-0000-111122223333");
   });
-
+  
   test("data.name is a non-empty string", function() {
     expect(res.body.data.name).to.be.a("string").and.not.empty;
   });
-
+  
   test("data.website is a string or null", function() {
     const website = res.body.data.website;
     expect(website === null || typeof website === "string").to.be.true;
   });
-
+  
   test("data.createdAt is a valid ISO 8601 string", function() {
     expect(res.body.data.createdAt).to.be.a("string");
     expect(new Date(res.body.data.createdAt).toISOString()).to.equal(res.body.data.createdAt);
   });
-
+  
   test("meta has requestId", function() {
     expect(res.body.meta.requestId).to.be.a("string");
   });

@@ -12,6 +12,7 @@ from app.application.dtos.publisher_dto import (
 from app.application.use_cases.publisher.view_publisher_detail import (
     ViewPublisherDetailUseCase,
 )
+from app.core.query_params import PaginatedResult, QueryParams
 from app.domain.entities import PublisherEntity
 from app.domain.exceptions import PublisherNotFoundError
 from app.domain.repositories.publisher_repository import IPublisherRepository
@@ -35,6 +36,14 @@ def _make_publisher(
 class FakePublisherRepository(IPublisherRepository):
     def __init__(self, publisher: PublisherEntity | None = None) -> None:
         self._publisher = publisher
+
+    async def find_all(self, query: QueryParams) -> PaginatedResult[PublisherEntity]:
+        return PaginatedResult(
+            items=[],
+            total_items=0,
+            page=query.page.page,
+            page_size=query.page.page_size,
+        )
 
     async def find_by_id(self, publisher_id: str) -> PublisherEntity | None:
         if self._publisher and self._publisher.id == publisher_id:

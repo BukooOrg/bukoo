@@ -4,6 +4,10 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field, field_validator
 
+from app.application.dtos.publisher_dto import FindPublishersCommand
+from app.core.query_params import PageParams, QueryParams, parse_sort
+from app.presentation.schemas.list_schema import ListQueryRequest
+
 
 # requests
 class BasePublisherRequest(BaseModel):
@@ -17,6 +21,17 @@ class BasePublisherRequest(BaseModel):
         if not stripped:
             raise ValueError("name must not be empty or whitespace.")
         return stripped
+
+
+class FindPublishersRequest(ListQueryRequest):
+    def to_command(self) -> FindPublishersCommand:
+        return FindPublishersCommand(
+            query_params=QueryParams(
+                page=PageParams(page=self.page, page_size=self.page_size),
+                sorts=parse_sort(self.sort),
+                search=self.search,
+            ),
+        )
 
 
 class CreatePublisherRequest(BasePublisherRequest):

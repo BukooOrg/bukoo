@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from fastapi import APIRouter
+from typing import Annotated
+
+from fastapi import APIRouter, Depends
 
 from app.application.dtos.publisher_dto import (
     CreatePublisherCommand,
@@ -10,14 +12,18 @@ from app.application.dtos.publisher_dto import (
 )
 from app.application.use_cases.publisher import (
     CreatePublisherUseCase,
+    FindPublishersUseCase,
     SoftDeletePublisherUseCase,
     UpdatePublisherUseCase,
     ViewPublisherDetailUseCase,
 )
 from app.presentation.dependencies.deps import AdminUser, DbSession, PublisherRepo
+from app.presentation.schemas.list_schema import PaginatedResponse, PaginationMeta
 from app.presentation.schemas.publisher_schema import (
+    BasePublisherResponse,
     CreatePublisherRequest,
     CreatePublisherResponse,
+    FindPublishersRequest,
     SoftDeletePublisherResponse,
     UpdatePublisherRequest,
     UpdatePublisherResponse,
@@ -28,13 +34,37 @@ router = APIRouter(prefix="/publishers", tags=["publisher"])
 
 
 @router.get(
+    "",
+    response_model=PaginatedResponse[BasePublisherResponse],
+    operation_id="findPublishers",
+)
+async def find_publishers(
+    query_params: Annotated[FindPublishersRequest, Depends(FindPublishersRequest)],
+    publisher_repo: PublisherRepo,
+    db_session: DbSession,
+) -> PaginatedResponse[BasePublisherResponse]:
+    use_case = FindPublishersUseCase(
+        db_session=db_session, publisher_repo=publisher_repo
+    )
+    result = await use_case.execute(query_params.to_command())
+    return PaginatedResponse(
+        items=[
+            BasePublisherResponse(
+                id=p.id, name=p.name, website=p.website, created_at=p.created_at
+            )
+            for p in result.items
+        ],
+        pagination=PaginationMeta.from_result(result),
+    )
+
+
+@router.get(
     "/{publisher_id}",
     response_model=ViewPublisherDetailResponse,
     operation_id="viewPublisherDetail",
 )
 async def view_publisher_detail(
     publisher_id: str,
-    _admin: AdminUser,
     publisher_repo: PublisherRepo,
     db_session: DbSession,
 ) -> ViewPublisherDetailResponse:
