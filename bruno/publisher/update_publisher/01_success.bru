@@ -1,0 +1,57 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/publishers/{{publisherId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // happy path — update name and website
+  {
+    "name": "Macmillan Publishers",
+    "website": "https://us.macmillan.com/"
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("data.id matches the path publisher_id", function() {
+    expect(res.body.data.id).to.equal(bru.getEnvVar("publisherId"));
+  });
+
+  test("data.name equals the updated name", function() {
+    expect(res.body.data.name).to.equal("Macmillan Publishers");
+  });
+
+  test("data.website equals the updated website", function() {
+    expect(res.body.data.website).to.equal("https://us.macmillan.com/");
+  });
+
+  test("data.created_at is a string", function() {
+    expect(res.body.data.created_at).to.be.a("string");
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

@@ -2,12 +2,20 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from app.application.dtos.publisher_dto import CreatePublisherCommand
-from app.application.use_cases.publisher import CreatePublisherUseCase
+from app.application.dtos.publisher_dto import (
+    CreatePublisherCommand,
+    UpdatePublisherCommand,
+)
+from app.application.use_cases.publisher import (
+    CreatePublisherUseCase,
+    UpdatePublisherUseCase,
+)
 from app.presentation.dependencies.deps import AdminUser, DbSession, PublisherRepo
 from app.presentation.schemas.publisher_schema import (
     CreatePublisherRequest,
     CreatePublisherResponse,
+    UpdatePublisherRequest,
+    UpdatePublisherResponse,
 )
 
 router = APIRouter(prefix="/publishers", tags=["publisher"])
@@ -32,6 +40,34 @@ async def create_publisher(
         CreatePublisherCommand(name=body.name, website=body.website)
     )
     return CreatePublisherResponse(
+        id=result.id,
+        name=result.name,
+        website=result.website,
+        created_at=result.created_at,
+    )
+
+
+@router.patch(
+    "/{publisher_id}",
+    response_model=UpdatePublisherResponse,
+    operation_id="updatePublisher",
+)
+async def update_publisher(
+    publisher_id: str,
+    body: UpdatePublisherRequest,
+    _admin: AdminUser,
+    publisher_repo: PublisherRepo,
+    db_session: DbSession,
+) -> UpdatePublisherResponse:
+    use_case = UpdatePublisherUseCase(
+        db_session=db_session, publisher_repo=publisher_repo
+    )
+    result = await use_case.execute(
+        UpdatePublisherCommand(
+            publisher_id=publisher_id, name=body.name, website=body.website
+        )
+    )
+    return UpdatePublisherResponse(
         id=result.id,
         name=result.name,
         website=result.website,

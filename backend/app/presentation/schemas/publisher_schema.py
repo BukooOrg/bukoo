@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, field_validator
 
 
 # requests
-class CreatePublisherRequest(BaseModel):
+class BasePublisherRequest(BaseModel):
     name: str = Field(..., min_length=2, max_length=255)
     website: str | None
 
@@ -19,9 +19,25 @@ class CreatePublisherRequest(BaseModel):
         return stripped
 
 
+class CreatePublisherRequest(BasePublisherRequest):
+    pass
+
+
+class UpdatePublisherRequest(BasePublisherRequest):
+    pass
+
+
 # responses
-class CreatePublisherResponse(BaseModel):
+class BasePublisherResponse(BaseModel):
     id: str
     name: str
     website: str | None
     created_at: datetime
+
+
+class CreatePublisherResponse(BasePublisherResponse):
+    pass
+
+
+class UpdatePublisherResponse(BasePublisherResponse):
+    pass

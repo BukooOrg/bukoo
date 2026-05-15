@@ -11,9 +11,24 @@ class CreatePublisherCommand:
     website: str | None
 
 
+@dataclass(frozen=True)
+class UpdatePublisherCommand:
+    publisher_id: str
+    name: str
+    website: str | None
+
+
 # results
 @dataclass(frozen=True)
 class CreatePublisherResult:
+    id: str
+    name: str
+    website: str | None
+    created_at: datetime
+
+
+@dataclass(frozen=True)
+class UpdatePublisherResult:
     id: str
     name: str
     website: str | None
