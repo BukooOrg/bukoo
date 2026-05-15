@@ -24,17 +24,18 @@ body:json {
     "name": "Macmillan Publishers",
     "website": null
   }
+  
 }
 
 tests {
   test("status 200", function() {
     expect(res.status).to.equal(200);
   });
-
+  
   test("success flag is true", function() {
     expect(res.body.success).to.be.true;
   });
-
+  
   test("data.website is null", function() {
     expect(res.body.data.website).to.be.null;
   });

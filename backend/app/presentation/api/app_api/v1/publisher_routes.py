@@ -4,16 +4,19 @@ from fastapi import APIRouter
 
 from app.application.dtos.publisher_dto import (
     CreatePublisherCommand,
+    SoftDeletePublisherCommand,
     UpdatePublisherCommand,
 )
 from app.application.use_cases.publisher import (
     CreatePublisherUseCase,
+    SoftDeletePublisherUseCase,
     UpdatePublisherUseCase,
 )
 from app.presentation.dependencies.deps import AdminUser, DbSession, PublisherRepo
 from app.presentation.schemas.publisher_schema import (
     CreatePublisherRequest,
     CreatePublisherResponse,
+    SoftDeletePublisherResponse,
     UpdatePublisherRequest,
     UpdatePublisherResponse,
 )
@@ -73,3 +76,23 @@ async def update_publisher(
         website=result.website,
         created_at=result.created_at,
     )
+
+
+@router.delete(
+    "/{publisher_id}",
+    response_model=SoftDeletePublisherResponse,
+    operation_id="softDeletePublisher",
+)
+async def soft_delete_publisher(
+    publisher_id: str,
+    _admin: AdminUser,
+    publisher_repo: PublisherRepo,
+    db_session: DbSession,
+) -> SoftDeletePublisherResponse:
+    use_case = SoftDeletePublisherUseCase(
+        db_session=db_session, publisher_repo=publisher_repo
+    )
+    result = await use_case.execute(
+        SoftDeletePublisherCommand(publisher_id=publisher_id)
+    )
+    return SoftDeletePublisherResponse(message=result.message)

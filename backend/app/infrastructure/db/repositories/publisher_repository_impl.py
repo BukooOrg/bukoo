@@ -17,7 +17,11 @@ class PublisherRepositoryImpl(IPublisherRepository):
 
     @override
     async def find_by_id(self, publisher_id: str) -> PublisherEntity | None:
-        stmt = select(PublisherModel).where(PublisherModel.id == publisher_id)
+        stmt = (
+            select(PublisherModel)
+            .where(PublisherModel.id == publisher_id)
+            .where(PublisherModel.deleted_at.is_(None))
+        )
         result = await self._session.execute(stmt)
         model = result.scalar_one_or_none()
         return PublisherMapper.to_entity(model) if model else None

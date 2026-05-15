@@ -18,6 +18,11 @@ class UpdatePublisherCommand:
     website: str | None
 
 
+@dataclass(frozen=True)
+class SoftDeletePublisherCommand:
+    publisher_id: str
+
+
 # results
 @dataclass(frozen=True)
 class CreatePublisherResult:
@@ -33,3 +38,8 @@ class UpdatePublisherResult:
     name: str
     website: str | None
     created_at: datetime
+
+
+@dataclass(frozen=True)
+class SoftDeletePublisherResult:
+    message: str

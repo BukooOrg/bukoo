@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field, field_validator
 # requests
 class BasePublisherRequest(BaseModel):
     name: str = Field(..., min_length=2, max_length=255)
-    website: str | None
+    website: str | None = Field(default=None)
 
     @field_validator("name")
     @classmethod
@@ -41,3 +41,7 @@ class CreatePublisherResponse(BasePublisherResponse):
 
 class UpdatePublisherResponse(BasePublisherResponse):
     pass
+
+
+class SoftDeletePublisherResponse(BaseModel):
+    message: str

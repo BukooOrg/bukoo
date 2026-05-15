@@ -13,6 +13,7 @@ class PublisherMapper(BaseMapper[PublisherModel, PublisherEntity]):
             _website=model.website,
             _created_at=model.created_at,
             _updated_at=model.updated_at,
+            _deleted_at=model.deleted_at,
         )
 
     @staticmethod
@@ -22,4 +23,5 @@ class PublisherMapper(BaseMapper[PublisherModel, PublisherEntity]):
             website=entity.website,
         )
         model.id = entity.id
+        model.deleted_at = entity.deleted_at
         return model

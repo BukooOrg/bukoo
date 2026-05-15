@@ -8,13 +8,13 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from .base import DefaultFieldMixin
+from .base import DefaultFieldMixin, SoftDeleteMixin
 
 if TYPE_CHECKING:
     from .book_model import BookModel
 
 
-class PublisherModel(DefaultFieldMixin):
+class PublisherModel(DefaultFieldMixin, SoftDeleteMixin):
     """
     Publisher entity. No soft-delete; books retain SET NULL on removal.
     No CHECK constraints → no @validates needed.
