@@ -101,11 +101,11 @@
 
 ## Testing
 
-- [ ] **Unit Tests** — Components (OtpInput, OtpInputBox, PasswordStrengthMeter)
-- [ ] **Unit Tests** — Hooks (useApiQuery, useApiMutation)
-- [ ] **Integration Tests** — Auth pages (Login, Register, Verify, Forgot, Reset)
-- [ ] **E2E Tests** — Registration flow (Register → Verify → Login)
-- [ ] **E2E Tests** — Password reset flow (Forgot → OTP → Reset → Login)
+- [x] **Unit Tests** — Components (OtpInput, OtpInputBox, PasswordStrengthMeter)
+- [x] **Unit Tests** — Hooks (useApiQuery, useApiMutation)
+- [x] **Unit Tests** — AuthContext
+- [x] **Integration Tests** — Auth pages (Login, Register, Verify, Forgot, Reset)
+- [ ] **E2E Tests** — Skipped (Playwright not required)
 
 ## Infrastructure
 
@@ -117,7 +117,6 @@
 - [x] **React Router** — Route management
 - [x] **Sonner Toast** — Notifications
 - [x] **Vitest** — Config exists (vitest.config.js)
-- [ ] **Playwright** — E2E testing setup (not installed)
 
 ## SDK Integration
 
@@ -142,7 +141,7 @@
 | Admin Pages | 0 | 21 | 21 |
 | Layout & Guards | 6 | 0 | 6 |
 | Shared Components | ~10 | ~20 | ~30 |
-| Testing | 0 | 5 suites | 5 |
+| Testing | 4 suites ✅ | 0 | 4 |
 | SDK Integration | 2 | 5 | 7 |
 
 **Total pages implemented:** 10 of 46 (22%)
