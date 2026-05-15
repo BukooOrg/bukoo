@@ -1,0 +1,34 @@
+meta {
+  name: validation missing name
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/publishers/{{publisherId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // name field absent — should trigger 422
+  {}
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+
+  test("error code is VALIDATION_ERROR", function() {
+    expect(res.body.error.code).to.equal("VALIDATION_ERROR");
+  });
+}

@@ -160,8 +160,19 @@ class FakePublisherRepository(IPublisherRepository):
     def __init__(self, publishers: dict[str, PublisherEntity] | None = None) -> None:
         self._publishers = publishers or {}
 
+    async def find_all(self, query: QueryParams) -> PaginatedResult[PublisherEntity]:
+        return PaginatedResult(
+            items=[],
+            total_items=0,
+            page=query.page.page,
+            page_size=query.page.page_size,
+        )
+
     async def find_by_id(self, publisher_id: str) -> PublisherEntity | None:
         return self._publishers.get(publisher_id)
+
+    async def save(self, publisher: PublisherEntity) -> None:
+        pass
 
 
 class FakeCategoryRepository(ICategoryRepository):

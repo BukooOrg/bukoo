@@ -1,0 +1,38 @@
+meta {
+  name: not found
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/publishers/00000000-0000-0000-0000-000000000000
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // publisher_id does not exist — should return 404
+  {
+    "name": "Ghost Publisher"
+  }
+  
+  
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+  
+  test("error code is PUBLISHER_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("PUBLISHER_NOT_FOUND");
+  });
+}
