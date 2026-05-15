@@ -21,3 +21,8 @@ class PublisherRepositoryImpl(IPublisherRepository):
         result = await self._session.execute(stmt)
         model = result.scalar_one_or_none()
         return PublisherMapper.to_entity(model) if model else None
+
+    @override
+    async def save(self, publisher: PublisherEntity) -> None:
+        model = PublisherMapper.to_model(publisher)
+        await self._session.merge(model)

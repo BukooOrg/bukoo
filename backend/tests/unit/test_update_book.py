@@ -163,6 +163,9 @@ class FakePublisherRepository(IPublisherRepository):
     async def find_by_id(self, publisher_id: str) -> PublisherEntity | None:
         return self._publishers.get(publisher_id)
 
+    async def save(self, publisher: PublisherEntity) -> None:
+        pass
+
 
 class FakeCategoryRepository(ICategoryRepository):
     def __init__(self, categories: dict[str, CategoryEntity] | None = None) -> None:

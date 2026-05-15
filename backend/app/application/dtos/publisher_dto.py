@@ -1,0 +1,20 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import datetime
+
+
+# commands
+@dataclass(frozen=True)
+class CreatePublisherCommand:
+    name: str
+    website: str | None
+
+
+# results
+@dataclass(frozen=True)
+class CreatePublisherResult:
+    id: str
+    name: str
+    website: str | None
+    created_at: datetime

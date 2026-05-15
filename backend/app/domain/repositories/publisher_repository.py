@@ -9,3 +9,7 @@ class IPublisherRepository(ABC):
     @abstractmethod
     async def find_by_id(self, publisher_id: str) -> PublisherEntity | None:
         pass
+
+    @abstractmethod
+    async def save(self, publisher: PublisherEntity) -> None:
+        pass

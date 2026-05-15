@@ -1,0 +1,40 @@
+meta {
+  name: success no website
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/publishers
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // happy path — website omitted; data.website should be null
+  {
+    "name": "Hachette Book Group"
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.website is null", function() {
+    expect(res.body.data.website).to.be.null;
+  });
+}
