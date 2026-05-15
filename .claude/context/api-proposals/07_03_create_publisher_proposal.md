@@ -146,17 +146,17 @@ _(None — no new error codes needed)_
 **Folder:** `bruno/publisher/create_publisher/`
 
 - **`01_success.bru` — Happy Path:**
-  - [ ] Status 201 Created
-  - [ ] `res.body.success` is `true`
-  - [ ] `res.body.data.id` is a non-empty string
-  - [ ] `res.body.data.name` equals the submitted name
-  - [ ] `res.body.data.website` equals the submitted website
-  - [ ] `res.body.data.createdAt` is a valid ISO datetime string
-  - [ ] `res.body.meta.requestId` is a string
+  - [x] Status 201 Created
+  - [x] `res.body.success` is `true`
+  - [x] `res.body.data.id` is a non-empty string
+  - [x] `res.body.data.name` equals the submitted name
+  - [x] `res.body.data.website` equals the submitted website
+  - [x] `res.body.data.createdAt` is a valid ISO datetime string
+  - [x] `res.body.meta.requestId` is a string
 
 - **`02_success_no_website.bru` — Happy Path (no website):**
-  - [ ] Status 201 Created
-  - [ ] `res.body.data.website` is `null`
+  - [x] Status 201 Created
+  - [x] `res.body.data.website` is `null`
 
 - **`03_forbidden_non_admin.bru`** — Status 403 when authenticated as a USER-role account → error code `ADMIN_ACCESS_REQUIRED`
 

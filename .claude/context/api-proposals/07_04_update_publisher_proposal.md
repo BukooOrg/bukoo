@@ -155,17 +155,17 @@ _(None — `PUBLISHER_NOT_FOUND` already exists)_
 **Folder:** `bruno/publisher/update_publisher/`
 
 - **`01_success.bru` — Happy Path (name + website):**
-  - [ ] Status 200 OK
-  - [ ] `res.body.success` is `true`
-  - [ ] `res.body.data.id` equals the path `publisher_id`
-  - [ ] `res.body.data.name` equals the submitted name
-  - [ ] `res.body.data.website` equals the submitted website
-  - [ ] `res.body.data.createdAt` is a valid ISO datetime string
-  - [ ] `res.body.meta.requestId` is a string
+  - [x] Status 200 OK
+  - [x] `res.body.success` is `true`
+  - [x] `res.body.data.id` equals the path `publisher_id`
+  - [x] `res.body.data.name` equals the submitted name
+  - [x] `res.body.data.website` equals the submitted website
+  - [x] `res.body.data.createdAt` is a valid ISO datetime string
+  - [x] `res.body.meta.requestId` is a string
 
 - **`02_success_clear_website.bru` — Happy Path (website set to null):**
-  - [ ] Status 200 OK
-  - [ ] `res.body.data.website` is `null`
+  - [x] Status 200 OK
+  - [x] `res.body.data.website` is `null`
 
 - **`03_forbidden_non_admin.bru`** — Status 403 when authenticated as a USER-role account → error code `ADMIN_ACCESS_REQUIRED`
 

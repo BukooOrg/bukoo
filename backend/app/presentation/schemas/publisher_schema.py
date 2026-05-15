@@ -35,6 +35,10 @@ class BasePublisherResponse(BaseModel):
     created_at: datetime
 
 
+class ViewPublisherDetailResponse(BasePublisherResponse):
+    pass
+
+
 class CreatePublisherResponse(BasePublisherResponse):
     pass
 

@@ -6,11 +6,13 @@ from app.application.dtos.publisher_dto import (
     CreatePublisherCommand,
     SoftDeletePublisherCommand,
     UpdatePublisherCommand,
+    ViewPublisherDetailCommand,
 )
 from app.application.use_cases.publisher import (
     CreatePublisherUseCase,
     SoftDeletePublisherUseCase,
     UpdatePublisherUseCase,
+    ViewPublisherDetailUseCase,
 )
 from app.presentation.dependencies.deps import AdminUser, DbSession, PublisherRepo
 from app.presentation.schemas.publisher_schema import (
@@ -19,9 +21,35 @@ from app.presentation.schemas.publisher_schema import (
     SoftDeletePublisherResponse,
     UpdatePublisherRequest,
     UpdatePublisherResponse,
+    ViewPublisherDetailResponse,
 )
 
 router = APIRouter(prefix="/publishers", tags=["publisher"])
+
+
+@router.get(
+    "/{publisher_id}",
+    response_model=ViewPublisherDetailResponse,
+    operation_id="viewPublisherDetail",
+)
+async def view_publisher_detail(
+    publisher_id: str,
+    _admin: AdminUser,
+    publisher_repo: PublisherRepo,
+    db_session: DbSession,
+) -> ViewPublisherDetailResponse:
+    use_case = ViewPublisherDetailUseCase(
+        db_session=db_session, publisher_repo=publisher_repo
+    )
+    result = await use_case.execute(
+        ViewPublisherDetailCommand(publisher_id=publisher_id)
+    )
+    return ViewPublisherDetailResponse(
+        id=result.id,
+        name=result.name,
+        website=result.website,
+        created_at=result.created_at,
+    )
 
 
 @router.post(
