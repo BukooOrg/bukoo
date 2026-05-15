@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { PasswordStrengthMeter } from '@/components/auth/password-strength-meter';
 import { useAuth } from '@/context/AuthContext';
 import { authApi } from '@/lib/apiClient';
 
@@ -12,6 +13,7 @@ export default function RegisterPage() {
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -152,9 +154,12 @@ export default function RegisterPage() {
                   required
                   minLength={8}
                   placeholder='Min. 8 characters'
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className='w-full pl-12 pr-4 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold'
                 />
               </div>
+              <PasswordStrengthMeter password={password} />
             </div>
 
             {/* Confirm Password */}
