@@ -2,7 +2,8 @@ import { Loader2 } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
-import { useApiMutation, useApiQuery } from '@/hooks/useApiMutation';
+import { useApiMutation } from '@/hooks/useApiMutation';
+import { useApiQuery } from '@/hooks/useApiQuery';
 import { usersApi } from '@/lib/apiClient';
 
 export default function AddressPage() {
