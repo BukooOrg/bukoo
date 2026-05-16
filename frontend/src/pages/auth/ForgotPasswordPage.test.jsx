@@ -34,9 +34,7 @@ describe('ForgotPasswordPage', () => {
     const form = document.querySelector('form');
     fireEvent.submit(form);
 
-    await expect(
-      screen.findByText('Please enter a valid email address')
-    ).resolves.toBeInTheDocument();
+    await expect(screen.findByText('Please enter a valid email address')).resolves.toBeInTheDocument();
   });
 
   it('renders back to login link', () => {
