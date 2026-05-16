@@ -126,6 +126,9 @@ class FakeReviewRepository(IReviewRepository):
         self._existing = existing
         self.saved: ReviewEntity | None = None
 
+    async def find_by_id(self, review_id: str) -> ReviewEntity | None:
+        raise NotImplementedError
+
     async def find_by_order_item_id(self, order_item_id: str) -> ReviewEntity | None:
         if self._existing and self._existing.order_item_id == order_item_id:
             return self._existing

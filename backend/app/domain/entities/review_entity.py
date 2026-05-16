@@ -77,6 +77,11 @@ class ReviewEntity:
         """
         self._deleted_at = datetime.now(UTC)
 
+    def update(self, rating: int | None, comment: str | None) -> None:
+        self._rating = rating
+        self._comment = comment
+        self._updated_at = datetime.now(UTC)
+
     def set_book(self, book: BookEntity) -> None:
         """
         Re-associate the review with a different book.

@@ -44,6 +44,8 @@ from app.domain.exceptions import (
     PublisherNotFoundError,
     ReviewAlreadyExistsError,
     ReviewNotEligibleError,
+    ReviewNotFoundError,
+    ReviewNotOwnedError,
     StorageUploadError,
     TokenAlreadyRevokedError,
     TokenExpiredError,
@@ -315,6 +317,17 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_404_NOT_FOUND,
         ErrorCode.CART_ITEM_NOT_FOUND,
         "Cart item not found.",
+    ),
+    # review
+    ReviewNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.REVIEW_NOT_FOUND,
+        "Review not found.",
+    ),
+    ReviewNotOwnedError: HttpExceptionMapping(
+        status.HTTP_403_FORBIDDEN,
+        ErrorCode.REVIEW_NOT_OWNED,
+        "You do not have permission to modify this review.",
     ),
     # wishlist
     ReviewNotEligibleError: HttpExceptionMapping(

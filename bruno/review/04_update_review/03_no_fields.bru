@@ -1,11 +1,11 @@
 meta {
-  name: missing rating and comment
+  name: no fields provided
   type: http
-  seq: 5
+  seq: 3
 }
 
-post {
-  url: {{baseUrl}}{{apiBase}}/books/{{bookId}}/reviews
+patch {
+  url: {{baseUrl}}{{apiBase}}/reviews/{{reviewId}}
   body: json
   auth: bearer
 }
@@ -19,10 +19,7 @@ auth:bearer {
 }
 
 body:json {
-  // Both rating and comment are omitted — should fail the model_validator.
-  {
-    "order_item_id": "{{orderItemId}}"
-  }
+  {}
   
 }
 

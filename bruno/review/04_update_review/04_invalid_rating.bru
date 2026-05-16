@@ -1,0 +1,52 @@
+meta {
+  name: invalid rating
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/reviews/{{reviewId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // Invalid rating. The rating must be in the range of 1 and 5 inculsively.
+  {
+    "rating": 6
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.id matches reviewId", function() {
+    expect(res.body.data.id).to.equal(bru.getEnvVar("reviewId"));
+  });
+  
+  test("data.rating equals submitted value", function() {
+    expect(res.body.data.rating).to.equal(4);
+  });
+  
+  test("data.comment equals submitted value", function() {
+    expect(res.body.data.comment).to.equal("Updated my thoughts — still a great read.");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

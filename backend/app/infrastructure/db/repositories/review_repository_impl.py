@@ -21,6 +21,17 @@ class ReviewRepositoryImpl(IReviewRepository):
         await self._session.merge(model)
 
     @override
+    async def find_by_id(self, review_id: str) -> ReviewEntity | None:
+        stmt = (
+            select(ReviewModel)
+            .where(ReviewModel.id == review_id)
+            .where(ReviewModel.deleted_at.is_(None))
+        )
+        result = await self._session.execute(stmt)
+        model = result.scalar_one_or_none()
+        return ReviewMapper.to_entity(model) if model else None
+
+    @override
     async def find_by_order_item_id(self, order_item_id: str) -> ReviewEntity | None:
         stmt = select(ReviewModel).where(ReviewModel.order_item_id == order_item_id)
         result = await self._session.execute(stmt)
