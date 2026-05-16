@@ -23,6 +23,12 @@ class UpdateReviewCommand:
     fields_to_update: frozenset[str]
 
 
+@dataclass(frozen=True)
+class SoftDeleteReviewCommand:
+    user_id: str
+    review_id: str
+
+
 # results
 @dataclass(frozen=True)
 class CreateReviewResult:

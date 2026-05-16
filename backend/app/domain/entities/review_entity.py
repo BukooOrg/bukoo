@@ -76,6 +76,7 @@ class ReviewEntity:
         permanently removing it from the database.
         """
         self._deleted_at = datetime.now(UTC)
+        self._updated_at = datetime.now(UTC)
 
     def update(self, rating: int | None, comment: str | None) -> None:
         self._rating = rating
