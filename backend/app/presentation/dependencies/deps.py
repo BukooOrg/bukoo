@@ -39,6 +39,7 @@ from app.domain.repositories import (
     IOrderRepository,
     IPaymentRepository,
     IPublisherRepository,
+    IReviewRepository,
     IUserRepository,
     IVerificationTokenRepository,
     IWishlistRepository,
@@ -63,6 +64,7 @@ from app.infrastructure.db.repositories import (
     OrderRepositoryImpl,
     PaymentRepositoryImpl,
     PublisherRepositoryImpl,
+    ReviewRepositoryImpl,
     UserRepositoryImpl,
     VerificationTokenRepositoryImpl,
     WishlistRepositoryImpl,
@@ -183,6 +185,13 @@ def get_notification_repository(session: DbSession) -> INotificationRepository:
 NotificationRepo = Annotated[
     INotificationRepository, Depends(get_notification_repository)
 ]
+
+
+def get_review_repository(session: DbSession) -> IReviewRepository:
+    return ReviewRepositoryImpl(session)
+
+
+ReviewRepo = Annotated[IReviewRepository, Depends(get_review_repository)]
 
 
 def get_payment_service() -> IPaymentService:

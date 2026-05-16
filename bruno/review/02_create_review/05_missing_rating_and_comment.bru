@@ -1,0 +1,36 @@
+meta {
+  name: missing rating and comment
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/books/{{bookId}}/reviews
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // Both rating and comment are omitted — should fail the model_validator.
+  {
+    "order_item_id": "{{orderItemId}}"
+  }
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+}

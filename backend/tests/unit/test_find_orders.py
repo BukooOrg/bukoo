@@ -101,6 +101,11 @@ class FakeOrderRepository(IOrderRepository):
             page_size=query.page.page_size,
         )
 
+    async def find_delivered_order_item(
+        self, user_id: str, order_item_id: str, book_id: str
+    ) -> OrderItemEntity | None:
+        return None
+
 
 # ---------------------------------------------------------------------------
 # Fixtures

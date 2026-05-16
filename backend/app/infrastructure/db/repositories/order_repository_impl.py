@@ -5,12 +5,15 @@ from typing import override
 from sqlalchemy import Date, cast, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.constants import OrderStatus
 from app.core.query_params import PaginatedResult, QueryParams
 from app.domain.entities import OrderEntity
+from app.domain.entities.order_item_entity import OrderItemEntity
 from app.domain.repositories import IOrderRepository
 from app.domain.repositories.order_repository import OrderFilters
 from app.infrastructure.db.mappers import OrderItemMapper, OrderMapper
 from app.infrastructure.db.models import OrderModel
+from app.infrastructure.db.models.order_item_model import OrderItemModel
 
 
 class OrderRepositoryImpl(IOrderRepository):
@@ -79,3 +82,19 @@ class OrderRepositoryImpl(IOrderRepository):
             for item in order.order_items:
                 item_model = OrderItemMapper.to_model(item)
                 await self._session.merge(item_model)
+
+    @override
+    async def find_delivered_order_item(
+        self, user_id: str, order_item_id: str, book_id: str
+    ) -> OrderItemEntity | None:
+        stmt = (
+            select(OrderItemModel)
+            .join(OrderModel, OrderItemModel.order_id == OrderModel.id)
+            .where(OrderModel.user_id == user_id)
+            .where(OrderModel.status == OrderStatus.DELIVERED)
+            .where(OrderItemModel.id == order_item_id)
+            .where(OrderItemModel.book_id == book_id)
+        )
+        result = await self._session.execute(stmt)
+        model = result.scalar_one_or_none()
+        return OrderItemMapper.to_entity(model) if model else None

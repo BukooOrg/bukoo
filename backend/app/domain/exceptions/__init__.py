@@ -49,6 +49,7 @@ from .payment import (
     PaymentVerificationError,
 )
 from .publisher import PublisherNotFoundError
+from .review import ReviewAlreadyExistsError, ReviewNotEligibleError
 from .storage import (
     FileSizeExceededError,
     InvalidFileTypeError,
@@ -117,4 +118,6 @@ __all__ = [
     "WishlistItemAlreadyExistsError",
     "WishlistNotFoundError",
     "WishlistItemNotFoundError",
+    "ReviewNotEligibleError",
+    "ReviewAlreadyExistsError",
 ]

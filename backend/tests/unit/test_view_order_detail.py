@@ -88,6 +88,11 @@ class FakeOrderRepository(IOrderRepository):
     async def find_all(self, *args: Any, **kwargs: Any) -> Any:
         return []
 
+    async def find_delivered_order_item(
+        self, user_id: str, order_item_id: str, book_id: str
+    ) -> OrderItemEntity | None:
+        return None
+
 
 # fixtures
 def _make_use_case(order: OrderEntity | None = None) -> ViewOrderDetailUseCase:

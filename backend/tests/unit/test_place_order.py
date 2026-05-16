@@ -13,11 +13,14 @@ from app.application.dtos.order_dto import (
     PlaceOrderResult,
 )
 from app.application.use_cases.order.place_order import PlaceOrderUseCase
-from app.domain.entities.address_entity import AddressEntity
-from app.domain.entities.book_entity import BookEntity
-from app.domain.entities.cart_entity import CartEntity
-from app.domain.entities.cart_item_entity import CartItemEntity
-from app.domain.entities.order_entity import OrderEntity
+from app.domain.entities import (
+    AddressEntity,
+    BookEntity,
+    CartEntity,
+    CartItemEntity,
+    OrderEntity,
+    OrderItemEntity,
+)
 from app.domain.exceptions import (
     AddressNotFoundError,
     BookNotFoundError,
@@ -182,6 +185,11 @@ class FakeOrderRepository(IOrderRepository):
 
     async def find_all(self, *args: Any, **kwargs: Any) -> Any:
         return []
+
+    async def find_delivered_order_item(
+        self, user_id: str, order_item_id: str, book_id: str
+    ) -> OrderItemEntity | None:
+        return None
 
 
 # ---------------------------------------------------------------------------

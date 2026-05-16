@@ -9,6 +9,7 @@ from .notification_repository import INotificationRepository
 from .order_repository import IOrderRepository
 from .payment_repository import IPaymentRepository
 from .publisher_repository import IPublisherRepository
+from .review_repository import IReviewRepository
 from .user_repository import IUserRepository
 from .verification_token_repository import IVerificationTokenRepository
 from .wishlist_repository import IWishlistRepository
@@ -30,4 +31,5 @@ __all__ = [
     "IUserRepository",
     "IVerificationTokenRepository",
     "IWishlistRepository",
+    "IReviewRepository",
 ]

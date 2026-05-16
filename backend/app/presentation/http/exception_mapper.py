@@ -42,6 +42,8 @@ from app.domain.exceptions import (
     OutOfStockError,
     PasswordNotSetError,
     PublisherNotFoundError,
+    ReviewAlreadyExistsError,
+    ReviewNotEligibleError,
     StorageUploadError,
     TokenAlreadyRevokedError,
     TokenExpiredError,
@@ -315,6 +317,16 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         "Cart item not found.",
     ),
     # wishlist
+    ReviewNotEligibleError: HttpExceptionMapping(
+        status.HTTP_403_FORBIDDEN,
+        ErrorCode.REVIEW_NOT_ELIGIBLE,
+        lambda exc: exc.message,
+    ),
+    ReviewAlreadyExistsError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.REVIEW_ALREADY_EXISTS,
+        lambda exc: exc.message,
+    ),
     WishlistItemAlreadyExistsError: HttpExceptionMapping(
         status.HTTP_409_CONFLICT,
         ErrorCode.WISHLIST_ITEM_ALREADY_EXISTS_FOUND,
