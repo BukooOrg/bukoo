@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import PasswordPage from './PasswordPage';
 
 vi.mock('@/lib/apiClient', () => ({
-  usersApi: {
+  userApi: {
     changePassword: vi.fn(),
   },
 }));
