@@ -2,6 +2,7 @@ import { render, screen, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { authApi, userApi } from '@/lib/apiClient';
+
 import { AuthProvider, useAuth } from './AuthContext';
 
 vi.mock('@/lib/apiClient', () => ({
@@ -17,12 +18,12 @@ function TestConsumer() {
   const { user, loading, login, logout } = useAuth();
   return (
     <div>
-      <p data-testid="loading">{loading ? 'true' : 'false'}</p>
-      <p data-testid="user">{user ? JSON.stringify(user) : 'null'}</p>
-      <button data-testid="login-btn" onClick={() => login({ id: '1', role: 'user' })}>
+      <p data-testid='loading'>{loading ? 'true' : 'false'}</p>
+      <p data-testid='user'>{user ? JSON.stringify(user) : 'null'}</p>
+      <button data-testid='login-btn' onClick={() => login({ id: '1', role: 'user' })}>
         Login
       </button>
-      <button data-testid="logout-btn" onClick={logout}>
+      <button data-testid='logout-btn' onClick={logout}>
         Logout
       </button>
     </div>
