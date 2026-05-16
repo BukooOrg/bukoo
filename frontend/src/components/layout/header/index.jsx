@@ -1,7 +1,7 @@
 import { UserIcon } from 'lucide-react';
 import { LogOut } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import CartModal from '@/components/cart/CartModal';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/data-display/avatar';
@@ -13,13 +13,11 @@ import {
 } from '@/components/ui/overlays/dropdown-menu';
 import { useAuth } from '@/context/AuthContext';
 import { getCollections } from '@/lib/sfcc';
-import { cn } from '@/lib/utils';
 
 import MobileMenu from './MobileMenu';
 import Search from './Search';
 
 export function Header() {
-  const { pathname } = useLocation();
   const [collections, setCollections] = useState([]);
   const { user, logout } = useAuth();
 
@@ -103,28 +101,6 @@ export function Header() {
             </Link>
           )}
         </nav>
-      </div>
-
-      {/* Genre Header Row */}
-      <div className='flex items-center justify-center h-12 border-b bg-background/60 backdrop-blur-xl border-secondary/15 md:h-16'>
-        <ul className='flex items-center gap-10 overflow-x-auto md:gap-16 no-scrollbar px-sides'>
-          {collections
-            .filter((c) => c.handle !== 'joyco-root')
-            .map((item) => (
-              <li key={item.handle}>
-                <Link
-                  to={`/shop/${item.handle}`}
-                  className={cn(
-                    'text-[11px] md:text-sm font-sans font-black uppercase tracking-[0.25em] transition-all hover:opacity-100',
-                    pathname.includes(item.handle)
-                      ? 'opacity-100 text-primary scale-110'
-                      : 'opacity-40'
-                  )}>
-                  {item.title}
-                </Link>
-              </li>
-            ))}
-        </ul>
       </div>
     </header>
   );

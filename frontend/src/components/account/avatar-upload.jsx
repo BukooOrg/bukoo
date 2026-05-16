@@ -23,17 +23,14 @@ export function AvatarUpload({ currentAvatarUrl, fullName, onAvatarChange }) {
     }
   );
 
-  const { mutate: removeAvatar, loading: removing } = useApiMutation(
-    () => userApi.removeAvatar(),
-    {
-      onSuccess: (data) => {
-        setPreview(null);
-        onAvatarChange?.(data.data);
-        toast.success('Avatar removed');
-      },
-      onError: () => toast.error('Failed to remove avatar'),
-    }
-  );
+  const { mutate: removeAvatar, loading: removing } = useApiMutation(() => userApi.removeAvatar(), {
+    onSuccess: (data) => {
+      setPreview(null);
+      onAvatarChange?.(data.data);
+      toast.success('Avatar removed');
+    },
+    onError: () => toast.error('Failed to remove avatar'),
+  });
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];

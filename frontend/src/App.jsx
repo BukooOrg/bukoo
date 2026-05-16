@@ -143,8 +143,10 @@ function App() {
 
               {/* 👤🔑 Any authenticated user */}
               <Route element={<ProtectedRoute />}>
-                <Route path='/account/profile' element={<ProfilePage />} />
-                <Route path='/account/password' element={<PasswordPage />} />
+                <Route element={<AccountLayout />}>
+                  <Route path='/account/profile' element={<ProfilePage />} />
+                  <Route path='/account/password' element={<PasswordPage />} />
+                </Route>
               </Route>
 
               {/* 👤 Customer only */}

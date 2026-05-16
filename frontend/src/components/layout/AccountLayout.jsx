@@ -40,65 +40,67 @@ export function AccountLayout() {
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           className='p-2 rounded-lg hover:bg-primary/5'>
-          {mobileOpen ? <X className='w-6 h-6' /> : <Menu className='w-6 h-6' />}
+          {mobileOpen ? <X className='w-5 h-5' /> : <Menu className='w-5 h-5' />}
         </button>
-        <span className='font-serif text-xl font-bold text-primary'>My Account</span>
+        <span className='font-serif text-lg font-bold text-primary'>My Account</span>
         <div />
       </div>
 
       <div className='flex'>
-        {/* Sidebar */}
+        {/* Sidebar — full height on desktop */}
         <aside
           className={cn(
-            'fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-border p-6 transition-transform duration-300 md:relative md:translate-x-0 md:inset-auto',
+            'fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-border flex flex-col transition-transform duration-300 md:relative md:translate-x-0 md:inset-auto md:w-80',
             mobileOpen ? 'translate-x-0' : '-translate-x-full'
           )}>
-          {/* User info */}
-          <div className='flex items-center gap-3 p-3 mb-6 rounded-xl bg-primary/5'>
-            <Avatar className='w-10 h-10 border-2 border-primary/20'>
-              <AvatarImage src={user?.avatarUrl} alt={user?.fullName} />
-              <AvatarFallback className='font-bold text-sm bg-primary text-background'>
-                {user?.fullName?.charAt(0)?.toUpperCase() ?? 'U'}
-              </AvatarFallback>
-            </Avatar>
-            <div className='min-w-0'>
-              <p className='text-sm font-bold truncate text-primary'>{user?.fullName}</p>
-              <p className='text-xs truncate text-muted-foreground'>{user?.email}</p>
+          <div className='flex flex-col h-full p-6'>
+            {/* User info — pinned top */}
+            <div className='flex items-center gap-3 p-3 mb-6 rounded-xl bg-primary/5 shrink-0'>
+              <Avatar className='w-10 h-10 border-2 border-primary/20'>
+                <AvatarImage src={user?.avatarUrl} alt={user?.fullName} />
+                <AvatarFallback className='font-bold text-sm bg-primary text-background'>
+                  {user?.fullName?.charAt(0)?.toUpperCase() ?? 'U'}
+                </AvatarFallback>
+              </Avatar>
+              <div className='min-w-0'>
+                <p className='text-sm font-bold truncate text-primary'>{user?.fullName}</p>
+                <p className='text-xs truncate text-muted-foreground'>{user?.email}</p>
+              </div>
             </div>
-          </div>
 
-          {/* Navigation */}
-          <nav className='space-y-1'>
-            {navItems.map((item) => {
-              const isActive = location.pathname === item.to;
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  onClick={() => setMobileOpen(false)}
-                  className={cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                    item.danger
-                      ? 'text-destructive hover:bg-destructive/5'
-                      : 'text-primary/70 hover:bg-primary/5 hover:text-primary',
-                    isActive && !item.danger && 'bg-primary/10 text-primary font-bold',
-                    isActive && item.danger && 'bg-destructive/10 text-destructive font-bold'
-                  )}>
-                  <Icon className='w-5 h-5 shrink-0' />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
+            {/* Navigation — scrollable middle */}
+            <nav className='space-y-1 flex-1 overflow-y-auto'>
+              {navItems.map((item) => {
+                const isActive = location.pathname === item.to;
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                      item.danger
+                        ? 'text-destructive hover:bg-destructive/5'
+                        : 'text-primary/70 hover:bg-primary/5 hover:text-primary',
+                      isActive && !item.danger && 'bg-primary/10 text-primary font-bold',
+                      isActive && item.danger && 'bg-destructive/10 text-destructive font-bold'
+                    )}>
+                    <Icon className='w-[18px] h-[18px] shrink-0' />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
 
-          {/* Back to home */}
-          <div className='mt-8 pt-6 border-t border-border'>
-            <Link
-              to='/'
-              className='flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary/40 hover:text-primary transition-colors'>
-              ← Back to Store
-            </Link>
+            {/* Back to home — pinned bottom */}
+            <div className='pt-4 mt-4 border-t border-border shrink-0'>
+              <Link
+                to='/'
+                className='flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary/40 hover:text-primary transition-colors'>
+                ← Back to Store
+              </Link>
+            </div>
           </div>
         </aside>
 
@@ -110,8 +112,8 @@ export function AccountLayout() {
           />
         )}
 
-        {/* Content */}
-        <main className='flex-1 p-6 md:p-10 max-w-4xl'>
+        {/* Content — centered */}
+        <main className='flex-1 p-6 md:p-10 mx-auto max-w-3xl w-full'>
           <Outlet />
         </main>
       </div>
