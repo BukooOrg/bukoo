@@ -146,7 +146,7 @@ function App() {
               <Route path='/checkout/payment' element={<CheckoutPaymentPage />} />
               <Route path='/checkout/confirmation' element={<CheckoutConfirmationPage />} />
 
-              {/* 👤 Account pages — with header/footer */}
+              {/* 👤 Account pages — no header/footer, sidebar layout */}
               <Route element={<ProtectedRoute />}>
                 <Route element={<AccountLayout />}>
                   <Route path='/account' element={<AccountPage />} />

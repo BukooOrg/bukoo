@@ -47,10 +47,10 @@ export function AccountLayout() {
       </div>
 
       <div className='flex'>
-        {/* Sidebar — below fixed header, full remaining height */}
+        {/* Sidebar — full height, wider */}
         <aside
           className={cn(
-            'fixed left-0 z-50 w-80 bg-white border-r border-border flex flex-col transition-transform duration-300 md:w-96 top-24 md:top-32 h-[calc(100vh-6rem)] md:h-[calc(100vh-8rem)]',
+            'fixed inset-y-0 left-0 z-50 w-80 bg-white border-r border-border flex flex-col transition-transform duration-300 md:w-[28rem]',
             mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
           )}>
           <div className='flex flex-col h-full p-6'>
@@ -63,8 +63,8 @@ export function AccountLayout() {
                 </AvatarFallback>
               </Avatar>
               <div className='min-w-0'>
-                <p className='text-sm font-bold truncate text-primary'>{user?.fullName}</p>
-                <p className='text-xs truncate text-muted-foreground'>{user?.email}</p>
+                <p className='text-base font-bold truncate text-primary'>{user?.fullName}</p>
+                <p className='text-sm truncate text-muted-foreground'>{user?.email}</p>
               </div>
             </div>
 
@@ -79,14 +79,14 @@ export function AccountLayout() {
                     to={item.to}
                     onClick={() => setMobileOpen(false)}
                     className={cn(
-                      'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                      'flex items-center gap-3 px-3 py-2.5 rounded-lg text-base font-medium transition-colors',
                       item.danger
                         ? 'text-destructive hover:bg-destructive/5'
                         : 'text-primary/70 hover:bg-primary/5 hover:text-primary',
                       isActive && !item.danger && 'bg-primary/10 text-primary font-bold',
                       isActive && item.danger && 'bg-destructive/10 text-destructive font-bold'
                     )}>
-                    <Icon className='w-[18px] h-[18px] shrink-0' />
+                    <Icon className='w-5 h-5 shrink-0' />
                     <span>{item.label}</span>
                   </Link>
                 );
@@ -97,7 +97,7 @@ export function AccountLayout() {
             <div className='pt-4 mt-4 border-t border-border shrink-0'>
               <Link
                 to='/'
-                className='flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary/40 hover:text-primary transition-colors'>
+                className='flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-primary/40 hover:text-primary transition-colors'>
                 ← Back to Store
               </Link>
             </div>
@@ -113,7 +113,7 @@ export function AccountLayout() {
         )}
 
         {/* Content — centered, offset for fixed sidebar on desktop */}
-        <main className='flex-1 p-6 md:p-10 md:ml-96 mx-auto max-w-3xl w-full'>
+        <main className='flex-1 p-6 md:p-10 md:ml-[28rem] mx-auto max-w-3xl w-full'>
           <Outlet />
         </main>
       </div>
