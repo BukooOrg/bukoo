@@ -39,7 +39,7 @@ export default function ShopPage() {
 
   return (
     <PageLayout>
-      <div className='pt-36 pb-24 px-sides max-w-[1440px] mx-auto'>
+      <div className='pt-0 pb-24 px-sides max-w-[1440px] mx-auto'>
         <GenreNav collections={collections} activeHandle={collectionHandle} />
 
         <div className='flex items-center justify-between pb-6 mb-10 border-b border-border mt-6'>
