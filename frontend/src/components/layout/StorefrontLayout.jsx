@@ -9,7 +9,7 @@ export function StorefrontLayout() {
   return (
     <div className='flex flex-col min-h-screen font-sans antialiased bg-background text-foreground'>
       <Header />
-      <main className='min-h-screen pt-36 md:pt-48'>
+      <main className='min-h-screen pt-28 md:pt-40'>
         <Outlet />
       </main>
       <Footer />
