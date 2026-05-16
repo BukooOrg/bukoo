@@ -28,12 +28,11 @@ describe('AccountLayout', () => {
 
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
     expect(screen.getByText('Profile')).toBeInTheDocument();
-    expect(screen.getByText('Password')).toBeInTheDocument();
     expect(screen.getByText('Address')).toBeInTheDocument();
     expect(screen.getByText('Orders')).toBeInTheDocument();
     expect(screen.getByText('Reviews')).toBeInTheDocument();
     expect(screen.getByText('Notifications')).toBeInTheDocument();
-    expect(screen.getByText('Delete Account')).toBeInTheDocument();
+    expect(screen.getByText('Password')).toBeInTheDocument();
   });
 
   it('shows user info in sidebar', () => {

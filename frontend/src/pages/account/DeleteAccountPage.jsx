@@ -40,9 +40,16 @@ export default function DeleteAccountPage() {
 
   return (
     <div className='space-y-8'>
-      <div>
-        <h1 className='font-serif text-3xl font-black text-destructive'>Delete Account</h1>
-        <p className='text-sm text-muted-foreground mt-1'>This action cannot be undone</p>
+      <div className='text-center'>
+        <div className='flex justify-center mb-4'>
+          <div className='w-14 h-14 bg-destructive/5 rounded-full flex items-center justify-center'>
+            <AlertTriangle className='w-7 h-7 text-destructive' />
+          </div>
+        </div>
+        <h1 className='text-4xl font-serif font-black mb-2 text-destructive tracking-tighter'>
+          Delete Account
+        </h1>
+        <p className='text-primary/40 font-bold italic text-sm'>This action cannot be undone</p>
       </div>
 
       <div className='p-6 rounded-2xl border border-destructive/20 bg-destructive/5'>
@@ -69,13 +76,13 @@ export default function DeleteAccountPage() {
             type='text'
             value={confirmation}
             onChange={(e) => setConfirmation(e.target.value)}
-            className='w-full px-4 py-3 bg-white border border-destructive/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-destructive/10 focus:border-destructive/20'
+            className='w-full px-4 py-4 bg-white border border-destructive/30 rounded-2xl focus:outline-none focus:ring-2 focus:ring-destructive/10 focus:border-destructive/20 font-sans font-bold'
             placeholder='DELETE'
           />
         </div>
 
         {error && (
-          <div className='p-4 border bg-destructive/5 border-destructive/10 rounded-xl'>
+          <div className='p-4 border bg-destructive/5 border-destructive/10 rounded-2xl'>
             <p className='text-xs font-bold text-destructive'>{error}</p>
           </div>
         )}
@@ -83,8 +90,15 @@ export default function DeleteAccountPage() {
         <button
           type='submit'
           disabled={isDisabled}
-          className='w-full py-4 bg-destructive text-white rounded-xl font-bold uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:hover:scale-100'>
-          {loading ? <Loader2 className='w-5 h-5 animate-spin' /> : 'Permanently Delete Account'}
+          className='w-full py-5 bg-destructive text-white rounded-2xl font-sans font-bold uppercase tracking-[0.2em] shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:hover:scale-100'>
+          {loading ? (
+            <Loader2 className='w-5 h-5 animate-spin' />
+          ) : (
+            <>
+              <AlertTriangle className='w-5 h-5' />
+              <span>Permanently Delete Account</span>
+            </>
+          )}
         </button>
       </form>
     </div>

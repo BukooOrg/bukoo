@@ -146,7 +146,7 @@ export default function LoginPage() {
                   name='password'
                   required
                   placeholder='Enter your password'
-                  className='w-full py-4 pl-12 pr-4 font-sans font-medium transition-all border bg-white/40 border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20'
+                  className='w-full py-4 pl-12 pr-4 font-sans font-bold transition-all border md:py-5 bg-white/40 border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20'
                 />
               </div>
             </div>

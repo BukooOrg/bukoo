@@ -1,4 +1,4 @@
-import { Loader2, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Eye, EyeOff, Lock, KeyRound, AlertCircle } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -15,21 +15,25 @@ export default function PasswordPage() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState('');
 
-  const { mutate: changePassword, loading } = useApiMutation(
-    (variables) => userApi.changePassword(variables),
-    {
-      onSuccess: () => {
-        toast.success('Password changed successfully!');
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-        setError('');
-      },
-      onError: (err) => {
-        setError(err.response?.data?.error?.message || 'Failed to change password');
-      },
-    }
-  );
+  const {
+    mutate: changePassword,
+    loading,
+    error: mutationError,
+  } = useApiMutation((variables) => userApi.changePassword(variables), {
+    onSuccess: () => {
+      toast.success('Password changed successfully!');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setError('');
+    },
+    onError: (err) => {
+      const msg =
+        err?.response?.data?.error?.message || err?.message || 'Failed to change password';
+      console.error('Password change error:', err);
+      setError(msg);
+    },
+  });
 
   const validatePassword = (pwd) => {
     if (pwd.length < 8) return 'Password must be at least 8 characters';
@@ -72,99 +76,132 @@ export default function PasswordPage() {
 
   return (
     <div className='space-y-8'>
-      <div>
-        <h1 className='font-serif text-3xl font-black text-primary'>Change Password</h1>
-        <p className='text-sm text-muted-foreground mt-1'>Update your account password</p>
+      <div className='text-center'>
+        <div className='flex justify-center mb-4'>
+          <div className='w-14 h-14 bg-primary/5 rounded-full flex items-center justify-center'>
+            <KeyRound className='w-7 h-7 text-primary' />
+          </div>
+        </div>
+        <h1 className='text-4xl font-serif font-black mb-2 text-primary tracking-tighter'>
+          Change Password
+        </h1>
+        <p className='text-primary/40 font-bold italic text-sm'>Update your account password</p>
       </div>
 
-      <form onSubmit={handleSubmit} className='space-y-6'>
-        {/* Current Password */}
-        <div className='space-y-2'>
-          <label className='block text-xs font-black uppercase tracking-[0.2em] text-primary/60'>
-            Current Password
-          </label>
-          <div className='relative'>
-            <input
-              type={showCurrent ? 'text' : 'password'}
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              className='w-full px-4 py-3 pr-12 bg-white border border-primary/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20'
-            />
-            <button
-              type='button'
-              onClick={() => setShowCurrent(!showCurrent)}
-              className='absolute right-4 top-1/2 -translate-y-1/2 text-primary/40 hover:text-primary'>
-              {showCurrent ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
-            </button>
+      <div className='max-w-lg mx-auto'>
+        <form onSubmit={handleSubmit} className='space-y-5'>
+          {/* Current Password */}
+          <div className='space-y-2'>
+            <label className='block text-xs font-black uppercase tracking-[0.2em] text-primary/60 pl-1'>
+              Current Password
+            </label>
+            <div className='relative group'>
+              <div className='absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none'>
+                <Lock className='w-5 h-5 text-primary/30 group-focus-within:text-primary transition-colors' />
+              </div>
+              <input
+                type={showCurrent ? 'text' : 'password'}
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder='Enter current password'
+                className='w-full pl-12 pr-14 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold'
+              />
+              <button
+                type='button'
+                onClick={() => setShowCurrent(!showCurrent)}
+                className='absolute right-4 top-1/2 -translate-y-1/2 text-primary/30 hover:text-primary transition-colors'>
+                {showCurrent ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
+              </button>
+            </div>
           </div>
-        </div>
 
-        {/* New Password */}
-        <div className='space-y-2'>
-          <label className='block text-xs font-black uppercase tracking-[0.2em] text-primary/60'>
-            New Password
-          </label>
-          <div className='relative'>
-            <input
-              type={showNew ? 'text' : 'password'}
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className='w-full px-4 py-3 pr-12 bg-white border border-primary/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20'
-            />
-            <button
-              type='button'
-              onClick={() => setShowNew(!showNew)}
-              className='absolute right-4 top-1/2 -translate-y-1/2 text-primary/40 hover:text-primary'>
-              {showNew ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
-            </button>
+          {/* New Password */}
+          <div className='space-y-2'>
+            <label className='block text-xs font-black uppercase tracking-[0.2em] text-primary/60 pl-1'>
+              New Password
+            </label>
+            <div className='relative group'>
+              <div className='absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none'>
+                <Lock className='w-5 h-5 text-primary/30 group-focus-within:text-primary transition-colors' />
+              </div>
+              <input
+                type={showNew ? 'text' : 'password'}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder='Min. 8 characters'
+                className='w-full pl-12 pr-14 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold'
+              />
+              <button
+                type='button'
+                onClick={() => setShowNew(!showNew)}
+                className='absolute right-4 top-1/2 -translate-y-1/2 text-primary/30 hover:text-primary transition-colors'>
+                {showNew ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
+              </button>
+            </div>
+            <PasswordStrengthMeter password={newPassword} />
           </div>
-          <PasswordStrengthMeter password={newPassword} />
-        </div>
 
-        {/* Confirm Password */}
-        <div className='space-y-2'>
-          <label className='block text-xs font-black uppercase tracking-[0.2em] text-primary/60'>
-            Confirm New Password
-          </label>
-          <div className='relative'>
-            <input
-              type={showConfirm ? 'text' : 'password'}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className='w-full px-4 py-3 pr-12 bg-white border border-primary/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20'
-            />
-            <button
-              type='button'
-              onClick={() => setShowConfirm(!showConfirm)}
-              className='absolute right-4 top-1/2 -translate-y-1/2 text-primary/40 hover:text-primary'>
-              {showConfirm ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
-            </button>
+          {/* Confirm New Password */}
+          <div className='space-y-2'>
+            <label className='block text-xs font-black uppercase tracking-[0.2em] text-primary/60 pl-1'>
+              Confirm New Password
+            </label>
+            <div className='relative group'>
+              <div className='absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none'>
+                <Lock className='w-5 h-5 text-primary/30 group-focus-within:text-primary transition-colors' />
+              </div>
+              <input
+                type={showConfirm ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder='Re-enter new password'
+                className='w-full pl-12 pr-14 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold'
+              />
+              <button
+                type='button'
+                onClick={() => setShowConfirm(!showConfirm)}
+                className='absolute right-4 top-1/2 -translate-y-1/2 text-primary/30 hover:text-primary transition-colors'>
+                {showConfirm ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
+              </button>
+            </div>
+            {confirmPassword && confirmPassword !== newPassword && (
+              <p className='text-xs font-bold text-destructive pl-1'>Passwords do not match</p>
+            )}
           </div>
-          {confirmPassword && confirmPassword !== newPassword && (
-            <p className='text-xs font-bold text-destructive'>Passwords do not match</p>
+
+          {/* Error Message */}
+          {(error || mutationError) && (
+            <div className='flex items-start gap-3 p-4 duration-300 border bg-destructive/5 border-destructive/10 rounded-2xl animate-in slide-in-from-top-2'>
+              <AlertCircle className='w-5 h-5 text-destructive shrink-0' />
+              <p className='text-xs font-bold leading-relaxed text-destructive'>
+                {error || mutationError?.message || 'An error occurred'}
+              </p>
+            </div>
           )}
-        </div>
 
-        {error && (
-          <div className='p-4 border bg-destructive/5 border-destructive/10 rounded-xl'>
-            <p className='text-xs font-bold text-destructive'>{error}</p>
-          </div>
-        )}
-
-        <button
-          type='submit'
-          disabled={
-            loading ||
-            !currentPassword ||
-            !newPassword ||
-            !confirmPassword ||
-            !!pwdError ||
-            newPassword !== confirmPassword
-          }
-          className='w-full py-4 bg-primary text-secondary rounded-xl font-bold uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50'>
-          {loading ? <Loader2 className='w-5 h-5 animate-spin' /> : 'Change Password'}
-        </button>
-      </form>
+          {/* Submit Button */}
+          <button
+            type='submit'
+            disabled={
+              loading ||
+              !currentPassword ||
+              !newPassword ||
+              !confirmPassword ||
+              !!pwdError ||
+              newPassword !== confirmPassword
+            }
+            className='w-full py-5 bg-primary text-secondary rounded-2xl font-sans font-bold uppercase tracking-[0.2em] shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100'>
+            {loading ? (
+              <Loader2 className='w-5 h-5 animate-spin' />
+            ) : (
+              <>
+                <Lock className='w-5 h-5' />
+                <span>Change Password</span>
+              </>
+            )}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

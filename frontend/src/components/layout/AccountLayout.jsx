@@ -5,7 +5,6 @@ import {
   ShoppingCart,
   Star,
   Bell,
-  AlertTriangle,
   LayoutDashboard,
   Menu,
   X,
@@ -20,12 +19,11 @@ import { cn } from '@/lib/utils';
 const navItems = [
   { to: '/account', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/account/profile', label: 'Profile', icon: User },
-  { to: '/account/password', label: 'Password', icon: Lock },
   { to: '/account/address', label: 'Address', icon: MapPin },
   { to: '/account/orders', label: 'Orders', icon: ShoppingCart },
   { to: '/account/reviews', label: 'Reviews', icon: Star },
   { to: '/account/notifications', label: 'Notifications', icon: Bell },
-  { to: '/account/delete', label: 'Delete Account', icon: AlertTriangle, danger: true },
+  { to: '/account/password', label: 'Password', icon: Lock },
 ];
 
 export function AccountLayout() {
@@ -50,7 +48,7 @@ export function AccountLayout() {
         {/* Sidebar — below fixed header, full remaining height */}
         <aside
           className={cn(
-            'fixed left-0 z-50 w-96 bg-white border-r border-border flex flex-col transition-transform duration-300 md:w-[28rem] top-24 md:top-32 h-screen',
+            'fixed left-0 z-50 w-96 bg-white border-r border-border flex flex-col transition-transform duration-300 md:w-[28rem] top-24 md:top-32 h-[calc(100vh-6rem)] md:h-[calc(100vh-8rem)]',
             mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
           )}>
           <div className='flex flex-col h-full p-8'>
@@ -63,8 +61,10 @@ export function AccountLayout() {
                 </AvatarFallback>
               </Avatar>
               <div className='min-w-0'>
-                <p className='text-base font-bold truncate text-primary'>{user?.fullName}</p>
-                <p className='text-sm truncate text-muted-foreground'>{user?.email}</p>
+                <p className='text-base font-sans font-bold truncate text-primary'>
+                  {user?.fullName}
+                </p>
+                <p className='text-sm font-sans truncate text-muted-foreground'>{user?.email}</p>
               </div>
             </div>
 
@@ -79,12 +79,9 @@ export function AccountLayout() {
                     to={item.to}
                     onClick={() => setMobileOpen(false)}
                     className={cn(
-                      'flex items-center gap-3.5 px-4 py-3 rounded-lg text-base font-medium transition-colors',
-                      item.danger
-                        ? 'text-destructive hover:bg-destructive/5'
-                        : 'text-primary/70 hover:bg-primary/5 hover:text-primary',
-                      isActive && !item.danger && 'bg-primary/10 text-primary font-bold',
-                      isActive && item.danger && 'bg-destructive/10 text-destructive font-bold'
+                      'flex items-center gap-3.5 px-4 py-3 rounded-lg text-base font-sans font-medium leading-relaxed transition-colors',
+                      'text-primary/70 hover:bg-primary/5 hover:text-primary',
+                      isActive && 'bg-primary/10 text-primary font-bold'
                     )}>
                     <Icon className='w-5 h-5 shrink-0' />
                     <span>{item.label}</span>
@@ -97,7 +94,7 @@ export function AccountLayout() {
             <div className='pt-6 mt-6 border-t border-border shrink-0'>
               <Link
                 to='/'
-                className='flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-primary/40 hover:text-primary transition-colors'>
+                className='flex items-center gap-2 text-sm font-sans font-bold uppercase tracking-widest text-primary/40 hover:text-primary transition-colors'>
                 ← Back to Store
               </Link>
             </div>
@@ -113,7 +110,7 @@ export function AccountLayout() {
         )}
 
         {/* Content — centered, offset for fixed sidebar on desktop */}
-        <main className='flex-1 p-6 md:p-10 md:ml-[28rem] mx-auto max-w-3xl w-full'>
+        <main className='flex-1 p-6 md:p-10 md:ml-[28rem] mx-auto max-w-5xl w-full'>
           <Outlet />
         </main>
       </div>
