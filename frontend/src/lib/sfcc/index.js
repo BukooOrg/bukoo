@@ -19,7 +19,7 @@ export async function getCollections() {
     return reshapeCategories(mockCollections);
   }
   try {
-    return await apiFetch('/api/collections');
+    return await apiFetch('/collections');
   } catch (error) {
     console.warn('API failed, falling back to mock data', error);
     return reshapeCategories(mockCollections);
@@ -32,7 +32,7 @@ export async function getCollection(id) {
     return reshapeCategory(coll);
   }
   try {
-    return await apiFetch(`/api/collections/${id}`);
+    return await apiFetch(`/collections/${id}`);
   } catch (error) {
     console.error(error);
     const coll = mockCollections.find((c) => c.id === id || c.handle === id);
@@ -46,7 +46,7 @@ export async function getProduct(handle) {
     return reshapeProduct(prod);
   }
   try {
-    return await apiFetch(`/api/products/${handle}`);
+    return await apiFetch(`/products/${handle}`);
   } catch (error) {
     console.error(error);
 
@@ -73,7 +73,7 @@ export async function getCollectionProducts({
     if (sortKey) params.append('sortKey', sortKey);
     if (query) params.append('query', query);
 
-    return await apiFetch(`/api/collections/${collectionHandle}/products?${params.toString()}`);
+    return await apiFetch(`/collections/${collectionHandle}/products?${params.toString()}`);
   } catch (error) {
     console.error(error);
 
@@ -96,7 +96,7 @@ export async function getProducts({ query, sortKey }) {
     const params = new URLSearchParams();
     if (query) params.append('query', query);
     if (sortKey) params.append('sortKey', sortKey);
-    return await apiFetch(`/api/products?${params.toString()}`);
+    return await apiFetch(`/products?${params.toString()}`);
   } catch (error) {
     console.error(error);
 
@@ -121,7 +121,7 @@ export async function createCart() {
     return cart;
   }
   try {
-    const cart = await apiFetch('/api/cart', { method: 'POST' });
+    const cart = await apiFetch('/cart', { method: 'POST' });
     Cookies.set('cartId', cart.id, { expires: 30, path: '/' });
     return cart;
   } catch {
@@ -153,7 +153,7 @@ export async function getCart() {
   }
 
   try {
-    return await apiFetch(`/api/cart/${cartId}`);
+    return await apiFetch(`/cart/${cartId}`);
   } catch {
     return null;
   }
@@ -169,7 +169,7 @@ export async function addToCart(lines) {
   if (currentId === 'mock-cart') return;
 
   try {
-    return await apiFetch(`/api/cart/${currentId}/items`, {
+    return await apiFetch(`/cart/${currentId}/items`, {
       method: 'POST',
       body: JSON.stringify(lines[0] || lines),
     });
@@ -182,7 +182,7 @@ export async function removeFromCart(lineIds) {
   const cartId = Cookies.get('cartId');
   if (!cartId || cartId === 'mock-cart') return;
   try {
-    return await apiFetch(`/api/cart/${cartId}/items/${lineIds[0]}`, { method: 'DELETE' });
+    return await apiFetch(`/cart/${cartId}/items/${lineIds[0]}`, { method: 'DELETE' });
   } catch {
     return;
   }
@@ -193,7 +193,7 @@ export async function updateCart(lines) {
   if (!cartId || cartId === 'mock-cart') return;
   try {
     const line = lines[0];
-    return await apiFetch(`/api/cart/${cartId}/items/${line.id}`, {
+    return await apiFetch(`/cart/${cartId}/items/${line.id}`, {
       method: 'PATCH',
       body: JSON.stringify({ quantity: line.quantity }),
     });
@@ -205,7 +205,7 @@ export async function updateCart(lines) {
 export async function getProductRecommendations(productId) {
   if (USE_MOCK) return reshapeProducts(mockProducts.slice(0, 4));
   try {
-    return await apiFetch(`/api/products/${productId}/recommendations`);
+    return await apiFetch(`/products/${productId}/recommendations`);
   } catch {
     return reshapeProducts(mockProducts.slice(0, 4));
   }

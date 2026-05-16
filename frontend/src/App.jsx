@@ -50,9 +50,9 @@ import { AdminRoute } from './components/guards/AdminRoute';
 //     </AuthProvider>
 //   );
 // }
-import { CustomerRoute } from './components/guards/CustomerRoute';
 import { ProtectedRoute } from './components/guards/ProtectedRoute';
 // ─── Layouts ────────────────────────────────────────────────────────────────
+import { AccountLayout } from './components/layout/AccountLayout';
 import { AdminLayout } from './components/layout/AdminLayout';
 import { AuthLayout } from './components/layout/AuthLayout';
 import { StorefrontLayout } from './components/layout/StorefrontLayout';
@@ -139,27 +139,25 @@ function App() {
               <Route path='/shop/:collection' element={<ShopPage />} />
               <Route path='/search' element={<ShopPage />} />
               <Route path='/product/:handle' element={<ProductDetailPage />} />
+              <Route path='/cart' element={<CartPage />} />
+              <Route path='/wishlist' element={<WishlistPage />} />
+              <Route path='/checkout' element={<CheckoutPage />} />
+              <Route path='/checkout/payment' element={<CheckoutPaymentPage />} />
+              <Route path='/checkout/confirmation' element={<CheckoutConfirmationPage />} />
 
-              {/* 👤🔑 Any authenticated user */}
+              {/* 👤 Account pages — with header/footer */}
               <Route element={<ProtectedRoute />}>
-                <Route path='/account/profile' element={<ProfilePage />} />
-                <Route path='/account/password' element={<PasswordPage />} />
-              </Route>
-
-              {/* 👤 Customer only */}
-              <Route element={<CustomerRoute />}>
-                <Route path='/account' element={<AccountPage />} />
-                <Route path='/account/address' element={<AddressPage />} />
-                <Route path='/account/orders' element={<AccountOrdersPage />} />
-                <Route path='/account/orders/:orderId' element={<AccountOrderDetailPage />} />
-                <Route path='/account/reviews' element={<AccountReviewsPage />} />
-                <Route path='/account/notifications' element={<AccountNotificationsPage />} />
-                <Route path='/account/delete' element={<DeleteAccountPage />} />
-                <Route path='/cart' element={<CartPage />} />
-                <Route path='/wishlist' element={<WishlistPage />} />
-                <Route path='/checkout' element={<CheckoutPage />} />
-                <Route path='/checkout/payment' element={<CheckoutPaymentPage />} />
-                <Route path='/checkout/confirmation' element={<CheckoutConfirmationPage />} />
+                <Route element={<AccountLayout />}>
+                  <Route path='/account' element={<AccountPage />} />
+                  <Route path='/account/profile' element={<ProfilePage />} />
+                  <Route path='/account/password' element={<PasswordPage />} />
+                  <Route path='/account/address' element={<AddressPage />} />
+                  <Route path='/account/delete' element={<DeleteAccountPage />} />
+                  <Route path='/account/orders' element={<AccountOrdersPage />} />
+                  <Route path='/account/orders/:orderId' element={<AccountOrderDetailPage />} />
+                  <Route path='/account/reviews' element={<AccountReviewsPage />} />
+                  <Route path='/account/notifications' element={<AccountNotificationsPage />} />
+                </Route>
               </Route>
             </Route>
 

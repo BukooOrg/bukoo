@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 
+import { GenreNav } from '@/components/layout/GenreNav';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { LatestProductCard } from '@/components/products/LatestProductCard';
 import { getCollectionProducts, getCollections } from '@/lib/sfcc';
@@ -11,7 +12,7 @@ export default function ShopPage() {
   const query = searchParams.get('q') || '';
 
   const [products, setProducts] = useState([]);
-  const [_collections, setCollections] = useState([]);
+  const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,8 +39,10 @@ export default function ShopPage() {
 
   return (
     <PageLayout>
-      <div className='pt-36 pb-24 px-sides max-w-[1440px] mx-auto'>
-        <div className='flex items-center justify-between pb-6 mb-10 border-b border-border'>
+      <div className='pt-0 pb-24 px-sides max-w-[1440px] mx-auto'>
+        <GenreNav collections={collections} activeHandle={collectionHandle} />
+
+        <div className='flex items-center justify-between pb-6 mb-10 border-b border-border mt-6'>
           <p className='text-[10px] font-sans font-black uppercase tracking-[0.3em] text-primary'>
             {products.length} Results
           </p>
