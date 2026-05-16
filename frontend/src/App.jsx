@@ -50,7 +50,6 @@ import { AdminRoute } from './components/guards/AdminRoute';
 //     </AuthProvider>
 //   );
 // }
-import { CustomerRoute } from './components/guards/CustomerRoute';
 import { ProtectedRoute } from './components/guards/ProtectedRoute';
 // ─── Layouts ────────────────────────────────────────────────────────────────
 import { AccountLayout } from './components/layout/AccountLayout';
@@ -146,7 +145,7 @@ function App() {
               <Route path='/checkout/payment' element={<CheckoutPaymentPage />} />
               <Route path='/checkout/confirmation' element={<CheckoutConfirmationPage />} />
 
-              {/* 👤 Account pages — no header/footer, sidebar layout */}
+              {/* 👤 Account pages — with header/footer */}
               <Route element={<ProtectedRoute />}>
                 <Route element={<AccountLayout />}>
                   <Route path='/account' element={<AccountPage />} />

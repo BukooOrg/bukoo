@@ -47,18 +47,18 @@ export function AccountLayout() {
       </div>
 
       <div className='flex'>
-        {/* Sidebar — full height, wider */}
+        {/* Sidebar — below fixed header, full remaining height */}
         <aside
           className={cn(
-            'fixed inset-y-0 left-0 z-50 w-80 bg-white border-r border-border flex flex-col transition-transform duration-300 md:w-[28rem]',
+            'fixed left-0 z-50 w-96 bg-white border-r border-border flex flex-col transition-transform duration-300 md:w-[28rem] top-24 md:top-32 h-screen',
             mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
           )}>
-          <div className='flex flex-col h-full p-6'>
+          <div className='flex flex-col h-full p-8'>
             {/* User info — pinned top */}
-            <div className='flex items-center gap-3 p-3 mb-6 rounded-xl bg-primary/5 shrink-0'>
-              <Avatar className='w-10 h-10 border-2 border-primary/20'>
+            <div className='flex items-center gap-4 p-4 mb-8 rounded-xl bg-primary/5 shrink-0'>
+              <Avatar className='w-12 h-12 border-2 border-primary/20'>
                 <AvatarImage src={user?.avatarUrl} alt={user?.fullName} />
-                <AvatarFallback className='font-bold text-sm bg-primary text-background'>
+                <AvatarFallback className='font-bold text-base bg-primary text-background'>
                   {user?.fullName?.charAt(0)?.toUpperCase() ?? 'U'}
                 </AvatarFallback>
               </Avatar>
@@ -69,7 +69,7 @@ export function AccountLayout() {
             </div>
 
             {/* Navigation — scrollable middle */}
-            <nav className='space-y-1 flex-1 overflow-y-auto'>
+            <nav className='space-y-1.5 flex-1 overflow-y-auto'>
               {navItems.map((item) => {
                 const isActive = location.pathname === item.to;
                 const Icon = item.icon;
@@ -79,7 +79,7 @@ export function AccountLayout() {
                     to={item.to}
                     onClick={() => setMobileOpen(false)}
                     className={cn(
-                      'flex items-center gap-3 px-3 py-2.5 rounded-lg text-base font-medium transition-colors',
+                      'flex items-center gap-3.5 px-4 py-3 rounded-lg text-base font-medium transition-colors',
                       item.danger
                         ? 'text-destructive hover:bg-destructive/5'
                         : 'text-primary/70 hover:bg-primary/5 hover:text-primary',
@@ -94,7 +94,7 @@ export function AccountLayout() {
             </nav>
 
             {/* Back to home — pinned bottom */}
-            <div className='pt-4 mt-4 border-t border-border shrink-0'>
+            <div className='pt-6 mt-6 border-t border-border shrink-0'>
               <Link
                 to='/'
                 className='flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-primary/40 hover:text-primary transition-colors'>
