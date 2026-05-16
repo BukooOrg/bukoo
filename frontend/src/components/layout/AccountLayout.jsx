@@ -47,10 +47,10 @@ export function AccountLayout() {
       </div>
 
       <div className='flex'>
-        {/* Sidebar — full height, fixed on both mobile and desktop */}
+        {/* Sidebar — below fixed header, full remaining height */}
         <aside
           className={cn(
-            'fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-border flex flex-col transition-transform duration-300 md:w-80',
+            'fixed left-0 z-50 w-80 bg-white border-r border-border flex flex-col transition-transform duration-300 md:w-96 top-24 md:top-32 h-[calc(100vh-6rem)] md:h-[calc(100vh-8rem)]',
             mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
           )}>
           <div className='flex flex-col h-full p-6'>
@@ -113,7 +113,7 @@ export function AccountLayout() {
         )}
 
         {/* Content — centered, offset for fixed sidebar on desktop */}
-        <main className='flex-1 p-6 md:p-10 md:ml-80 mx-auto max-w-3xl w-full'>
+        <main className='flex-1 p-6 md:p-10 md:ml-96 mx-auto max-w-3xl w-full'>
           <Outlet />
         </main>
       </div>

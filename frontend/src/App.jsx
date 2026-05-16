@@ -145,25 +145,20 @@ function App() {
               <Route path='/checkout' element={<CheckoutPage />} />
               <Route path='/checkout/payment' element={<CheckoutPaymentPage />} />
               <Route path='/checkout/confirmation' element={<CheckoutConfirmationPage />} />
-            </Route>
 
-            {/* ── ACCOUNT LAYOUT — sidebar shell (no Header/Footer) ────── */}
-            <Route element={<ProtectedRoute />}>
-              <Route element={<AccountLayout />}>
-                <Route path='/account/profile' element={<ProfilePage />} />
-                <Route path='/account/password' element={<PasswordPage />} />
-              </Route>
-            </Route>
-
-            <Route element={<CustomerRoute />}>
-              <Route element={<AccountLayout />}>
-                <Route path='/account' element={<AccountPage />} />
-                <Route path='/account/address' element={<AddressPage />} />
-                <Route path='/account/delete' element={<DeleteAccountPage />} />
-                <Route path='/account/orders' element={<AccountOrdersPage />} />
-                <Route path='/account/orders/:orderId' element={<AccountOrderDetailPage />} />
-                <Route path='/account/reviews' element={<AccountReviewsPage />} />
-                <Route path='/account/notifications' element={<AccountNotificationsPage />} />
+              {/* 👤 Account pages — with header/footer */}
+              <Route element={<ProtectedRoute />}>
+                <Route element={<AccountLayout />}>
+                  <Route path='/account' element={<AccountPage />} />
+                  <Route path='/account/profile' element={<ProfilePage />} />
+                  <Route path='/account/password' element={<PasswordPage />} />
+                  <Route path='/account/address' element={<AddressPage />} />
+                  <Route path='/account/delete' element={<DeleteAccountPage />} />
+                  <Route path='/account/orders' element={<AccountOrdersPage />} />
+                  <Route path='/account/orders/:orderId' element={<AccountOrderDetailPage />} />
+                  <Route path='/account/reviews' element={<AccountReviewsPage />} />
+                  <Route path='/account/notifications' element={<AccountNotificationsPage />} />
+                </Route>
               </Route>
             </Route>
 
