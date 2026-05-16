@@ -5,10 +5,10 @@ import { toast } from 'sonner';
 import { AvatarUpload } from '@/components/account/avatar-upload';
 import { useApiMutation } from '@/hooks/useApiMutation';
 import { useApiQuery } from '@/hooks/useApiQuery';
-import { userApi } from '@/lib/apiClient';
+import { usersApi } from '@/lib/apiClient';
 
 export default function ProfilePage() {
-  const { data: profile, loading: profileLoading } = useApiQuery(() => userApi.getMe(), {
+  const { data: profile, loading: profileLoading } = useApiQuery(() => usersApi.getMe(), {
     select: (res) => res.data,
   });
 
@@ -24,7 +24,7 @@ export default function ProfilePage() {
   }, [profile]);
 
   const { mutate: updateProfile, loading: updating } = useApiMutation(
-    (variables) => userApi.updateProfile(variables),
+    (variables) => usersApi.updateProfile(variables),
     {
       onSuccess: () => {
         toast.success('Profile updated!');

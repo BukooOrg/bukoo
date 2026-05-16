@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import AccountPage from './AccountPage';
 
 vi.mock('@/lib/apiClient', () => ({
-  userApi: {
+  usersApi: {
     getMe: vi.fn(),
   },
 }));

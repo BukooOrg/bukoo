@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import DeleteAccountPage from './DeleteAccountPage';
 
 vi.mock('@/lib/apiClient', () => ({
-  userApi: {
+  usersApi: {
     softDeleteMe: vi.fn(),
   },
 }));

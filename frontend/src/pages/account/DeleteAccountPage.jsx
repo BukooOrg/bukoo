@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 import { useAuth } from '@/context/AuthContext';
 import { useApiMutation } from '@/hooks/useApiMutation';
-import { userApi } from '@/lib/apiClient';
+import { usersApi } from '@/lib/apiClient';
 
 export default function DeleteAccountPage() {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ export default function DeleteAccountPage() {
   const [confirmation, setConfirmation] = useState('');
   const [error, setError] = useState('');
 
-  const { mutate: deleteAccount, loading } = useApiMutation(() => userApi.softDeleteMe(), {
+  const { mutate: deleteAccount, loading } = useApiMutation(() => usersApi.softDeleteMe(), {
     onSuccess: () => {
       toast.success('Account deleted successfully');
       logout();

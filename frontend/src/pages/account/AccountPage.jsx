@@ -14,7 +14,7 @@ import { Link } from 'react-router-dom';
 import { StatusBadge } from '@/components/account/status-badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/data-display/avatar';
 import { useApiQuery } from '@/hooks/useApiQuery';
-import { userApi } from '@/lib/apiClient';
+import { usersApi } from '@/lib/apiClient';
 
 const quickLinks = [
   { to: '/account/profile', label: 'Profile', desc: 'Update your personal details', icon: User },
@@ -31,7 +31,7 @@ const quickLinks = [
 ];
 
 export default function AccountPage() {
-  const { data: profile, loading } = useApiQuery(() => userApi.getMe(), {
+  const { data: profile, loading } = useApiQuery(() => usersApi.getMe(), {
     select: (res) => res.data,
   });
 
