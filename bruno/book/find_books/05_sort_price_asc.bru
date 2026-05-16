@@ -1,0 +1,36 @@
+meta {
+  name: sort by price ascending
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/books?sort=price
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("data.items is an array", function() {
+    expect(res.body.data.items).to.be.an("array");
+  });
+
+  test("items are sorted by price ascending", function() {
+    var items = res.body.data.items;
+    for (var i = 0; i < items.length - 1; i++) {
+      expect(parseFloat(items[i].price) <= parseFloat(items[i + 1].price)).to.be.true;
+    }
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

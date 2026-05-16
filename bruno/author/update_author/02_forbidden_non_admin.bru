@@ -1,0 +1,37 @@
+meta {
+  name: forbidden non admin
+  type: http
+  seq: 2
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/authors/{{authorId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  // requires a USER-role token in {{userToken}}
+  token: {{userToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // USER role should be rejected with 403
+  {
+    "name": "Leo Tolstoy"
+  }
+}
+
+tests {
+  test("status 403", function() {
+    expect(res.status).to.equal(403);
+  });
+
+  test("error code is ADMIN_ACCESS_REQUIRED", function() {
+    expect(res.body.error.code).to.equal("ADMIN_ACCESS_REQUIRED");
+  });
+}

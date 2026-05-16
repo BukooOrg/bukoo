@@ -1,0 +1,54 @@
+meta {
+  name: success activated book
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/books/{{bookId}}
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  bookId: 019e15da-7820-799e-acf2-7ad53d8a6da2
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.id equals requested book ID", function() {
+    expect(res.body.data.id).to.equal(bru.getEnvVar("book_id"));
+    
+  });
+  
+  test("data.is_active is true", function() {
+    expect(res.body.data.is_active).to.be.true;
+  });
+  
+  test("data.title is a non-empty string", function() {
+    expect(res.body.data.title).to.be.a("string").and.not.empty;
+  });
+  
+  test("data.price is a string", function() {
+    expect(res.body.data.price).to.be.a("string");
+  });
+  
+  test("data.authors is an array", function() {
+    expect(res.body.data.authors).to.be.an("array");
+  });
+  
+  test("data.created_at is a string", function() {
+    expect(res.body.data.created_at).to.be.a("string");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

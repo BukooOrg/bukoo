@@ -1,0 +1,33 @@
+meta {
+  name: file too large
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/books/{{bookId}}/cover
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:multipart-form {
+  file: @file(C:\Users\hp\Downloads\imresizer-nicolas-horn-MTZTGvDsHFY-unsplash.jpg)
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+  
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+  
+  test("error code is FILE_SIZE_EXCEEDED", function() {
+    expect(res.body.error.code).to.equal("FILE_SIZE_EXCEEDED");
+  });
+}

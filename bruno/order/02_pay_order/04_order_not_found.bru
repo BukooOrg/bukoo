@@ -1,0 +1,38 @@
+meta {
+  name: order not found
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/orders/00000000-0000-7000-0000-000000000000/payment
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "payment_method": "online_banking",
+    "outcome": "success",
+    "bank_name": "Maybank",
+    "account_number": "1234567890"
+  }
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+
+  test("error code is ORDER_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("ORDER_NOT_FOUND");
+  });
+}

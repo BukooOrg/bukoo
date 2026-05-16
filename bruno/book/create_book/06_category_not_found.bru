@@ -1,0 +1,44 @@
+meta {
+  name: category not found
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/books
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // category_id does not exist
+  {
+    "title": "No Category Book",
+    "price": 14.99,
+    "stock_quantity": 10,
+    "language": "English",
+    "category_id": "00000000-0000-7000-0000-000000000000"
+  }
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is CATEGORY_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("CATEGORY_NOT_FOUND");
+  });
+}

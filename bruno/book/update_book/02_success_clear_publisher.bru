@@ -1,0 +1,44 @@
+meta {
+  name: success clear publisher
+  type: http
+  seq: 2
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/books/{{bookId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // publisher_id: null clears the publisher association
+  {
+    "publisher_id": "null"
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.publisher is null", function() {
+    expect(res.body.data.publisher).to.be.null;
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

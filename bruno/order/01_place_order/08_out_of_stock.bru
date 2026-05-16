@@ -1,0 +1,42 @@
+meta {
+  name: out of stock
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/orders
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // Prerequisite: set the book's stock_quantity to 0 via PATCH /books/{book_id}/stock,
+  // then ensure {{cartItemId}} references that book.
+  {
+    "cart_item_ids": ["{{cartItemId}}"]
+  }
+  
+}
+
+tests {
+  test("status 409", function() {
+    expect(res.status).to.equal(409);
+  });
+  
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+  
+  test("error code is OUT_OF_STOCK", function() {
+    expect(res.body.error.code).to.equal("OUT_OF_STOCK");
+  });
+}

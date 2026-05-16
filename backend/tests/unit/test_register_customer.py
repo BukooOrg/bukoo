@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import date, timedelta
-from typing import override
+from typing import Any, override
 from unittest.mock import AsyncMock
 
 import pytest
@@ -94,6 +94,22 @@ class FakeEmailNotificationService(IEmailNotificationService):
 
     @override
     def send_password_reset_email(self, to: str, otp: str) -> None:
+        pass
+
+    @override
+    def send_payment_receipt(self, *args: Any, **kwargs: Any) -> None:
+        pass
+
+    @override
+    def send_order_cancellation(self, *args: Any, **kwargs: Any) -> None:
+        pass
+
+    @override
+    def send_order_shipped(self, *args: Any, **kwargs: Any) -> None:
+        pass
+
+    @override
+    def send_order_delivered(self, *args: Any, **kwargs: Any) -> None:
         pass
 
 

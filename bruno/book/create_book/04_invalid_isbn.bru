@@ -1,0 +1,45 @@
+meta {
+  name: invalid isbn
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/books
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // isbn fails ISBN-13 checksum
+  {
+    "title": "Bad ISBN Book",
+    "price": 9.99,
+    "stock_quantity": 1,
+    "language": "English",
+    "isbn": "9780000000000"
+  }
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+  
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+  
+  test("error code is INVALID_ISBN", function() {
+    expect(res.body.error.code).to.equal("VALIDATION_ERROR");
+    
+  });
+}

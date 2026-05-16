@@ -8,6 +8,7 @@ flow (not implemented here) calls user.activate() when the link is clicked.
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from typing import override
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid_extension import uuid7
@@ -41,8 +42,10 @@ class RegisterUseCase(BaseUseCase):
         self._token_svc = token_svc
         self._email_svc = email_svc
 
+    @override
     async def execute(self, cmd: RegisterCommand) -> TokenDTO:
-        if await self._user_repo.exists_by_email(cmd.email):
+        user = await self._user_repo.find_by_email(cmd.email)
+        if user and user.status != UserStatus.PENDING:
             raise UserAlreadyExistsError(cmd.email)
 
         now = datetime.now(UTC)

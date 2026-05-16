@@ -1,0 +1,36 @@
+meta {
+  name: sort descending by name
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/authors?sort=-name
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("data.items is an array", function() {
+    expect(res.body.data.items).to.be.an("array");
+  });
+
+  test("items are sorted in descending name order", function() {
+    var items = res.body.data.items;
+    for (var i = 0; i < items.length - 1; i++) {
+      expect(items[i].name.toLowerCase() >= items[i + 1].name.toLowerCase()).to.be.true;
+    }
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

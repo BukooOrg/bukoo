@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import override
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.dtos.collection_dto import (
@@ -19,6 +21,7 @@ class SoftDeleteCollectionUseCase(BaseUseCase):
         super().__init__(db_session)
         self._collection_repo = collection_repo
 
+    @override
     async def execute(
         self, cmd: SoftDeleteCollectionCommand
     ) -> SoftDeleteCollectionResult:

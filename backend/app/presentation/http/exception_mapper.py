@@ -3,11 +3,19 @@ from collections.abc import Callable
 from fastapi import status
 
 from app.application.errors.error_codes import ErrorCode
+from app.core.constants import OrderStatus
 from app.domain.exceptions import (
     AddressNotFoundError,
     AdminAccessRequiredError,
+    AuthorNotFoundError,
+    BookAlreadyActivatedError,
+    BookAlreadyDeactivatedError,
     BookAlreadyExistsError,
     BookNotFoundError,
+    CartItemNotFoundError,
+    CartNotFoundError,
+    CategoryAlreadyExistsError,
+    CategoryNotFoundError,
     CollectionAlreadyExistsError,
     CollectionNotFoundError,
     CurrentPasswordIncorrectError,
@@ -25,10 +33,15 @@ from app.domain.exceptions import (
     NoAuthHeaderError,
     OAuthProviderNotFoundError,
     OAuthStateInvalidError,
+    OrderAccessDeniedError,
     OrderAlreadyPaidError,
+    OrderNotCancellableError,
     OrderNotFoundError,
+    OrderNotPayableError,
+    OrderStatusTransitionInvalidError,
     OutOfStockError,
     PasswordNotSetError,
+    PublisherNotFoundError,
     StorageUploadError,
     TokenAlreadyRevokedError,
     TokenExpiredError,
@@ -37,6 +50,9 @@ from app.domain.exceptions import (
     UserNotFoundError,
     UserNotVerifiedError,
     UserSuspendedError,
+    WishlistItemAlreadyExistsError,
+    WishlistItemNotFoundError,
+    WishlistNotFoundError,
 )
 
 
@@ -50,6 +66,22 @@ class HttpExceptionMapping:
         self.status_code = status_code
         self.code = code
         self.message = message
+
+
+def get_order_not_cancellable_message(exc: DomainException) -> str:
+    """
+    Constructs a contextual error message for order cancellation failures.
+    Provides additional debugging metadata for administrators.
+    """
+    if exc.context.get("is_admin"):
+        allowed: list[OrderStatus] = exc.context.get(
+            "allowed_cancelled_status_for_admin", "None"
+        )
+        return (
+            f"{exc.message} Allowed cancelled statuses for admin: {', '.join(allowed)}"
+        )
+
+    return exc.message
 
 
 EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
@@ -120,6 +152,16 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         "Your new password must be different from your current one. Please choose a new, unique password.",
     ),
     # Book
+    BookAlreadyActivatedError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.BOOK_ALREADY_ACTIVATED,
+        "Book already activated",
+    ),
+    BookAlreadyDeactivatedError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.BOOK_ALREADY_DEACTIVATED,
+        "Book already deactivated",
+    ),
     BookNotFoundError: HttpExceptionMapping(
         status.HTTP_404_NOT_FOUND,
         ErrorCode.BOOK_NOT_FOUND,
@@ -146,10 +188,28 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         ErrorCode.ORDER_ALREADY_PAID,
         "Order already paid",
     ),
+    OrderNotPayableError: HttpExceptionMapping(
+        status.HTTP_400_BAD_REQUEST,
+        ErrorCode.ORDER_NOT_PAYABLE,
+        lambda exc: exc.message,
+    ),
     OutOfStockError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT, ErrorCode.OUT_OF_STOCK, "Out of stock."
+    ),
+    OrderAccessDeniedError: HttpExceptionMapping(
+        status.HTTP_403_FORBIDDEN,
+        ErrorCode.ORDER_ACCESS_DENIED,
+        "You do not have permission to access this order.",
+    ),
+    OrderNotCancellableError: HttpExceptionMapping(
         status.HTTP_409_CONFLICT,
-        ErrorCode.OUT_OF_STOCK,
-        "Out of stock",
+        ErrorCode.ORDER_NOT_CANCELLABLE,
+        get_order_not_cancellable_message,
+    ),
+    OrderStatusTransitionInvalidError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.ORDER_STATUS_TRANSITION_INVALID,
+        lambda exc: exc.message,
     ),
     EmptyOrderError: HttpExceptionMapping(
         status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -203,6 +263,17 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         ErrorCode.INVALID_FILE_TYPE,
         lambda exc: exc.message,
     ),
+    # Category
+    CategoryAlreadyExistsError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.CATEGORY_ALREADY_EXISTS,
+        lambda exc: exc.message,
+    ),
+    CategoryNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.CATEGORY_NOT_FOUND,
+        "Category not found.",
+    ),
     # Collection
     CollectionAlreadyExistsError: HttpExceptionMapping(
         status.HTTP_409_CONFLICT,
@@ -219,5 +290,44 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_404_NOT_FOUND,
         ErrorCode.ADDRESS_NOT_FOUND,
         "You do not have address",
+    ),
+    # author
+    AuthorNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.AUTHOR_NOT_FOUND,
+        "You do not have author",
+    ),
+    # publisher
+    PublisherNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.PUBLISHER_NOT_FOUND,
+        "Publisher not found.",
+    ),
+    # cart
+    CartNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.CART_NOT_FOUND,
+        "Cart not found.",
+    ),
+    CartItemNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.CART_ITEM_NOT_FOUND,
+        "Cart item not found.",
+    ),
+    # wishlist
+    WishlistItemAlreadyExistsError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.WISHLIST_ITEM_ALREADY_EXISTS_FOUND,
+        "Wishlist item already exists",
+    ),
+    WishlistNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.WISHLIST_NOT_FOUND,
+        "Wishlist not found.",
+    ),
+    WishlistItemNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.WISHLIST_ITEM_NOT_FOUND,
+        "Wishlist item not found.",
     ),
 }

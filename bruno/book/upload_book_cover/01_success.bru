@@ -1,0 +1,41 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/books/{{bookId}}/cover
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:multipart-form {
+  file: @file(C:\Users\hp\Downloads\91mSZ570DUL._SL1500_.jpg)
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.id equals bookId", function() {
+    expect(res.body.data.id).to.equal(bru.getEnvVar("bookId"));
+  });
+  
+  test("data.cover_url is a string", function() {
+    expect(res.body.data.cover_url).to.be.a("string");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

@@ -1,0 +1,29 @@
+meta {
+  name: invalid price range price_max less than price_min
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/books?price_min=50&price_max=10
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is VALIDATION_ERROR", function() {
+    expect(res.body.error.code).to.equal("VALIDATION_ERROR");
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

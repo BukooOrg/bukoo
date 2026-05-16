@@ -1,0 +1,40 @@
+meta {
+  name: success filter by status paid
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/orders?status=cancelled
+  body: none
+  auth: bearer
+}
+
+params:query {
+  status: cancelled
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("all items have status paid", function() {
+    const items = res.body.data.items;
+    items.forEach(function(item) {
+      expect(item.status).to.equal("paid");
+    });
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

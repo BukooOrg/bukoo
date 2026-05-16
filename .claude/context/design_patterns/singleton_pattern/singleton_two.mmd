@@ -1,0 +1,49 @@
+---
+config:
+  theme: white
+  themeVariables:
+    background: '#ffffff'
+    primaryColor: '#ffffff'
+    primaryTextColor: '#000000'
+    lineColor: '#000000'
+    secondaryColor: '#ffffff'
+    tertiaryColor: '#ffffff'
+    actorBorder: '#000000'
+    actorTextColor: '#000000'
+  look: classic
+  mirrorActors: true
+---
+sequenceDiagram
+    actor Client as User
+    participant Route as Request Handler
+    participant Service as BookService
+    participant Repo as Book Repository
+    participant DCM as DatabaseManager
+    participant DB@{ "type": "database" } as Database
+    Client->>Route: browse books request
+    activate Route
+    Route->>Service: get books (with filters)
+    activate Service
+    Service->>Repo: find all matching books
+    activate Repo
+    Repo->>DCM: get_instance()
+    activate DCM
+    DCM->>DCM: shared instance exists?
+    Note right of DCM: Instance found. Returning cached singleton.
+    DCM-->>Repo: return instance (existing DatabaseConnectionManager)
+    deactivate DCM
+    Repo->>DCM: open session via session factory
+    activate DCM
+    DCM-->>Repo: database session
+    deactivate DCM
+    Repo->>DB: query books catalogue (with filters)
+    activate DB
+    DB-->>Repo: matching book records
+    deactivate DB
+    Repo->>Repo: commit and close session
+    Repo-->>Service: list of Book objects
+    deactivate Repo
+    Service-->>Route: list of Book response objects
+    deactivate Service
+    Route-->>Client: success response (books data)
+    deactivate Route

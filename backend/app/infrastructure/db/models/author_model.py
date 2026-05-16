@@ -7,13 +7,13 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from .base import DefaultFieldMixin
+from .base import DefaultFieldMixin, SoftDeleteMixin
 
 if TYPE_CHECKING:
     from .book_author_model import BookAuthorModel
 
 
-class AuthorModel(DefaultFieldMixin):
+class AuthorModel(DefaultFieldMixin, SoftDeleteMixin):
     """
     Author entity. Linked to books via the books_authors association table.
     No CHECK constraints → no @validates needed.

@@ -9,6 +9,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
+from pydantic import ValidationError
 
 from app.application.use_cases.system.system_register import SystemRegisterUseCase
 from app.core.config import (
@@ -331,6 +332,7 @@ class AppFactory:
         application.add_exception_handler(
             RequestValidationError, validation_exception_handler
         )
+        application.add_exception_handler(ValidationError, validation_exception_handler)
         application.add_exception_handler(DomainException, domain_exception_handler)
 
         if (

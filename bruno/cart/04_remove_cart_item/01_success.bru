@@ -1,0 +1,21 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+delete {
+  url: {{baseUrl}}{{apiBase}}/cart/items/{{cartItemId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 204", function() {
+    expect(res.status).to.equal(204);
+  });
+}

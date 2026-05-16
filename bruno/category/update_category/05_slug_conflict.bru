@@ -1,0 +1,38 @@
+meta {
+  name: slug conflict
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/categories/{{categoryId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // depends on another category with url_slug "science-fiction-testing" existing (created by create_category/01_success.bru)
+  {
+    "name": "Science Fiction",
+    "url_slug": "science-fiction",
+    "collection_id": "{{collectionId}}"
+  }
+}
+
+tests {
+  test("status 409", function() {
+    expect(res.status).to.equal(409);
+  });
+  
+  test("error code is CATEGORY_ALREADY_EXISTS", function() {
+    expect(res.body.error.code).to.equal("CATEGORY_ALREADY_EXISTS");
+  });
+}

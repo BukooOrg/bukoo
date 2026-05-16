@@ -1,0 +1,29 @@
+meta {
+  name: invalid page size exceeds maximum
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/books?page_size=101
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is VALIDATION_ERROR", function() {
+    expect(res.body.error.code).to.equal("VALIDATION_ERROR");
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

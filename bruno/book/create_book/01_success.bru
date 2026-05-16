@@ -1,0 +1,78 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/books
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // happy path — create a new book with all fields and authors
+  {
+    "title": "The Pragmatic Programmer",
+    "price": 49.99,
+    "stock_quantity": 20,
+    "language": "English",
+    "isbn": "9780135957059",
+    "description": "Your journey to mastery.",
+    "page_count": 352,
+    "published_date": "2019-09-13",
+    "authors": [
+      { "author_id": "{{authorId}}", "display_order": 1 },
+      { "author_id": "{{authorId2}}", "display_order": 2 }
+    ],
+    "publisher_id": "019e14bd-5a9c-7f27-91b4-15b2eedf7176",
+    "category_id": "019e14bd-5a65-7e9a-bf98-d9bb21303461"
+  }
+  
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.id is a non-empty string", function() {
+    expect(res.body.data.id).to.be.a("string").and.not.empty;
+  });
+  
+  test("data.title equals input", function() {
+    expect(res.body.data.title).to.equal("The Pragmatic Programmer");
+  });
+  
+  test("data.isbn equals input", function() {
+    expect(res.body.data.isbn).to.equal("9780135957059");
+  });
+  
+  test("data.authors has correct count", function() {
+    expect(res.body.data.authors).to.have.lengthOf(1);
+  });
+  
+  test("data.authors[0].display_order is 1", function() {
+    expect(res.body.data.authors[0].display_order).to.equal(1);
+  });
+  
+  test("data.is_active is true", function() {
+    expect(res.body.data.is_active).to.be.true;
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

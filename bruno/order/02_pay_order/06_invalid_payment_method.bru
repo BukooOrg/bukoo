@@ -1,0 +1,32 @@
+meta {
+  name: invalid payment method
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/orders/{{orderId}}/payment
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "payment_method": "crypto",
+    "outcome": "success"
+  }
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+}

@@ -1,0 +1,21 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+delete {
+  url: {{baseUrl}}{{apiBase}}/wishlist/items/{{wishlistItemId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 204", function() {
+    expect(res.status).to.equal(204);
+  });
+}

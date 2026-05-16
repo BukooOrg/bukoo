@@ -1,0 +1,42 @@
+meta {
+  name: success clear website
+  type: http
+  seq: 2
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/publishers/{{publisherId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // website set to null — should clear the existing website
+  {
+    "name": "Macmillan Publishers",
+    "website": null
+  }
+  
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.website is null", function() {
+    expect(res.body.data.website).to.be.null;
+  });
+}

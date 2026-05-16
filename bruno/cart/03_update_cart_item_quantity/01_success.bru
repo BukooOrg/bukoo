@@ -1,0 +1,54 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/cart/items/{{cartItemId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // success — depends on 09_cart/02_add_cart_item/01_success_new_item.bru having run first (sets cartItemId)
+  {
+    "quantity": 3
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setEnvVar("cartItemId", res.body.data.id);
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.quantity equals requested quantity", function() {
+    expect(res.body.data.quantity).to.equal(3);
+  });
+  
+  test("data.id matches cartItemId", function() {
+    expect(res.body.data.id).to.equal(bru.getEnvVar("cartItemId"));
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

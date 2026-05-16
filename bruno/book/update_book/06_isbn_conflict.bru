@@ -1,0 +1,41 @@
+meta {
+  name: isbn conflict
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/books/{{deactivatedBookId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // isbn belongs to {{bookId}} (set by 01_success.bru); updating a different book to the same isbn should conflict
+  // Depends on 01_success.bru having run first so that bookId has this isbn
+  {
+    "isbn": "9780135957059"
+  }
+}
+
+tests {
+  test("status 409", function() {
+    expect(res.status).to.equal(409);
+  });
+
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is BOOK_ALREADY_EXISTS", function() {
+    expect(res.body.error.code).to.equal("BOOK_ALREADY_EXISTS");
+  });
+}

@@ -1,0 +1,42 @@
+meta {
+  name: filter by price range
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/books?price_min=10&price_max=50
+  body: none
+  auth: none
+}
+
+params:query {
+  price_min: 10
+  price_max: 50
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.items is an array", function() {
+    expect(res.body.data.items).to.be.an("array");
+  });
+  
+  test("all returned books are within price range", function() {
+    res.body.data.items.forEach(function(book) {
+      var price = parseFloat(book.price);
+      expect(price).to.be.at.least(10);
+      expect(price).to.be.at.most(50);
+    });
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

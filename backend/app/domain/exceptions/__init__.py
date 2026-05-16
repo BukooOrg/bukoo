@@ -21,24 +21,34 @@ from .auth import (
     UserNotVerifiedError,
     UserSuspendedError,
 )
+from .author import AuthorNotFoundError
 from .base import DomainException
 from .book import (
+    BookAlreadyActivatedError,
+    BookAlreadyDeactivatedError,
     BookAlreadyExistsError,
     BookNotFoundError,
     InvalidISBNError,
 )
 from .cache import CacheDeleteError, CacheReadError, CacheWriteError
+from .cart import CartItemNotFoundError, CartNotFoundError
+from .category import CategoryAlreadyExistsError, CategoryNotFoundError
 from .collection import CollectionAlreadyExistsError, CollectionNotFoundError
 from .order import (
     EmptyOrderError,
+    OrderAccessDeniedError,
     OrderAlreadyPaidError,
+    OrderNotCancellableError,
     OrderNotFoundError,
+    OrderNotPayableError,
+    OrderStatusTransitionInvalidError,
     OutOfStockError,
 )
 from .payment import (
     PaymentCreationError,
     PaymentVerificationError,
 )
+from .publisher import PublisherNotFoundError
 from .storage import (
     FileSizeExceededError,
     InvalidFileTypeError,
@@ -46,6 +56,11 @@ from .storage import (
     StorageUploadError,
 )
 from .user import CustomerOnlyError
+from .wishlist import (
+    WishlistItemAlreadyExistsError,
+    WishlistItemNotFoundError,
+    WishlistNotFoundError,
+)
 
 __all__ = [
     "DomainException",
@@ -63,14 +78,22 @@ __all__ = [
     "UserNotFoundError",
     "UserNotVerifiedError",
     "UserSuspendedError",
+    "BookAlreadyActivatedError",
+    "BookAlreadyDeactivatedError",
     "BookAlreadyExistsError",
     "BookNotFoundError",
     "InvalidISBNError",
+    "CategoryAlreadyExistsError",
+    "CategoryNotFoundError",
     "CollectionAlreadyExistsError",
     "CollectionNotFoundError",
     "OrderNotFoundError",
     "OrderAlreadyPaidError",
+    "OrderNotPayableError",
     "OutOfStockError",
+    "OrderAccessDeniedError",
+    "OrderNotCancellableError",
+    "OrderStatusTransitionInvalidError",
     "EmptyOrderError",
     "PaymentCreationError",
     "PaymentVerificationError",
@@ -87,4 +110,11 @@ __all__ = [
     "CurrentPasswordIncorrectError",
     "PasswordNotSetError",
     "NewPasswordSameAsCurrentError",
+    "AuthorNotFoundError",
+    "PublisherNotFoundError",
+    "CartNotFoundError",
+    "CartItemNotFoundError",
+    "WishlistItemAlreadyExistsError",
+    "WishlistNotFoundError",
+    "WishlistItemNotFoundError",
 ]

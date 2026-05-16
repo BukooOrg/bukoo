@@ -42,4 +42,5 @@ class CartModel(DefaultFieldMixin):
         cascade="all, delete-orphan",
         lazy="selectin",
         init=False,
+        order_by="CartItemModel.created_at",
     )

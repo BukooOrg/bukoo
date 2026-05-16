@@ -1,0 +1,58 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/publishers
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // happy path — create a new publisher with name and website
+  {
+    "name": "Macmillan Publishers",
+    "website": "https://us.macmillan.com/"
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("data.id is a non-empty string", function() {
+    expect(res.body.data.id).to.be.a("string").and.not.empty;
+  });
+
+  test("data.name equals input", function() {
+    expect(res.body.data.name).to.equal("Macmillan Publishers");
+  });
+
+  test("data.website equals input", function() {
+    expect(res.body.data.website).to.equal("https://us.macmillan.com/");
+  });
+
+  test("data.created_at is an ISO 8601 string", function() {
+    expect(res.body.data.created_at).to.be.a("string");
+    expect(new Date(res.body.data.created_at).toISOString()).to.equal(res.body.data.created_at);
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

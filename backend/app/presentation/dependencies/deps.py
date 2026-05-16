@@ -15,6 +15,7 @@ from app.application.interfaces import (
     IStorageService,
     ITokenService,
 )
+from app.application.interfaces.payment_service import IPaymentService
 from app.core.config import get_configs
 from app.core.constants import ObjectStorageType, UserRole
 from app.domain.entities import UserEntity
@@ -29,9 +30,18 @@ from app.domain.exceptions import (
 from app.domain.repositories import (
     IAccountRepository,
     IAddressRepository,
+    IAuthorRepository,
+    IBookRepository,
+    ICartRepository,
+    ICategoryRepository,
     ICollectionRepository,
+    INotificationRepository,
+    IOrderRepository,
+    IPaymentRepository,
+    IPublisherRepository,
     IUserRepository,
     IVerificationTokenRepository,
+    IWishlistRepository,
 )
 from app.infrastructure.auth import (
     BcryptPasswordHasher,
@@ -44,11 +54,21 @@ from app.infrastructure.cache import RedisCacheService
 from app.infrastructure.db.repositories import (
     AccountRepositoryImpl,
     AddressRepositoryImpl,
+    AuthorRepositoryImpl,
+    BookRepositoryImpl,
+    CartRepositoryImpl,
+    CategoryRepositoryImpl,
     CollectionRepositoryImpl,
+    NotificationRepositoryImpl,
+    OrderRepositoryImpl,
+    PaymentRepositoryImpl,
+    PublisherRepositoryImpl,
     UserRepositoryImpl,
     VerificationTokenRepositoryImpl,
+    WishlistRepositoryImpl,
 )
 from app.infrastructure.db.session import get_db_session
+from app.infrastructure.payment.payment_service_impl import PaymentServiceImpl
 from app.infrastructure.storage import MinIOStorage, S3Storage
 from app.infrastructure.tasks.email_notification_service import (
     CeleryEmailNotificationService,
@@ -65,8 +85,14 @@ def get_user_repository(session: DbSession) -> IUserRepository:
     return UserRepositoryImpl(session)
 
 
+UserRepo = Annotated[IUserRepository, Depends(get_user_repository)]
+
+
 def get_account_repository(session: DbSession) -> IAccountRepository:
     return AccountRepositoryImpl(session)
+
+
+AccountRepo = Annotated[IAccountRepository, Depends(get_account_repository)]
 
 
 def get_verification_token_repository(
@@ -75,16 +101,44 @@ def get_verification_token_repository(
     return VerificationTokenRepositoryImpl(session)
 
 
+VerificationTokenRepo = Annotated[
+    IVerificationTokenRepository, Depends(get_verification_token_repository)
+]
+
+
 def get_address_repository(session: DbSession) -> IAddressRepository:
     return AddressRepositoryImpl(session)
 
 
-UserRepo = Annotated[IUserRepository, Depends(get_user_repository)]
-AccountRepo = Annotated[IAccountRepository, Depends(get_account_repository)]
-VerificationTokenRepo = Annotated[
-    IVerificationTokenRepository, Depends(get_verification_token_repository)
-]
 AddressRepo = Annotated[IAddressRepository, Depends(get_address_repository)]
+
+
+def get_category_repository(session: DbSession) -> ICategoryRepository:
+    return CategoryRepositoryImpl(session)
+
+
+CategoryRepo = Annotated[ICategoryRepository, Depends(get_category_repository)]
+
+
+def get_author_repository(session: DbSession) -> IAuthorRepository:
+    return AuthorRepositoryImpl(session)
+
+
+AuthorRepo = Annotated[IAuthorRepository, Depends(get_author_repository)]
+
+
+def get_book_repository(session: DbSession) -> IBookRepository:
+    return BookRepositoryImpl(session)
+
+
+BookRepo = Annotated[IBookRepository, Depends(get_book_repository)]
+
+
+def get_publisher_repository(session: DbSession) -> IPublisherRepository:
+    return PublisherRepositoryImpl(session)
+
+
+PublisherRepo = Annotated[IPublisherRepository, Depends(get_publisher_repository)]
 
 
 def get_collection_repository(session: DbSession) -> ICollectionRepository:
@@ -92,6 +146,50 @@ def get_collection_repository(session: DbSession) -> ICollectionRepository:
 
 
 CollectionRepo = Annotated[ICollectionRepository, Depends(get_collection_repository)]
+
+
+def get_cart_repository(session: DbSession) -> ICartRepository:
+    return CartRepositoryImpl(session)
+
+
+CartRepo = Annotated[ICartRepository, Depends(get_cart_repository)]
+
+
+def get_wishlist_repository(session: DbSession) -> IWishlistRepository:
+    return WishlistRepositoryImpl(session)
+
+
+WishlistRepo = Annotated[IWishlistRepository, Depends(get_wishlist_repository)]
+
+
+def get_order_repository(session: DbSession) -> IOrderRepository:
+    return OrderRepositoryImpl(session)
+
+
+OrderRepo = Annotated[IOrderRepository, Depends(get_order_repository)]
+
+
+def get_payment_repository(session: DbSession) -> IPaymentRepository:
+    return PaymentRepositoryImpl(session)
+
+
+PaymentRepo = Annotated[IPaymentRepository, Depends(get_payment_repository)]
+
+
+def get_notification_repository(session: DbSession) -> INotificationRepository:
+    return NotificationRepositoryImpl(session)
+
+
+NotificationRepo = Annotated[
+    INotificationRepository, Depends(get_notification_repository)
+]
+
+
+def get_payment_service() -> IPaymentService:
+    return PaymentServiceImpl()
+
+
+PaymentSvc = Annotated[IPaymentService, Depends(get_payment_service)]
 
 
 # Cache

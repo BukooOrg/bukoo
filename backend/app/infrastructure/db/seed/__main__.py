@@ -201,8 +201,8 @@ async def seed_books(
         page_count_raw = na(row.get("page_count", "N/A"))
         language = row.get("language", "English").strip() or "English"
         published_date_raw = na(row.get("published_date", "N/A"))
-        publisher_name = row.get("publisher_name", "").strip() or None
-        author_names_raw = row.get("author_name", "").strip()
+        publisher_name = na(row.get("publisher_name", "N/A"))
+        author_names_raw = na(row.get("author_name", "N/A"))
         category_name = row.get("category", "").strip() or None
 
         # skip empty row
@@ -309,38 +309,39 @@ async def seed_books(
             },
         )
 
-        raw_authors = [a.strip() for a in author_names_raw.split(",") if a.strip()]
-        for display_order, author_name in enumerate(raw_authors, start=1):
-            if not author_name:
-                continue
+        if author_names_raw:
+            raw_authors = [a.strip() for a in author_names_raw.split(",") if a.strip()]
+            for display_order, author_name in enumerate(raw_authors, start=1):
+                if not author_name:
+                    continue
 
-            if author_name in author_cache:
-                author_id = author_cache[author_name]
-            else:
-                # authors table has no unique constraint on name —
-                # deduplication is handled purely in-memory via the cache.
-                author_id = uuid7_str()
+                if author_name in author_cache:
+                    author_id = author_cache[author_name]
+                else:
+                    # authors table has no unique constraint on name —
+                    # deduplication is handled purely in-memory via the cache.
+                    author_id = uuid7_str()
+                    await session.execute(
+                        text(
+                            "INSERT INTO authors (id, name, created_at, updated_at) "
+                            "VALUES (:id, :name, NOW(), NOW())"
+                        ),
+                        {"id": author_id, "name": author_name},
+                    )
+                    author_cache[author_name] = author_id
+
                 await session.execute(
                     text(
-                        "INSERT INTO authors (id, name, created_at, updated_at) "
-                        "VALUES (:id, :name, NOW(), NOW())"
+                        "INSERT INTO books_authors (book_id, author_id, display_order, created_at, updated_at) "
+                        "VALUES (:book_id, :author_id, :display_order, NOW(), NOW()) "
+                        "ON CONFLICT DO NOTHING"
                     ),
-                    {"id": author_id, "name": author_name},
+                    {
+                        "book_id": book_id,
+                        "author_id": author_id,
+                        "display_order": display_order,
+                    },
                 )
-                author_cache[author_name] = author_id
-
-            await session.execute(
-                text(
-                    "INSERT INTO books_authors (book_id, author_id, display_order, created_at, updated_at) "
-                    "VALUES (:book_id, :author_id, :display_order, NOW(), NOW()) "
-                    "ON CONFLICT DO NOTHING"
-                ),
-                {
-                    "book_id": book_id,
-                    "author_id": author_id,
-                    "display_order": display_order,
-                },
-            )
 
         book_count += 1
 

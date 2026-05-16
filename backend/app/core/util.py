@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from datetime import UTC
+from typing import Any
 
 import httpx
 from fastapi import Response
+from sqlalchemy import inspect
 
 
 def size_to_bytes(size: int | float | str) -> int | None:
@@ -133,3 +135,12 @@ async def download_content(
     except Exception as exc:
         print(f"Could not download from {url}: {exc}")
         return None
+
+
+def is_loaded(model: Any, field_name: str) -> bool:
+    """Returns True if the field is already loaded on the model."""
+    return field_name not in inspect(model).unloaded
+
+
+def construct_order_ref(order_id: str) -> str:
+    return f"BKO-{order_id[:8].upper()}"

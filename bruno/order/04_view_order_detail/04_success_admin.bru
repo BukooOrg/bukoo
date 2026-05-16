@@ -1,0 +1,35 @@
+meta {
+  name: success admin views any order
+  type: http
+  seq: 4
+}
+
+get {
+  // Prerequisite: {{token}} must be an admin token.
+  // Login as adminEmail/adminPassword first and set {{token}} to the admin access token.
+  url: {{baseUrl}}{{apiBase}}/orders/{{orderId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("data.id matches requested orderId", function() {
+    expect(res.body.data.id).to.equal(bru.getEnvVar("orderId"));
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

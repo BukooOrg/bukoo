@@ -11,6 +11,7 @@ class PublisherEntity:
     _website: str | None
     _created_at: datetime
     _updated_at: datetime
+    _deleted_at: datetime | None = None
 
     # getters
     @property
@@ -33,9 +34,16 @@ class PublisherEntity:
     def updated_at(self) -> datetime:
         return self._updated_at
 
+    @property
+    def deleted_at(self) -> datetime | None:
+        return self._deleted_at
+
     # methods
     def update(self, name: str, website: str | None) -> None:
-        """Update publisher name and website together."""
         self._name = name
         self._website = website
+        self._updated_at = datetime.now(UTC)
+
+    def soft_delete(self) -> None:
+        self._deleted_at = datetime.now(UTC)
         self._updated_at = datetime.now(UTC)

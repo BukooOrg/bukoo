@@ -1,0 +1,39 @@
+meta {
+  name: order not payable
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/orders/{{orderId}}/payment
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // Prerequisite: {{orderId}} must be an already PAID or CANCELLED order.
+  {
+    "payment_method": "online_banking",
+    "outcome": "success",
+    "bank_name": "Maybank",
+    "account_number": "1234567890"
+  }
+}
+
+tests {
+  test("status 400", function() {
+    expect(res.status).to.equal(400);
+  });
+
+  test("error code is ORDER_NOT_PAYABLE", function() {
+    expect(res.body.error.code).to.equal("ORDER_NOT_PAYABLE");
+  });
+}

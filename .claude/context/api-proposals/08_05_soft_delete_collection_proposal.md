@@ -141,14 +141,13 @@ _(None — `COLLECTION_NOT_FOUND` already exists)_
 
 **Happy Path:**
 
-- [ ] `SoftDeleteCollectionUseCase.execute(valid_command)` returns `SoftDeleteCollectionResult` with `message = "Collection deleted successfully."`
-- [ ] `collection.soft_delete()` is called (entity's `deleted_at` is set)
-- [ ] `collection_repo.save()` is called once
-- [ ] `db_session.commit()` is called once
-
 **Error Cases:**
 
-- [ ] Raises `CollectionNotFoundError` when `find_by_id` returns `None`
+- [x] # Raises `CollectionNotFoundError` when `find_by_id` returns `None`
+- [x] `SoftDeleteCollectionUseCase.execute(valid_command)` returns `SoftDeleteCollectionResult` with `message = "Collection deleted successfully."`
+- [x] `collection.soft_delete()` is called (entity's `deleted_at` is set)
+- [x] `collection_repo.save()` is called once
+- [x] `db_session.commit()` is called once
 
 ---
 

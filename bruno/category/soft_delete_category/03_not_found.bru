@@ -1,0 +1,33 @@
+meta {
+  name: not found
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{baseUrl}}{{apiBase}}/categories/00000000-0000-0000-0000-000000000000
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is CATEGORY_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("CATEGORY_NOT_FOUND");
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

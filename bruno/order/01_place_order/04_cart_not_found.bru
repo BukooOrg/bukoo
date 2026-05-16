@@ -1,0 +1,41 @@
+meta {
+  name: cart not found
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/orders
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // Prerequisite: the authenticated user must have no active cart.
+  // Use a freshly registered (and verified) user whose cart has never been created.
+  {
+    "cart_item_ids": ["00000000-0000-0000-0000-000000000001"]
+  }
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is CART_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("CART_NOT_FOUND");
+  });
+}

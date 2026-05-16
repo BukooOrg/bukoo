@@ -1,0 +1,63 @@
+meta {
+  name: success replace authors
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/books/{{bookId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // replace entire author list with a single author
+  // {
+  //   "authors": [
+  //     { "author_id": "{{authorId}}", "display_order": 1 }
+  //   ]
+  // }
+  // {
+  //   "authors": [
+  //     { "author_id": "019e14bd-75b4-788b-8cba-51b39829b55e", "display_order": 1 }
+  //   ]
+  // }
+  {
+    "authors": [
+      { "author_id": "{{authorId}}", "display_order": 1 },
+      { "author_id": "{{authorId2}}", "display_order": 2 }
+    ]
+  }
+  
+  
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.authors has one entry", function() {
+    expect(res.body.data.authors).to.have.lengthOf(1);
+  });
+  
+  test("data.authors[0].display_order is 1", function() {
+    expect(res.body.data.authors[0].display_order).to.equal(1);
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

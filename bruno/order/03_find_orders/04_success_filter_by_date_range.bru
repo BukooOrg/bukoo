@@ -1,0 +1,37 @@
+meta {
+  name: success filter by date range
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/orders?date_from=2026-05-14
+  body: none
+  auth: bearer
+}
+
+params:query {
+  date_from: 2026-05-14
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.items is an array", function() {
+    expect(res.body.data.items).to.be.an("array");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

@@ -1,0 +1,29 @@
+meta {
+  name: forbidden non admin
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/books/{{bookId}}/cover
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{userToken}}
+}
+
+tests {
+  test("status 403", function() {
+    expect(res.status).to.equal(403);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is ADMIN_ACCESS_REQUIRED", function() {
+    expect(res.body.error.code).to.equal("ADMIN_ACCESS_REQUIRED");
+  });
+}

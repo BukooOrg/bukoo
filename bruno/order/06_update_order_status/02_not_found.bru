@@ -1,0 +1,35 @@
+meta {
+  name: order not found
+  type: http
+  seq: 2
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/orders/00000000-0000-7000-0000-000000000000/status
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "status": "shipped"
+  }
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+
+  test("error code is ORDER_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("ORDER_NOT_FOUND");
+  });
+}
