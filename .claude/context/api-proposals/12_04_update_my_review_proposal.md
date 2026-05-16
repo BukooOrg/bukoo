@@ -103,9 +103,9 @@ At least one of `rating` or `comment` must be explicitly present in the body (va
 
 1. **Auth guard** — The `CurrentUser` dependency in `deps.py` decodes the Bearer token via `JWTService`, checks the blocklist in `RedisCacheService`, and resolves the active `UserEntity`. Returns HTTP 401 if the token is invalid, expired, or revoked.
 
-2. **Input validation** — FastAPI/Pydantic validates `UpdateReviewRequest`. A `model_validator(mode="after")` inspects `model_fields_set`; if neither `"rating"` nor `"comment"` is present in `model_fields_set`, it raises `ValueError` → HTTP 400 `VALIDATION_ERROR`. Field-level constraints (rating 1–5, comment max 2000 chars) are enforced by Pydantic field validators → HTTP 422 on failure.
+2. **Input validation** — FastAPI/Pydantic validates `UpdateMyReviewRequest`. A `model_validator(mode="after")` inspects `model_fields_set`; if neither `"rating"` nor `"comment"` is present in `model_fields_set`, it raises `ValueError` → HTTP 400 `VALIDATION_ERROR`. Field-level constraints (rating 1–5, comment max 2000 chars) are enforced by Pydantic field validators → HTTP 422 on failure.
 
-3. **Fetch review** — `UpdateReviewUseCase.execute(cmd)` calls `await self._review_repo.find_by_id(cmd.review_id)`. If `None`, raise `ReviewNotFoundError(cmd.review_id)` → HTTP 404 `REVIEW_NOT_FOUND`.
+3. **Fetch review** — `UpdateMyReviewUseCase.execute(cmd)` calls `await self._review_repo.find_by_id(cmd.review_id)`. If `None`, raise `ReviewNotFoundError(cmd.review_id)` → HTTP 404 `REVIEW_NOT_FOUND`.
 
 4. **Ownership check** — If `review.user_id != cmd.user_id`, raise `ReviewNotOwnedError(cmd.review_id)` → HTTP 403 `REVIEW_NOT_OWNED`.
 
@@ -124,7 +124,7 @@ At least one of `rating` or `comment` must be explicitly present in the body (va
 
 9. **Commit** — `await self._db_session.commit()`.
 
-10. **Return** — Build and return `UpdateReviewResult` with all fields from the updated entity.
+10. **Return** — Build and return `UpdateMyReviewResult` with all fields from the updated entity.
 
 ---
 
@@ -145,10 +145,10 @@ At least one of `rating` or `comment` must be explicitly present in the body (va
 
 ### New DTOs
 
-| DTO Class             | Type            | Fields                                                                                                                                                                 |
-| --------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `UpdateReviewCommand` | Command (input) | `user_id: str`, `review_id: str`, `rating: int \| None`, `comment: str \| None`, `fields_to_update: frozenset[str]`                                                    |
-| `UpdateReviewResult`  | Result (output) | `id: str`, `book_id: str`, `user_id: str \| None`, `order_item_id: str`, `rating: int \| None`, `comment: str \| None`, `created_at: datetime`, `updated_at: datetime` |
+| DTO Class               | Type            | Fields                                                                                                                                                                 |
+| ----------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `UpdateMyReviewCommand` | Command (input) | `user_id: str`, `review_id: str`, `rating: int \| None`, `comment: str \| None`, `fields_to_update: frozenset[str]`                                                    |
+| `UpdateMyReviewResult`  | Result (output) | `id: str`, `book_id: str`, `user_id: str \| None`, `order_item_id: str`, `rating: int \| None`, `comment: str \| None`, `created_at: datetime`, `updated_at: datetime` |
 
 ### New Domain Exceptions
 
@@ -170,7 +170,7 @@ At least one of `rating` or `comment` must be explicitly present in the body (va
 
 ### Bruno Tests
 
-**Folder:** `bruno/12_review/04_update_review/`
+**Folder:** `bruno/12_review/04_update_my_review/`
 
 Each test case is a separate `.bru` file.
 
@@ -192,11 +192,11 @@ Each test case is a separate `.bru` file.
 
 ### Pytest Unit Tests
 
-**File:** `backend/tests/unit/test_update_review.py`
+**File:** `backend/tests/unit/test_update_my_review.py`
 
 **Happy Path:**
 
-- [x] `UpdateReviewUseCase.execute(valid_command)` returns `UpdateReviewResult` with updated `rating`, `comment`, and a `updated_at` after the original
+- [x] `UpdateMyReviewUseCase.execute(valid_command)` returns `UpdateMyReviewResult` with updated `rating`, `comment`, and a `updated_at` after the original
 
 **Error Cases:**
 
@@ -216,16 +216,16 @@ Each test case is a separate `.bru` file.
 - [x] 1. Domain entity (`app/domain/entities/review_entity.py`) — add `update(rating, comment)` method
 - [x] 2. Domain exceptions (`app/domain/exceptions/review.py`) — add `ReviewNotFoundError`, `ReviewNotOwnedError`; export both from `app/domain/exceptions/__init__.py`
 - [x] 3. Repository interface method (`app/domain/repositories/review_repository.py`) — add `find_by_id(review_id: str) -> ReviewEntity | None`
-- [x] 4. DTOs (`app/application/dtos/review_dto.py`) — add `UpdateReviewCommand`, `UpdateReviewResult`
-- [x] 5. Use case (`app/application/use_cases/review/update_review.py`) — new file `UpdateReviewUseCase`
+- [x] 4. DTOs (`app/application/dtos/review_dto.py`) — add `UpdateMyReviewCommand`, `UpdateMyReviewResult`
+- [x] 5. Use case (`app/application/use_cases/review/update_my_review.py`) — new file `UpdateMyReviewUseCase`
 - [x] 6. ORM model — no changes (existing `ReviewModel`)
 - [x] 7. Mapper — no changes (existing `ReviewMapper`)
 - [x] 8. Repository implementation (`app/infrastructure/db/repositories/review_repository_impl.py`) — implement `find_by_id()`
 - [x] 9. Exception mapping (`app/presentation/http/exception_mapper.py`) — map `ReviewNotFoundError` → 404 `REVIEW_NOT_FOUND`; `ReviewNotOwnedError` → 403 `REVIEW_NOT_OWNED`
 - [x] 10. Error codes (`app/application/errors/error_codes.py`) — add `REVIEW_NOT_FOUND`, `REVIEW_NOT_OWNED`
-- [x] 11. Pydantic schemas (`app/presentation/schemas/review_schema.py`) — add `UpdateReviewRequest`, `UpdateReviewResponse`
+- [x] 11. Pydantic schemas (`app/presentation/schemas/review_schema.py`) — add `UpdateMyReviewRequest`, `UpdateMyReviewResponse`
 - [x] 12. Route handler — add `PATCH /reviews/{review_id}` to the existing reviews router
 - [x] 13. Wire in `deps.py` — no new wiring needed (review repo already registered)
 - [x] 14. Alembic migration — not needed (no schema changes)
-- [x] 15. Bruno test files (`bruno/12_review/04_update_review/` — `folder.bru` + 5 test files)
-- [x] 16. Pytest unit tests (`backend/tests/unit/test_update_review.py`)
+- [x] 15. Bruno test files (`bruno/12_review/04_update_my_review/` — `folder.bru` + 5 test files)
+- [x] 16. Pytest unit tests (`backend/tests/unit/test_update_my_review.py`)

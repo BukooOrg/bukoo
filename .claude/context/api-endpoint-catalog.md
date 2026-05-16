@@ -226,8 +226,8 @@ use case to build). Existing auth endpoints (`POST /auth/register`,
 | 12.1 | `/books/{book_id}/reviews`        | GET    | 🌐     | Paginated reviews for a book (only visible/non-hidden)                         |
 | 12.2 | `/books/{book_id}/reviews`        | POST   | 👤     | Submit review; only allowed if user has a DELIVERED order containing this book |
 | 12.3 | `/users/me/reviews`               | GET    | 👤     | List own reviews                                                               |
-| 12.4 | `/reviews/{review_id}`            | PATCH  | 👤     | Update own review (rating, text)                                               |
-| 12.5 | `/reviews/{review_id}`            | DELETE | 👤     | Delete own review                                                              |
+| 12.4 | `/users/me/reviews/{review_id}`   | PATCH  | 👤     | Update own review (rating, text)                                               |
+| 12.5 | /users/me/reviews/{review_id}`    | DELETE | 👤     | Delete own review                                                              |
 | 12.6 | `/reviews/{review_id}/visibility` | PATCH  | 🔑     | Hide or restore a review (moderation)                                          |
 | 12.7 | `/reviews/{review_id}`            | DELETE | 🔑     | Admin hard-remove a review                                                     |
 

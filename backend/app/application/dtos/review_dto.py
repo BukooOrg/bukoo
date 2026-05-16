@@ -15,7 +15,7 @@ class CreateReviewCommand:
 
 
 @dataclass(frozen=True)
-class UpdateReviewCommand:
+class UpdateMyReviewCommand:
     user_id: str
     review_id: str
     rating: int | None
@@ -24,7 +24,7 @@ class UpdateReviewCommand:
 
 
 @dataclass(frozen=True)
-class SoftDeleteReviewCommand:
+class SoftDeleteMyReviewCommand:
     user_id: str
     review_id: str
 
@@ -43,7 +43,7 @@ class CreateReviewResult:
 
 
 @dataclass(frozen=True)
-class UpdateReviewResult:
+class UpdateMyReviewResult:
     id: str
     book_id: str
     user_id: str | None

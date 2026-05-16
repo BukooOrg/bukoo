@@ -5,8 +5,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from app.application.dtos.review_dto import SoftDeleteReviewCommand
-from app.application.use_cases.review.soft_delete_review import SoftDeleteReviewUseCase
+from app.application.dtos.review_dto import SoftDeleteMyReviewCommand
+from app.application.use_cases.review.soft_delete_my_review import (
+    SoftDeleteMyReviewUseCase,
+)
 from app.domain.entities.review_entity import ReviewEntity
 from app.domain.exceptions.review import ReviewNotFoundError, ReviewNotOwnedError
 from app.domain.repositories import IReviewRepository
@@ -51,22 +53,22 @@ class FakeReviewRepository(IReviewRepository):
 
 def _make_use_case(
     review: ReviewEntity | None = None,
-) -> tuple[SoftDeleteReviewUseCase, AsyncMock, FakeReviewRepository]:
+) -> tuple[SoftDeleteMyReviewUseCase, AsyncMock, FakeReviewRepository]:
     db_session = AsyncMock()
     review_repo = FakeReviewRepository(review=review)
-    use_case = SoftDeleteReviewUseCase(db_session=db_session, review_repo=review_repo)
+    use_case = SoftDeleteMyReviewUseCase(db_session=db_session, review_repo=review_repo)
     return use_case, db_session, review_repo
 
 
 def _cmd(
     review_id: str = "review-001",
     user_id: str = "user-001",
-) -> SoftDeleteReviewCommand:
-    return SoftDeleteReviewCommand(user_id=user_id, review_id=review_id)
+) -> SoftDeleteMyReviewCommand:
+    return SoftDeleteMyReviewCommand(user_id=user_id, review_id=review_id)
 
 
 @pytest.mark.unit
-class TestSoftDeleteReviewUseCase:
+class TestSoftDeleteMyReviewUseCase:
     async def test_soft_delete_sets_deleted_at(self) -> None:
         review = _make_review()
         use_case, _, review_repo = _make_use_case(review=review)

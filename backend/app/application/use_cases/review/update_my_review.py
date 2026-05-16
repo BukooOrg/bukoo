@@ -4,14 +4,14 @@ from typing import override
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.application.dtos.review_dto import UpdateReviewCommand, UpdateReviewResult
+from app.application.dtos.review_dto import UpdateMyReviewCommand, UpdateMyReviewResult
 from app.domain.exceptions.review import ReviewNotFoundError, ReviewNotOwnedError
 from app.domain.repositories import IReviewRepository
 
 from ..base import BaseUseCase
 
 
-class UpdateReviewUseCase(BaseUseCase):
+class UpdateMyReviewUseCase(BaseUseCase):
     def __init__(
         self,
         db_session: AsyncSession,
@@ -21,7 +21,7 @@ class UpdateReviewUseCase(BaseUseCase):
         self._review_repo = review_repo
 
     @override
-    async def execute(self, cmd: UpdateReviewCommand) -> UpdateReviewResult:
+    async def execute(self, cmd: UpdateMyReviewCommand) -> UpdateMyReviewResult:
         review = await self._review_repo.find_by_id(cmd.review_id)
         if review is None:
             raise ReviewNotFoundError(cmd.review_id)
@@ -39,7 +39,7 @@ class UpdateReviewUseCase(BaseUseCase):
         await self._review_repo.save(review)
         await self._db_session.commit()
 
-        return UpdateReviewResult(
+        return UpdateMyReviewResult(
             id=review.id,
             book_id=review.book_id,
             user_id=review.user_id,

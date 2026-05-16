@@ -5,7 +5,7 @@ meta {
 }
 
 patch {
-  url: {{baseUrl}}{{apiBase}}/reviews/{{reviewId}}
+  url: {{baseUrl}}{{apiBase}}/users/me/reviews/{{reviewId}}
   body: json
   auth: bearer
 }
@@ -22,10 +22,7 @@ body:json {
   // Prerequisite: {{reviewId}} must be set from a prior Create Review call.
   {
     "rating": null,
-    
-    
     "comment": "Updated my thoughts — still a great read."
-    
   //   "comment": null
   }
 }

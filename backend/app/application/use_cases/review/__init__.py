@@ -1,9 +1,9 @@
 from .create_review import CreateReviewUseCase
-from .soft_delete_review import SoftDeleteReviewUseCase
-from .update_review import UpdateReviewUseCase
+from .soft_delete_my_review import SoftDeleteMyReviewUseCase
+from .update_my_review import UpdateMyReviewUseCase
 
 __all__ = [
     "CreateReviewUseCase",
-    "UpdateReviewUseCase",
-    "SoftDeleteReviewUseCase",
+    "UpdateMyReviewUseCase",
+    "SoftDeleteMyReviewUseCase",
 ]

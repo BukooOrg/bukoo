@@ -4,14 +4,14 @@ from typing import override
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.application.dtos.review_dto import SoftDeleteReviewCommand
+from app.application.dtos.review_dto import SoftDeleteMyReviewCommand
 from app.domain.exceptions.review import ReviewNotFoundError, ReviewNotOwnedError
 from app.domain.repositories import IReviewRepository
 
 from ..base import BaseUseCase
 
 
-class SoftDeleteReviewUseCase(BaseUseCase):
+class SoftDeleteMyReviewUseCase(BaseUseCase):
     def __init__(
         self,
         db_session: AsyncSession,
@@ -21,7 +21,7 @@ class SoftDeleteReviewUseCase(BaseUseCase):
         self._review_repo = review_repo
 
     @override
-    async def execute(self, cmd: SoftDeleteReviewCommand) -> None:
+    async def execute(self, cmd: SoftDeleteMyReviewCommand) -> None:
         review = await self._review_repo.find_by_id(cmd.review_id)
         if review is None:
             raise ReviewNotFoundError(cmd.review_id)

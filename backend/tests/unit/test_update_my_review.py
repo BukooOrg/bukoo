@@ -5,8 +5,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from app.application.dtos.review_dto import UpdateReviewCommand, UpdateReviewResult
-from app.application.use_cases.review.update_review import UpdateReviewUseCase
+from app.application.dtos.review_dto import UpdateMyReviewCommand, UpdateMyReviewResult
+from app.application.use_cases.review.update_my_review import UpdateMyReviewUseCase
 from app.domain.entities.review_entity import ReviewEntity
 from app.domain.exceptions.review import ReviewNotFoundError, ReviewNotOwnedError
 from app.domain.repositories import IReviewRepository
@@ -52,10 +52,10 @@ class FakeReviewRepository(IReviewRepository):
 
 def _make_use_case(
     review: ReviewEntity | None = None,
-) -> tuple[UpdateReviewUseCase, AsyncMock, FakeReviewRepository]:
+) -> tuple[UpdateMyReviewUseCase, AsyncMock, FakeReviewRepository]:
     db_session = AsyncMock()
     review_repo = FakeReviewRepository(review=review)
-    use_case = UpdateReviewUseCase(db_session=db_session, review_repo=review_repo)
+    use_case = UpdateMyReviewUseCase(db_session=db_session, review_repo=review_repo)
     return use_case, db_session, review_repo
 
 
@@ -65,8 +65,8 @@ def _cmd(
     rating: int | None = None,
     comment: str | None = None,
     fields_to_update: frozenset[str] = frozenset({"rating"}),
-) -> UpdateReviewCommand:
-    return UpdateReviewCommand(
+) -> UpdateMyReviewCommand:
+    return UpdateMyReviewCommand(
         user_id=user_id,
         review_id=review_id,
         rating=rating,
@@ -76,7 +76,7 @@ def _cmd(
 
 
 @pytest.mark.unit
-class TestUpdateReviewUseCase:
+class TestUpdateMyReviewUseCase:
     async def test_updates_both_rating_and_comment(self) -> None:
         review = _make_review(rating=5, comment="Old comment")
         use_case, db_session, review_repo = _make_use_case(review=review)
@@ -88,7 +88,7 @@ class TestUpdateReviewUseCase:
 
         result = await use_case.execute(cmd)
 
-        assert isinstance(result, UpdateReviewResult)
+        assert isinstance(result, UpdateMyReviewResult)
         assert result.rating == 4
         assert result.comment == "Updated comment"
         assert review_repo.saved is not None

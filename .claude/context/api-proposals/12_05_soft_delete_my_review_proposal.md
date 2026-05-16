@@ -2,23 +2,23 @@
 
 ## Overview
 
-| Field        | Value                 |
-| ------------ | --------------------- |
-| API Set      | 12. Review            |
-| Use Case     | 5. Soft Delete Review |
-| File Index   | 12_05                 |
-| Access Level | 👤 Customer           |
-| Status       | Implemented           |
+| Field        | Value                    |
+| ------------ | ------------------------ |
+| API Set      | 12. Review               |
+| Use Case     | 5. Soft Delete My Review |
+| File Index   | 12_05                    |
+| Access Level | 👤 Customer              |
+| Status       | Implemented              |
 
 ---
 
 ## Endpoint
 
-| Field  | Value                             |
-| ------ | --------------------------------- |
-| Method | DELETE                            |
-| URL    | `/api/app/v1/reviews/{review_id}` |
-| Auth   | Bearer token (USER role)          |
+| Field  | Value                                      |
+| ------ | ------------------------------------------ |
+| Method | DELETE                                     |
+| URL    | `/api/app/v1/users/me/reviews/{review_id}` |
+| Auth   | Bearer token (USER role)                   |
 
 ---
 
@@ -120,7 +120,7 @@ _None — `REVIEW_NOT_FOUND` and `REVIEW_NOT_OWNED` already exist in `app/applic
 
 ### Bruno Tests
 
-**Folder:** `bruno/12_review/05_soft_delete_review/`
+**Folder:** `bruno/12_review/05_soft_delete_my_review/`
 
 Each test case is a separate `.bru` file.
 
@@ -136,11 +136,11 @@ Each test case is a separate `.bru` file.
 
 ### Pytest Unit Tests
 
-**File:** `backend/tests/unit/test_soft_delete_review.py`
+**File:** `backend/tests/unit/test_soft_delete_my_review.py`
 
 **Happy Path:**
 
-- [x] `SoftDeleteReviewUseCase.execute(valid_command)` returns `DeleteReviewResult` and calls `review_repo.save()` with a review whose `deleted_at` is not `None`
+- [x] `SoftDeleteMyReviewUseCase.execute(valid_command)` returns `DeleteReviewResult` and calls `review_repo.save()` with a review whose `deleted_at` is not `None`
 
 **Error Cases:**
 
@@ -159,7 +159,7 @@ Each test case is a separate `.bru` file.
 - [x] 2. Domain exceptions — `ReviewNotFoundError`, `ReviewNotOwnedError` already exist — no changes needed
 - [x] 3. Repository interface — `find_by_id` and `save` already exist on `IReviewRepository` — no changes needed
 - [x] 4. DTOs — add `DeleteReviewCommand` and `DeleteReviewResult` to `app/application/dtos/review_dto.py`
-- [x] 5. Use case — `app/application/use_cases/review/soft_delete_review.py`
+- [x] 5. Use case — `app/application/use_cases/review/soft_delete_my_review.py`
 - [x] 6. ORM model — `ReviewModel` exists; no new table
 - [x] 7. Mapper — `ReviewMapper` exists; no changes needed
 - [x] 8. Repository implementation — no new methods needed on `ReviewRepositoryImpl`
@@ -169,5 +169,5 @@ Each test case is a separate `.bru` file.
 - [x] 12. Route handler — add `DELETE /{review_id}` to `app/presentation/api/app_api/v1/review_routes.py`
 - [x] 13. Wire in `deps.py` — `ReviewRepo` and `CustomerUser` already wired — no changes needed
 - [x] 14. Alembic migration — not needed (no schema change)
-- [x] 15. Bruno test files — `bruno/review/05_soft_delete_review/` with `folder.bru` + `01_success.bru` + `02_not_owned.bru`
-- [x] 16. Pytest unit tests — `backend/tests/unit/test_soft_delete_review.py`
+- [x] 15. Bruno test files — `bruno/review/05_soft_delete_my_review/` with `folder.bru` + `01_success.bru` + `02_not_owned.bru`
+- [x] 16. Pytest unit tests — `backend/tests/unit/test_soft_delete_my_review.py`

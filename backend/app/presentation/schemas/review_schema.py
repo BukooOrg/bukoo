@@ -22,7 +22,7 @@ class CreateReviewRequest(BaseReviewRequest):
     order_item_id: str
 
 
-class UpdateReviewRequest(BaseReviewRequest):
+class UpdateMyReviewRequest(BaseReviewRequest):
     pass
 
 
@@ -38,7 +38,7 @@ class CreateReviewResponse(BaseModel):
     updated_at: datetime
 
 
-class UpdateReviewResponse(BaseModel):
+class UpdateMyReviewResponse(BaseModel):
     id: str
     book_id: str
     user_id: str | None
