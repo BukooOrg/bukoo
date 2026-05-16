@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/data-display/avatar';
 import { useApiMutation } from '@/hooks/useApiMutation';
-import { usersApi } from '@/lib/apiClient';
+import { userApi } from '@/lib/apiClient';
 import { cn } from '@/lib/utils';
 
 export function AvatarUpload({ currentAvatarUrl, fullName, onAvatarChange }) {
@@ -12,7 +12,7 @@ export function AvatarUpload({ currentAvatarUrl, fullName, onAvatarChange }) {
   const [preview, setPreview] = useState(currentAvatarUrl);
 
   const { mutate: uploadAvatar, loading: uploading } = useApiMutation(
-    (variables) => usersApi.updateAvatar(variables),
+    (variables) => userApi.updateAvatar(variables),
     {
       onSuccess: (data) => {
         setPreview(data.data.avatarUrl);
@@ -24,7 +24,7 @@ export function AvatarUpload({ currentAvatarUrl, fullName, onAvatarChange }) {
   );
 
   const { mutate: removeAvatar, loading: removing } = useApiMutation(
-    () => usersApi.removeAvatar(),
+    () => userApi.removeAvatar(),
     {
       onSuccess: (data) => {
         setPreview(null);

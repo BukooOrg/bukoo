@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 import { PasswordStrengthMeter } from '@/components/auth/password-strength-meter';
 import { useApiMutation } from '@/hooks/useApiMutation';
-import { usersApi } from '@/lib/apiClient';
+import { userApi } from '@/lib/apiClient';
 
 export default function PasswordPage() {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -16,7 +16,7 @@ export default function PasswordPage() {
   const [error, setError] = useState('');
 
   const { mutate: changePassword, loading } = useApiMutation(
-    (variables) => usersApi.changePassword(variables),
+    (variables) => userApi.changePassword(variables),
     {
       onSuccess: () => {
         toast.success('Password changed successfully!');

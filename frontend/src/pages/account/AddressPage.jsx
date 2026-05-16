@@ -4,10 +4,10 @@ import { toast } from 'sonner';
 
 import { useApiMutation } from '@/hooks/useApiMutation';
 import { useApiQuery } from '@/hooks/useApiQuery';
-import { usersApi } from '@/lib/apiClient';
+import { userApi } from '@/lib/apiClient';
 
 export default function AddressPage() {
-  const { data: address, loading: addressLoading } = useApiQuery(() => usersApi.getMyAddress(), {
+  const { data: address, loading: addressLoading } = useApiQuery(() => userApi.getMyAddress(), {
     select: (res) => res.data,
     skipOnError: true,
   });
@@ -40,7 +40,7 @@ export default function AddressPage() {
   }, [address]);
 
   const { mutate: saveAddress, loading: saving } = useApiMutation(
-    (variables) => usersApi.upsertAddress(variables),
+    (variables) => userApi.upsertAddress(variables),
     {
       onSuccess: () => {
         toast.success('Address saved!');
