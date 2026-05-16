@@ -1,6 +1,7 @@
 import { ResponseError } from '@bukoo/api-client';
 import React, { useState, useEffect } from 'react';
 
+import { GenreNav } from '@/components/layout/GenreNav';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { LatestProductCard } from '@/components/products/LatestProductCard';
 import { healthApi, userApi } from '@/lib/apiClient';
@@ -8,7 +9,7 @@ import { getCollectionProducts, getCollections } from '@/lib/sfcc';
 
 export default function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
-  const [_collections, setCollections] = useState([]);
+  const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -62,7 +63,9 @@ export default function HomePage() {
   return (
     <PageLayout>
       <div className='pt-36 pb-24 px-sides max-w-[1440px] mx-auto'>
-        <div className='flex items-center justify-between pb-6 mb-10 border-b border-border'>
+        <GenreNav collections={collections} />
+
+        <div className='flex items-center justify-between pb-6 mb-10 border-b border-border mt-6'>
           <p className='text-[10px] font-sans font-black uppercase tracking-[0.3em] text-primary'>
             Featured Selection
           </p>
