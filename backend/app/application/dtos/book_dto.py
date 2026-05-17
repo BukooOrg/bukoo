@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Literal
 
 from app.core.query_params import QueryParams
 from app.domain.repositories.book_repository import BookFilters, BookStatusFilter
@@ -51,14 +50,15 @@ class UpdateBookCommand:
     price: Decimal | None
     stock_quantity: int | None
     language: str | None
-    isbn: str | None | Literal["null"] = None
-    description: str | None | Literal["null"] = None
-    cover_url: None | Literal["null"] = None
-    page_count: int | None | Literal["null"] = None
-    published_date: date | None | Literal["null"] = None
-    publisher_id: str | None | Literal["null"] = None
-    category_id: str | None | Literal["null"] = None
-    authors: list[BookAuthorItem] | None | Literal["null"] = None
+    isbn: str | None = None
+    description: str | None = None
+    cover_url: None = None
+    page_count: int | None = None
+    published_date: date | None = None
+    publisher_id: str | None = None
+    category_id: str | None = None
+    authors: list[BookAuthorItem] | None = None
+    fields_to_update: frozenset[str] = field(default_factory=frozenset)
 
 
 @dataclass(frozen=True)

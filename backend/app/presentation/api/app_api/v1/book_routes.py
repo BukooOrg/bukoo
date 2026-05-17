@@ -238,6 +238,7 @@ async def update_book(
             ]
             if isinstance(body.authors, list)
             else body.authors,
+            fields_to_update=frozenset(body.model_fields_set),
         )
     )
     return build_base_book_response(result, UpdateBookResponse)
