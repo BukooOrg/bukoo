@@ -139,11 +139,6 @@ function App() {
               <Route path='/shop/:collection' element={<ShopPage />} />
               <Route path='/search' element={<ShopPage />} />
               <Route path='/product/:handle' element={<ProductDetailPage />} />
-              <Route path='/cart' element={<CartPage />} />
-              <Route path='/wishlist' element={<WishlistPage />} />
-              <Route path='/checkout' element={<CheckoutPage />} />
-              <Route path='/checkout/payment' element={<CheckoutPaymentPage />} />
-              <Route path='/checkout/confirmation' element={<CheckoutConfirmationPage />} />
 
               {/* 👤 Account pages — with header/footer */}
               <Route element={<ProtectedRoute />}>
@@ -159,6 +154,11 @@ function App() {
                   <Route path='/account/notifications' element={<AccountNotificationsPage />} />
                 </Route>
               </Route>
+              <Route path='/cart' element={<CartPage />} />
+              <Route path='/wishlist' element={<WishlistPage />} />
+              <Route path='/checkout' element={<CheckoutPage />} />
+              <Route path='/checkout/payment' element={<CheckoutPaymentPage />} />
+              <Route path='/checkout/confirmation' element={<CheckoutConfirmationPage />} />
             </Route>
 
             {/* ── ADMIN LAYOUT — sidebar shell ─────────────────────────── */}
