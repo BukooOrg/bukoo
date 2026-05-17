@@ -6,10 +6,12 @@ from fastapi import APIRouter, Depends
 
 from app.application.dtos.review_dto import (
     HideOrRestoreReviewCommand,
+    SoftDeleteReviewCommand,
 )
 from app.application.use_cases.review import (
     FindReviewsByAdminUseCase,
     HideOrRestoreReviewUseCase,
+    SoftDeleteReviewUseCase,
 )
 from app.core.util import build_public_url
 from app.presentation.dependencies.deps import AdminUser, DbSession, ReviewRepo
@@ -100,3 +102,18 @@ async def hide_or_restore_review(
             cover_url=build_public_url(result.book.cover_url),
         ),
     )
+
+
+@router.delete(
+    "/{review_id}",
+    status_code=204,
+    operation_id="softDeleteReview",
+)
+async def soft_delete_review(
+    review_id: str,
+    _admin_user: AdminUser,
+    review_repo: ReviewRepo,
+    db_session: DbSession,
+) -> None:
+    use_case = SoftDeleteReviewUseCase(db_session=db_session, review_repo=review_repo)
+    await use_case.execute(SoftDeleteReviewCommand(review_id=review_id))

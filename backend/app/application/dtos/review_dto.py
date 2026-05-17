@@ -56,6 +56,11 @@ class FindReviewsByAdminCommand:
     filters: ReviewFilters = field(default_factory=ReviewFilters)
 
 
+@dataclass(frozen=True)
+class SoftDeleteReviewCommand:
+    review_id: str
+
+
 # results
 @dataclass(frozen=True)
 class BaseReviewResult:
