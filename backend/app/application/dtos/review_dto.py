@@ -9,6 +9,12 @@ from app.domain.repositories.review_repository import ReviewFilters
 
 # commands
 @dataclass(frozen=True)
+class FindReviewsCommand:
+    book_id: str
+    query_params: QueryParams
+
+
+@dataclass(frozen=True)
 class CreateReviewCommand:
     user_id: str
     book_id: str
@@ -79,6 +85,11 @@ class CreateReviewResult(BaseReviewResult):
 @dataclass(frozen=True)
 class UpdateMyReviewResult(BaseReviewResult):
     pass
+
+
+@dataclass(frozen=True)
+class PublicReviewItem(BaseReviewResult):
+    book: BaseReviewBookItem
 
 
 @dataclass(frozen=True)

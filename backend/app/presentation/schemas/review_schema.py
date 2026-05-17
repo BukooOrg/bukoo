@@ -5,7 +5,10 @@ from typing import Self
 
 from pydantic import BaseModel, Field, model_validator
 
-from app.application.dtos.review_dto import FindReviewsByAdminCommand
+from app.application.dtos.review_dto import (
+    FindReviewsByAdminCommand,
+    FindReviewsCommand,
+)
 from app.core.query_params import PageParams, QueryParams, parse_sort
 from app.domain.repositories.review_repository import ReviewFilters
 from app.presentation.schemas.list_schema import ListQueryRequest
@@ -33,6 +36,18 @@ class UpdateMyReviewRequest(BaseReviewRequest):
 
 class HideOrRestoreReviewRequest(BaseModel):
     is_hidden: bool
+
+
+class ReviewListQueryRequest(ListQueryRequest):
+    def to_command(self, book_id: str) -> FindReviewsCommand:
+        return FindReviewsCommand(
+            book_id=book_id,
+            query_params=QueryParams(
+                page=PageParams(page=self.page, page_size=self.page_size),
+                sorts=parse_sort(self.sort),
+                search=self.search,
+            ),
+        )
 
 
 class AdminReviewListQueryRequest(ListQueryRequest):
@@ -74,6 +89,10 @@ class BaseReviewBookItem(BaseModel):
 class BaseAdminReviewResponse(BaseReviewResponse):
     is_hidden: bool
     hidden_at: datetime | None
+    book: BaseReviewBookItem
+
+
+class PublicReviewItemResponse(BaseReviewResponse):
     book: BaseReviewBookItem
 
 
