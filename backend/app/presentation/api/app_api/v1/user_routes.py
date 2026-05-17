@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Response, UploadFile
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, Response, UploadFile
 
 from app.application.dtos.review_dto import (
     SoftDeleteMyReviewCommand,
@@ -18,6 +20,7 @@ from app.application.dtos.user_dto import (
     UpsertAddressCommand,
 )
 from app.application.use_cases.review import (
+    FindMyReviewsUseCase,
     SoftDeleteMyReviewUseCase,
     UpdateMyReviewUseCase,
 )
@@ -45,7 +48,11 @@ from app.presentation.dependencies.deps import (
     TokenService,
     UserRepo,
 )
+from app.presentation.schemas.list_schema import PaginatedResponse, PaginationMeta
 from app.presentation.schemas.review_schema import (
+    BaseReviewBookItem,
+    MyReviewListQueryRequest,
+    ReviewWithBookItemResponse,
     UpdateMyReviewRequest,
     UpdateMyReviewResponse,
 )
@@ -290,6 +297,46 @@ async def upsert_address(
 
 
 # review
+@router.get(
+    "/me/reviews",
+    response_model=PaginatedResponse[ReviewWithBookItemResponse],
+    operation_id="findMyReviews",
+)
+async def find_my_reviews(
+    query_params: Annotated[
+        MyReviewListQueryRequest, Depends(MyReviewListQueryRequest)
+    ],
+    customer_user: CustomerUser,
+    review_repo: ReviewRepo,
+    db_session: DbSession,
+) -> PaginatedResponse[ReviewWithBookItemResponse]:
+    use_case = FindMyReviewsUseCase(db_session=db_session, review_repo=review_repo)
+    result = await use_case.execute(query_params.to_command(customer_user.id))
+    return PaginatedResponse(
+        items=[
+            ReviewWithBookItemResponse(
+                id=item.id,
+                book_id=item.book_id,
+                user_id=item.user_id,
+                order_item_id=item.order_item_id,
+                rating=item.rating,
+                comment=item.comment,
+                is_hidden=item.is_hidden,
+                hidden_at=item.hidden_at,
+                created_at=item.created_at,
+                updated_at=item.updated_at,
+                book=BaseReviewBookItem(
+                    id=item.book.id,
+                    title=item.book.title,
+                    cover_url=build_public_url(item.book.cover_url),
+                ),
+            )
+            for item in result.items
+        ],
+        pagination=PaginationMeta.from_result(result),
+    )
+
+
 @router.patch(
     "/me/reviews/{review_id}",
     response_model=UpdateMyReviewResponse,

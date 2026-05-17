@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.dtos.review_dto import (
     BaseReviewBookItem,
-    FindReviewsByAdminCommand,
+    FindMyReviewsCommand,
     ReviewWithBookItem,
 )
 from app.core.query_params import PaginatedResult
@@ -16,7 +16,7 @@ from app.domain.repositories.review_repository import ReviewFilters
 from ..base import BaseUseCase
 
 
-class FindReviewsByAdminUseCase(BaseUseCase):
+class FindMyReviewsUseCase(BaseUseCase):
     def __init__(
         self,
         db_session: AsyncSession,
@@ -27,16 +27,11 @@ class FindReviewsByAdminUseCase(BaseUseCase):
 
     @override
     async def execute(
-        self, cmd: FindReviewsByAdminCommand
+        self, cmd: FindMyReviewsCommand
     ) -> PaginatedResult[ReviewWithBookItem]:
-        print(cmd.query_params)
         result = await self._review_repo.find_all(
             query=cmd.query_params,
-            filters=ReviewFilters(
-                book_id=cmd.filters.book_id,
-                user_id=cmd.filters.user_id,
-                is_hidden=cmd.filters.is_hidden,
-            ),
+            filters=ReviewFilters(user_id=cmd.user_id),
         )
 
         items: list[ReviewWithBookItem] = []

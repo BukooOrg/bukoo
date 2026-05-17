@@ -1,0 +1,57 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/users/me/reviews?sort=updated_at
+  body: none
+  auth: bearer
+}
+
+params:query {
+  sort: updated_at
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.items is an array", function() {
+    expect(res.body.data.items).to.be.an("array");
+  });
+  
+  test("each item has is_hidden and hidden_at fields", function() {
+    res.body.data.items.forEach(function(item) {
+      expect(item).to.have.property("is_hidden");
+      expect(item).to.have.property("hidden_at");
+    });
+  });
+  
+  test("each item has a book object", function() {
+    res.body.data.items.forEach(function(item) {
+      expect(item.book).to.have.property("id");
+      expect(item.book).to.have.property("title");
+      expect(item.book).to.have.property("cover_url");
+    });
+  });
+  
+  test("pagination present", function() {
+    expect(res.body.data.pagination).to.have.property("page");
+    expect(res.body.data.pagination.page).to.equal(1);
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

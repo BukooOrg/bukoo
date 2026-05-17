@@ -15,11 +15,11 @@ from app.core.util import build_public_url
 from app.presentation.dependencies.deps import AdminUser, DbSession, ReviewRepo
 from app.presentation.schemas.list_schema import PaginatedResponse, PaginationMeta
 from app.presentation.schemas.review_schema import (
-    AdminReviewItemResponse,
     AdminReviewListQueryRequest,
     BaseReviewBookItem,
     HideOrRestoreReviewRequest,
     HideOrRestoreReviewResponse,
+    ReviewWithBookItemResponse,
 )
 
 router = APIRouter(prefix="/reviews", tags=["review"])
@@ -27,7 +27,7 @@ router = APIRouter(prefix="/reviews", tags=["review"])
 
 @router.get(
     "",
-    response_model=PaginatedResponse[AdminReviewItemResponse],
+    response_model=PaginatedResponse[ReviewWithBookItemResponse],
     operation_id="findReviewsByAdmin",
 )
 async def find_reviews_by_admin(
@@ -37,12 +37,12 @@ async def find_reviews_by_admin(
     _admin_user: AdminUser,
     review_repo: ReviewRepo,
     db_session: DbSession,
-) -> PaginatedResponse[AdminReviewItemResponse]:
+) -> PaginatedResponse[ReviewWithBookItemResponse]:
     use_case = FindReviewsByAdminUseCase(db_session=db_session, review_repo=review_repo)
     result = await use_case.execute(query_params.to_command())
     return PaginatedResponse(
         items=[
-            AdminReviewItemResponse(
+            ReviewWithBookItemResponse(
                 id=item.id,
                 book_id=item.book_id,
                 user_id=item.user_id,

@@ -24,6 +24,12 @@ class CreateReviewCommand:
 
 
 @dataclass(frozen=True)
+class FindMyReviewsCommand:
+    user_id: str
+    query_params: QueryParams
+
+
+@dataclass(frozen=True)
 class UpdateMyReviewCommand:
     user_id: str
     review_id: str
@@ -71,7 +77,7 @@ class BaseReviewBookItem:
 
 
 @dataclass(frozen=True)
-class AdminReviewItem(BaseReviewResult):
+class ReviewWithBookItem(BaseReviewResult):
     is_hidden: bool
     hidden_at: datetime | None
     book: BaseReviewBookItem
@@ -93,5 +99,5 @@ class PublicReviewItem(BaseReviewResult):
 
 
 @dataclass(frozen=True)
-class HideOrRestoreReviewResult(AdminReviewItem):
+class HideOrRestoreReviewResult(ReviewWithBookItem):
     pass
