@@ -8,6 +8,7 @@ import pytest
 
 from app.application.dtos.review_dto import CreateReviewCommand, CreateReviewResult
 from app.application.use_cases.review.create_review import CreateReviewUseCase
+from app.core.query_params import PaginatedResult, QueryParams
 from app.domain.entities.book_entity import BookEntity
 from app.domain.entities.order_item_entity import OrderItemEntity
 from app.domain.entities.review_entity import ReviewEntity
@@ -19,6 +20,7 @@ from app.domain.exceptions.review import (
 from app.domain.repositories import IBookRepository, IOrderRepository, IReviewRepository
 from app.domain.repositories.book_repository import BookStatusFilter
 from app.domain.repositories.order_repository import OrderFilters
+from app.domain.repositories.review_repository import ReviewFilters
 
 
 def _make_book(book_id: str = "book-001") -> BookEntity:
@@ -71,6 +73,7 @@ def _make_review(
         _user_id="user-001",
         _rating=5,
         _comment="Great book!",
+        _hidden_at=None,
         _created_at=now,
         _updated_at=now,
         _deleted_at=None,
@@ -133,6 +136,11 @@ class FakeReviewRepository(IReviewRepository):
         if self._existing and self._existing.order_item_id == order_item_id:
             return self._existing
         return None
+
+    async def find_all(
+        self, query: QueryParams, filters: ReviewFilters
+    ) -> PaginatedResult[ReviewEntity]:
+        raise NotImplementedError
 
     async def save(self, review: ReviewEntity) -> None:
         self.saved = review

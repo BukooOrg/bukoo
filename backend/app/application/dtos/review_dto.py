@@ -29,9 +29,21 @@ class SoftDeleteMyReviewCommand:
     review_id: str
 
 
+@dataclass(frozen=True)
+class HideOrRestoreReviewCommand:
+    review_id: str
+    is_hidden: bool
+
+
+@dataclass(frozen=True)
+class FindReviewsByAdminCommand:
+    query_params: QueryParams
+    filters: ReviewFilters = field(default_factory=ReviewFilters)
+
+
 # results
 @dataclass(frozen=True)
-class CreateReviewResult:
+class BaseReviewResult:
     id: str
     book_id: str
     user_id: str | None
@@ -43,12 +55,18 @@ class CreateReviewResult:
 
 
 @dataclass(frozen=True)
-class UpdateMyReviewResult:
-    id: str
-    book_id: str
-    user_id: str | None
-    order_item_id: str
-    rating: int | None
-    comment: str | None
-    created_at: datetime
-    updated_at: datetime
+
+
+@dataclass(frozen=True)
+class CreateReviewResult(BaseReviewResult):
+    pass
+
+
+@dataclass(frozen=True)
+class UpdateMyReviewResult(BaseReviewResult):
+    pass
+
+
+@dataclass(frozen=True)
+class HideOrRestoreReviewResult(AdminReviewItem):
+    pass

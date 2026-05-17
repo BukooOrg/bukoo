@@ -221,15 +221,16 @@ use case to build). Existing auth endpoints (`POST /auth/register`,
 
 > Customer reviews and ratings; admin moderation.
 
-| #    | Endpoint                          | Method | Access | Notes                                                                          |
-| ---- | --------------------------------- | ------ | ------ | ------------------------------------------------------------------------------ |
-| 12.1 | `/books/{book_id}/reviews`        | GET    | 🌐     | Paginated reviews for a book (only visible/non-hidden)                         |
-| 12.2 | `/books/{book_id}/reviews`        | POST   | 👤     | Submit review; only allowed if user has a DELIVERED order containing this book |
-| 12.3 | `/users/me/reviews`               | GET    | 👤     | List own reviews                                                               |
-| 12.4 | `/users/me/reviews/{review_id}`   | PATCH  | 👤     | Update own review (rating, text)                                               |
-| 12.5 | /users/me/reviews/{review_id}`    | DELETE | 👤     | Delete own review                                                              |
-| 12.6 | `/reviews/{review_id}/visibility` | PATCH  | 🔑     | Hide or restore a review (moderation)                                          |
-| 12.7 | `/reviews/{review_id}`            | DELETE | 🔑     | Admin hard-remove a review                                                     |
+| #    | Endpoint                          | Method | Access | Notes                                                                                                   |
+| ---- | --------------------------------- | ------ | ------ | ------------------------------------------------------------------------------------------------------- |
+| 12.1 | `/books/{book_id}/reviews`        | GET    | 🌐     | Paginated reviews for a book (only visible/non-hidden)                                                  |
+| 12.2 | `/books/{book_id}/reviews`        | POST   | 👤     | Submit review; only allowed if user has a DELIVERED order containing this book                          |
+| 12.3 | `/users/me/reviews`               | GET    | 👤     | List own reviews                                                                                        |
+| 12.4 | `/users/me/reviews/{review_id}`   | PATCH  | 👤     | Update own review (rating, text)                                                                        |
+| 12.5 | `/users/me/reviews/{review_id}`   | DELETE | 👤     | Delete own review                                                                                       |
+| 12.6 | `/reviews`                        | GET    | 🔑     | Paginated list of all reviews; filters: `book_id`, `user_id`, `is_hidden`; includes hidden/soft-deleted |
+| 12.7 | `/reviews/{review_id}/visibility` | PATCH  | 🔑     | Hide or restore a review (moderation)                                                                   |
+| 12.8 | `/reviews/{review_id}`            | DELETE | 🔑     | Admin hard-remove a review                                                                              |
 
 ---
 
@@ -291,8 +292,8 @@ use case to build). Existing auth endpoints (`POST /auth/register`,
 | 9. Cart                         | 5              | Shopping cart                      |
 | 10. Wishlist                    | 4              | Saved-for-later                    |
 | 11. Order                       | 6              | Checkout & fulfillment             |
-| 12. Review                      | 7              | Ratings & moderation               |
+| 12. Review                      | 8              | Ratings & moderation               |
 | 13. Notification                | 5              | In-app inbox                       |
 | 14. Admin – Inventory Dashboard | 2              | Stock metrics                      |
 | 15. Admin – Reports & Analytics | 4              | Async report jobs                  |
-| **Total**                       | **87**         |                                    |
+| **Total**                       | **88**         |                                    |

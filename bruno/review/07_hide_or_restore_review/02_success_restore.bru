@@ -1,11 +1,11 @@
 meta {
-  name: success shipped
+  name: success restore
   type: http
-  seq: 1
+  seq: 2
 }
 
 patch {
-  url: {{baseUrl}}{{apiBase}}/orders/{{orderId}}/status
+  url: {{baseUrl}}{{apiBase}}/reviews/{{reviewId}}/visibility
   body: json
   auth: bearer
 }
@@ -19,31 +19,30 @@ auth:bearer {
 }
 
 body:json {
-  // advance a PAID order to SHIPPED
+  // Prerequisite: {{reviewId}} must be set and previously hidden.
+  // Requires admin token in {{token}}.
   {
-    "status": "delivered"
+    "is_hidden": false
   }
-  
-  
 }
 
 tests {
   test("status 200", function() {
     expect(res.status).to.equal(200);
   });
-  
+
   test("success flag is true", function() {
     expect(res.body.success).to.be.true;
   });
-  
-  test("data.status is shipped", function() {
-    expect(res.body.data.status).to.equal("shipped");
+
+  test("data.is_hidden is false", function() {
+    expect(res.body.data.is_hidden).to.be.false;
   });
-  
-  test("data.updated_at is a valid ISO timestamp", function() {
-    expect(res.body.data.updated_at).to.be.a("string").and.not.empty;
+
+  test("data.hidden_at is null", function() {
+    expect(res.body.data.hidden_at).to.be.null;
   });
-  
+
   test("meta has requestId", function() {
     expect(res.body.meta.requestId).to.be.a("string");
   });

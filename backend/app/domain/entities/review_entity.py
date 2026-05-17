@@ -15,6 +15,7 @@ class ReviewEntity:
     _order_item_id: str
     _rating: int | None
     _comment: str | None
+    _hidden_at: datetime | None
     _created_at: datetime
     _updated_at: datetime
     _deleted_at: datetime | None
@@ -49,6 +50,10 @@ class ReviewEntity:
         return self._comment
 
     @property
+    def hidden_at(self) -> datetime | None:
+        return self._hidden_at
+
+    @property
     def created_at(self) -> datetime:
         return self._created_at
 
@@ -66,10 +71,22 @@ class ReviewEntity:
 
     # derived properties
     @property
+    def is_hidden(self) -> bool:
+        return self._hidden_at is not None
+
+    @property
     def is_deleted(self) -> bool:
         return self._deleted_at is not None
 
     # methods
+    def hide(self) -> None:
+        self._hidden_at = datetime.now(UTC)
+        self._updated_at = datetime.now(UTC)
+
+    def restore(self) -> None:
+        self._hidden_at = None
+        self._updated_at = datetime.now(UTC)
+
     def soft_delete(self) -> None:
         """
         Admin action: hide the review from public view without

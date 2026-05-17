@@ -14,6 +14,7 @@ class ReviewMapper(BaseMapper[ReviewModel, ReviewEntity]):
             _order_item_id=model.order_item_id,
             _rating=model.rating,
             _comment=model.comment,
+            _hidden_at=model.hidden_at,
             _created_at=model.created_at,
             _updated_at=model.updated_at,
             _deleted_at=model.deleted_at,
@@ -29,5 +30,6 @@ class ReviewMapper(BaseMapper[ReviewModel, ReviewEntity]):
         model.user_id = entity.user_id
         model.book_id = entity.book_id
         model.order_item_id = entity.order_item_id
+        model.hidden_at = entity.hidden_at
         model.deleted_at = entity.deleted_at
         return model

@@ -7,9 +7,11 @@ import pytest
 
 from app.application.dtos.review_dto import UpdateMyReviewCommand, UpdateMyReviewResult
 from app.application.use_cases.review.update_my_review import UpdateMyReviewUseCase
+from app.core.query_params import PaginatedResult, QueryParams
 from app.domain.entities.review_entity import ReviewEntity
 from app.domain.exceptions.review import ReviewNotFoundError, ReviewNotOwnedError
 from app.domain.repositories import IReviewRepository
+from app.domain.repositories.review_repository import ReviewFilters
 
 
 def _make_review(
@@ -26,6 +28,7 @@ def _make_review(
         _user_id=user_id,
         _rating=rating,
         _comment=comment,
+        _hidden_at=None,
         _created_at=now,
         _updated_at=now,
         _deleted_at=None,
@@ -43,6 +46,11 @@ class FakeReviewRepository(IReviewRepository):
         return self._store.get(review_id)
 
     async def find_by_order_item_id(self, order_item_id: str) -> ReviewEntity | None:
+        raise NotImplementedError
+
+    async def find_all(
+        self, query: QueryParams, filters: ReviewFilters
+    ) -> PaginatedResult[ReviewEntity]:
         raise NotImplementedError
 
     async def save(self, review: ReviewEntity) -> None:

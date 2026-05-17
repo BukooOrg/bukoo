@@ -5,34 +5,33 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from app.application.dtos.review_dto import SoftDeleteMyReviewCommand
-from app.application.use_cases.review.soft_delete_my_review import (
-    SoftDeleteMyReviewUseCase,
+from app.application.dtos.review_dto import HideOrRestoreReviewCommand
+from app.application.use_cases.review.hide_or_restore_review import (
+    HideOrRestoreReviewUseCase,
 )
 from app.core.query_params import PaginatedResult, QueryParams
 from app.domain.entities.review_entity import ReviewEntity
-from app.domain.exceptions.review import ReviewNotFoundError, ReviewNotOwnedError
+from app.domain.exceptions.review import ReviewNotFoundError
 from app.domain.repositories import IReviewRepository
 from app.domain.repositories.review_repository import ReviewFilters
 
 
 def _make_review(
     review_id: str = "review-001",
-    user_id: str = "user-001",
-    deleted_at: datetime | None = None,
+    hidden_at: datetime | None = None,
 ) -> ReviewEntity:
     now = datetime.now(UTC)
     return ReviewEntity(
         _id=review_id,
         _book_id="book-001",
         _order_item_id="item-001",
-        _user_id=user_id,
+        _user_id="user-001",
         _rating=4,
-        _comment="Good read.",
-        _hidden_at=None,
+        _comment="Great read.",
+        _hidden_at=hidden_at,
         _created_at=now,
         _updated_at=now,
-        _deleted_at=deleted_at,
+        _deleted_at=None,
     )
 
 
@@ -61,30 +60,45 @@ class FakeReviewRepository(IReviewRepository):
 
 def _make_use_case(
     review: ReviewEntity | None = None,
-) -> tuple[SoftDeleteMyReviewUseCase, AsyncMock, FakeReviewRepository]:
+) -> tuple[HideOrRestoreReviewUseCase, AsyncMock, FakeReviewRepository]:
     db_session = AsyncMock()
     review_repo = FakeReviewRepository(review=review)
-    use_case = SoftDeleteMyReviewUseCase(db_session=db_session, review_repo=review_repo)
+    use_case = HideOrRestoreReviewUseCase(
+        db_session=db_session, review_repo=review_repo
+    )
     return use_case, db_session, review_repo
 
 
 def _cmd(
     review_id: str = "review-001",
-    user_id: str = "user-001",
-) -> SoftDeleteMyReviewCommand:
-    return SoftDeleteMyReviewCommand(user_id=user_id, review_id=review_id)
+    is_hidden: bool = True,
+) -> HideOrRestoreReviewCommand:
+    return HideOrRestoreReviewCommand(review_id=review_id, is_hidden=is_hidden)
 
 
 @pytest.mark.unit
-class TestSoftDeleteMyReviewUseCase:
-    async def test_soft_delete_sets_deleted_at(self) -> None:
+class TestHideOrRestoreReviewUseCase:
+    async def test_hide_sets_is_hidden_true_and_hidden_at(self) -> None:
         review = _make_review()
         use_case, _, review_repo = _make_use_case(review=review)
 
-        await use_case.execute(_cmd())
+        result = await use_case.execute(_cmd(is_hidden=True))
 
+        assert result.is_hidden is True
+        assert result.hidden_at is not None
         assert review_repo.saved is not None
-        assert review_repo.saved.deleted_at is not None
+        assert review_repo.saved.is_hidden is True
+
+    async def test_restore_sets_is_hidden_false_and_hidden_at_none(self) -> None:
+        review = _make_review(hidden_at=datetime.now(UTC))
+        use_case, _, review_repo = _make_use_case(review=review)
+
+        result = await use_case.execute(_cmd(is_hidden=False))
+
+        assert result.is_hidden is False
+        assert result.hidden_at is None
+        assert review_repo.saved is not None
+        assert review_repo.saved.is_hidden is False
 
     async def test_commit_called_once(self) -> None:
         review = _make_review()
@@ -100,16 +114,23 @@ class TestSoftDeleteMyReviewUseCase:
         with pytest.raises(ReviewNotFoundError):
             await use_case.execute(_cmd(review_id="nonexistent"))
 
-    async def test_raises_review_not_owned_when_different_user(self) -> None:
-        review = _make_review(user_id="user-001")
-        use_case, _, _ = _make_use_case(review=review)
+    async def test_hide_already_hidden_review_is_idempotent(self) -> None:
+        already_hidden_at = datetime(2026, 1, 1, tzinfo=UTC)
+        review = _make_review(hidden_at=already_hidden_at)
+        use_case, _, review_repo = _make_use_case(review=review)
 
-        with pytest.raises(ReviewNotOwnedError):
-            await use_case.execute(_cmd(user_id="user-999"))
+        result = await use_case.execute(_cmd(is_hidden=True))
 
-    async def test_raises_review_not_found_for_already_deleted_review(self) -> None:
-        # find_by_id filters deleted_at IS NULL, so soft-deleted records return None
-        use_case, _, _ = _make_use_case(review=None)
+        assert result.is_hidden is True
+        assert result.hidden_at is not None
+        # hidden_at updated to a new timestamp
+        assert result.hidden_at != already_hidden_at
 
-        with pytest.raises(ReviewNotFoundError):
-            await use_case.execute(_cmd(review_id="deleted-review"))
+    async def test_restore_already_visible_review_is_idempotent(self) -> None:
+        review = _make_review(hidden_at=None)
+        use_case, _, review_repo = _make_use_case(review=review)
+
+        result = await use_case.execute(_cmd(is_hidden=False))
+
+        assert result.is_hidden is False
+        assert result.hidden_at is None

@@ -60,6 +60,7 @@ class CreateReviewUseCase(BaseUseCase):
             _user_id=cmd.user_id,
             _rating=cmd.rating,
             _comment=cmd.comment,
+            _hidden_at=None,
             _created_at=now,
             _updated_at=now,
             _deleted_at=None,

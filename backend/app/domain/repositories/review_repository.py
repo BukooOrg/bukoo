@@ -11,7 +11,10 @@ class IReviewRepository(ABC):
         pass
 
     @abstractmethod
-    async def find_by_id(self, review_id: str) -> ReviewEntity | None:
+    async def find_by_id(
+        self,
+        review_id: str,
+    ) -> ReviewEntity | None:
         pass
 
     @abstractmethod

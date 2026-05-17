@@ -1,0 +1,52 @@
+meta {
+  name: success hide
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/reviews/{{reviewId}}/visibility
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // Prerequisite: {{reviewId}} must be set from a prior Create Review call.
+  // Requires admin token in {{token}}.
+  {
+    "is_hidden": false
+  }
+  
+  
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.is_hidden is true", function() {
+    expect(res.body.data.is_hidden).to.be.true;
+  });
+  
+  test("data.hidden_at is a non-null ISO string", function() {
+    expect(res.body.data.hidden_at).to.be.a("string").and.not.empty;
+    expect(new Date(res.body.data.hidden_at).toISOString()).to.equal(res.body.data.hidden_at);
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}
