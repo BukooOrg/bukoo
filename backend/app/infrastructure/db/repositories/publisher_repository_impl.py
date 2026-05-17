@@ -33,7 +33,6 @@ class PublisherRepositoryImpl(IPublisherRepository):
             conditions.append(PublisherModel.name.ilike(f"%{query.search}%"))
 
         where_clause = and_(*conditions)
-
         base_stmt = select(PublisherModel)
 
         total_items: int = (

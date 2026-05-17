@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, ClassVar, override
 
-from sqlalchemy import func, select
+from sqlalchemy import ColumnElement, and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute
 
@@ -25,11 +25,19 @@ class AuthorRepositoryImpl(IAuthorRepository):
 
     @override
     async def find_all(self, query: QueryParams) -> PaginatedResult[AuthorEntity]:
-        base_filter = AuthorModel.deleted_at.is_(None)
+        conditions: list[ColumnElement[bool]] = [AuthorModel.deleted_at.is_(None)]
+
+        if query.search:
+            conditions.append(AuthorModel.name.ilike(f"%{query.search}%"))
+
+        where_clauses = and_(*conditions)
+        base_stmt = select(AuthorModel)
 
         total_items: int = (
             await self._session.execute(
-                select(func.count()).select_from(AuthorModel).where(base_filter)
+                select(func.count()).select_from(
+                    base_stmt.where(where_clauses).subquery()
+                )
             )
         ).scalar_one()
 
@@ -46,8 +54,7 @@ class AuthorRepositoryImpl(IAuthorRepository):
         models = (
             (
                 await self._session.execute(
-                    select(AuthorModel)
-                    .where(base_filter)
+                    base_stmt.where(where_clauses)
                     .order_by(*order_clauses)
                     .offset(query.page.offset)
                     .limit(query.page.limit)
