@@ -243,6 +243,7 @@ class TestUpdateBookUseCase:
             price=Decimal("59.99"),
             stock_quantity=None,
             language=None,
+            fields_to_update=frozenset({"title", "price"}),
         )
 
         result = await use_case.execute(cmd)
@@ -287,6 +288,7 @@ class TestUpdateBookUseCase:
             stock_quantity=None,
             language=None,
             authors=[],
+            fields_to_update=frozenset({"authors"}),
         )
 
         result = await use_case.execute(cmd)
@@ -304,7 +306,8 @@ class TestUpdateBookUseCase:
             price=None,
             stock_quantity=None,
             language=None,
-            publisher_id="null",
+            publisher_id=None,
+            fields_to_update=frozenset({"publisher_id"}),
         )
 
         result = await use_case.execute(cmd)
@@ -338,6 +341,7 @@ class TestUpdateBookUseCase:
             stock_quantity=None,
             language=None,
             isbn="9780135957059",
+            fields_to_update=frozenset({"isbn"}),
         )
 
         with pytest.raises(BookAlreadyExistsError):
@@ -357,6 +361,7 @@ class TestUpdateBookUseCase:
             stock_quantity=None,
             language=None,
             authors=[BookAuthorItem(author_id="nonexistent-author", display_order=1)],
+            fields_to_update=frozenset({"authors"}),
         )
 
         with pytest.raises(AuthorNotFoundError):
@@ -376,6 +381,7 @@ class TestUpdateBookUseCase:
             stock_quantity=None,
             language=None,
             publisher_id="nonexistent-pub",
+            fields_to_update=frozenset({"publisher_id"}),
         )
 
         with pytest.raises(PublisherNotFoundError):
@@ -395,6 +401,7 @@ class TestUpdateBookUseCase:
             stock_quantity=None,
             language=None,
             category_id="nonexistent-cat",
+            fields_to_update=frozenset({"category_id"}),
         )
 
         with pytest.raises(CategoryNotFoundError):
@@ -417,6 +424,7 @@ class TestUpdateBookUseCase:
             stock_quantity=None,
             language=None,
             authors=[BookAuthorItem(author_id="author-new", display_order=1)],
+            fields_to_update=frozenset({"authors"}),
         )
 
         result = await use_case.execute(cmd)
@@ -439,6 +447,7 @@ class TestUpdateBookUseCase:
             stock_quantity=None,
             language=None,
             isbn="9780135957059",
+            fields_to_update=frozenset({"isbn"}),
         )
 
         result = await use_case.execute(cmd)

@@ -48,69 +48,66 @@ class UpdateBookUseCase(BaseBookUseCase):
             raise BookNotFoundError(cmd.book_id)
 
         isbn = book.isbn
-        if cmd.isbn is not None:
-            if cmd.isbn == "null":
-                isbn = None
-            else:
+        if "isbn" in cmd.fields_to_update:
+            if cmd.isbn:
                 isbn_book = await self._book_repo.find_by_isbn(cmd.isbn)
-                if isbn_book is not None and isbn_book.id != book.id:
+                if isbn_book and isbn_book.id != book.id:
                     raise BookAlreadyExistsError(cmd.isbn)
-                isbn = cmd.isbn
+            isbn = cmd.isbn
 
-        description = book.description
-        if cmd.description is not None:
-            description = None if cmd.description == "null" else cmd.description
+        description = (
+            cmd.description
+            if "description" in cmd.fields_to_update
+            else book.description
+        )
 
         # * only set the cover_url in db to None, the actual cover is still persisted in object storage
         cover_url = book.cover_url
-        if cmd.cover_url is not None:
-            assert cmd.cover_url == "null"
+        if "cover_url" in cmd.fields_to_update:
+            assert cmd.cover_url is None
             cover_url = None
 
-        page_count = book.page_count
-        if cmd.page_count is not None:
-            page_count = None if cmd.page_count == "null" else cmd.page_count
+        page_count = (
+            cmd.page_count if "page_count" in cmd.fields_to_update else book.page_count
+        )
 
-        published_date = book.published_date
-        if cmd.published_date is not None:
-            published_date = (
-                None if cmd.published_date == "null" else cmd.published_date
-            )
+        published_date = (
+            cmd.published_date
+            if "published_date" in cmd.fields_to_update
+            else book.published_date
+        )
 
         publisher: PublisherEntity | None = book.publisher
-        if cmd.publisher_id is not None:
-            if cmd.publisher_id == "null":
-                publisher = None
-            else:
+        if "publisher_id" in cmd.fields_to_update:
+            if cmd.publisher_id:
                 resolved_publisher = await self._publisher_repo.find_by_id(
                     cmd.publisher_id
                 )
                 if resolved_publisher is None:
                     raise PublisherNotFoundError(cmd.publisher_id)
                 publisher = resolved_publisher
-
-        category: CategoryEntity | None = book.category
-        if cmd.category_id is not None:
-            if cmd.category_id == "null":
-                category = None
             else:
+                publisher = None
+        category: CategoryEntity | None = book.category
+        if "category_id" in cmd.fields_to_update:
+            if cmd.category_id:
                 resolved_category = await self._category_repo.find_by_id(
                     cmd.category_id
                 )
                 if resolved_category is None:
                     raise CategoryNotFoundError(cmd.category_id)
                 category = resolved_category
+            else:
+                category = None
 
         authors: list[BookAuthorEntity] = list(book.authors)
-        if cmd.authors is not None:
-            if cmd.authors == "null":
-                authors = []
-            else:
+        if "authors" in cmd.fields_to_update:
+            if cmd.authors:
                 now = datetime.now(UTC)
                 authors = []
                 for item in cmd.authors:
                     author_entity = await self._author_repo.find_by_id(item.author_id)
-                    if author_entity is None:
+                    if not author_entity:
                         raise AuthorNotFoundError(item.author_id)
                     book_author = BookAuthorEntity(
                         _book_id=book.id,
@@ -121,12 +118,23 @@ class UpdateBookUseCase(BaseBookUseCase):
                     )
                     book_author.set_author(author_entity)
                     authors.append(book_author)
+            else:
+                authors = []
 
         book.update(
-            title=cmd.title or book.title,
-            price=cmd.price or book.price,
-            stock_quantity=cmd.stock_quantity or book.stock_quantity,
-            language=cmd.language or book.language,
+            title=cmd.title
+            if "title" in cmd.fields_to_update and cmd.title is not None
+            else book.title,
+            price=cmd.price
+            if "price" in cmd.fields_to_update and cmd.price is not None
+            else book.price,
+            stock_quantity=cmd.stock_quantity
+            if "stock_quantity" in cmd.fields_to_update
+            and cmd.stock_quantity is not None
+            else book.stock_quantity,
+            language=cmd.language
+            if "language" in cmd.fields_to_update and cmd.language is not None
+            else book.language,
             isbn=isbn,
             description=description,
             cover_url=cover_url,
