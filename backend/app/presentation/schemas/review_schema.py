@@ -35,6 +35,24 @@ class HideOrRestoreReviewRequest(BaseModel):
     is_hidden: bool
 
 
+class AdminReviewListQueryRequest(ListQueryRequest):
+    book_id: str | None = None
+    user_id: str | None = None
+    is_hidden: bool | None = None
+
+    def to_command(self) -> FindReviewsByAdminCommand:
+        return FindReviewsByAdminCommand(
+            query_params=QueryParams(
+                page=PageParams(page=self.page, page_size=self.page_size),
+                sorts=parse_sort(self.sort),
+                search=self.search,
+            ),
+            filters=ReviewFilters(
+                book_id=self.book_id, user_id=self.user_id, is_hidden=self.is_hidden
+            ),
+        )
+
+
 # responses
 class BaseReviewResponse(BaseModel):
     id: str
@@ -47,9 +65,16 @@ class BaseReviewResponse(BaseModel):
     updated_at: datetime
 
 
+class BaseReviewBookItem(BaseModel):
+    id: str
+    title: str
+    cover_url: str | None
+
+
 class BaseAdminReviewResponse(BaseReviewResponse):
     is_hidden: bool
     hidden_at: datetime | None
+    book: BaseReviewBookItem
 
 
 class CreateReviewResponse(BaseReviewResponse):
@@ -61,4 +86,8 @@ class UpdateMyReviewResponse(BaseReviewResponse):
 
 
 class HideOrRestoreReviewResponse(BaseAdminReviewResponse):
+    pass
+
+
+class AdminReviewItemResponse(BaseAdminReviewResponse):
     pass

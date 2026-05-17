@@ -5,6 +5,7 @@ from typing import override
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.dtos.review_dto import (
+    BaseReviewBookItem,
     HideOrRestoreReviewCommand,
     HideOrRestoreReviewResult,
 )
@@ -38,6 +39,7 @@ class HideOrRestoreReviewUseCase(BaseUseCase):
         await self._review_repo.save(review)
         await self._db_session.commit()
 
+        assert review.book is not None
         return HideOrRestoreReviewResult(
             id=review.id,
             book_id=review.book_id,
@@ -49,4 +51,9 @@ class HideOrRestoreReviewUseCase(BaseUseCase):
             hidden_at=review._hidden_at,
             created_at=review.created_at,
             updated_at=review.updated_at,
+            book=BaseReviewBookItem(
+                id=review.book.id,
+                title=review.book.title,
+                cover_url=review.book.cover_url,
+            ),
         )

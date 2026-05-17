@@ -1,7 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
+
+from app.core.query_params import QueryParams
+from app.domain.repositories.review_repository import ReviewFilters
 
 
 # commands
@@ -55,6 +58,17 @@ class BaseReviewResult:
 
 
 @dataclass(frozen=True)
+class BaseReviewBookItem:
+    id: str
+    title: str
+    cover_url: str | None
+
+
+@dataclass(frozen=True)
+class AdminReviewItem(BaseReviewResult):
+    is_hidden: bool
+    hidden_at: datetime | None
+    book: BaseReviewBookItem
 
 
 @dataclass(frozen=True)

@@ -2,6 +2,7 @@ from app.domain.entities import ReviewEntity
 from app.infrastructure.db.models import ReviewModel
 
 from .base_mapper import BaseMapper
+from .book_mapper import BookMapper
 
 
 class ReviewMapper(BaseMapper[ReviewModel, ReviewEntity]):
@@ -18,6 +19,7 @@ class ReviewMapper(BaseMapper[ReviewModel, ReviewEntity]):
             _created_at=model.created_at,
             _updated_at=model.updated_at,
             _deleted_at=model.deleted_at,
+            _book=BookMapper.to_entity(model.book) if model.book is not None else None,
         )
 
     @staticmethod

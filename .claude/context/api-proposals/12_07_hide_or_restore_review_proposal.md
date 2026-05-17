@@ -74,7 +74,12 @@ _(None)_
     "is_hidden": true,
     "hidden_at": "2026-05-16T10:30:00Z",
     "created_at": "2026-01-15T10:00:00Z",
-    "updated_at": "2026-05-16T10:30:00Z"
+    "updated_at": "2026-05-16T10:30:00Z",
+    "book": {
+      "id": "01932abc-0001-7000-0000-000000000002",
+      "title": "The Midnight Library",
+      "cover_url": "https://..."
+    }
   },
   "meta": {
     "requestId": "01932abc-...",

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from decimal import Decimal
 from unittest.mock import AsyncMock
 
 import pytest
@@ -10,10 +11,33 @@ from app.application.use_cases.review.hide_or_restore_review import (
     HideOrRestoreReviewUseCase,
 )
 from app.core.query_params import PaginatedResult, QueryParams
+from app.domain.entities.book_entity import BookEntity
 from app.domain.entities.review_entity import ReviewEntity
 from app.domain.exceptions.review import ReviewNotFoundError
 from app.domain.repositories import IReviewRepository
 from app.domain.repositories.review_repository import ReviewFilters
+
+
+def _make_book() -> BookEntity:
+    now = datetime.now(UTC)
+    return BookEntity(
+        _id="book-001",
+        _title="Test Book",
+        _price=Decimal("9.99"),
+        _stock_quantity=10,
+        _language="en",
+        _publisher_id=None,
+        _category_id=None,
+        _isbn=None,
+        _description=None,
+        _cover_url=None,
+        _page_count=None,
+        _published_date=None,
+        _deactivated_at=None,
+        _created_at=now,
+        _updated_at=now,
+        _deleted_at=None,
+    )
 
 
 def _make_review(
@@ -32,6 +56,7 @@ def _make_review(
         _created_at=now,
         _updated_at=now,
         _deleted_at=None,
+        _book=_make_book(),
     )
 
 
