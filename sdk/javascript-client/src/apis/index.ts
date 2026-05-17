@@ -9,5 +9,6 @@ export * from './CollectionApi';
 export * from './HealthApi';
 export * from './OrderApi';
 export * from './PublisherApi';
+export * from './ReviewApi';
 export * from './UserApi';
 export * from './WishlistApi';
