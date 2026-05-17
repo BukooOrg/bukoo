@@ -1,0 +1,33 @@
+meta {
+  name: not owned
+  type: http
+  seq: 2
+}
+
+delete {
+  url: {{baseUrl}}{{apiBase}}/users/me/reviews/{{reviewId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 403", function() {
+    expect(res.status).to.equal(403);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is REVIEW_NOT_OWNED", function() {
+    expect(res.body.error.code).to.equal("REVIEW_NOT_OWNED");
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

@@ -26,15 +26,10 @@ Validation notes:
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import (
-    ForeignKey,
-    Index,
-    Integer,
-    String,
-    Text,
-)
+from sqlalchemy import DateTime, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import DefaultFieldMixin, SoftDeleteMixin
@@ -78,6 +73,9 @@ class ReviewModel(DefaultFieldMixin, SoftDeleteMixin):
         ForeignKey("order_items.id", ondelete="CASCADE"),
         nullable=False,
         init=False,
+    )
+    hidden_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True, default=None, init=False
     )
 
     user: Mapped[UserModel | None] = relationship(

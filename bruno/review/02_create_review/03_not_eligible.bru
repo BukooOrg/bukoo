@@ -1,0 +1,41 @@
+meta {
+  name: not eligible
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/books/{{bookId}}/reviews
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // order_item_id does not belong to a DELIVERED order for this user and book.
+  {
+    "order_item_id": "00000000-0000-0000-0000-000000000099",
+    "rating": 4
+  }
+}
+
+tests {
+  test("status 403", function() {
+    expect(res.status).to.equal(403);
+  });
+
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is REVIEW_NOT_ELIGIBLE", function() {
+    expect(res.body.error.code).to.equal("REVIEW_NOT_ELIGIBLE");
+  });
+}

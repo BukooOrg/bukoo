@@ -1,0 +1,65 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/books/{{bookId}}/reviews
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // Prerequisite: user must have a DELIVERED order containing the book ({{bookId}}).
+  // Set {{orderItemId}} to a valid order_item id from a DELIVERED order.
+  {
+    "order_item_id": "{{orderItemId}}",
+    "rating": 5,
+    "comment": "An excellent read, highly recommended. brubruh"
+    
+    
+  }
+  
+  
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("reviewId", res.body.data.id);
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.id is a non-empty string", function() {
+    expect(res.body.data.id).to.be.a("string").and.not.empty;
+  });
+  
+  test("data.rating equals submitted value", function() {
+    expect(res.body.data.rating).to.equal(5);
+  });
+  
+  test("data.comment equals submitted value", function() {
+    expect(res.body.data.comment).to.equal("An excellent read, highly recommended.");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

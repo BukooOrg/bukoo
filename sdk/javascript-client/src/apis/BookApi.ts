@@ -16,13 +16,16 @@
 import * as runtime from '../runtime';
 import type {
   CreateBookRequest,
+  CreateReviewRequest,
   ErrorResponse,
   PriceMax,
   PriceMin,
   ResponseWrapperActivateBookResponse,
   ResponseWrapperCreateBookResponse,
+  ResponseWrapperCreateReviewResponse,
   ResponseWrapperDeactivateBookResponse,
   ResponseWrapperPaginatedResponseBaseBookResponse,
+  ResponseWrapperPaginatedResponsePublicReviewItemResponse,
   ResponseWrapperSoftDeleteBookResponse,
   ResponseWrapperUpdateBookResponse,
   ResponseWrapperUpdateBookStockQuantityResponse,
@@ -34,6 +37,8 @@ import type {
 import {
     CreateBookRequestFromJSON,
     CreateBookRequestToJSON,
+    CreateReviewRequestFromJSON,
+    CreateReviewRequestToJSON,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
     PriceMaxFromJSON,
@@ -44,10 +49,14 @@ import {
     ResponseWrapperActivateBookResponseToJSON,
     ResponseWrapperCreateBookResponseFromJSON,
     ResponseWrapperCreateBookResponseToJSON,
+    ResponseWrapperCreateReviewResponseFromJSON,
+    ResponseWrapperCreateReviewResponseToJSON,
     ResponseWrapperDeactivateBookResponseFromJSON,
     ResponseWrapperDeactivateBookResponseToJSON,
     ResponseWrapperPaginatedResponseBaseBookResponseFromJSON,
     ResponseWrapperPaginatedResponseBaseBookResponseToJSON,
+    ResponseWrapperPaginatedResponsePublicReviewItemResponseFromJSON,
+    ResponseWrapperPaginatedResponsePublicReviewItemResponseToJSON,
     ResponseWrapperSoftDeleteBookResponseFromJSON,
     ResponseWrapperSoftDeleteBookResponseToJSON,
     ResponseWrapperUpdateBookResponseFromJSON,
@@ -72,6 +81,11 @@ export interface CreateBookOperationRequest {
     createBookRequest: CreateBookRequest;
 }
 
+export interface CreateReviewOperationRequest {
+    bookId: string;
+    createReviewRequest: CreateReviewRequest;
+}
+
 export interface DeactivateBookRequest {
     bookId: string;
 }
@@ -90,6 +104,14 @@ export interface FindBooksRequest {
     priceMin?: PriceMin | null;
     priceMax?: PriceMax | null;
     inStock?: boolean | null;
+}
+
+export interface FindReviewsRequest {
+    bookId: string;
+    sort?: string | null;
+    page?: number;
+    pageSize?: number;
+    search?: string | null;
 }
 
 export interface SoftDeleteBookRequest {
@@ -203,6 +225,57 @@ export class BookApi extends runtime.BaseAPI {
      */
     async createBook(requestParameters: CreateBookOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperCreateBookResponse> {
         const response = await this.createBookRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Create Review
+     */
+    async createReviewRaw(requestParameters: CreateReviewOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperCreateReviewResponse>> {
+        if (requestParameters['bookId'] == null) {
+            throw new runtime.RequiredError(
+                'bookId',
+                'Required parameter "bookId" was null or undefined when calling createReview().'
+            );
+        }
+
+        if (requestParameters['createReviewRequest'] == null) {
+            throw new runtime.RequiredError(
+                'createReviewRequest',
+                'Required parameter "createReviewRequest" was null or undefined when calling createReview().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/app/v1/books/{book_id}/reviews`.replace(`{${"book_id"}}`, encodeURIComponent(String(requestParameters['bookId']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: CreateReviewRequestToJSON(requestParameters['createReviewRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperCreateReviewResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Create Review
+     */
+    async createReview(requestParameters: CreateReviewOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperCreateReviewResponse> {
+        const response = await this.createReviewRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -322,6 +395,55 @@ export class BookApi extends runtime.BaseAPI {
      */
     async findBooks(requestParameters: FindBooksRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperPaginatedResponseBaseBookResponse> {
         const response = await this.findBooksRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Find Reviews
+     */
+    async findReviewsRaw(requestParameters: FindReviewsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperPaginatedResponsePublicReviewItemResponse>> {
+        if (requestParameters['bookId'] == null) {
+            throw new runtime.RequiredError(
+                'bookId',
+                'Required parameter "bookId" was null or undefined when calling findReviews().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters['sort'] != null) {
+            queryParameters['sort'] = requestParameters['sort'];
+        }
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['pageSize'] != null) {
+            queryParameters['page_size'] = requestParameters['pageSize'];
+        }
+
+        if (requestParameters['search'] != null) {
+            queryParameters['search'] = requestParameters['search'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/app/v1/books/{book_id}/reviews`.replace(`{${"book_id"}}`, encodeURIComponent(String(requestParameters['bookId']))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperPaginatedResponsePublicReviewItemResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Find Reviews
+     */
+    async findReviews(requestParameters: FindReviewsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperPaginatedResponsePublicReviewItemResponse> {
+        const response = await this.findReviewsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

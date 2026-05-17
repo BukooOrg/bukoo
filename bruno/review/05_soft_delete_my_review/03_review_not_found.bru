@@ -1,0 +1,29 @@
+meta {
+  name: review not found
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{baseUrl}}{{apiBase}}/users/me/reviews/00000000-0000-0000-0000-000000000001
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+  
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+  
+  test("error code is REVIEW_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("REVIEW_NOT_FOUND");
+  });
+}

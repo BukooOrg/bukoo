@@ -1,0 +1,38 @@
+meta {
+  name: success filtered hidden
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/reviews?is_hidden=true
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("all returned reviews are hidden", function() {
+    const items = res.body.data.items;
+    expect(items).to.be.an("array");
+    items.forEach(function(item) {
+      expect(item.is_hidden).to.be.true;
+      expect(item.hidden_at).to.be.a("string").and.not.empty;
+    });
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

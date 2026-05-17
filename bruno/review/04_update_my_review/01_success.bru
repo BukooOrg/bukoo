@@ -1,0 +1,54 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/users/me/reviews/{{reviewId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // Prerequisite: {{reviewId}} must be set from a prior Create Review call.
+  {
+    "rating": 4,
+    "comment": "Updated my thoughts — still a great read. bruhbruh"
+  //   "comment": null
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.id matches reviewId", function() {
+    expect(res.body.data.id).to.equal(bru.getEnvVar("reviewId"));
+  });
+  
+  test("data.rating equals submitted value", function() {
+    expect(res.body.data.rating).to.equal(4);
+  });
+  
+  test("data.comment equals submitted value", function() {
+    expect(res.body.data.comment).to.equal("Updated my thoughts — still a great read.");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

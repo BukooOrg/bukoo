@@ -1,0 +1,49 @@
+meta {
+  name: success restore
+  type: http
+  seq: 2
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/reviews/{{reviewId}}/visibility
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // Prerequisite: {{reviewId}} must be set and previously hidden.
+  // Requires admin token in {{token}}.
+  {
+    "is_hidden": false
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("data.is_hidden is false", function() {
+    expect(res.body.data.is_hidden).to.be.false;
+  });
+
+  test("data.hidden_at is null", function() {
+    expect(res.body.data.hidden_at).to.be.null;
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

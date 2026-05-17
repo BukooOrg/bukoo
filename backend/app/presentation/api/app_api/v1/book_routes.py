@@ -16,6 +16,7 @@ from app.application.dtos.book_dto import (
     UploadBookCoverCommand,
     ViewBookDetailCommand,
 )
+from app.application.dtos.review_dto import CreateReviewCommand
 from app.application.use_cases.book import (
     ActivateBookUseCase,
     CreateBookUseCase,
@@ -27,6 +28,7 @@ from app.application.use_cases.book import (
     UploadBookCoverUseCase,
     ViewBookDetailUseCase,
 )
+from app.application.use_cases.review import CreateReviewUseCase, FindReviewsUseCase
 from app.core.constants import ALLOWED_COVER_TYPES, MAX_COVER_BYTES
 from app.core.util import build_public_url
 from app.domain.exceptions import FileSizeExceededError, InvalidFileTypeError
@@ -36,8 +38,11 @@ from app.presentation.dependencies.deps import (
     AuthorRepo,
     BookRepo,
     CategoryRepo,
+    CustomerUser,
     DbSession,
+    OrderRepo,
     PublisherRepo,
+    ReviewRepo,
     StorageService,
 )
 from app.presentation.schemas.book_schema import (
@@ -60,6 +65,13 @@ from app.presentation.schemas.book_schema import (
     ViewBookDetailResponse,
 )
 from app.presentation.schemas.list_schema import PaginatedResponse, PaginationMeta
+from app.presentation.schemas.review_schema import (
+    BaseReviewBookItem,
+    CreateReviewRequest,
+    CreateReviewResponse,
+    PublicReviewItemResponse,
+    ReviewListQueryRequest,
+)
 
 router = APIRouter(prefix="/books", tags=["book"])
 
@@ -336,3 +348,84 @@ async def upload_book_cover(
         )
     )
     return build_base_book_response(result, UploadBookCoverResponse)
+
+
+@router.get(
+    "/{book_id}/reviews",
+    response_model=PaginatedResponse[PublicReviewItemResponse],
+    operation_id="findReviews",
+)
+async def find_reviews(
+    book_id: str,
+    query_params: Annotated[ReviewListQueryRequest, Depends(ReviewListQueryRequest)],
+    book_repo: BookRepo,
+    review_repo: ReviewRepo,
+    db_session: DbSession,
+) -> PaginatedResponse[PublicReviewItemResponse]:
+    use_case = FindReviewsUseCase(
+        db_session=db_session, book_repo=book_repo, review_repo=review_repo
+    )
+    result = await use_case.execute(query_params.to_command(book_id))
+    return PaginatedResponse(
+        items=[
+            PublicReviewItemResponse(
+                id=item.id,
+                book_id=item.book_id,
+                user_id=item.user_id,
+                order_item_id=item.order_item_id,
+                rating=item.rating,
+                comment=item.comment,
+                created_at=item.created_at,
+                updated_at=item.updated_at,
+                book=BaseReviewBookItem(
+                    id=item.book.id,
+                    title=item.book.title,
+                    cover_url=build_public_url(item.book.cover_url),
+                ),
+            )
+            for item in result.items
+        ],
+        pagination=PaginationMeta.from_result(result),
+    )
+
+
+@router.post(
+    "/{book_id}/reviews",
+    response_model=CreateReviewResponse,
+    status_code=201,
+    operation_id="createReview",
+)
+async def create_review(
+    book_id: str,
+    body: CreateReviewRequest,
+    current_user: CustomerUser,
+    book_repo: BookRepo,
+    order_repo: OrderRepo,
+    review_repo: ReviewRepo,
+    db_session: DbSession,
+) -> CreateReviewResponse:
+    use_case = CreateReviewUseCase(
+        db_session=db_session,
+        book_repo=book_repo,
+        order_repo=order_repo,
+        review_repo=review_repo,
+    )
+    result = await use_case.execute(
+        CreateReviewCommand(
+            user_id=current_user.id,
+            book_id=book_id,
+            order_item_id=body.order_item_id,
+            rating=body.rating,
+            comment=body.comment,
+        )
+    )
+    return CreateReviewResponse(
+        id=result.id,
+        book_id=result.book_id,
+        user_id=result.user_id,
+        order_item_id=result.order_item_id,
+        rating=result.rating,
+        comment=result.comment,
+        created_at=result.created_at,
+        updated_at=result.updated_at,
+    )

@@ -2,8 +2,14 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Response, UploadFile
+from typing import Annotated
 
+from fastapi import APIRouter, Depends, Response, UploadFile
+
+from app.application.dtos.review_dto import (
+    SoftDeleteMyReviewCommand,
+    UpdateMyReviewCommand,
+)
 from app.application.dtos.user_dto import (
     ChangePasswordCommand,
     GetMyAddressCommand,
@@ -13,13 +19,20 @@ from app.application.dtos.user_dto import (
     UpdateProfileCommand,
     UpsertAddressCommand,
 )
-from app.application.use_cases.user.change_password import ChangePasswordUseCase
-from app.application.use_cases.user.get_my_address import GetMyAddressUseCase
-from app.application.use_cases.user.remove_avatar import RemoveAvatarUseCase
-from app.application.use_cases.user.soft_delete_me import SoftDeleteMeUseCase
-from app.application.use_cases.user.update_avatar import UpdateAvatarUseCase
-from app.application.use_cases.user.update_profile import UpdateProfileUseCase
-from app.application.use_cases.user.upsert_address import UpsertAddressUseCase
+from app.application.use_cases.review import (
+    FindMyReviewsUseCase,
+    SoftDeleteMyReviewUseCase,
+    UpdateMyReviewUseCase,
+)
+from app.application.use_cases.user import (
+    ChangePasswordUseCase,
+    GetMyAddressUseCase,
+    RemoveAvatarUseCase,
+    SoftDeleteMeUseCase,
+    UpdateAvatarUseCase,
+    UpdateProfileUseCase,
+    UpsertAddressUseCase,
+)
 from app.core.constants import ALLOWED_AVATAR_TYPES, MAX_AVATAR_BYTES
 from app.core.util import build_public_url, clear_auth_cookie
 from app.domain.exceptions import FileSizeExceededError, InvalidFileTypeError
@@ -29,10 +42,19 @@ from app.presentation.dependencies.deps import (
     CustomerUser,
     DbSession,
     PasswordHasher,
+    ReviewRepo,
     StorageService,
     TokenPayload,
     TokenService,
     UserRepo,
+)
+from app.presentation.schemas.list_schema import PaginatedResponse, PaginationMeta
+from app.presentation.schemas.review_schema import (
+    BaseReviewBookItem,
+    MyReviewListQueryRequest,
+    ReviewWithBookItemResponse,
+    UpdateMyReviewRequest,
+    UpdateMyReviewResponse,
 )
 from app.presentation.schemas.user_schema import (
     AddressResponse,
@@ -209,6 +231,7 @@ async def change_password(
     return ChangePasswordResponse(message=result.message)
 
 
+# address
 @router.get("/me/address", response_model=AddressResponse, operation_id="getMyAddress")
 async def get_my_address(
     current_user: CustomerUser, user_repo: UserRepo, db_session: DbSession
@@ -270,4 +293,97 @@ async def upsert_address(
         country=result.country,
         created_at=result.created_at,
         updated_at=result.updated_at,
+    )
+
+
+# review
+@router.get(
+    "/me/reviews",
+    response_model=PaginatedResponse[ReviewWithBookItemResponse],
+    operation_id="findMyReviews",
+)
+async def find_my_reviews(
+    query_params: Annotated[
+        MyReviewListQueryRequest, Depends(MyReviewListQueryRequest)
+    ],
+    customer_user: CustomerUser,
+    review_repo: ReviewRepo,
+    db_session: DbSession,
+) -> PaginatedResponse[ReviewWithBookItemResponse]:
+    use_case = FindMyReviewsUseCase(db_session=db_session, review_repo=review_repo)
+    result = await use_case.execute(query_params.to_command(customer_user.id))
+    return PaginatedResponse(
+        items=[
+            ReviewWithBookItemResponse(
+                id=item.id,
+                book_id=item.book_id,
+                user_id=item.user_id,
+                order_item_id=item.order_item_id,
+                rating=item.rating,
+                comment=item.comment,
+                is_hidden=item.is_hidden,
+                hidden_at=item.hidden_at,
+                created_at=item.created_at,
+                updated_at=item.updated_at,
+                book=BaseReviewBookItem(
+                    id=item.book.id,
+                    title=item.book.title,
+                    cover_url=build_public_url(item.book.cover_url),
+                ),
+            )
+            for item in result.items
+        ],
+        pagination=PaginationMeta.from_result(result),
+    )
+
+
+@router.patch(
+    "/me/reviews/{review_id}",
+    response_model=UpdateMyReviewResponse,
+    operation_id="updateMyReview",
+)
+async def update_my_review(
+    review_id: str,
+    body: UpdateMyReviewRequest,
+    customer_user: CustomerUser,
+    review_repo: ReviewRepo,
+    db_session: DbSession,
+) -> UpdateMyReviewResponse:
+    use_case = UpdateMyReviewUseCase(db_session=db_session, review_repo=review_repo)
+    result = await use_case.execute(
+        UpdateMyReviewCommand(
+            user_id=customer_user.id,
+            review_id=review_id,
+            rating=body.rating,
+            comment=body.comment,
+            fields_to_update=frozenset(body.model_fields_set),
+        )
+    )
+    return UpdateMyReviewResponse(
+        id=result.id,
+        book_id=result.book_id,
+        user_id=result.user_id,
+        order_item_id=result.order_item_id,
+        rating=result.rating,
+        comment=result.comment,
+        created_at=result.created_at,
+        updated_at=result.updated_at,
+    )
+
+
+@router.delete(
+    "/me/reviews/{review_id}",
+    status_code=204,
+    response_model=None,
+    operation_id="softDeleteMyReview",
+)
+async def soft_delete_my_review(
+    review_id: str,
+    customer_user: CustomerUser,
+    review_repo: ReviewRepo,
+    db_session: DbSession,
+) -> None:
+    use_case = SoftDeleteMyReviewUseCase(db_session=db_session, review_repo=review_repo)
+    await use_case.execute(
+        SoftDeleteMyReviewCommand(user_id=customer_user.id, review_id=review_id)
     )

@@ -19,8 +19,11 @@ import type {
   ErrorResponse,
   ResponseWrapperAddressResponse,
   ResponseWrapperChangePasswordResponse,
+  ResponseWrapperPaginatedResponseReviewWithBookItemResponse,
   ResponseWrapperSoftDeleteMeResponse,
+  ResponseWrapperUpdateMyReviewResponse,
   ResponseWrapperUserProfileResponse,
+  UpdateMyReviewRequest,
   UpdateProfileRequest,
   UpsertAddressRequest,
 } from '../models/index';
@@ -33,10 +36,16 @@ import {
     ResponseWrapperAddressResponseToJSON,
     ResponseWrapperChangePasswordResponseFromJSON,
     ResponseWrapperChangePasswordResponseToJSON,
+    ResponseWrapperPaginatedResponseReviewWithBookItemResponseFromJSON,
+    ResponseWrapperPaginatedResponseReviewWithBookItemResponseToJSON,
     ResponseWrapperSoftDeleteMeResponseFromJSON,
     ResponseWrapperSoftDeleteMeResponseToJSON,
+    ResponseWrapperUpdateMyReviewResponseFromJSON,
+    ResponseWrapperUpdateMyReviewResponseToJSON,
     ResponseWrapperUserProfileResponseFromJSON,
     ResponseWrapperUserProfileResponseToJSON,
+    UpdateMyReviewRequestFromJSON,
+    UpdateMyReviewRequestToJSON,
     UpdateProfileRequestFromJSON,
     UpdateProfileRequestToJSON,
     UpsertAddressRequestFromJSON,
@@ -47,8 +56,24 @@ export interface ChangePasswordOperationRequest {
     changePasswordRequest: ChangePasswordRequest;
 }
 
+export interface FindMyReviewsRequest {
+    sort?: string | null;
+    page?: number;
+    pageSize?: number;
+    search?: string | null;
+}
+
+export interface SoftDeleteMyReviewRequest {
+    reviewId: string;
+}
+
 export interface UpdateAvatarRequest {
     file: string;
+}
+
+export interface UpdateMyReviewOperationRequest {
+    reviewId: string;
+    updateMyReviewRequest: UpdateMyReviewRequest;
 }
 
 export interface UpdateProfileOperationRequest {
@@ -105,6 +130,56 @@ export class UserApi extends runtime.BaseAPI {
      */
     async changePassword(requestParameters: ChangePasswordOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperChangePasswordResponse> {
         const response = await this.changePasswordRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Find My Reviews
+     */
+    async findMyReviewsRaw(requestParameters: FindMyReviewsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperPaginatedResponseReviewWithBookItemResponse>> {
+        const queryParameters: any = {};
+
+        if (requestParameters['sort'] != null) {
+            queryParameters['sort'] = requestParameters['sort'];
+        }
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['pageSize'] != null) {
+            queryParameters['page_size'] = requestParameters['pageSize'];
+        }
+
+        if (requestParameters['search'] != null) {
+            queryParameters['search'] = requestParameters['search'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/app/v1/users/me/reviews`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperPaginatedResponseReviewWithBookItemResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Find My Reviews
+     */
+    async findMyReviews(requestParameters: FindMyReviewsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperPaginatedResponseReviewWithBookItemResponse> {
+        const response = await this.findMyReviewsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -245,6 +320,46 @@ export class UserApi extends runtime.BaseAPI {
     }
 
     /**
+     * Soft Delete My Review
+     */
+    async softDeleteMyReviewRaw(requestParameters: SoftDeleteMyReviewRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['reviewId'] == null) {
+            throw new runtime.RequiredError(
+                'reviewId',
+                'Required parameter "reviewId" was null or undefined when calling softDeleteMyReview().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/app/v1/users/me/reviews/{review_id}`.replace(`{${"review_id"}}`, encodeURIComponent(String(requestParameters['reviewId']))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Soft Delete My Review
+     */
+    async softDeleteMyReview(requestParameters: SoftDeleteMyReviewRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.softDeleteMyReviewRaw(requestParameters, initOverrides);
+    }
+
+    /**
      * Update Avatar
      */
     async updateAvatarRaw(requestParameters: UpdateAvatarRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperUserProfileResponse>> {
@@ -301,6 +416,57 @@ export class UserApi extends runtime.BaseAPI {
      */
     async updateAvatar(requestParameters: UpdateAvatarRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperUserProfileResponse> {
         const response = await this.updateAvatarRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Update My Review
+     */
+    async updateMyReviewRaw(requestParameters: UpdateMyReviewOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperUpdateMyReviewResponse>> {
+        if (requestParameters['reviewId'] == null) {
+            throw new runtime.RequiredError(
+                'reviewId',
+                'Required parameter "reviewId" was null or undefined when calling updateMyReview().'
+            );
+        }
+
+        if (requestParameters['updateMyReviewRequest'] == null) {
+            throw new runtime.RequiredError(
+                'updateMyReviewRequest',
+                'Required parameter "updateMyReviewRequest" was null or undefined when calling updateMyReview().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/app/v1/users/me/reviews/{review_id}`.replace(`{${"review_id"}}`, encodeURIComponent(String(requestParameters['reviewId']))),
+            method: 'PATCH',
+            headers: headerParameters,
+            query: queryParameters,
+            body: UpdateMyReviewRequestToJSON(requestParameters['updateMyReviewRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperUpdateMyReviewResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Update My Review
+     */
+    async updateMyReview(requestParameters: UpdateMyReviewOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperUpdateMyReviewResponse> {
+        const response = await this.updateMyReviewRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

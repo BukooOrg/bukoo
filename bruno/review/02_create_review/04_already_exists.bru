@@ -1,0 +1,42 @@
+meta {
+  name: already exists
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/books/{{bookId}}/reviews
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // Prerequisite: 01_success.bru must have run first so a review for this order_item_id exists.
+  {
+    "order_item_id": "{{orderItemId}}",
+    "rating": 3,
+    "comment": "Changed my mind."
+  }
+}
+
+tests {
+  test("status 409", function() {
+    expect(res.status).to.equal(409);
+  });
+
+  test("success is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is REVIEW_ALREADY_EXISTS", function() {
+    expect(res.body.error.code).to.equal("REVIEW_ALREADY_EXISTS");
+  });
+}

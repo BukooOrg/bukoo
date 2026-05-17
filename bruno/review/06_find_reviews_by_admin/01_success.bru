@@ -1,0 +1,46 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/reviews?sort=updated_at
+  body: none
+  auth: bearer
+}
+
+params:query {
+  sort: updated_at
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.items is an array", function() {
+    expect(res.body.data.items).to.be.an("array");
+  });
+  
+  test("data.pagination is present", function() {
+    expect(res.body.data.pagination).to.have.property("page");
+    expect(res.body.data.pagination).to.have.property("page_size");
+    expect(res.body.data.pagination).to.have.property("total_items");
+    expect(res.body.data.pagination).to.have.property("total_pages");
+    expect(res.body.data.pagination).to.have.property("has_next");
+    expect(res.body.data.pagination).to.have.property("has_prev");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}
