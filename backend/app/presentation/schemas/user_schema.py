@@ -6,8 +6,11 @@ from datetime import date, datetime
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
+from app.application.dtos.user_dto import FindUsersCommand
 from app.application.validators import DateOfBirth, PasswordStr, PhoneNumber
 from app.core.constants import UserRole, UserStatus
+from app.core.query_params import PageParams, QueryParams, parse_sort
+from app.presentation.schemas.list_schema import ListQueryRequest
 
 
 # requests
@@ -74,6 +77,22 @@ class UpsertAddressRequest(BaseModel):
         return v
 
 
+class FindUsersQueryRequest(ListQueryRequest):
+    role: UserRole | None = None
+    status: UserStatus | None = None
+
+    def to_command(self) -> FindUsersCommand:
+        return FindUsersCommand(
+            query_params=QueryParams(
+                page=PageParams(page=self.page, page_size=self.page_size),
+                sorts=parse_sort(self.sort),
+                search=self.search,
+            ),
+            role=self.role,
+            status=self.status,
+        )
+
+
 class RegisterAdminRequest(BaseModel):
     email: EmailStr = Field(..., description="Admin account email address")
     password: PasswordStr = Field(
@@ -128,5 +147,19 @@ class AddressResponse(BaseModel):
     state: str
     postcode: str
     country: str
+    created_at: datetime
+    updated_at: datetime
+
+
+class UserListItemResponse(BaseModel):
+    id: str
+    email: str
+    full_name: str
+    date_of_birth: date | None
+    role: UserRole
+    status: UserStatus
+    avatar_url: str | None
+    have_password: bool
+    last_login_at: datetime | None
     created_at: datetime
     updated_at: datetime

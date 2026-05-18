@@ -28,6 +28,7 @@ from app.application.use_cases.review import (
 )
 from app.application.use_cases.user import (
     ChangePasswordUseCase,
+    FindUsersUseCase,
     GetMyAddressUseCase,
     RegisterAdminUseCase,
     RemoveAvatarUseCase,
@@ -66,10 +67,12 @@ from app.presentation.schemas.user_schema import (
     AddressResponse,
     ChangePasswordRequest,
     ChangePasswordResponse,
+    FindUsersQueryRequest,
     RegisterAdminRequest,
     SoftDeleteMeResponse,
     UpdateProfileRequest,
     UpsertAddressRequest,
+    UserListItemResponse,
     UserProfileResponse,
 )
 
@@ -397,6 +400,40 @@ async def soft_delete_my_review(
 
 
 # user management
+@router.get(
+    "",
+    response_model=PaginatedResponse[UserListItemResponse],
+    operation_id="findUsers",
+)
+async def find_users(
+    query_params: Annotated[FindUsersQueryRequest, Depends(FindUsersQueryRequest)],
+    _admin_user: AdminUser,
+    user_repo: UserRepo,
+    db_session: DbSession,
+) -> PaginatedResponse[UserListItemResponse]:
+    use_case = FindUsersUseCase(db_session=db_session, user_repo=user_repo)
+    result = await use_case.execute(query_params.to_command())
+    return PaginatedResponse(
+        items=[
+            UserListItemResponse(
+                id=u.id,
+                email=u.email,
+                full_name=u.full_name,
+                date_of_birth=u.date_of_birth,
+                role=u.role,
+                status=u.status,
+                avatar_url=build_public_url(u.avatar_url),
+                have_password=u.have_password,
+                last_login_at=u.last_login_at,
+                created_at=u.created_at,
+                updated_at=u.updated_at,
+            )
+            for u in result.items
+        ],
+        pagination=PaginationMeta.from_result(result),
+    )
+
+
 @router.get(
     "/{user_id}", response_model=UserProfileResponse, operation_id="viewUserProfile"
 )

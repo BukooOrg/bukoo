@@ -1,4 +1,5 @@
 from .change_password import ChangePasswordUseCase
+from .find_users import FindUsersUseCase
 from .get_my_address import GetMyAddressUseCase
 from .register_admin import RegisterAdminUseCase
 from .remove_avatar import RemoveAvatarUseCase
@@ -10,6 +11,7 @@ from .view_user_profile import ViewUserProfileUseCase
 
 __all__ = [
     "ChangePasswordUseCase",
+    "FindUsersUseCase",
     "GetMyAddressUseCase",
     "RegisterAdminUseCase",
     "RemoveAvatarUseCase",

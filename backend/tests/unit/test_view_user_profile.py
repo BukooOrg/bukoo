@@ -58,6 +58,9 @@ class FakeUserRepository(IUserRepository):
     async def count_including_deleted(self) -> int:
         return len(self._store)
 
+    async def find_all(self, query: object, filters: object) -> object:
+        raise NotImplementedError
+
 
 def _build_use_case(
     user_repo: FakeUserRepository | None = None,

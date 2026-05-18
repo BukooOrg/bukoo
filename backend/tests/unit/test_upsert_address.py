@@ -100,6 +100,9 @@ class FakeUserRepository(IUserRepository):
     async def count_including_deleted(self) -> int:
         return 0
 
+    async def find_all(self, query: object, filters: object) -> object:
+        raise NotImplementedError
+
 
 class FakeAddressRepository(IAddressRepository):
     def __init__(self) -> None:

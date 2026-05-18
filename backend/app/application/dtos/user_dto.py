@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 
 from app.core.constants import UserRole, UserStatus
+from app.core.query_params import QueryParams
 
 
 # commands
@@ -58,16 +59,23 @@ class UpsertAddressCommand:
 
 
 @dataclass(frozen=True)
-class RegisterAdminCommand:
-    email: str
-    password: str
-    full_name: str
-    date_of_birth: date | None
+class FindUsersCommand:
+    query_params: QueryParams
+    role: UserRole | None = None
+    status: UserStatus | None = None
 
 
 @dataclass(frozen=True)
 class ViewUserProfileCommand:
     user_id: str
+
+
+@dataclass(frozen=True)
+class RegisterAdminCommand:
+    email: str
+    password: str
+    full_name: str
+    date_of_birth: date | None
 
 
 # results
@@ -154,6 +162,21 @@ class UpsertAddressResult:
     state: str
     postcode: str
     country: str
+    created_at: datetime
+    updated_at: datetime
+
+
+@dataclass(frozen=True)
+class FindUserResult:
+    id: str
+    email: str
+    full_name: str
+    date_of_birth: date | None
+    role: UserRole
+    status: UserStatus
+    avatar_url: str | None
+    have_password: bool
+    last_login_at: datetime | None
     created_at: datetime
     updated_at: datetime
 

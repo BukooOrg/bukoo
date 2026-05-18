@@ -1,0 +1,27 @@
+meta {
+  name: filter by status
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/users?status=suspended
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("all items have status suspended", function() {
+    res.body.data.items.forEach(function(user) {
+      expect(user.status).to.equal("suspended");
+    });
+  });
+}

@@ -1,0 +1,21 @@
+meta {
+  name: invalid role param
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/users?role=unknown
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+}
