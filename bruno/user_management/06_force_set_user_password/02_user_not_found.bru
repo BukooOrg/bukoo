@@ -1,0 +1,39 @@
+meta {
+  name: user not found
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/users/00000000-0000-0000-0000-000000000000/password-reset
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "new_password": "NewSecurePass123!"
+  }
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is USER_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("USER_NOT_FOUND");
+  });
+}

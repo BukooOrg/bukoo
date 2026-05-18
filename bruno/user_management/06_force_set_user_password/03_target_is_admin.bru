@@ -1,0 +1,41 @@
+meta {
+  name: target is admin
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/users/{{userId}}/password-reset
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // target user is an admin — password reset is not permitted
+  {
+    "new_password": "NewSecurePass123!"
+  }
+  
+}
+
+tests {
+  test("status 409", function() {
+    expect(res.status).to.equal(409);
+  });
+  
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+  
+  test("error code is CANNOT_RESET_ADMIN_PASSWORD", function() {
+    expect(res.body.error.code).to.equal("CANNOT_RESET_ADMIN_PASSWORD");
+  });
+}

@@ -1,6 +1,7 @@
 from .activate_user import ActivateUserUseCase
 from .change_password import ChangePasswordUseCase
 from .find_users import FindUsersUseCase
+from .force_set_user_password import ForceSetUserPasswordUseCase
 from .get_my_address import GetMyAddressUseCase
 from .register_admin import RegisterAdminUseCase
 from .remove_avatar import RemoveAvatarUseCase
@@ -15,13 +16,14 @@ __all__ = [
     "ActivateUserUseCase",
     "ChangePasswordUseCase",
     "FindUsersUseCase",
+    "ForceSetUserPasswordUseCase",
     "GetMyAddressUseCase",
     "RegisterAdminUseCase",
     "RemoveAvatarUseCase",
     "SoftDeleteMeUseCase",
+    "SuspendUserUseCase",
     "UpdateAvatarUseCase",
     "UpdateProfileUseCase",
     "UpsertAddressUseCase",
-    "SuspendUserUseCase",
     "ViewUserProfileUseCase",
 ]

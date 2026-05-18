@@ -13,6 +13,7 @@ from app.application.dtos.review_dto import (
 from app.application.dtos.user_dto import (
     ActivateUserCommand,
     ChangePasswordCommand,
+    ForceSetUserPasswordCommand,
     GetMyAddressCommand,
     RegisterAdminCommand,
     RemoveAvatarCommand,
@@ -32,6 +33,7 @@ from app.application.use_cases.user import (
     ActivateUserUseCase,
     ChangePasswordUseCase,
     FindUsersUseCase,
+    ForceSetUserPasswordUseCase,
     GetMyAddressUseCase,
     RegisterAdminUseCase,
     RemoveAvatarUseCase,
@@ -72,6 +74,8 @@ from app.presentation.schemas.user_schema import (
     ChangePasswordRequest,
     ChangePasswordResponse,
     FindUsersQueryRequest,
+    ForceSetUserPasswordRequest,
+    ForceSetUserPasswordResponse,
     RegisterAdminRequest,
     SoftDeleteMeResponse,
     UpdateProfileRequest,
@@ -561,3 +565,25 @@ async def activate_user(
         created_at=result.created_at,
         updated_at=result.updated_at,
     )
+
+
+@router.post(
+    "/{user_id}/password-reset",
+    response_model=ForceSetUserPasswordResponse,
+    operation_id="forceSetUserPassword",
+)
+async def force_set_user_password(
+    user_id: str,
+    body: ForceSetUserPasswordRequest,
+    _admin_user: AdminUser,
+    user_repo: UserRepo,
+    hasher: PasswordHasher,
+    db_session: DbSession,
+) -> ForceSetUserPasswordResponse:
+    use_case = ForceSetUserPasswordUseCase(
+        db_session=db_session, user_repo=user_repo, hasher=hasher
+    )
+    result = await use_case.execute(
+        ForceSetUserPasswordCommand(user_id=user_id, new_password=body.new_password)
+    )
+    return ForceSetUserPasswordResponse(message=result.message)

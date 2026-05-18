@@ -28,3 +28,15 @@ class CannotActivatePendingUserError(DomainException):
         super().__init__(
             "Cannot activate a pending user. The user must verify their email first."
         )
+
+
+class CannotResetAdminPasswordError(DomainException):
+    def __init__(self) -> None:
+        super().__init__("Admin account passwords cannot be reset by another admin.")
+
+
+class UserHasNoCredentialAccountError(DomainException):
+    def __init__(self) -> None:
+        super().__init__(
+            "This account uses social login and does not have a password to reset."
+        )

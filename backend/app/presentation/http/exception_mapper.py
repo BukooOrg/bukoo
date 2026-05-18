@@ -13,6 +13,7 @@ from app.domain.exceptions import (
     BookAlreadyExistsError,
     BookNotFoundError,
     CannotActivatePendingUserError,
+    CannotResetAdminPasswordError,
     CannotSuspendAdminError,
     CartItemNotFoundError,
     CartNotFoundError,
@@ -55,6 +56,7 @@ from app.domain.exceptions import (
     UserAlreadyExistsError,
     UserAlreadySuspendedError,
     UserAlreadyVerifiedError,
+    UserHasNoCredentialAccountError,
     UserNotFoundError,
     UserNotVerifiedError,
     UserSuspendedError,
@@ -128,6 +130,16 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_409_CONFLICT,
         ErrorCode.CANNOT_ACTIVATE_PENDING_USER,
         "Cannot activate a pending user. The user must verify their email first.",
+    ),
+    CannotResetAdminPasswordError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.CANNOT_RESET_ADMIN_PASSWORD,
+        "Admin account passwords cannot be reset by another admin.",
+    ),
+    UserHasNoCredentialAccountError: HttpExceptionMapping(
+        status.HTTP_400_BAD_REQUEST,
+        ErrorCode.USER_HAS_NO_CREDENTIAL_ACCOUNT,
+        "This account uses social login and does not have a password to reset.",
     ),
     UserAlreadyVerifiedError: HttpExceptionMapping(
         status.HTTP_409_CONFLICT,

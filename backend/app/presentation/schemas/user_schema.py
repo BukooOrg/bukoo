@@ -113,6 +113,13 @@ class RegisterAdminRequest(BaseModel):
         return stripped
 
 
+class ForceSetUserPasswordRequest(BaseModel):
+    new_password: PasswordStr = Field(
+        ...,
+        description="New password to set for the user (plain text, hashed server-side)",
+    )
+
+
 # responses
 class UserProfileResponse(BaseModel):
     id: str
@@ -163,3 +170,7 @@ class UserListItemResponse(BaseModel):
     last_login_at: datetime | None
     created_at: datetime
     updated_at: datetime
+
+
+class ForceSetUserPasswordResponse(BaseModel):
+    message: str

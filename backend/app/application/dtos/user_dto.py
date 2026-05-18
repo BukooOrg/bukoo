@@ -88,6 +88,12 @@ class ActivateUserCommand:
     user_id: str
 
 
+@dataclass(frozen=True)
+class ForceSetUserPasswordCommand:
+    user_id: str
+    new_password: str
+
+
 # results
 @dataclass(frozen=True)
 class SoftDeleteMeResult:
@@ -249,3 +255,8 @@ class ActivateUserResult:
     last_login_at: datetime | None
     created_at: datetime
     updated_at: datetime
+
+
+@dataclass(frozen=True)
+class ForceSetUserPasswordResult:
+    message: str
