@@ -6,6 +6,7 @@ from .soft_delete_me import SoftDeleteMeUseCase
 from .update_avatar import UpdateAvatarUseCase
 from .update_profile import UpdateProfileUseCase
 from .upsert_address import UpsertAddressUseCase
+from .view_user_profile import ViewUserProfileUseCase
 
 __all__ = [
     "ChangePasswordUseCase",
@@ -16,4 +17,5 @@ __all__ = [
     "UpdateAvatarUseCase",
     "UpdateProfileUseCase",
     "UpsertAddressUseCase",
+    "ViewUserProfileUseCase",
 ]

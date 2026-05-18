@@ -19,6 +19,7 @@ from app.application.dtos.user_dto import (
     UpdateAvatarCommand,
     UpdateProfileCommand,
     UpsertAddressCommand,
+    ViewUserProfileCommand,
 )
 from app.application.use_cases.review import (
     FindMyReviewsUseCase,
@@ -34,6 +35,7 @@ from app.application.use_cases.user import (
     UpdateAvatarUseCase,
     UpdateProfileUseCase,
     UpsertAddressUseCase,
+    ViewUserProfileUseCase,
 )
 from app.core.constants import ALLOWED_AVATAR_TYPES, MAX_AVATAR_BYTES
 from app.core.util import build_public_url, clear_auth_cookie
@@ -395,6 +397,32 @@ async def soft_delete_my_review(
 
 
 # user management
+@router.get(
+    "/{user_id}", response_model=UserProfileResponse, operation_id="viewUserProfile"
+)
+async def view_user_profile(
+    user_id: str,
+    _admin_user: AdminUser,
+    user_repo: UserRepo,
+    db_session: DbSession,
+) -> UserProfileResponse:
+    use_case = ViewUserProfileUseCase(db_session=db_session, user_repo=user_repo)
+    result = await use_case.execute(ViewUserProfileCommand(user_id=user_id))
+    return UserProfileResponse(
+        id=result.id,
+        email=result.email,
+        full_name=result.full_name,
+        date_of_birth=result.date_of_birth,
+        role=result.role,
+        status=result.status,
+        avatar_url=build_public_url(result.avatar_url),
+        have_password=result.have_password,
+        last_login_at=result.last_login_at,
+        created_at=result.created_at,
+        updated_at=result.updated_at,
+    )
+
+
 @router.post(
     "/admin",
     response_model=UserProfileResponse,
