@@ -12,6 +12,7 @@ from app.domain.exceptions import (
     BookAlreadyDeactivatedError,
     BookAlreadyExistsError,
     BookNotFoundError,
+    CannotActivatePendingUserError,
     CannotSuspendAdminError,
     CartItemNotFoundError,
     CartNotFoundError,
@@ -50,6 +51,7 @@ from app.domain.exceptions import (
     StorageUploadError,
     TokenAlreadyRevokedError,
     TokenExpiredError,
+    UserAlreadyActiveError,
     UserAlreadyExistsError,
     UserAlreadySuspendedError,
     UserAlreadyVerifiedError,
@@ -116,6 +118,16 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_409_CONFLICT,
         ErrorCode.CANNOT_SUSPEND_ADMIN,
         "Admin accounts cannot be suspended",
+    ),
+    UserAlreadyActiveError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.USER_ALREADY_ACTIVE,
+        "User is already active",
+    ),
+    CannotActivatePendingUserError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.CANNOT_ACTIVATE_PENDING_USER,
+        "Cannot activate a pending user. The user must verify their email first.",
     ),
     UserAlreadyVerifiedError: HttpExceptionMapping(
         status.HTTP_409_CONFLICT,
