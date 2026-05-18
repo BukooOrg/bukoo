@@ -72,10 +72,10 @@ export interface UpdateBookRequest {
     description?: string | null;
     /**
      * 
-     * @type {}
+     * @type {any}
      * @memberof UpdateBookRequest
      */
-    coverUrl?:  | null;
+    coverUrl?: any | null;
     /**
      * 
      * @type {number}
@@ -131,7 +131,7 @@ export function UpdateBookRequestFromJSONTyped(json: any, ignoreDiscriminator: b
         'language': json['language'] == null ? undefined : json['language'],
         'isbn': json['isbn'] == null ? undefined : json['isbn'],
         'description': json['description'] == null ? undefined : json['description'],
-        'coverUrl': json['cover_url'] == null ? undefined : FromJSON(json['cover_url']),
+        'coverUrl': json['cover_url'] == null ? undefined : json['cover_url'],
         'pageCount': json['page_count'] == null ? undefined : json['page_count'],
         'publishedDate': json['published_date'] == null ? undefined : (new Date(json['published_date'])),
         'publisherId': json['publisher_id'] == null ? undefined : json['publisher_id'],
@@ -157,7 +157,7 @@ export function UpdateBookRequestToJSONTyped(value?: UpdateBookRequest | null, i
         'language': value['language'],
         'isbn': value['isbn'],
         'description': value['description'],
-        'cover_url': ToJSON(value['coverUrl']),
+        'cover_url': value['coverUrl'],
         'page_count': value['pageCount'],
         'published_date': value['publishedDate'] == null ? undefined : ((value['publishedDate'] as any).toISOString().substring(0,10)),
         'publisher_id': value['publisherId'],

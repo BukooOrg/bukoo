@@ -17,29 +17,46 @@ import * as runtime from '../runtime';
 import type {
   ChangePasswordRequest,
   ErrorResponse,
+  ForceSetUserPasswordRequest,
+  RegisterAdminRequest,
   ResponseWrapperAddressResponse,
   ResponseWrapperChangePasswordResponse,
+  ResponseWrapperForceSetUserPasswordResponse,
   ResponseWrapperPaginatedResponseReviewWithBookItemResponse,
+  ResponseWrapperPaginatedResponseUserListItemResponse,
   ResponseWrapperSoftDeleteMeResponse,
+  ResponseWrapperSoftDeleteUserResponse,
   ResponseWrapperUpdateMyReviewResponse,
   ResponseWrapperUserProfileResponse,
   UpdateMyReviewRequest,
   UpdateProfileRequest,
   UpsertAddressRequest,
+  UserRole,
+  UserStatus,
 } from '../models/index';
 import {
     ChangePasswordRequestFromJSON,
     ChangePasswordRequestToJSON,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
+    ForceSetUserPasswordRequestFromJSON,
+    ForceSetUserPasswordRequestToJSON,
+    RegisterAdminRequestFromJSON,
+    RegisterAdminRequestToJSON,
     ResponseWrapperAddressResponseFromJSON,
     ResponseWrapperAddressResponseToJSON,
     ResponseWrapperChangePasswordResponseFromJSON,
     ResponseWrapperChangePasswordResponseToJSON,
+    ResponseWrapperForceSetUserPasswordResponseFromJSON,
+    ResponseWrapperForceSetUserPasswordResponseToJSON,
     ResponseWrapperPaginatedResponseReviewWithBookItemResponseFromJSON,
     ResponseWrapperPaginatedResponseReviewWithBookItemResponseToJSON,
+    ResponseWrapperPaginatedResponseUserListItemResponseFromJSON,
+    ResponseWrapperPaginatedResponseUserListItemResponseToJSON,
     ResponseWrapperSoftDeleteMeResponseFromJSON,
     ResponseWrapperSoftDeleteMeResponseToJSON,
+    ResponseWrapperSoftDeleteUserResponseFromJSON,
+    ResponseWrapperSoftDeleteUserResponseToJSON,
     ResponseWrapperUpdateMyReviewResponseFromJSON,
     ResponseWrapperUpdateMyReviewResponseToJSON,
     ResponseWrapperUserProfileResponseFromJSON,
@@ -50,7 +67,15 @@ import {
     UpdateProfileRequestToJSON,
     UpsertAddressRequestFromJSON,
     UpsertAddressRequestToJSON,
+    UserRoleFromJSON,
+    UserRoleToJSON,
+    UserStatusFromJSON,
+    UserStatusToJSON,
 } from '../models/index';
+
+export interface ActivateUserRequest {
+    userId: string;
+}
 
 export interface ChangePasswordOperationRequest {
     changePasswordRequest: ChangePasswordRequest;
@@ -63,8 +88,34 @@ export interface FindMyReviewsRequest {
     search?: string | null;
 }
 
+export interface FindUsersRequest {
+    sort?: string | null;
+    page?: number;
+    pageSize?: number;
+    search?: string | null;
+    role?: UserRole | null;
+    status?: UserStatus | null;
+}
+
+export interface ForceSetUserPasswordOperationRequest {
+    userId: string;
+    forceSetUserPasswordRequest: ForceSetUserPasswordRequest;
+}
+
+export interface RegisterAdminOperationRequest {
+    registerAdminRequest: RegisterAdminRequest;
+}
+
 export interface SoftDeleteMyReviewRequest {
     reviewId: string;
+}
+
+export interface SoftDeleteUserRequest {
+    userId: string;
+}
+
+export interface SuspendUserRequest {
+    userId: string;
 }
 
 export interface UpdateAvatarRequest {
@@ -84,10 +135,55 @@ export interface UpsertAddressOperationRequest {
     upsertAddressRequest: UpsertAddressRequest;
 }
 
+export interface ViewUserProfileRequest {
+    userId: string;
+}
+
 /**
  * 
  */
 export class UserApi extends runtime.BaseAPI {
+
+    /**
+     * Activate User
+     */
+    async activateUserRaw(requestParameters: ActivateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperUserProfileResponse>> {
+        if (requestParameters['userId'] == null) {
+            throw new runtime.RequiredError(
+                'userId',
+                'Required parameter "userId" was null or undefined when calling activateUser().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/app/v1/users/{user_id}/activate`.replace(`{${"user_id"}}`, encodeURIComponent(String(requestParameters['userId']))),
+            method: 'PATCH',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperUserProfileResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Activate User
+     */
+    async activateUser(requestParameters: ActivateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperUserProfileResponse> {
+        const response = await this.activateUserRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Change Password
@@ -184,6 +280,115 @@ export class UserApi extends runtime.BaseAPI {
     }
 
     /**
+     * Find Users
+     */
+    async findUsersRaw(requestParameters: FindUsersRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperPaginatedResponseUserListItemResponse>> {
+        const queryParameters: any = {};
+
+        if (requestParameters['sort'] != null) {
+            queryParameters['sort'] = requestParameters['sort'];
+        }
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['pageSize'] != null) {
+            queryParameters['page_size'] = requestParameters['pageSize'];
+        }
+
+        if (requestParameters['search'] != null) {
+            queryParameters['search'] = requestParameters['search'];
+        }
+
+        if (requestParameters['role'] != null) {
+            queryParameters['role'] = requestParameters['role'];
+        }
+
+        if (requestParameters['status'] != null) {
+            queryParameters['status'] = requestParameters['status'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/app/v1/users`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperPaginatedResponseUserListItemResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Find Users
+     */
+    async findUsers(requestParameters: FindUsersRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperPaginatedResponseUserListItemResponse> {
+        const response = await this.findUsersRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Force Set User Password
+     */
+    async forceSetUserPasswordRaw(requestParameters: ForceSetUserPasswordOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperForceSetUserPasswordResponse>> {
+        if (requestParameters['userId'] == null) {
+            throw new runtime.RequiredError(
+                'userId',
+                'Required parameter "userId" was null or undefined when calling forceSetUserPassword().'
+            );
+        }
+
+        if (requestParameters['forceSetUserPasswordRequest'] == null) {
+            throw new runtime.RequiredError(
+                'forceSetUserPasswordRequest',
+                'Required parameter "forceSetUserPasswordRequest" was null or undefined when calling forceSetUserPassword().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/app/v1/users/{user_id}/password-reset`.replace(`{${"user_id"}}`, encodeURIComponent(String(requestParameters['userId']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ForceSetUserPasswordRequestToJSON(requestParameters['forceSetUserPasswordRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperForceSetUserPasswordResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Force Set User Password
+     */
+    async forceSetUserPassword(requestParameters: ForceSetUserPasswordOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperForceSetUserPasswordResponse> {
+        const response = await this.forceSetUserPasswordRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Get Me
      */
     async getMeRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperUserProfileResponse>> {
@@ -248,6 +453,50 @@ export class UserApi extends runtime.BaseAPI {
      */
     async getMyAddress(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperAddressResponse> {
         const response = await this.getMyAddressRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Register Admin
+     */
+    async registerAdminRaw(requestParameters: RegisterAdminOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperUserProfileResponse>> {
+        if (requestParameters['registerAdminRequest'] == null) {
+            throw new runtime.RequiredError(
+                'registerAdminRequest',
+                'Required parameter "registerAdminRequest" was null or undefined when calling registerAdmin().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/app/v1/users/admin`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: RegisterAdminRequestToJSON(requestParameters['registerAdminRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperUserProfileResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Register Admin
+     */
+    async registerAdmin(requestParameters: RegisterAdminOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperUserProfileResponse> {
+        const response = await this.registerAdminRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -357,6 +606,88 @@ export class UserApi extends runtime.BaseAPI {
      */
     async softDeleteMyReview(requestParameters: SoftDeleteMyReviewRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.softDeleteMyReviewRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Soft Delete User
+     */
+    async softDeleteUserRaw(requestParameters: SoftDeleteUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperSoftDeleteUserResponse>> {
+        if (requestParameters['userId'] == null) {
+            throw new runtime.RequiredError(
+                'userId',
+                'Required parameter "userId" was null or undefined when calling softDeleteUser().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/app/v1/users/{user_id}`.replace(`{${"user_id"}}`, encodeURIComponent(String(requestParameters['userId']))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperSoftDeleteUserResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Soft Delete User
+     */
+    async softDeleteUser(requestParameters: SoftDeleteUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperSoftDeleteUserResponse> {
+        const response = await this.softDeleteUserRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Suspend User
+     */
+    async suspendUserRaw(requestParameters: SuspendUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperUserProfileResponse>> {
+        if (requestParameters['userId'] == null) {
+            throw new runtime.RequiredError(
+                'userId',
+                'Required parameter "userId" was null or undefined when calling suspendUser().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/app/v1/users/{user_id}/suspend`.replace(`{${"user_id"}}`, encodeURIComponent(String(requestParameters['userId']))),
+            method: 'PATCH',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperUserProfileResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Suspend User
+     */
+    async suspendUser(requestParameters: SuspendUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperUserProfileResponse> {
+        const response = await this.suspendUserRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
@@ -555,6 +886,47 @@ export class UserApi extends runtime.BaseAPI {
      */
     async upsertAddress(requestParameters: UpsertAddressOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperAddressResponse> {
         const response = await this.upsertAddressRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * View User Profile
+     */
+    async viewUserProfileRaw(requestParameters: ViewUserProfileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseWrapperUserProfileResponse>> {
+        if (requestParameters['userId'] == null) {
+            throw new runtime.RequiredError(
+                'userId',
+                'Required parameter "userId" was null or undefined when calling viewUserProfile().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("HTTPBearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/app/v1/users/{user_id}`.replace(`{${"user_id"}}`, encodeURIComponent(String(requestParameters['userId']))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseWrapperUserProfileResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * View User Profile
+     */
+    async viewUserProfile(requestParameters: ViewUserProfileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseWrapperUserProfileResponse> {
+        const response = await this.viewUserProfileRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
