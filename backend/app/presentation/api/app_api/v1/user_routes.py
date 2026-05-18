@@ -13,6 +13,7 @@ from app.application.dtos.review_dto import (
 from app.application.dtos.user_dto import (
     ChangePasswordCommand,
     GetMyAddressCommand,
+    RegisterAdminCommand,
     RemoveAvatarCommand,
     SoftDeleteMeCommand,
     UpdateAvatarCommand,
@@ -27,6 +28,7 @@ from app.application.use_cases.review import (
 from app.application.use_cases.user import (
     ChangePasswordUseCase,
     GetMyAddressUseCase,
+    RegisterAdminUseCase,
     RemoveAvatarUseCase,
     SoftDeleteMeUseCase,
     UpdateAvatarUseCase,
@@ -37,7 +39,9 @@ from app.core.constants import ALLOWED_AVATAR_TYPES, MAX_AVATAR_BYTES
 from app.core.util import build_public_url, clear_auth_cookie
 from app.domain.exceptions import FileSizeExceededError, InvalidFileTypeError
 from app.presentation.dependencies.deps import (
+    AccountRepo,
     AddressRepo,
+    AdminUser,
     CurrentUser,
     CustomerUser,
     DbSession,
@@ -60,6 +64,7 @@ from app.presentation.schemas.user_schema import (
     AddressResponse,
     ChangePasswordRequest,
     ChangePasswordResponse,
+    RegisterAdminRequest,
     SoftDeleteMeResponse,
     UpdateProfileRequest,
     UpsertAddressRequest,
@@ -386,4 +391,48 @@ async def soft_delete_my_review(
     use_case = SoftDeleteMyReviewUseCase(db_session=db_session, review_repo=review_repo)
     await use_case.execute(
         SoftDeleteMyReviewCommand(user_id=customer_user.id, review_id=review_id)
+    )
+
+
+# user management
+@router.post(
+    "/admin",
+    response_model=UserProfileResponse,
+    status_code=201,
+    operation_id="registerAdmin",
+)
+async def register_admin(
+    body: RegisterAdminRequest,
+    _admin_user: AdminUser,
+    user_repo: UserRepo,
+    account_repo: AccountRepo,
+    hasher: PasswordHasher,
+    db_session: DbSession,
+) -> UserProfileResponse:
+    use_case = RegisterAdminUseCase(
+        db_session=db_session,
+        user_repo=user_repo,
+        account_repo=account_repo,
+        hasher=hasher,
+    )
+    result = await use_case.execute(
+        RegisterAdminCommand(
+            email=str(body.email),
+            password=body.password,
+            full_name=body.full_name,
+            date_of_birth=body.date_of_birth,
+        )
+    )
+    return UserProfileResponse(
+        id=result.id,
+        email=result.email,
+        full_name=result.full_name,
+        date_of_birth=result.date_of_birth,
+        role=result.role,
+        status=result.status,
+        avatar_url=build_public_url(result.avatar_url),
+        have_password=result.have_password,
+        last_login_at=result.last_login_at,
+        created_at=result.created_at,
+        updated_at=result.updated_at,
     )

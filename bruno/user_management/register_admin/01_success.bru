@@ -1,0 +1,55 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/users/admin
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // happy path — register a new admin account
+  {
+    "email": "new.admin@bukoo.com",
+    "password": "Admin@12345",
+    "full_name": "Jane Admin",
+    "date_of_birth": "1990-05-15"
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.role is admin", function() {
+    expect(res.body.data.role).to.equal("admin");
+  });
+  
+  test("data.status is active", function() {
+    expect(res.body.data.status).to.equal("active");
+  });
+  
+  test("data.email matches submitted email", function() {
+    expect(res.body.data.email).to.equal("new.admin@bukoo.com");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

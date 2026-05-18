@@ -4,16 +4,13 @@ from __future__ import annotations
 
 from datetime import date, datetime
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from app.application.validators import DateOfBirth, PasswordStr, PhoneNumber
 from app.core.constants import UserRole, UserStatus
 
 
-class SoftDeleteMeResponse(BaseModel):
-    message: str
-
-
+# requests
 class UpdateProfileRequest(BaseModel):
     full_name: str = Field(..., min_length=2, max_length=255)
     date_of_birth: DateOfBirth | None = Field(
@@ -29,20 +26,6 @@ class UpdateProfileRequest(BaseModel):
         return stripped
 
 
-class UserProfileResponse(BaseModel):
-    id: str
-    email: str
-    full_name: str
-    date_of_birth: date | None
-    role: UserRole
-    status: UserStatus
-    avatar_url: str | None
-    have_password: bool
-    last_login_at: datetime | None
-    created_at: datetime
-    updated_at: datetime
-
-
 class ChangePasswordRequest(BaseModel):
     current_password: PasswordStr = Field(
         ...,
@@ -52,10 +35,6 @@ class ChangePasswordRequest(BaseModel):
         ...,
         description="User new password to be set (plain text, will be hashed server-side)",
     )
-
-
-class ChangePasswordResponse(BaseModel):
-    message: str
 
 
 class UpsertAddressRequest(BaseModel):
@@ -93,6 +72,49 @@ class UpsertAddressRequest(BaseModel):
             stripped = v.strip()
             return stripped if stripped else None
         return v
+
+
+class RegisterAdminRequest(BaseModel):
+    email: EmailStr = Field(..., description="Admin account email address")
+    password: PasswordStr = Field(
+        ...,
+        description="Plain-text password (hashed server-side)",
+    )
+    full_name: str = Field(..., min_length=2, max_length=255)
+    date_of_birth: DateOfBirth | None = Field(
+        None, description="ISO 8601 date (YYYY-MM-DD)"
+    )
+
+    @field_validator("full_name")
+    @classmethod
+    def strip_and_validate_full_name(cls, v: str) -> str:
+        stripped = v.strip()
+        if not stripped:
+            raise ValueError("full_name must not be empty or whitespace.")
+        return stripped
+
+
+# responses
+class UserProfileResponse(BaseModel):
+    id: str
+    email: str
+    full_name: str
+    date_of_birth: date | None
+    role: UserRole
+    status: UserStatus
+    avatar_url: str | None
+    have_password: bool
+    last_login_at: datetime | None
+    created_at: datetime
+    updated_at: datetime
+
+
+class ChangePasswordResponse(BaseModel):
+    message: str
+
+
+class SoftDeleteMeResponse(BaseModel):
+    message: str
 
 
 class AddressResponse(BaseModel):

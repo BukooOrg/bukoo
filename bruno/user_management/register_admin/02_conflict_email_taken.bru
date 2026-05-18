@@ -1,0 +1,43 @@
+meta {
+  name: conflict email taken
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/users/admin
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // duplicate email — run 01_success.bru first to register this email
+  {
+    "email": "new.admin@bukoo.com",
+    "password": "Admin@12345",
+    "full_name": "Jane Admin",
+    "date_of_birth": "1990-05-15"
+  }
+}
+
+tests {
+  test("status 409", function() {
+    expect(res.status).to.equal(409);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is USER_ALREADY_EXISTS", function() {
+    expect(res.body.error.code).to.equal("USER_ALREADY_EXISTS");
+  });
+}

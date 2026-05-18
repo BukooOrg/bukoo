@@ -6,6 +6,7 @@ from datetime import date, datetime
 from app.core.constants import UserRole, UserStatus
 
 
+# commands
 @dataclass(frozen=True)
 class UpdateAvatarCommand:
     user_id: str
@@ -54,6 +55,15 @@ class SoftDeleteMeCommand:
     token_payload: dict[str, object]
 
 
+@dataclass(frozen=True)
+class RegisterAdminCommand:
+    email: str
+    password: str
+    full_name: str
+    date_of_birth: date | None
+
+
+# results
 @dataclass(frozen=True)
 class SoftDeleteMeResult:
     message: str
@@ -139,5 +149,20 @@ class UpsertAddressResult:
     state: str
     postcode: str
     country: str
+    created_at: datetime
+    updated_at: datetime
+
+
+@dataclass(frozen=True)
+class RegisterAdminResult:
+    id: str
+    email: str
+    full_name: str
+    date_of_birth: date | None
+    role: UserRole
+    status: UserStatus
+    avatar_url: str | None
+    have_password: bool
+    last_login_at: datetime | None
     created_at: datetime
     updated_at: datetime
