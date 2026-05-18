@@ -161,6 +161,9 @@ class FakeUserRepository(IUserRepository):
     async def count_including_deleted(self) -> int:
         return len(self._by_id)
 
+    async def find_all(self, query: object, filters: object) -> object:
+        raise NotImplementedError
+
 
 class FakeAccountRepository(IAccountRepository):
     def __init__(self) -> None:

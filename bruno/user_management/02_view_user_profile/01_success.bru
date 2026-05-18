@@ -1,0 +1,41 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/users/{{userId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.id matches requested user", function() {
+    expect(res.body.data.id).to.equal(bru.getEnvVar("targetUserId"));
+  });
+  
+  test("data.email is a string", function() {
+    expect(res.body.data.email).to.be.a("string");
+  });
+  
+  test("data.role is user or admin", function() {
+    expect(["user", "admin"]).to.include(res.body.data.role);
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

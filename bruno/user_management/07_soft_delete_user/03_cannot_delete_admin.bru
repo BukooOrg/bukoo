@@ -1,0 +1,29 @@
+meta {
+  name: cannot delete admin
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{baseUrl}}{{apiBase}}/users/{{userId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+  
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+  
+  test("error code is CANNOT_SOFT_DELETE_ADMIN", function() {
+    expect(res.body.error.code).to.equal("CANNOT_SOFT_DELETE_ADMIN");
+  });
+}

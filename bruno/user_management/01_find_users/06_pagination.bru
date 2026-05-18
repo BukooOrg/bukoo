@@ -1,0 +1,33 @@
+meta {
+  name: second page with page_size 5
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/users?page=2&page_size=5
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("page equals 2", function() {
+    expect(res.body.data.pagination.page).to.equal(2);
+  });
+
+  test("page_size equals 5", function() {
+    expect(res.body.data.pagination.page_size).to.equal(5);
+  });
+
+  test("items count is at most 5", function() {
+    expect(res.body.data.items.length).to.be.at.most(5);
+  });
+}

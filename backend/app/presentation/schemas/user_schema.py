@@ -4,16 +4,16 @@ from __future__ import annotations
 
 from datetime import date, datetime
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
+from app.application.dtos.user_dto import FindUsersCommand
 from app.application.validators import DateOfBirth, PasswordStr, PhoneNumber
 from app.core.constants import UserRole, UserStatus
+from app.core.query_params import PageParams, QueryParams, parse_sort
+from app.presentation.schemas.list_schema import ListQueryRequest
 
 
-class SoftDeleteMeResponse(BaseModel):
-    message: str
-
-
+# requests
 class UpdateProfileRequest(BaseModel):
     full_name: str = Field(..., min_length=2, max_length=255)
     date_of_birth: DateOfBirth | None = Field(
@@ -29,20 +29,6 @@ class UpdateProfileRequest(BaseModel):
         return stripped
 
 
-class UserProfileResponse(BaseModel):
-    id: str
-    email: str
-    full_name: str
-    date_of_birth: date | None
-    role: UserRole
-    status: UserStatus
-    avatar_url: str | None
-    have_password: bool
-    last_login_at: datetime | None
-    created_at: datetime
-    updated_at: datetime
-
-
 class ChangePasswordRequest(BaseModel):
     current_password: PasswordStr = Field(
         ...,
@@ -52,10 +38,6 @@ class ChangePasswordRequest(BaseModel):
         ...,
         description="User new password to be set (plain text, will be hashed server-side)",
     )
-
-
-class ChangePasswordResponse(BaseModel):
-    message: str
 
 
 class UpsertAddressRequest(BaseModel):
@@ -95,6 +77,72 @@ class UpsertAddressRequest(BaseModel):
         return v
 
 
+class FindUsersQueryRequest(ListQueryRequest):
+    role: UserRole | None = None
+    status: UserStatus | None = None
+
+    def to_command(self) -> FindUsersCommand:
+        return FindUsersCommand(
+            query_params=QueryParams(
+                page=PageParams(page=self.page, page_size=self.page_size),
+                sorts=parse_sort(self.sort),
+                search=self.search,
+            ),
+            role=self.role,
+            status=self.status,
+        )
+
+
+class RegisterAdminRequest(BaseModel):
+    email: EmailStr = Field(..., description="Admin account email address")
+    password: PasswordStr = Field(
+        ...,
+        description="Plain-text password (hashed server-side)",
+    )
+    full_name: str = Field(..., min_length=2, max_length=255)
+    date_of_birth: DateOfBirth | None = Field(
+        None, description="ISO 8601 date (YYYY-MM-DD)"
+    )
+
+    @field_validator("full_name")
+    @classmethod
+    def strip_and_validate_full_name(cls, v: str) -> str:
+        stripped = v.strip()
+        if not stripped:
+            raise ValueError("full_name must not be empty or whitespace.")
+        return stripped
+
+
+class ForceSetUserPasswordRequest(BaseModel):
+    new_password: PasswordStr = Field(
+        ...,
+        description="New password to set for the user (plain text, hashed server-side)",
+    )
+
+
+# responses
+class UserProfileResponse(BaseModel):
+    id: str
+    email: str
+    full_name: str
+    date_of_birth: date | None
+    role: UserRole
+    status: UserStatus
+    avatar_url: str | None
+    have_password: bool
+    last_login_at: datetime | None
+    created_at: datetime
+    updated_at: datetime
+
+
+class ChangePasswordResponse(BaseModel):
+    message: str
+
+
+class SoftDeleteMeResponse(BaseModel):
+    message: str
+
+
 class AddressResponse(BaseModel):
     id: str
     user_id: str
@@ -108,3 +156,25 @@ class AddressResponse(BaseModel):
     country: str
     created_at: datetime
     updated_at: datetime
+
+
+class UserListItemResponse(BaseModel):
+    id: str
+    email: str
+    full_name: str
+    date_of_birth: date | None
+    role: UserRole
+    status: UserStatus
+    avatar_url: str | None
+    have_password: bool
+    last_login_at: datetime | None
+    created_at: datetime
+    updated_at: datetime
+
+
+class ForceSetUserPasswordResponse(BaseModel):
+    message: str
+
+
+class SoftDeleteUserResponse(BaseModel):
+    message: str

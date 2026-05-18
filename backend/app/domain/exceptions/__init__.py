@@ -61,7 +61,16 @@ from .storage import (
     StorageNotFoundError,
     StorageUploadError,
 )
-from .user import CustomerOnlyError
+from .user import (
+    CannotActivatePendingUserError,
+    CannotResetAdminPasswordError,
+    CannotSoftDeleteAdminError,
+    CannotSuspendAdminError,
+    CustomerOnlyError,
+    UserAlreadyActiveError,
+    UserAlreadySuspendedError,
+    UserHasNoCredentialAccountError,
+)
 from .wishlist import (
     WishlistItemAlreadyExistsError,
     WishlistItemNotFoundError,
@@ -112,6 +121,13 @@ __all__ = [
     "CacheDeleteError",
     "AdminAccessRequiredError",
     "CustomerOnlyError",
+    "UserAlreadySuspendedError",
+    "CannotSuspendAdminError",
+    "UserAlreadyActiveError",
+    "CannotActivatePendingUserError",
+    "CannotResetAdminPasswordError",
+    "CannotSoftDeleteAdminError",
+    "UserHasNoCredentialAccountError",
     "AddressNotFoundError",
     "CurrentPasswordIncorrectError",
     "PasswordNotSetError",

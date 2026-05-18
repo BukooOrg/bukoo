@@ -1,0 +1,29 @@
+meta {
+  name: user not found
+  type: http
+  seq: 2
+}
+
+delete {
+  url: {{baseUrl}}{{apiBase}}/users/00000000-0000-0000-0000-000000000000
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is USER_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("USER_NOT_FOUND");
+  });
+}

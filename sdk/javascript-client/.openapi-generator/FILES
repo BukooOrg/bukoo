@@ -55,6 +55,8 @@ src/models/CreateReviewResponse.ts
 src/models/DeactivateBookResponse.ts
 src/models/ErrorBody.ts
 src/models/ErrorResponse.ts
+src/models/ForceSetUserPasswordRequest.ts
+src/models/ForceSetUserPasswordResponse.ts
 src/models/ForgotPasswordRequest.ts
 src/models/ForgotPasswordResponse.ts
 src/models/GetMyCartResponse.ts
@@ -76,6 +78,7 @@ src/models/PaginatedResponseBasePublisherResponse.ts
 src/models/PaginatedResponseOrderSummaryResponse.ts
 src/models/PaginatedResponsePublicReviewItemResponse.ts
 src/models/PaginatedResponseReviewWithBookItemResponse.ts
+src/models/PaginatedResponseUserListItemResponse.ts
 src/models/PaginationMeta.ts
 src/models/PayOrderResponse.ts
 src/models/PaymentStatus.ts
@@ -87,6 +90,7 @@ src/models/Price1.ts
 src/models/PriceMax.ts
 src/models/PriceMin.ts
 src/models/PublicReviewItemResponse.ts
+src/models/RegisterAdminRequest.ts
 src/models/RegisterCustomerRequest.ts
 src/models/RegisterResponse.ts
 src/models/ResendVerificationRequest.ts
@@ -110,6 +114,7 @@ src/models/ResponseWrapperCreateReviewResponse.ts
 src/models/ResponseWrapperData.ts
 src/models/ResponseWrapperData1.ts
 src/models/ResponseWrapperDeactivateBookResponse.ts
+src/models/ResponseWrapperForceSetUserPasswordResponse.ts
 src/models/ResponseWrapperForgotPasswordResponse.ts
 src/models/ResponseWrapperGetMyCartResponse.ts
 src/models/ResponseWrapperGetMyWishlistResponse.ts
@@ -124,6 +129,7 @@ src/models/ResponseWrapperPaginatedResponseBasePublisherResponse.ts
 src/models/ResponseWrapperPaginatedResponseOrderSummaryResponse.ts
 src/models/ResponseWrapperPaginatedResponsePublicReviewItemResponse.ts
 src/models/ResponseWrapperPaginatedResponseReviewWithBookItemResponse.ts
+src/models/ResponseWrapperPaginatedResponseUserListItemResponse.ts
 src/models/ResponseWrapperPayOrderResponse.ts
 src/models/ResponseWrapperPlaceOrderResponse.ts
 src/models/ResponseWrapperRegisterResponse.ts
@@ -135,6 +141,7 @@ src/models/ResponseWrapperSoftDeleteCategoryResponse.ts
 src/models/ResponseWrapperSoftDeleteCollectionResponse.ts
 src/models/ResponseWrapperSoftDeleteMeResponse.ts
 src/models/ResponseWrapperSoftDeletePublisherResponse.ts
+src/models/ResponseWrapperSoftDeleteUserResponse.ts
 src/models/ResponseWrapperTokenResponse.ts
 src/models/ResponseWrapperUpdateAuthorResponse.ts
 src/models/ResponseWrapperUpdateBookResponse.ts
@@ -162,6 +169,7 @@ src/models/SoftDeleteCategoryResponse.ts
 src/models/SoftDeleteCollectionResponse.ts
 src/models/SoftDeleteMeResponse.ts
 src/models/SoftDeletePublisherResponse.ts
+src/models/SoftDeleteUserResponse.ts
 src/models/TokenResponse.ts
 src/models/UpdateAuthorRequest.ts
 src/models/UpdateAuthorResponse.ts
@@ -183,6 +191,7 @@ src/models/UpdatePublisherRequest.ts
 src/models/UpdatePublisherResponse.ts
 src/models/UploadBookCoverResponse.ts
 src/models/UpsertAddressRequest.ts
+src/models/UserListItemResponse.ts
 src/models/UserProfileResponse.ts
 src/models/UserRole.ts
 src/models/UserStatus.ts

@@ -11,13 +11,19 @@ from app.application.dtos.review_dto import (
     UpdateMyReviewCommand,
 )
 from app.application.dtos.user_dto import (
+    ActivateUserCommand,
     ChangePasswordCommand,
+    ForceSetUserPasswordCommand,
     GetMyAddressCommand,
+    RegisterAdminCommand,
     RemoveAvatarCommand,
     SoftDeleteMeCommand,
+    SoftDeleteUserCommand,
+    SuspendUserCommand,
     UpdateAvatarCommand,
     UpdateProfileCommand,
     UpsertAddressCommand,
+    ViewUserProfileCommand,
 )
 from app.application.use_cases.review import (
     FindMyReviewsUseCase,
@@ -25,19 +31,28 @@ from app.application.use_cases.review import (
     UpdateMyReviewUseCase,
 )
 from app.application.use_cases.user import (
+    ActivateUserUseCase,
     ChangePasswordUseCase,
+    FindUsersUseCase,
+    ForceSetUserPasswordUseCase,
     GetMyAddressUseCase,
+    RegisterAdminUseCase,
     RemoveAvatarUseCase,
     SoftDeleteMeUseCase,
+    SoftDeleteUserUseCase,
+    SuspendUserUseCase,
     UpdateAvatarUseCase,
     UpdateProfileUseCase,
     UpsertAddressUseCase,
+    ViewUserProfileUseCase,
 )
 from app.core.constants import ALLOWED_AVATAR_TYPES, MAX_AVATAR_BYTES
 from app.core.util import build_public_url, clear_auth_cookie
 from app.domain.exceptions import FileSizeExceededError, InvalidFileTypeError
 from app.presentation.dependencies.deps import (
+    AccountRepo,
     AddressRepo,
+    AdminUser,
     CurrentUser,
     CustomerUser,
     DbSession,
@@ -60,9 +75,15 @@ from app.presentation.schemas.user_schema import (
     AddressResponse,
     ChangePasswordRequest,
     ChangePasswordResponse,
+    FindUsersQueryRequest,
+    ForceSetUserPasswordRequest,
+    ForceSetUserPasswordResponse,
+    RegisterAdminRequest,
     SoftDeleteMeResponse,
+    SoftDeleteUserResponse,
     UpdateProfileRequest,
     UpsertAddressRequest,
+    UserListItemResponse,
     UserProfileResponse,
 )
 
@@ -387,3 +408,201 @@ async def soft_delete_my_review(
     await use_case.execute(
         SoftDeleteMyReviewCommand(user_id=customer_user.id, review_id=review_id)
     )
+
+
+# user management
+@router.get(
+    "",
+    response_model=PaginatedResponse[UserListItemResponse],
+    operation_id="findUsers",
+)
+async def find_users(
+    query_params: Annotated[FindUsersQueryRequest, Depends(FindUsersQueryRequest)],
+    _admin_user: AdminUser,
+    user_repo: UserRepo,
+    db_session: DbSession,
+) -> PaginatedResponse[UserListItemResponse]:
+    use_case = FindUsersUseCase(db_session=db_session, user_repo=user_repo)
+    result = await use_case.execute(query_params.to_command())
+    return PaginatedResponse(
+        items=[
+            UserListItemResponse(
+                id=u.id,
+                email=u.email,
+                full_name=u.full_name,
+                date_of_birth=u.date_of_birth,
+                role=u.role,
+                status=u.status,
+                avatar_url=build_public_url(u.avatar_url),
+                have_password=u.have_password,
+                last_login_at=u.last_login_at,
+                created_at=u.created_at,
+                updated_at=u.updated_at,
+            )
+            for u in result.items
+        ],
+        pagination=PaginationMeta.from_result(result),
+    )
+
+
+@router.get(
+    "/{user_id}", response_model=UserProfileResponse, operation_id="viewUserProfile"
+)
+async def view_user_profile(
+    user_id: str,
+    _admin_user: AdminUser,
+    user_repo: UserRepo,
+    db_session: DbSession,
+) -> UserProfileResponse:
+    use_case = ViewUserProfileUseCase(db_session=db_session, user_repo=user_repo)
+    result = await use_case.execute(ViewUserProfileCommand(user_id=user_id))
+    return UserProfileResponse(
+        id=result.id,
+        email=result.email,
+        full_name=result.full_name,
+        date_of_birth=result.date_of_birth,
+        role=result.role,
+        status=result.status,
+        avatar_url=build_public_url(result.avatar_url),
+        have_password=result.have_password,
+        last_login_at=result.last_login_at,
+        created_at=result.created_at,
+        updated_at=result.updated_at,
+    )
+
+
+@router.post(
+    "/admin",
+    response_model=UserProfileResponse,
+    status_code=201,
+    operation_id="registerAdmin",
+)
+async def register_admin(
+    body: RegisterAdminRequest,
+    _admin_user: AdminUser,
+    user_repo: UserRepo,
+    account_repo: AccountRepo,
+    hasher: PasswordHasher,
+    db_session: DbSession,
+) -> UserProfileResponse:
+    use_case = RegisterAdminUseCase(
+        db_session=db_session,
+        user_repo=user_repo,
+        account_repo=account_repo,
+        hasher=hasher,
+    )
+    result = await use_case.execute(
+        RegisterAdminCommand(
+            email=str(body.email),
+            password=body.password,
+            full_name=body.full_name,
+            date_of_birth=body.date_of_birth,
+        )
+    )
+    return UserProfileResponse(
+        id=result.id,
+        email=result.email,
+        full_name=result.full_name,
+        date_of_birth=result.date_of_birth,
+        role=result.role,
+        status=result.status,
+        avatar_url=build_public_url(result.avatar_url),
+        have_password=result.have_password,
+        last_login_at=result.last_login_at,
+        created_at=result.created_at,
+        updated_at=result.updated_at,
+    )
+
+
+@router.patch(
+    "/{user_id}/suspend",
+    response_model=UserProfileResponse,
+    operation_id="suspendUser",
+)
+async def suspend_user(
+    user_id: str,
+    _admin_user: AdminUser,
+    user_repo: UserRepo,
+    db_session: DbSession,
+) -> UserProfileResponse:
+    use_case = SuspendUserUseCase(db_session=db_session, user_repo=user_repo)
+    result = await use_case.execute(SuspendUserCommand(user_id=user_id))
+    return UserProfileResponse(
+        id=result.id,
+        email=result.email,
+        full_name=result.full_name,
+        date_of_birth=result.date_of_birth,
+        role=result.role,
+        status=result.status,
+        avatar_url=build_public_url(result.avatar_url),
+        have_password=result.have_password,
+        last_login_at=result.last_login_at,
+        created_at=result.created_at,
+        updated_at=result.updated_at,
+    )
+
+
+@router.patch(
+    "/{user_id}/activate",
+    response_model=UserProfileResponse,
+    operation_id="activateUser",
+)
+async def activate_user(
+    user_id: str,
+    _admin_user: AdminUser,
+    user_repo: UserRepo,
+    db_session: DbSession,
+) -> UserProfileResponse:
+    use_case = ActivateUserUseCase(db_session=db_session, user_repo=user_repo)
+    result = await use_case.execute(ActivateUserCommand(user_id=user_id))
+    return UserProfileResponse(
+        id=result.id,
+        email=result.email,
+        full_name=result.full_name,
+        date_of_birth=result.date_of_birth,
+        role=result.role,
+        status=result.status,
+        avatar_url=build_public_url(result.avatar_url),
+        have_password=result.have_password,
+        last_login_at=result.last_login_at,
+        created_at=result.created_at,
+        updated_at=result.updated_at,
+    )
+
+
+@router.post(
+    "/{user_id}/password-reset",
+    response_model=ForceSetUserPasswordResponse,
+    operation_id="forceSetUserPassword",
+)
+async def force_set_user_password(
+    user_id: str,
+    body: ForceSetUserPasswordRequest,
+    _admin_user: AdminUser,
+    user_repo: UserRepo,
+    hasher: PasswordHasher,
+    db_session: DbSession,
+) -> ForceSetUserPasswordResponse:
+    use_case = ForceSetUserPasswordUseCase(
+        db_session=db_session, user_repo=user_repo, hasher=hasher
+    )
+    result = await use_case.execute(
+        ForceSetUserPasswordCommand(user_id=user_id, new_password=body.new_password)
+    )
+    return ForceSetUserPasswordResponse(message=result.message)
+
+
+@router.delete(
+    "/{user_id}",
+    response_model=SoftDeleteUserResponse,
+    operation_id="softDeleteUser",
+)
+async def soft_delete_user(
+    user_id: str,
+    _admin_user: AdminUser,
+    user_repo: UserRepo,
+    db_session: DbSession,
+) -> SoftDeleteUserResponse:
+    use_case = SoftDeleteUserUseCase(db_session=db_session, user_repo=user_repo)
+    result = await use_case.execute(SoftDeleteUserCommand(user_id=user_id))
+    return SoftDeleteUserResponse(message=result.message)

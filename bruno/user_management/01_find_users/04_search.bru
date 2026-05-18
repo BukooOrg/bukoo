@@ -1,0 +1,29 @@
+meta {
+  name: search by name or email
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/users?search=admin
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("data.items is an array", function() {
+    expect(res.body.data.items).to.be.an("array");
+  });
+}

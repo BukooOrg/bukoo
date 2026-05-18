@@ -1,0 +1,38 @@
+meta {
+  name: validation missing fields
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/users/admin
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // missing required fields: email, password, full_name
+  {}
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is VALIDATION_ERROR", function() {
+    expect(res.body.error.code).to.equal("VALIDATION_ERROR");
+  });
+}

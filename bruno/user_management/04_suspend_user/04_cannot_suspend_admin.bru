@@ -1,0 +1,29 @@
+meta {
+  name: cannot suspend admin
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/users/{{userId}}/suspend
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 409", function() {
+    expect(res.status).to.equal(409);
+  });
+  
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+  
+  test("error code is CANNOT_SUSPEND_ADMIN", function() {
+    expect(res.body.error.code).to.equal("CANNOT_SUSPEND_ADMIN");
+  });
+}

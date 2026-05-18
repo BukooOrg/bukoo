@@ -1,0 +1,29 @@
+meta {
+  name: already active
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/users/{{userId}}/activate
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 409", function() {
+    expect(res.status).to.equal(409);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is USER_ALREADY_ACTIVE", function() {
+    expect(res.body.error.code).to.equal("USER_ALREADY_ACTIVE");
+  });
+}

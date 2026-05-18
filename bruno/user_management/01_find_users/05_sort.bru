@@ -1,0 +1,31 @@
+meta {
+  name: sort full_name ascending
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/users?sort=-full_name
+  body: none
+  auth: bearer
+}
+
+params:query {
+  sort: -full_name
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("items are sorted by full_name ascending", function() {
+    const names = res.body.data.items.map(function(u) { return u.full_name; });
+    const sorted = [...names].sort();
+    expect(names).to.deep.equal(sorted);
+  });
+}

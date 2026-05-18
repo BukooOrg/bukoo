@@ -69,6 +69,9 @@ class FakeUserRepository(IUserRepository):
     async def count_including_deleted(self) -> int:
         return len(self._store)
 
+    async def find_all(self, query: object, filters: object) -> object:
+        raise NotImplementedError
+
 
 class FakeStorageService(IStorageService):
     def __init__(self, should_fail: bool = False) -> None:
