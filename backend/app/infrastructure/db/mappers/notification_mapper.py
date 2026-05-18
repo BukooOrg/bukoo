@@ -15,6 +15,7 @@ class NotificationMapper(BaseMapper[NotificationModel, NotificationEntity]):
             _body=model.body,
             _status=model.status,
             _sent_at=model.sent_at,
+            _read_at=model.read_at,
             _created_at=model.created_at,
             # NotificationModel has no updated_at by design.
         )
@@ -30,4 +31,5 @@ class NotificationMapper(BaseMapper[NotificationModel, NotificationEntity]):
         model.id = entity.id
         model.user_id = entity.user_id
         model.sent_at = entity.sent_at
+        model.read_at = entity.read_at
         return model

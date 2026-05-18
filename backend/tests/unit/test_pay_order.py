@@ -121,6 +121,9 @@ class FakeNotificationRepository(INotificationRepository):
     async def save(self, notification: NotificationEntity) -> None:
         self.saved.append(notification)
 
+    async def find_all(self, *args: Any, **kwargs: Any) -> Any:
+        pass
+
 
 class FakeBookRepository(IBookRepository):
     async def find_by_id(self, *args: Any, **kwargs: Any) -> Any:
