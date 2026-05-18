@@ -1,0 +1,37 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/users/{{userId}}/suspend
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.status is suspended", function() {
+    expect(res.body.data.status).to.equal("suspended");
+  });
+  
+  test("data.id matches target user", function() {
+    expect(res.body.data.id).to.equal(bru.getEnvVar("userId"));
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

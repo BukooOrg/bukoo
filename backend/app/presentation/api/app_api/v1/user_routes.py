@@ -16,6 +16,7 @@ from app.application.dtos.user_dto import (
     RegisterAdminCommand,
     RemoveAvatarCommand,
     SoftDeleteMeCommand,
+    SuspendUserCommand,
     UpdateAvatarCommand,
     UpdateProfileCommand,
     UpsertAddressCommand,
@@ -33,6 +34,7 @@ from app.application.use_cases.user import (
     RegisterAdminUseCase,
     RemoveAvatarUseCase,
     SoftDeleteMeUseCase,
+    SuspendUserUseCase,
     UpdateAvatarUseCase,
     UpdateProfileUseCase,
     UpsertAddressUseCase,
@@ -488,6 +490,34 @@ async def register_admin(
             date_of_birth=body.date_of_birth,
         )
     )
+    return UserProfileResponse(
+        id=result.id,
+        email=result.email,
+        full_name=result.full_name,
+        date_of_birth=result.date_of_birth,
+        role=result.role,
+        status=result.status,
+        avatar_url=build_public_url(result.avatar_url),
+        have_password=result.have_password,
+        last_login_at=result.last_login_at,
+        created_at=result.created_at,
+        updated_at=result.updated_at,
+    )
+
+
+@router.patch(
+    "/{user_id}/suspend",
+    response_model=UserProfileResponse,
+    operation_id="suspendUser",
+)
+async def suspend_user(
+    user_id: str,
+    _admin_user: AdminUser,
+    user_repo: UserRepo,
+    db_session: DbSession,
+) -> UserProfileResponse:
+    use_case = SuspendUserUseCase(db_session=db_session, user_repo=user_repo)
+    result = await use_case.execute(SuspendUserCommand(user_id=user_id))
     return UserProfileResponse(
         id=result.id,
         email=result.email,

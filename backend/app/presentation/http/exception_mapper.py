@@ -12,6 +12,7 @@ from app.domain.exceptions import (
     BookAlreadyDeactivatedError,
     BookAlreadyExistsError,
     BookNotFoundError,
+    CannotSuspendAdminError,
     CartItemNotFoundError,
     CartNotFoundError,
     CategoryAlreadyExistsError,
@@ -50,6 +51,7 @@ from app.domain.exceptions import (
     TokenAlreadyRevokedError,
     TokenExpiredError,
     UserAlreadyExistsError,
+    UserAlreadySuspendedError,
     UserAlreadyVerifiedError,
     UserNotFoundError,
     UserNotVerifiedError,
@@ -104,6 +106,16 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_409_CONFLICT,
         ErrorCode.USER_ALREADY_EXISTS,
         "User already exists",
+    ),
+    UserAlreadySuspendedError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.USER_ALREADY_SUSPENDED,
+        "User is already suspended",
+    ),
+    CannotSuspendAdminError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.CANNOT_SUSPEND_ADMIN,
+        "Admin accounts cannot be suspended",
     ),
     UserAlreadyVerifiedError: HttpExceptionMapping(
         status.HTTP_409_CONFLICT,

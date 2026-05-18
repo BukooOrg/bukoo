@@ -61,7 +61,7 @@ from .storage import (
     StorageNotFoundError,
     StorageUploadError,
 )
-from .user import CustomerOnlyError
+from .user import CannotSuspendAdminError, CustomerOnlyError, UserAlreadySuspendedError
 from .wishlist import (
     WishlistItemAlreadyExistsError,
     WishlistItemNotFoundError,
@@ -112,6 +112,8 @@ __all__ = [
     "CacheDeleteError",
     "AdminAccessRequiredError",
     "CustomerOnlyError",
+    "UserAlreadySuspendedError",
+    "CannotSuspendAdminError",
     "AddressNotFoundError",
     "CurrentPasswordIncorrectError",
     "PasswordNotSetError",

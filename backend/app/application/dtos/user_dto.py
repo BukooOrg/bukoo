@@ -78,6 +78,11 @@ class RegisterAdminCommand:
     date_of_birth: date | None
 
 
+@dataclass(frozen=True)
+class SuspendUserCommand:
+    user_id: str
+
+
 # results
 @dataclass(frozen=True)
 class SoftDeleteMeResult:
@@ -198,6 +203,21 @@ class ViewUserProfileResult:
 
 @dataclass(frozen=True)
 class RegisterAdminResult:
+    id: str
+    email: str
+    full_name: str
+    date_of_birth: date | None
+    role: UserRole
+    status: UserStatus
+    avatar_url: str | None
+    have_password: bool
+    last_login_at: datetime | None
+    created_at: datetime
+    updated_at: datetime
+
+
+@dataclass(frozen=True)
+class SuspendUserResult:
     id: str
     email: str
     full_name: str
