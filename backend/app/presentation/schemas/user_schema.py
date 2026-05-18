@@ -174,3 +174,7 @@ class UserListItemResponse(BaseModel):
 
 class ForceSetUserPasswordResponse(BaseModel):
     message: str
+
+
+class SoftDeleteUserResponse(BaseModel):
+    message: str

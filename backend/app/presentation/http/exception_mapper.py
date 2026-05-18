@@ -14,6 +14,7 @@ from app.domain.exceptions import (
     BookNotFoundError,
     CannotActivatePendingUserError,
     CannotResetAdminPasswordError,
+    CannotSoftDeleteAdminError,
     CannotSuspendAdminError,
     CartItemNotFoundError,
     CartNotFoundError,
@@ -135,6 +136,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_409_CONFLICT,
         ErrorCode.CANNOT_RESET_ADMIN_PASSWORD,
         "Admin account passwords cannot be reset by another admin.",
+    ),
+    CannotSoftDeleteAdminError: HttpExceptionMapping(
+        status.HTTP_422_UNPROCESSABLE_ENTITY,
+        ErrorCode.CANNOT_SOFT_DELETE_ADMIN,
+        "Admin accounts cannot be soft-deleted.",
     ),
     UserHasNoCredentialAccountError: HttpExceptionMapping(
         status.HTTP_400_BAD_REQUEST,

@@ -40,3 +40,8 @@ class UserHasNoCredentialAccountError(DomainException):
         super().__init__(
             "This account uses social login and does not have a password to reset."
         )
+
+
+class CannotSoftDeleteAdminError(DomainException):
+    def __init__(self) -> None:
+        super().__init__("Admin accounts cannot be soft-deleted.")

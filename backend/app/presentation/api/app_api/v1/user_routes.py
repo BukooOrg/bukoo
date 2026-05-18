@@ -18,6 +18,7 @@ from app.application.dtos.user_dto import (
     RegisterAdminCommand,
     RemoveAvatarCommand,
     SoftDeleteMeCommand,
+    SoftDeleteUserCommand,
     SuspendUserCommand,
     UpdateAvatarCommand,
     UpdateProfileCommand,
@@ -38,6 +39,7 @@ from app.application.use_cases.user import (
     RegisterAdminUseCase,
     RemoveAvatarUseCase,
     SoftDeleteMeUseCase,
+    SoftDeleteUserUseCase,
     SuspendUserUseCase,
     UpdateAvatarUseCase,
     UpdateProfileUseCase,
@@ -78,6 +80,7 @@ from app.presentation.schemas.user_schema import (
     ForceSetUserPasswordResponse,
     RegisterAdminRequest,
     SoftDeleteMeResponse,
+    SoftDeleteUserResponse,
     UpdateProfileRequest,
     UpsertAddressRequest,
     UserListItemResponse,
@@ -587,3 +590,19 @@ async def force_set_user_password(
         ForceSetUserPasswordCommand(user_id=user_id, new_password=body.new_password)
     )
     return ForceSetUserPasswordResponse(message=result.message)
+
+
+@router.delete(
+    "/{user_id}",
+    response_model=SoftDeleteUserResponse,
+    operation_id="softDeleteUser",
+)
+async def soft_delete_user(
+    user_id: str,
+    _admin_user: AdminUser,
+    user_repo: UserRepo,
+    db_session: DbSession,
+) -> SoftDeleteUserResponse:
+    use_case = SoftDeleteUserUseCase(db_session=db_session, user_repo=user_repo)
+    result = await use_case.execute(SoftDeleteUserCommand(user_id=user_id))
+    return SoftDeleteUserResponse(message=result.message)
