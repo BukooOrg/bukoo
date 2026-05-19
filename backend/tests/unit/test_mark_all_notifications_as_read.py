@@ -61,6 +61,9 @@ class FakeNotificationRepository(INotificationRepository):
     async def mark_all_as_read_user_id(self, user_id: str) -> int:
         return self._marked_count
 
+    async def delete(self, notification_id: str) -> None:
+        raise NotImplementedError
+
 
 class FakeUserRepository(IUserRepository):
     def __init__(self, user: UserEntity | None = None) -> None:

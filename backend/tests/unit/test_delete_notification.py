@@ -5,12 +5,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from app.application.dtos.notification_dto import (
-    MarkNotificationAsReadCommand,
-    MarkNotificationResult,
-)
-from app.application.use_cases.notification.mark_notification_as_read import (
-    MarkNotificationAsReadUseCase,
+from app.application.dtos.notification_dto import DeleteNotificationCommand
+from app.application.use_cases.notification.delete_notification import (
+    DeleteNotificationUseCase,
 )
 from app.core.constants import NotificationStatus
 from app.core.query_params import PaginatedResult, QueryParams
@@ -23,7 +20,6 @@ from app.domain.repositories.notification_repository import NotificationFilters
 def _make_notification(
     notification_id: str = "notif-001",
     user_id: str = "user-001",
-    read_at: datetime | None = None,
 ) -> NotificationEntity:
     now = datetime.now(UTC)
     return NotificationEntity(
@@ -35,22 +31,25 @@ def _make_notification(
         _created_at=now,
         _sent_at=None,
         _user_id=user_id,
-        _read_at=read_at,
+        _read_at=None,
     )
 
 
 class FakeNotificationRepository(INotificationRepository):
     def __init__(self, notification: NotificationEntity | None = None) -> None:
         self._notification = notification
-        self.saved: NotificationEntity | None = None
+        self.deleted_ids: list[str] = []
 
     async def find_by_id(self, notification_id: str) -> NotificationEntity | None:
         if self._notification and self._notification.id == notification_id:
             return self._notification
         return None
 
+    async def delete(self, notification_id: str) -> None:
+        self.deleted_ids.append(notification_id)
+
     async def save(self, notification: NotificationEntity) -> None:
-        self.saved = notification
+        raise NotImplementedError
 
     async def find_all(
         self, query: QueryParams, filters: NotificationFilters
@@ -63,18 +62,13 @@ class FakeNotificationRepository(INotificationRepository):
     async def mark_all_as_read_user_id(self, user_id: str) -> int:
         raise NotImplementedError
 
-    async def delete(self, notification_id: str) -> None:
-        raise NotImplementedError
-
 
 def _make_use_case(
     notification: NotificationEntity | None = None,
-) -> tuple[MarkNotificationAsReadUseCase, AsyncMock, FakeNotificationRepository]:
+) -> tuple[DeleteNotificationUseCase, AsyncMock, FakeNotificationRepository]:
     db_session = AsyncMock()
     repo = FakeNotificationRepository(notification=notification)
-    use_case = MarkNotificationAsReadUseCase(
-        db_session=db_session, notification_repo=repo
-    )
+    use_case = DeleteNotificationUseCase(db_session=db_session, notification_repo=repo)
     return use_case, db_session, repo
 
 
@@ -82,8 +76,8 @@ def _cmd(
     notification_id: str = "notif-001",
     user_id: str = "user-001",
     is_admin: bool = False,
-) -> MarkNotificationAsReadCommand:
-    return MarkNotificationAsReadCommand(
+) -> DeleteNotificationCommand:
+    return DeleteNotificationCommand(
         notification_id=notification_id,
         user_id=user_id,
         is_admin=is_admin,
@@ -91,28 +85,32 @@ def _cmd(
 
 
 @pytest.mark.unit
-class TestMarkNotificationAsReadUseCase:
-    async def test_marks_unread_notification_as_read(self) -> None:
-        notification = _make_notification(read_at=None)
-        use_case, _, _ = _make_use_case(notification=notification)
+class TestDeleteNotificationUseCase:
+    async def test_returns_none_and_calls_delete_with_correct_id(self) -> None:
+        notification = _make_notification()
+        use_case, _, repo = _make_use_case(notification=notification)
 
         result = await use_case.execute(_cmd())
 
-        assert isinstance(result, MarkNotificationResult)
-        assert result.is_read is True
-        assert result.read_at is not None
+        assert result is None
+        assert repo.deleted_ids == ["notif-001"]
 
-    async def test_idempotent_when_already_read(self) -> None:
-        already_read_at = datetime(2026, 1, 10, 12, 0, 0, tzinfo=UTC)
-        notification = _make_notification(read_at=already_read_at)
-        use_case, db_session, repo = _make_use_case(notification=notification)
+    async def test_admin_can_delete_another_users_notification(self) -> None:
+        notification = _make_notification(user_id="user-999")
+        use_case, _, repo = _make_use_case(notification=notification)
 
-        result = await use_case.execute(_cmd())
+        result = await use_case.execute(_cmd(user_id="admin-001", is_admin=True))
 
-        assert result.is_read is True
-        assert result.read_at == already_read_at
-        db_session.commit.assert_not_called()
-        assert repo.saved is None
+        assert result is None
+        assert "notif-001" in repo.deleted_ids
+
+    async def test_commit_called_exactly_once_on_success(self) -> None:
+        notification = _make_notification()
+        use_case, db_session, _ = _make_use_case(notification=notification)
+
+        await use_case.execute(_cmd())
+
+        db_session.commit.assert_awaited_once()
 
     async def test_raises_not_found_when_notification_missing(self) -> None:
         use_case, _, _ = _make_use_case(notification=None)
@@ -120,36 +118,28 @@ class TestMarkNotificationAsReadUseCase:
         with pytest.raises(NotificationNotFoundError):
             await use_case.execute(_cmd(notification_id="does-not-exist"))
 
-    async def test_raises_not_found_for_other_users_notification_when_not_admin(
-        self,
-    ) -> None:
+    async def test_raises_not_found_when_user_does_not_own_notification(self) -> None:
         notification = _make_notification(user_id="user-999")
         use_case, _, _ = _make_use_case(notification=notification)
 
         with pytest.raises(NotificationNotFoundError):
             await use_case.execute(_cmd(user_id="user-001", is_admin=False))
 
-    async def test_admin_can_mark_other_users_notification_as_read(self) -> None:
-        notification = _make_notification(user_id="user-999", read_at=None)
-        use_case, _, _ = _make_use_case(notification=notification)
+    async def test_delete_not_called_when_existence_check_fails(self) -> None:
+        use_case, db_session, repo = _make_use_case(notification=None)
 
-        result = await use_case.execute(_cmd(user_id="admin-001", is_admin=True))
+        with pytest.raises(NotificationNotFoundError):
+            await use_case.execute(_cmd(notification_id="does-not-exist"))
 
-        assert result.is_read is True
-        assert result.read_at is not None
+        assert repo.deleted_ids == []
+        db_session.commit.assert_not_called()
 
-    async def test_commit_called_exactly_once_on_mutation(self) -> None:
-        notification = _make_notification(read_at=None)
-        use_case, db_session, _ = _make_use_case(notification=notification)
+    async def test_delete_not_called_when_ownership_check_fails(self) -> None:
+        notification = _make_notification(user_id="user-999")
+        use_case, db_session, repo = _make_use_case(notification=notification)
 
-        await use_case.execute(_cmd())
+        with pytest.raises(NotificationNotFoundError):
+            await use_case.execute(_cmd(user_id="user-001", is_admin=False))
 
-        db_session.commit.assert_awaited_once()
-
-    async def test_commit_not_called_when_already_read(self) -> None:
-        notification = _make_notification(read_at=datetime.now(UTC))
-        use_case, db_session, _ = _make_use_case(notification=notification)
-
-        await use_case.execute(_cmd())
-
+        assert repo.deleted_ids == []
         db_session.commit.assert_not_called()

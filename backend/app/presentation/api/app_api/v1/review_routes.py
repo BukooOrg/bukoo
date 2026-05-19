@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 
 from app.application.dtos.review_dto import (
     HideOrRestoreReviewCommand,
@@ -114,6 +114,7 @@ async def soft_delete_review(
     _admin_user: AdminUser,
     review_repo: ReviewRepo,
     db_session: DbSession,
-) -> None:
+) -> Response:
     use_case = SoftDeleteReviewUseCase(db_session=db_session, review_repo=review_repo)
     await use_case.execute(SoftDeleteReviewCommand(review_id=review_id))
+    return Response(status_code=204)

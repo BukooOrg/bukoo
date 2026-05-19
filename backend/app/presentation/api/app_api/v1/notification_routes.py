@@ -2,14 +2,16 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Response
 
 from app.application.dtos.notification_dto import (
+    DeleteNotificationCommand,
     GetUnreadNotificationCountCommand,
     MarkAllNotificationsAsReadCommand,
     MarkNotificationAsReadCommand,
 )
 from app.application.use_cases.notification import (
+    DeleteNotificationUseCase,
     FindNotificationsUseCase,
     GetUnreadNotificationCountUseCase,
     MarkAllNotificationsAsReadUseCase,
@@ -146,3 +148,28 @@ async def mark_all_notifications_as_read(
         )
     )
     return MarkAllNotificationsAsReadResponse(marked_count=result.marked_count)
+
+
+@router.delete(
+    "/{notification_id}",
+    status_code=204,
+    response_model=None,
+    operation_id="deleteNotification",
+)
+async def delete_notification(
+    notification_id: str,
+    current_user: CurrentUser,
+    notification_repo: NotificationRepo,
+    db_session: DbSession,
+) -> Response:
+    use_case = DeleteNotificationUseCase(
+        db_session=db_session, notification_repo=notification_repo
+    )
+    await use_case.execute(
+        DeleteNotificationCommand(
+            user_id=current_user.id,
+            is_admin=current_user.role == UserRole.ADMIN,
+            notification_id=notification_id,
+        )
+    )
+    return Response(status_code=204)

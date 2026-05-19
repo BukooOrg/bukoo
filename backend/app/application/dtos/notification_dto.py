@@ -33,6 +33,13 @@ class MarkAllNotificationsAsReadCommand:
     target_user_id: str | None = None
 
 
+@dataclass(frozen=True)
+class DeleteNotificationCommand:
+    user_id: str
+    notification_id: str
+    is_admin: bool
+
+
 # results
 @dataclass(frozen=True)
 class BaseNotificationItem:

@@ -152,6 +152,9 @@ class FakeNotificationRepository(INotificationRepository):
     async def mark_all_as_read_user_id(self, user_id: str) -> int:
         raise NotImplementedError
 
+    async def delete(self, notification_id: str) -> None:
+        raise NotImplementedError
+
 
 # ---------------------------------------------------------------------------
 # Factory

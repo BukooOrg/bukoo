@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, ClassVar, override
 
-from sqlalchemy import ColumnElement, and_, func, select, update
+from sqlalchemy import ColumnElement, and_, delete, func, select, update
 from sqlalchemy.engine import CursorResult
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute
@@ -118,3 +118,8 @@ class NotificationRepositoryImpl(INotificationRepository):
         )
         cursor: CursorResult[Any] = await self._session.execute(stmt)  # type: ignore[assignment]
         return cursor.rowcount
+
+    @override
+    async def delete(self, notification_id: str) -> None:
+        stmt = delete(NotificationModel).where(NotificationModel.id == notification_id)
+        await self._session.execute(stmt)
