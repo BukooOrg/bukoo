@@ -1,9 +1,9 @@
-import Cookies from 'js-cookie';
+import { getToken } from './apiClient';
 
-const API_BASE_URL = '/api'; // Vite proxy handles this in dev, Flask static in prod
+const API_BASE_URL = '/api';
 
 export async function apiFetch(endpoint, options = {}) {
-  const token = Cookies.get('jwt');
+  const token = getToken();
 
   const headers = {
     'Content-Type': 'application/json',

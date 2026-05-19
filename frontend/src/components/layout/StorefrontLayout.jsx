@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Toaster } from 'sonner';
 
+import { SkipLink } from '@/components/ui/misc/skip-link';
 import { getCollections } from '@/lib/sfcc';
 
 import { Footer } from './Footer';
@@ -28,13 +29,14 @@ export function StorefrontLayout() {
 
   return (
     <div className='flex flex-col min-h-screen font-sans antialiased bg-background text-foreground'>
+      <SkipLink />
       <Header />
       {!isAccountPage && (
         <div className='mt-24 md:mt-32'>
           <GenreNav collections={collections} activeHandle={activeHandle} />
         </div>
       )}
-      <main className='min-h-screen pt-0'>
+      <main id='main-content' className='min-h-screen pt-0'>
         <Outlet />
       </main>
       {!isAccountPage && <Footer />}

@@ -188,7 +188,7 @@ export default function BookNewPage() {
   }
 
   return (
-    <div className='space-y-8'>
+    <div className='space-y-8 max-w-2xl'>
       <Link
         to='/admin/books'
         className='inline-flex items-center gap-2 text-xs font-sans font-black uppercase tracking-widest text-primary/40 hover:text-primary transition-colors'>

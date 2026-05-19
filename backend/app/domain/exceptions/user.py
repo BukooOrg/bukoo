@@ -45,3 +45,10 @@ class UserHasNoCredentialAccountError(DomainException):
 class CannotSoftDeleteAdminError(DomainException):
     def __init__(self) -> None:
         super().__init__("Admin accounts cannot be soft-deleted.")
+
+
+class CannotDeleteSelfError(DomainException):
+    def __init__(self) -> None:
+        super().__init__(
+            "You cannot delete your own account. Use account settings instead."
+        )

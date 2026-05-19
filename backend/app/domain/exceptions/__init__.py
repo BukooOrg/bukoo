@@ -65,6 +65,7 @@ from .storage import (
 )
 from .user import (
     CannotActivatePendingUserError,
+    CannotDeleteSelfError,
     CannotResetAdminPasswordError,
     CannotSoftDeleteAdminError,
     CannotSuspendAdminError,
@@ -130,6 +131,7 @@ __all__ = [
     "CannotActivatePendingUserError",
     "CannotResetAdminPasswordError",
     "CannotSoftDeleteAdminError",
+    "CannotDeleteSelfError",
     "UserHasNoCredentialAccountError",
     "AddressNotFoundError",
     "CurrentPasswordIncorrectError",

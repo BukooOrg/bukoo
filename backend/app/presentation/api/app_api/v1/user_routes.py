@@ -600,10 +600,12 @@ async def force_set_user_password(
 )
 async def soft_delete_user(
     user_id: str,
-    _admin_user: AdminUser,
+    admin_user: AdminUser,
     user_repo: UserRepo,
     db_session: DbSession,
 ) -> SoftDeleteUserResponse:
     use_case = SoftDeleteUserUseCase(db_session=db_session, user_repo=user_repo)
-    result = await use_case.execute(SoftDeleteUserCommand(user_id=user_id))
+    result = await use_case.execute(
+        SoftDeleteUserCommand(user_id=user_id, actor_id=admin_user.id)
+    )
     return SoftDeleteUserResponse(message=result.message)

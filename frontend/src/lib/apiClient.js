@@ -16,15 +16,32 @@ import {
 } from '@bukoo/api-client';
 import Cookies from 'js-cookie';
 
+const TOKEN_KEY = 'bukoo_jwt';
+
+export function getToken() {
+  const sessionToken = sessionStorage.getItem(TOKEN_KEY);
+  if (sessionToken) return sessionToken;
+  return Cookies.get('jwt') || null;
+}
+
+export function setToken(token) {
+  sessionStorage.setItem(TOKEN_KEY, token);
+}
+
+export function clearToken() {
+  sessionStorage.removeItem(TOKEN_KEY);
+  Cookies.remove('jwt');
+}
+
 const configuration = new Configuration({
   basePath: '',
   middleware: [
     {
       pre: async (context) => {
-        const token = Cookies.get('jwt');
+        const token = getToken();
         if (token) {
           context.init.headers = {
-            ...context.init.headers,
+            ...(context.init.headers || {}),
             Authorization: `Bearer ${token}`,
           };
         }
@@ -53,7 +70,7 @@ export async function uploadBookCover(bookId, file) {
   formData.append('file', file);
 
   const headers = {};
-  const token = Cookies.get('jwt');
+  const token = getToken();
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }

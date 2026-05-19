@@ -12,6 +12,7 @@ vi.mock('@/lib/apiClient', () => ({
   userApi: {
     getMe: vi.fn(),
   },
+  clearToken: vi.fn(),
 }));
 
 function TestConsumer() {
