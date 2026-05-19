@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/context/AuthContext';
+import { userApi } from '@/lib/apiClient';
 
 const ERROR_MESSAGES = {
   OAUTH_STATE_INVALID: 'Your login session expired or was invalid. Please try again.',
@@ -28,11 +29,24 @@ export default function OAuthCallbackPage() {
       return;
     }
 
-    login({ authenticated: true });
-    setStatus('success');
+    // OAuth callback sets HTTP-only cookie server-side.
+    // The cookie-based auth middleware will pick it up automatically.
+    async function completeOAuth() {
+      try {
+        const userData = await userApi.getMe();
+        login(userData.data);
+        setStatus('success');
+        setTimeout(
+          () => navigate(userData.data?.role === 'admin' ? '/admin' : '/', { replace: true }),
+          1500
+        );
+      } catch {
+        setErrorMsg('Failed to complete sign-in. Please try again.');
+        setStatus('error');
+      }
+    }
 
-    const timer = setTimeout(() => navigate('/', { replace: true }), 1500);
-    return () => clearTimeout(timer);
+    completeOAuth();
   }, []);
 
   return (

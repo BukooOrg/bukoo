@@ -78,7 +78,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className='space-y-8'>
+    <div className='space-y-8 max-w-2xl'>
       <div className='text-center pt-8'>
         <h1 className='text-4xl font-serif font-black mb-2 text-primary tracking-tighter'>
           Profile

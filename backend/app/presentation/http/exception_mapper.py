@@ -14,6 +14,7 @@ from app.domain.exceptions import (
     BookAlreadyExistsError,
     BookNotFoundError,
     CannotActivatePendingUserError,
+    CannotDeleteSelfError,
     CannotResetAdminPasswordError,
     CannotSoftDeleteAdminError,
     CannotSuspendAdminError,
@@ -149,6 +150,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_422_UNPROCESSABLE_ENTITY,
         ErrorCode.CANNOT_SOFT_DELETE_ADMIN,
         "Admin accounts cannot be soft-deleted.",
+    ),
+    CannotDeleteSelfError: HttpExceptionMapping(
+        status.HTTP_409_CONFLICT,
+        ErrorCode.CANNOT_DELETE_SELF,
+        "You cannot delete your own account. Use account settings instead.",
     ),
     UserHasNoCredentialAccountError: HttpExceptionMapping(
         status.HTTP_400_BAD_REQUEST,

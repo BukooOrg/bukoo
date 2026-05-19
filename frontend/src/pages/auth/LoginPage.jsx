@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '@/context/AuthContext';
-import { authApi } from '@/lib/apiClient';
+import { authApi, setToken, userApi } from '@/lib/apiClient';
 
 function GoogleIcon() {
   return (
@@ -64,11 +64,16 @@ export default function LoginPage() {
         },
       });
 
+      // Store JWT in sessionStorage for SDK middleware to use
+      setToken(res.data.accessToken);
+
+      // Fetch user data to determine role before navigating
+      const userData = await userApi.getMe();
       if (login) {
-        login(res.data);
+        login(userData.data);
       }
 
-      navigate(res.data?.role === 'admin' ? '/admin' : '/');
+      navigate(userData.data?.role === 'admin' ? '/admin' : '/');
     } catch (err) {
       console.error(err);
       if (err instanceof ResponseError) {

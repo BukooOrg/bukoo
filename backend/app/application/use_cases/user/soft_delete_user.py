@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.application.dtos.user_dto import SoftDeleteUserCommand, SoftDeleteUserResult
 from app.core.constants import UserRole
 from app.domain.exceptions import UserNotFoundError
-from app.domain.exceptions.user import CannotSoftDeleteAdminError
+from app.domain.exceptions.user import CannotDeleteSelfError, CannotSoftDeleteAdminError
 from app.domain.repositories.user_repository import IUserRepository
 
 from ..base import BaseUseCase
@@ -20,6 +20,9 @@ class SoftDeleteUserUseCase(BaseUseCase):
 
     @override
     async def execute(self, cmd: SoftDeleteUserCommand) -> SoftDeleteUserResult:
+        if cmd.user_id == cmd.actor_id:
+            raise CannotDeleteSelfError()
+
         user = await self._user_repo.find_by_id(cmd.user_id)
         if user is None:
             raise UserNotFoundError(cmd.user_id)

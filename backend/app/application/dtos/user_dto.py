@@ -97,6 +97,7 @@ class ForceSetUserPasswordCommand:
 @dataclass(frozen=True)
 class SoftDeleteUserCommand:
     user_id: str
+    actor_id: str
 
 
 # results

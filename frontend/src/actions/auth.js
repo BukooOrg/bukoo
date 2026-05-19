@@ -1,29 +1,24 @@
-import Cookies from 'js-cookie';
+import { setToken, clearToken } from '@/lib/apiClient';
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = '/api/app/v1';
 
 export async function loginAction(email, password) {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     });
 
-    const data = await response.json();
+    const result = await response.json();
 
     if (!response.ok) {
-      return { error: data.detail || 'Authentication failed' };
+      return { error: result.error?.message || 'Authentication failed' };
     }
 
-    // Set JWT in cookie
-    Cookies.set('jwt', data.token, {
-      expires: 1, // 1 day
-      secure: window.location.protocol === 'https:',
-      sameSite: 'strict',
-    });
+    setToken(result.data.access_token);
 
-    return { success: true, user: data.user };
+    return { success: true, data: result.data };
   } catch (err) {
     console.error(err);
     return { error: 'Could not connect to the authentication server' };
@@ -32,26 +27,25 @@ export async function loginAction(email, password) {
 
 export async function registerAction(email, password, fullName) {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, full_name: fullName }),
+      body: JSON.stringify({
+        email,
+        password,
+        confirm_password: password,
+        full_name: fullName,
+        date_of_birth: '1990-01-01',
+      }),
     });
 
-    const data = await response.json();
+    const result = await response.json();
 
     if (!response.ok) {
-      return { error: data.detail || 'Registration failed' };
+      return { error: result.error?.message || 'Registration failed' };
     }
 
-    // Set JWT in cookie
-    Cookies.set('jwt', data.token, {
-      expires: 1,
-      secure: window.location.protocol === 'https:',
-      sameSite: 'strict',
-    });
-
-    return { success: true, user: data.user };
+    return { success: true, data: result.data };
   } catch (err) {
     console.error(err);
     return { error: 'Could not connect to the authentication server' };
@@ -59,7 +53,14 @@ export async function registerAction(email, password, fullName) {
 }
 
 export async function logoutAction() {
-  Cookies.remove('jwt');
-  Cookies.remove('cartId');
+  clearToken();
+  try {
+    await fetch(`${API_BASE_URL}/auth/logout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch {
+    // Ignore errors during logout
+  }
   return { success: true };
 }

@@ -19,7 +19,9 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/data-display/badge';
+import { DetailSkeleton } from '@/components/ui/feedback/page-skeleton';
 import { Button } from '@/components/ui/forms/button';
+import { BreadcrumbNav } from '@/components/ui/navigation/breadcrumb-nav';
 import {
   Dialog,
   DialogContent,
@@ -268,13 +270,7 @@ export default function BookDetailPage() {
     'w-full pl-12 pr-4 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm';
 
   if (loading) {
-    return (
-      <div className='animate-pulse space-y-4'>
-        <div className='h-8 bg-primary/5 rounded-xl w-48' />
-        <div className='h-64 bg-primary/5 rounded-2xl' />
-        <div className='h-48 bg-primary/5 rounded-2xl' />
-      </div>
-    );
+    return <DetailSkeleton sections={3} />;
   }
 
   if (!book) {
@@ -295,7 +291,9 @@ export default function BookDetailPage() {
   }
 
   return (
-    <div className='space-y-8'>
+    <div className='space-y-8 max-w-4xl'>
+      <BreadcrumbNav />
+
       {/* Header */}
       <div className='text-center pt-8'>
         <h1 className='text-4xl font-serif font-black mb-2 text-primary tracking-tighter'>
