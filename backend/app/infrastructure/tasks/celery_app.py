@@ -15,11 +15,15 @@ TASK_QUEUES = (
 
 TASK_ROUTES = {
     "email.*": {"queue": "mail", "routing_key": "mail"},
+    "notification.*": {"queue": "default", "routing_key": "default"},
 }
 
 
 def create_celery() -> Celery:
-    tasks = ["app.infrastructure.tasks.email_tasks"]
+    tasks = [
+        "app.infrastructure.tasks.email_tasks",
+        "app.infrastructure.tasks.notification_tasks",
+    ]
 
     configs = get_configs()
     app = Celery(
