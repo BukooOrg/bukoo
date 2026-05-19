@@ -35,6 +35,7 @@ from app.domain.exceptions import (
     InvalidTokenError,
     NewPasswordSameAsCurrentError,
     NoAuthHeaderError,
+    NotificationNotFoundError,
     OAuthProviderNotFoundError,
     OAuthStateInvalidError,
     OrderAccessDeniedError,
@@ -396,5 +397,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_404_NOT_FOUND,
         ErrorCode.WISHLIST_ITEM_NOT_FOUND,
         "Wishlist item not found.",
+    ),
+    # notification
+    NotificationNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.NOTIFICATION_NOT_FOUND,
+        "Notification not found",
     ),
 }

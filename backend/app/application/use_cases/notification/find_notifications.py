@@ -5,8 +5,8 @@ from typing import override
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.dtos.notification_dto import (
+    BaseNotificationItem,
     FindNotificationsCommand,
-    NotificationItem,
 )
 from app.core.query_params import PaginatedResult
 from app.domain.repositories import INotificationRepository
@@ -27,7 +27,7 @@ class FindNotificationsUseCase(BaseUseCase):
     @override
     async def execute(
         self, cmd: FindNotificationsCommand
-    ) -> PaginatedResult[NotificationItem]:
+    ) -> PaginatedResult[BaseNotificationItem]:
         result = await self._notification_repo.find_all(
             query=cmd.query_params,
             filters=NotificationFilters(user_id=cmd.user_id, is_read=cmd.is_read),
@@ -35,7 +35,7 @@ class FindNotificationsUseCase(BaseUseCase):
 
         return PaginatedResult(
             items=[
-                NotificationItem(
+                BaseNotificationItem(
                     id=n.id,
                     user_id=n.user_id,
                     type=n.type,

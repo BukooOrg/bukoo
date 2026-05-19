@@ -30,7 +30,7 @@ class UnreadNotificationCountResponse(BaseModel):
     unread_count: int
 
 
-class NotificationItemResponse(BaseModel):
+class BaseNotificationResponse(BaseModel):
     id: str
     user_id: str | None
     type: str
@@ -39,3 +39,11 @@ class NotificationItemResponse(BaseModel):
     is_read: bool
     read_at: datetime | None
     created_at: datetime
+
+
+class BaseNotificationItemResponse(BaseNotificationResponse):
+    pass
+
+
+class MarkNotificationAsReadResponse(BaseNotificationResponse):
+    pass

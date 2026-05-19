@@ -68,10 +68,14 @@ class NotificationEntity:
 
     # methods
     def mark_sent(self) -> None:
-        """Record a successful dispatch — stamps sent_at with current UTC time."""
+        """Record a successful dispatch — stamps sent_at with current UTC time in Email notification."""
         self._status = NotificationStatus.SENT
         self._sent_at = datetime.now(UTC)
 
     def mark_failed(self) -> None:
-        """Record a failed dispatch attempt."""
+        """Record a failed dispatch attempt in Email notification."""
         self._status = NotificationStatus.FAILED
+
+    def mark_read(self) -> None:
+        """Mark the notification as read in In-app notification"""
+        self._read_at = datetime.now(UTC)

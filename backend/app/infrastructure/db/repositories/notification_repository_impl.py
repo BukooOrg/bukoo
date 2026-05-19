@@ -83,6 +83,13 @@ class NotificationRepositoryImpl(INotificationRepository):
         )
 
     @override
+    async def find_by_id(self, notification_id: str) -> NotificationEntity | None:
+        stmt = select(NotificationModel).where(NotificationModel.id == notification_id)
+        result = await self._session.execute(stmt)
+        model = result.scalar_one_or_none()
+        return NotificationMapper.to_entity(model) if model else None
+
+    @override
     async def count_unread(self, user_id: str) -> int:
         stmt = (
             select(func.count())

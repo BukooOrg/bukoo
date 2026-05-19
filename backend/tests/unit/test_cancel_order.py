@@ -202,6 +202,9 @@ class FakeNotificationRepository(INotificationRepository):
     def __init__(self) -> None:
         self.saved: list[NotificationEntity] = []
 
+    async def find_by_id(self, notification_id: str) -> NotificationEntity | None:
+        return None
+
     async def save(self, notification: NotificationEntity) -> None:
         self.saved.append(notification)
 

@@ -6,8 +6,8 @@ from unittest.mock import AsyncMock
 import pytest
 
 from app.application.dtos.notification_dto import (
+    BaseNotificationItem,
     FindNotificationsCommand,
-    NotificationItem,
 )
 from app.application.use_cases.notification.find_notifications import (
     FindNotificationsUseCase,
@@ -69,6 +69,9 @@ class FakeNotificationRepository(INotificationRepository):
             page_size=page_size,
         )
 
+    async def find_by_id(self, notification_id: str) -> NotificationEntity | None:
+        raise NotImplementedError
+
     async def save(self, notification: NotificationEntity) -> None:
         raise NotImplementedError
 
@@ -109,7 +112,7 @@ class TestFindNotificationsUseCase:
 
         assert result.total_items == 2
         assert len(result.items) == 2
-        assert all(isinstance(item, NotificationItem) for item in result.items)
+        assert all(isinstance(item, BaseNotificationItem) for item in result.items)
 
     async def test_returns_only_unread_when_is_read_false(self) -> None:
         notifications = [

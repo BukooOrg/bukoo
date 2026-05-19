@@ -42,6 +42,9 @@ class FakeNotificationRepository(INotificationRepository):
     def __init__(self, notifications: list[NotificationEntity] | None = None) -> None:
         self._notifications = notifications or []
 
+    async def find_by_id(self, notification_id: str) -> NotificationEntity | None:
+        raise NotImplementedError
+
     async def save(self, notification: NotificationEntity) -> None:
         raise NotImplementedError
 

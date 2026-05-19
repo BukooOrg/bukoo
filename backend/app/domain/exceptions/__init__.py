@@ -34,6 +34,7 @@ from .cache import CacheDeleteError, CacheReadError, CacheWriteError
 from .cart import CartItemNotFoundError, CartNotFoundError
 from .category import CategoryAlreadyExistsError, CategoryNotFoundError
 from .collection import CollectionAlreadyExistsError, CollectionNotFoundError
+from .notification import NotificationNotFoundError
 from .order import (
     EmptyOrderError,
     OrderAccessDeniedError,
@@ -143,4 +144,5 @@ __all__ = [
     "ReviewAlreadyExistsError",
     "ReviewNotFoundError",
     "ReviewNotOwnedError",
+    "NotificationNotFoundError",
 ]

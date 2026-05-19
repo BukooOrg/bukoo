@@ -25,5 +25,9 @@ class INotificationRepository(ABC):
         pass
 
     @abstractmethod
+    async def find_by_id(self, notification_id: str) -> NotificationEntity | None:
+        pass
+
+    @abstractmethod
     async def count_unread(self, user_id: str) -> int:
         pass
