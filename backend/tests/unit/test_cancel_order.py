@@ -208,6 +208,9 @@ class FakeNotificationRepository(INotificationRepository):
     async def find_all(self, *args: Any, **kwargs: Any) -> Any:
         pass
 
+    async def count_unread(self, *args: Any, **kwargs: Any) -> int:
+        return 0
+
 
 # ---------------------------------------------------------------------------
 # Fixtures

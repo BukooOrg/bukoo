@@ -14,6 +14,11 @@ class FindNotificationsCommand:
     is_read: bool | None = None
 
 
+@dataclass(frozen=True)
+class GetUnreadNotificationCountCommand:
+    user_id: str
+
+
 # results
 @dataclass(frozen=True)
 class NotificationItem:
@@ -25,3 +30,8 @@ class NotificationItem:
     is_read: bool
     read_at: datetime | None
     created_at: datetime
+
+
+@dataclass(frozen=True)
+class GetUnreadNotificationCountResult:
+    unread_count: int

@@ -23,3 +23,7 @@ class INotificationRepository(ABC):
         self, query: QueryParams, filters: NotificationFilters
     ) -> PaginatedResult[NotificationEntity]:
         pass
+
+    @abstractmethod
+    async def count_unread(self, user_id: str) -> int:
+        pass

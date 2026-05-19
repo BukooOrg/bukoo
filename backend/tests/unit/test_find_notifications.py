@@ -72,6 +72,9 @@ class FakeNotificationRepository(INotificationRepository):
     async def save(self, notification: NotificationEntity) -> None:
         raise NotImplementedError
 
+    async def count_unread(self, user_id: str) -> int:
+        raise NotImplementedError
+
 
 def _make_use_case(
     notifications: list[NotificationEntity] | None = None,

@@ -26,6 +26,10 @@ class NotificationListQueryRequest(ListQueryRequest):
 
 
 # responses
+class UnreadNotificationCountResponse(BaseModel):
+    unread_count: int
+
+
 class NotificationItemResponse(BaseModel):
     id: str
     user_id: str | None

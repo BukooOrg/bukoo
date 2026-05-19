@@ -81,3 +81,17 @@ class NotificationRepositoryImpl(INotificationRepository):
             page=query.page.page,
             page_size=query.page.page_size,
         )
+
+    @override
+    async def count_unread(self, user_id: str) -> int:
+        stmt = (
+            select(func.count())
+            .select_from(NotificationModel)
+            .where(
+                and_(
+                    NotificationModel.user_id == user_id,
+                    NotificationModel.read_at.is_(None),
+                )
+            )
+        )
+        return (await self._session.execute(stmt)).scalar_one()

@@ -4,12 +4,17 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from app.application.use_cases.notification import FindNotificationsUseCase
+from app.application.dtos.notification_dto import GetUnreadNotificationCountCommand
+from app.application.use_cases.notification import (
+    FindNotificationsUseCase,
+    GetUnreadNotificationCountUseCase,
+)
 from app.presentation.dependencies.deps import CurrentUser, DbSession, NotificationRepo
 from app.presentation.schemas.list_schema import PaginatedResponse, PaginationMeta
 from app.presentation.schemas.notification_schema import (
     NotificationItemResponse,
     NotificationListQueryRequest,
+    UnreadNotificationCountResponse,
 )
 
 router = APIRouter(prefix="/notifications", tags=["notification"])
@@ -48,3 +53,22 @@ async def find_notifications(
         ],
         pagination=PaginationMeta.from_result(result),
     )
+
+
+@router.get(
+    "/unread-count",
+    response_model=UnreadNotificationCountResponse,
+    operation_id="getUnreadNotificationCount",
+)
+async def get_unread_notification_count(
+    current_user: CurrentUser,
+    notification_repo: NotificationRepo,
+    db_session: DbSession,
+) -> UnreadNotificationCountResponse:
+    use_case = GetUnreadNotificationCountUseCase(
+        db_session=db_session, notification_repo=notification_repo
+    )
+    result = await use_case.execute(
+        GetUnreadNotificationCountCommand(user_id=current_user.id)
+    )
+    return UnreadNotificationCountResponse(unread_count=result.unread_count)
