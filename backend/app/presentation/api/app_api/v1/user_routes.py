@@ -403,11 +403,12 @@ async def soft_delete_my_review(
     customer_user: CustomerUser,
     review_repo: ReviewRepo,
     db_session: DbSession,
-) -> None:
+) -> Response:
     use_case = SoftDeleteMyReviewUseCase(db_session=db_session, review_repo=review_repo)
     await use_case.execute(
         SoftDeleteMyReviewCommand(user_id=customer_user.id, review_id=review_id)
     )
+    return Response(status_code=204)
 
 
 # user management

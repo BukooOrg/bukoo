@@ -124,7 +124,6 @@ class PayOrderUseCase(BaseUseCase):
             payment.mark_success(result.simulated_ref)
             order.update_status(OrderStatus.PAID)
 
-            # todo: decide when to update sent_at
             notification = NotificationEntity(
                 _id=str(uuid7()),
                 _user_id=cmd.user_id,
@@ -175,6 +174,7 @@ class PayOrderUseCase(BaseUseCase):
                 to=cmd.user_email,
                 full_name=cmd.user_full_name,
                 order_id=order.id,
+                notification_id=notification.id,
                 payment_ref=result.simulated_ref or "",
                 payment_method_display=method_display,
                 items=receipt_items,

@@ -1,0 +1,41 @@
+meta {
+  name: admin success
+  type: http
+  seq: 2
+}
+
+patch {
+  url: {{baseUrl}}{{apiBase}}/notifications/{{notificationId}}/read?user_id=019e2181-3987-7a41-bdf8-320254194b03
+  body: none
+  auth: bearer
+}
+
+params:query {
+  user_id: 019e2181-3987-7a41-bdf8-320254194b03
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.is_read is true", function() {
+    expect(res.body.data.is_read).to.be.true;
+  });
+  
+  test("data.read_at is a non-null string", function() {
+    expect(res.body.data.read_at).to.be.a("string");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

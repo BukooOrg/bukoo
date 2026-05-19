@@ -7,6 +7,7 @@ src/apis/CartApi.ts
 src/apis/CategoryApi.ts
 src/apis/CollectionApi.ts
 src/apis/HealthApi.ts
+src/apis/NotificationApi.ts
 src/apis/OrderApi.ts
 src/apis/PublisherApi.ts
 src/apis/ReviewApi.ts
@@ -24,6 +25,7 @@ src/models/AuthorListItemResponse.ts
 src/models/BaseBookResponse.ts
 src/models/BaseCartItemResponse.ts
 src/models/BaseCategoryResponse.ts
+src/models/BaseNotificationItemResponse.ts
 src/models/BaseOrderItemResponse.ts
 src/models/BasePublisherResponse.ts
 src/models/BaseReviewBookItem.ts
@@ -67,6 +69,8 @@ src/models/HideOrRestoreReviewRequest.ts
 src/models/HideOrRestoreReviewResponse.ts
 src/models/LoginRequest.ts
 src/models/LogoutResponse.ts
+src/models/MarkAllNotificationsAsReadResponse.ts
+src/models/MarkNotificationAsReadResponse.ts
 src/models/MoveWishlistItemToCartResponse.ts
 src/models/OAuthLoginUrlResponse.ts
 src/models/OnlineBankingPaymentRequest.ts
@@ -74,6 +78,7 @@ src/models/OrderStatus.ts
 src/models/OrderSummaryResponse.ts
 src/models/PaginatedResponseAuthorListItemResponse.ts
 src/models/PaginatedResponseBaseBookResponse.ts
+src/models/PaginatedResponseBaseNotificationItemResponse.ts
 src/models/PaginatedResponseBasePublisherResponse.ts
 src/models/PaginatedResponseOrderSummaryResponse.ts
 src/models/PaginatedResponsePublicReviewItemResponse.ts
@@ -121,10 +126,13 @@ src/models/ResponseWrapperGetMyWishlistResponse.ts
 src/models/ResponseWrapperHealthCheckResponse.ts
 src/models/ResponseWrapperHideOrRestoreReviewResponse.ts
 src/models/ResponseWrapperLogoutResponse.ts
+src/models/ResponseWrapperMarkAllNotificationsAsReadResponse.ts
+src/models/ResponseWrapperMarkNotificationAsReadResponse.ts
 src/models/ResponseWrapperMoveWishlistItemToCartResponse.ts
 src/models/ResponseWrapperOAuthLoginUrlResponse.ts
 src/models/ResponseWrapperPaginatedResponseAuthorListItemResponse.ts
 src/models/ResponseWrapperPaginatedResponseBaseBookResponse.ts
+src/models/ResponseWrapperPaginatedResponseBaseNotificationItemResponse.ts
 src/models/ResponseWrapperPaginatedResponseBasePublisherResponse.ts
 src/models/ResponseWrapperPaginatedResponseOrderSummaryResponse.ts
 src/models/ResponseWrapperPaginatedResponsePublicReviewItemResponse.ts
@@ -143,6 +151,7 @@ src/models/ResponseWrapperSoftDeleteMeResponse.ts
 src/models/ResponseWrapperSoftDeletePublisherResponse.ts
 src/models/ResponseWrapperSoftDeleteUserResponse.ts
 src/models/ResponseWrapperTokenResponse.ts
+src/models/ResponseWrapperUnreadNotificationCountResponse.ts
 src/models/ResponseWrapperUpdateAuthorResponse.ts
 src/models/ResponseWrapperUpdateBookResponse.ts
 src/models/ResponseWrapperUpdateBookStockQuantityResponse.ts
@@ -171,6 +180,7 @@ src/models/SoftDeleteMeResponse.ts
 src/models/SoftDeletePublisherResponse.ts
 src/models/SoftDeleteUserResponse.ts
 src/models/TokenResponse.ts
+src/models/UnreadNotificationCountResponse.ts
 src/models/UpdateAuthorRequest.ts
 src/models/UpdateAuthorResponse.ts
 src/models/UpdateBookRequest.ts

@@ -22,6 +22,7 @@ class NotificationEntity:
     _sent_at: datetime | None
     # user_id is nullable (SET NULL on user deletion; history is kept for audit).
     _user_id: str | None = None
+    _read_at: datetime | None = None
 
     # getters
     @property
@@ -53,15 +54,28 @@ class NotificationEntity:
         return self._sent_at
 
     @property
+    def read_at(self) -> datetime | None:
+        return self._read_at
+
+    @property
     def created_at(self) -> datetime:
         return self._created_at
 
+    # derived property
+    @property
+    def is_read(self) -> bool:
+        return self._read_at is not None
+
     # methods
     def mark_sent(self) -> None:
-        """Record a successful dispatch — stamps sent_at with current UTC time."""
+        """Record a successful dispatch — stamps sent_at with current UTC time in Email notification."""
         self._status = NotificationStatus.SENT
         self._sent_at = datetime.now(UTC)
 
     def mark_failed(self) -> None:
-        """Record a failed dispatch attempt."""
+        """Record a failed dispatch attempt in Email notification."""
         self._status = NotificationStatus.FAILED
+
+    def mark_read(self) -> None:
+        """Mark the notification as read in In-app notification"""
+        self._read_at = datetime.now(UTC)

@@ -137,8 +137,23 @@ class FakeNotificationRepository(INotificationRepository):
     def __init__(self) -> None:
         self.saved: list[NotificationEntity] = []
 
+    async def find_by_id(self, notification_id: str) -> NotificationEntity | None:
+        return None
+
     async def save(self, notification: NotificationEntity) -> None:
         self.saved.append(notification)
+
+    async def find_all(self, *args: Any, **kwargs: Any) -> Any:
+        pass
+
+    async def count_unread(self, *args: Any, **kwargs: Any) -> int:
+        return 0
+
+    async def mark_all_as_read_user_id(self, user_id: str) -> int:
+        raise NotImplementedError
+
+    async def delete(self, notification_id: str) -> None:
+        raise NotImplementedError
 
 
 # ---------------------------------------------------------------------------

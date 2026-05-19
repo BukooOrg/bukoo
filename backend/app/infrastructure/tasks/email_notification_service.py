@@ -11,6 +11,10 @@ from app.application.interfaces.email_notification_service import (
 from app.core.config import get_configs
 from app.core.util import construct_order_ref
 from app.infrastructure.tasks.email_tasks import send_mail
+from app.infrastructure.tasks.notification_tasks import (
+    mark_notification_failed,
+    mark_notification_sent,
+)
 
 _HEADER_BG = "#1a1a2e"
 _CANCEL_ACCENT = "#c0392b"
@@ -126,6 +130,7 @@ class CeleryEmailNotificationService(IEmailNotificationService):
         to: str,
         full_name: str,
         order_id: str,
+        notification_id: str,
         payment_ref: str,
         payment_method_display: str,
         items: list[PaymentReceiptItem],
@@ -223,10 +228,14 @@ class CeleryEmailNotificationService(IEmailNotificationService):
 
 </div>
 """
-        send_mail.delay(
-            to=to,
-            subject=f"Your {brand_name} Receipt — {order_ref}",
-            body_html=body_html,
+        send_mail.apply_async(
+            kwargs={
+                "to": to,
+                "subject": f"Your {brand_name} Receipt — {order_ref}",
+                "body_html": body_html,
+            },
+            link=mark_notification_sent.si(notification_id),
+            link_error=mark_notification_failed.si(notification_id),
         )
 
     @override
@@ -235,6 +244,7 @@ class CeleryEmailNotificationService(IEmailNotificationService):
         to: str,
         full_name: str,
         order_id: str,
+        notification_id: str,
         items: list[PaymentReceiptItem],
         total: Decimal,
         cancelled_at: datetime,
@@ -276,10 +286,14 @@ class CeleryEmailNotificationService(IEmailNotificationService):
 
 </div>
 """
-        send_mail.delay(
-            to=to,
-            subject=f"Your {brand_name} Order {order_ref} Has Been Cancelled",
-            body_html=body_html,
+        send_mail.apply_async(
+            kwargs={
+                "to": to,
+                "subject": f"Your {brand_name} Order {order_ref} Has Been Cancelled",
+                "body_html": body_html,
+            },
+            link=mark_notification_sent.si(notification_id),
+            link_error=mark_notification_failed.si(notification_id),
         )
 
     @override
@@ -288,6 +302,7 @@ class CeleryEmailNotificationService(IEmailNotificationService):
         to: str,
         full_name: str,
         order_id: str,
+        notification_id: str,
         items: list[PaymentReceiptItem],
         total: Decimal,
         shipped_at: datetime,
@@ -320,10 +335,14 @@ class CeleryEmailNotificationService(IEmailNotificationService):
 
 </div>
 """
-        send_mail.delay(
-            to=to,
-            subject=f"Your {brand_name} Order {order_ref} Has Been Shipped",
-            body_html=body_html,
+        send_mail.apply_async(
+            kwargs={
+                "to": to,
+                "subject": f"Your {brand_name} Order {order_ref} Has Been Shipped",
+                "body_html": body_html,
+            },
+            link=mark_notification_sent.si(notification_id),
+            link_error=mark_notification_failed.si(notification_id),
         )
 
     @override
@@ -332,6 +351,7 @@ class CeleryEmailNotificationService(IEmailNotificationService):
         to: str,
         full_name: str,
         order_id: str,
+        notification_id: str,
         items: list[PaymentReceiptItem],
         total: Decimal,
         delivered_at: datetime,
@@ -364,8 +384,12 @@ class CeleryEmailNotificationService(IEmailNotificationService):
 
 </div>
 """
-        send_mail.delay(
-            to=to,
-            subject=f"Your {brand_name} Order {order_ref} Has Been Delivered",
-            body_html=body_html,
+        send_mail.apply_async(
+            kwargs={
+                "to": to,
+                "subject": f"Your {brand_name} Order {order_ref} Has Been Delivered",
+                "body_html": body_html,
+            },
+            link=mark_notification_sent.si(notification_id),
+            link_error=mark_notification_failed.si(notification_id),
         )

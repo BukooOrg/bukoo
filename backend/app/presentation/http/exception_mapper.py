@@ -7,6 +7,7 @@ from app.core.constants import OrderStatus
 from app.domain.exceptions import (
     AddressNotFoundError,
     AdminAccessRequiredError,
+    AdminRoleRequiredError,
     AuthorNotFoundError,
     BookAlreadyActivatedError,
     BookAlreadyDeactivatedError,
@@ -35,6 +36,7 @@ from app.domain.exceptions import (
     InvalidTokenError,
     NewPasswordSameAsCurrentError,
     NoAuthHeaderError,
+    NotificationNotFoundError,
     OAuthProviderNotFoundError,
     OAuthStateInvalidError,
     OrderAccessDeniedError,
@@ -96,6 +98,12 @@ def get_order_not_cancellable_message(exc: DomainException) -> str:
 
 
 EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
+    # Common
+    AdminRoleRequiredError: HttpExceptionMapping(
+        status.HTTP_403_FORBIDDEN,
+        ErrorCode.ADMIN_ROLE_REQUIRED,
+        lambda exc: exc.message,
+    ),
     # Auth
     InvalidCredentialsError: HttpExceptionMapping(
         status.HTTP_401_UNAUTHORIZED,
@@ -396,5 +404,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_404_NOT_FOUND,
         ErrorCode.WISHLIST_ITEM_NOT_FOUND,
         "Wishlist item not found.",
+    ),
+    # notification
+    NotificationNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.NOTIFICATION_NOT_FOUND,
+        "Notification not found",
     ),
 }

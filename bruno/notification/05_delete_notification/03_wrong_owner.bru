@@ -1,0 +1,33 @@
+meta {
+  name: wrong owner
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{baseUrl}}{{apiBase}}/notifications/{{notificationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+
+  test("error code is NOTIFICATION_NOT_FOUND", function() {
+    expect(res.body.error.code).to.equal("NOTIFICATION_NOT_FOUND");
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

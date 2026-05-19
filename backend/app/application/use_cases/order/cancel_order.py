@@ -109,6 +109,7 @@ class CancelOrderUseCase(BaseUseCase):
                 to=owner.email,
                 full_name=owner.full_name,
                 order_id=order.id,
+                notification_id=notification.id,
                 items=receipt_items,
                 total=order.total,
                 cancelled_at=order.updated_at,
