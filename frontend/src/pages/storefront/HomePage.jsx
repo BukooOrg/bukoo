@@ -1,71 +1,39 @@
-import { ResponseError } from '@bukoo/api-client';
 import React, { useState, useEffect } from 'react';
 
-import { GenreNav } from '@/components/layout/GenreNav';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { LatestProductCard } from '@/components/products/LatestProductCard';
-import { healthApi, userApi } from '@/lib/apiClient';
-import { getCollectionProducts, getCollections } from '@/lib/sfcc';
+import mockProducts from '@/data/mock/products.json';
+import { bookApi } from '@/lib/apiClient';
+import { fromApiBooks, reshapeProducts } from '@/lib/sfcc/utils';
 
 export default function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
-  const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function healthCheck() {
-      try {
-        const res = await healthApi.healthCheck();
-        console.log(res);
-      } catch (err) {
-        if (err instanceof ResponseError) {
-          const body = await err.response.json();
-          console.error(body);
-        }
-      }
-    }
-    healthCheck();
-  }, []);
-
-  useEffect(() => {
-    async function getMe() {
-      try {
-        const res = await userApi.getMe();
-        console.log(res);
-      } catch (err) {
-        if (err instanceof ResponseError) {
-          const body = await err.response.json();
-          console.error(body);
-        }
-      }
-    }
-    getMe();
-  }, []);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [products, cols] = await Promise.all([
-          getCollectionProducts({ collection: 'joyco-root' }),
-          getCollections(),
-        ]);
-        setFeaturedProducts(products);
-        setCollections(cols);
-      } catch (error) {
-        console.error('Failed to load home page data', error);
-      } finally {
-        setLoading(false);
+        const bookRes = await bookApi.findBooks({ status: 'activate', pageSize: 24 });
+        const reshaped = fromApiBooks(bookRes.data?.items || []);
+        if (reshaped.length > 0) {
+          setFeaturedProducts(reshaped);
+          setLoading(false);
+          return;
+        }
+      } catch {
+        // API unavailable, fall through to mock
       }
+
+      setFeaturedProducts(reshapeProducts(mockProducts));
+      setLoading(false);
     }
     loadData();
   }, []);
 
   return (
     <PageLayout>
-      <div className='pt-0 pb-24 px-sides max-w-[1440px] mx-auto'>
-        <GenreNav collections={collections} />
-
-        <div className='flex items-center justify-between pb-6 mb-10 border-b border-border mt-6'>
+      <div className='pt-8 pb-24 px-sides max-w-[1440px] mx-auto'>
+        <div className='flex items-center justify-between pb-6 mb-10 border-b border-border'>
           <p className='text-[10px] font-sans font-black uppercase tracking-[0.3em] text-primary'>
             Featured Selection
           </p>

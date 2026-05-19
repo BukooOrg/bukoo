@@ -68,7 +68,7 @@ export default function LoginPage() {
         login(res.data);
       }
 
-      navigate('/');
+      navigate(res.data?.role === 'admin' ? '/admin' : '/');
     } catch (err) {
       console.error(err);
       if (err instanceof ResponseError) {

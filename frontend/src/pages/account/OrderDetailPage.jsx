@@ -1,15 +1,9 @@
-import { Package } from 'lucide-react';
 import React from 'react';
 
 export default function OrderDetailPage() {
   return (
     <div className='space-y-8'>
-      <div className='text-center'>
-        <div className='flex justify-center mb-4'>
-          <div className='w-14 h-14 bg-primary/5 rounded-full flex items-center justify-center'>
-            <Package className='w-7 h-7 text-primary' />
-          </div>
-        </div>
+      <div className='text-center pt-8'>
         <h1 className='text-4xl font-serif font-black mb-2 text-primary tracking-tighter'>
           Order Details
         </h1>

@@ -1,5 +1,5 @@
-export const formatPrice = (amount, currencyCode = 'GBP') => {
-  return new Intl.NumberFormat('en-GB', {
+export const formatPrice = (amount, currencyCode = 'MYR') => {
+  return new Intl.NumberFormat('ms-MY', {
     style: 'currency',
     currency: currencyCode,
   }).format(amount);
@@ -63,4 +63,64 @@ export const reshapeProduct = (product) => {
 
 export const reshapeProducts = (products) => {
   return products.map(reshapeProduct).filter(Boolean);
+};
+
+export const fromApiBook = (book) => {
+  if (!book) return null;
+  const price = book.price || '0';
+  const coverUrl = book.coverUrl;
+  const vendor = book.publisher?.name || book.authors?.[0]?.name || 'Bukoo Editions';
+
+  return {
+    id: book.id,
+    handle: book.id,
+    title: book.title,
+    description: book.description || '',
+    descriptionHtml: book.description ? `<p>${book.description.replace(/\n/g, '</p><p>')}</p>` : '',
+    vendor,
+    isbn: book.isbn || null,
+    pageCount: book.pageCount || null,
+    language: book.language || null,
+    publishedDate: book.publishedDate || null,
+    publisher: book.publisher || null,
+    authors: book.authors || [],
+    isActive: book.isActive ?? true,
+    stockQuantity: book.stockQuantity ?? 0,
+    featuredImage: {
+      url: coverUrl || '',
+      altText: book.title,
+      width: 800,
+      height: 1200,
+    },
+    images: coverUrl ? [{ url: coverUrl, altText: book.title, width: 800, height: 1200 }] : [],
+    priceRange: {
+      minVariantPrice: { amount: price, currencyCode: 'MYR' },
+      maxVariantPrice: { amount: price, currencyCode: 'MYR' },
+    },
+    variants: [],
+    options: [],
+    tags: [book.category?.name, ...(book.authors || []).map((a) => a.name)].filter(Boolean),
+    categoryId: book.category?.id,
+    availableForSale: (book.stockQuantity ?? 0) > 0,
+  };
+};
+
+export const fromApiBooks = (books) => {
+  return books.map(fromApiBook).filter(Boolean);
+};
+
+export const fromApiCollection = (collection) => {
+  if (!collection) return null;
+  return {
+    id: collection.id,
+    handle: collection.urlSlug || collection.id,
+    title: collection.name,
+    description: '',
+    seo: { title: collection.name, description: '' },
+    parentCategoryTree: [],
+  };
+};
+
+export const fromApiCollections = (collections) => {
+  return collections.map(fromApiCollection).filter(Boolean);
 };

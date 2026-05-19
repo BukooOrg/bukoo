@@ -7,8 +7,8 @@ const strengthLevels = [
   {
     level: 1,
     label: 'Medium',
-    color: 'bg-[hsl(var(--warning))]',
-    textColor: 'text-[hsl(var(--warning))]',
+    color: 'bg-amber-500',
+    textColor: 'text-amber-700',
   },
   { level: 2, label: 'Strong', color: 'bg-green-600', textColor: 'text-green-600' },
 ];

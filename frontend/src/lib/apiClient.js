@@ -47,3 +47,28 @@ export const publisherApi = new PublisherApi(configuration);
 export const reviewApi = new ReviewApi(configuration);
 export const userApi = new UserApi(configuration);
 export const wishlistApi = new WishlistApi(configuration);
+
+export async function uploadBookCover(bookId, file) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const headers = {};
+  const token = Cookies.get('jwt');
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`/api/app/v1/books/${bookId}/cover`, {
+    method: 'POST',
+    headers,
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    const message = body?.error?.message || body?.detail || 'Upload failed';
+    throw new Error(message);
+  }
+
+  return response.json();
+}

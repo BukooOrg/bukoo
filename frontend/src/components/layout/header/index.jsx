@@ -1,5 +1,6 @@
 import { UserIcon } from 'lucide-react';
 import { LogOut } from 'lucide-react';
+import { Shield } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -83,6 +84,15 @@ export function Header() {
                     Profile
                   </Link>
                 </DropdownMenuItem>
+
+                {user?.role === 'admin' && (
+                  <DropdownMenuItem asChild className='cursor-pointer'>
+                    <Link to='/admin'>
+                      <Shield className='mr-2 size-4' />
+                      Admin
+                    </Link>
+                  </DropdownMenuItem>
+                )}
 
                 <DropdownMenuItem
                   onClick={logout}
