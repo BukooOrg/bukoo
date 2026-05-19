@@ -48,7 +48,7 @@ export function AccountLayout() {
         {/* Sidebar — below fixed header, full remaining height */}
         <aside
           className={cn(
-            'fixed left-0 z-50 w-96 bg-white border-r border-border flex flex-col transition-transform duration-300 md:w-[28rem] top-24 md:top-32 h-[calc(100vh-6rem)] md:h-[calc(100vh-8rem)]',
+            'fixed left-0 z-50 w-80 bg-white border-r border-border flex flex-col transition-transform duration-300 md:w-96 top-24 md:top-32 h-[calc(100vh-6rem)] md:h-[calc(100vh-8rem)]',
             mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
           )}>
           <div className='flex flex-col h-full p-8'>
@@ -110,7 +110,7 @@ export function AccountLayout() {
         )}
 
         {/* Content — centered, offset for fixed sidebar on desktop */}
-        <main className='flex-1 p-6 md:p-10 md:ml-[28rem] mx-auto max-w-5xl w-full'>
+        <main className='flex-1 p-6 pt-24 md:p-10 md:pt-32 md:ml-96 mx-auto max-w-5xl w-full'>
           <Outlet />
         </main>
       </div>

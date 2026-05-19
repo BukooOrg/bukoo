@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 
-import { GenreNav } from '@/components/layout/GenreNav';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { LatestProductCard } from '@/components/products/LatestProductCard';
-import { getCollectionProducts, getCollections } from '@/lib/sfcc';
+import mockProducts from '@/data/mock/products.json';
+import { bookApi } from '@/lib/apiClient';
+import { fromApiBooks, reshapeProducts } from '@/lib/sfcc/utils';
 
 export default function ShopPage() {
   const { collection: collectionHandle } = useParams();
@@ -12,37 +13,45 @@ export default function ShopPage() {
   const query = searchParams.get('q') || '';
 
   const [products, setProducts] = useState([]);
-  const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
       setLoading(true);
       try {
-        const [prodData, collData] = await Promise.all([
-          getCollectionProducts({
-            collection: collectionHandle || 'joyco-root',
-            query,
-          }),
-          getCollections(),
-        ]);
-        setProducts(prodData);
-        setCollections(collData);
-      } catch (error) {
-        console.error('Failed to load shop data', error);
-      } finally {
-        setLoading(false);
+        const bookRes = await bookApi.findBooks({
+          status: 'activate',
+          search: query || undefined,
+          pageSize: 48,
+        });
+        const reshaped = fromApiBooks(bookRes.data?.items || []);
+        if (reshaped.length > 0) {
+          setProducts(reshaped);
+          setLoading(false);
+          return;
+        }
+      } catch {
+        // API unavailable, fall through
       }
+
+      let filtered = reshapeProducts(mockProducts);
+      if (collectionHandle && collectionHandle !== 'joyco-root') {
+        filtered = filtered.filter((p) => p.categoryId === collectionHandle);
+      }
+      if (query) {
+        const q = query.toLowerCase();
+        filtered = filtered.filter((p) => p.title.toLowerCase().includes(q));
+      }
+      setProducts(filtered);
+      setLoading(false);
     }
     loadData();
   }, [collectionHandle, query]);
 
   return (
     <PageLayout>
-      <div className='pt-0 pb-24 px-sides max-w-[1440px] mx-auto'>
-        <GenreNav collections={collections} activeHandle={collectionHandle} />
-
-        <div className='flex items-center justify-between pb-6 mb-10 border-b border-border mt-6'>
+      <div className='pt-8 pb-24 px-sides max-w-[1440px] mx-auto'>
+        <div className='flex items-center justify-between pb-6 mb-10 border-b border-border'>
           <p className='text-[10px] font-sans font-black uppercase tracking-[0.3em] text-primary'>
             {products.length} Results
           </p>

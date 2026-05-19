@@ -17,6 +17,7 @@ from app.core.config import (
     CORSConfig,
     EnvironmentConfig,
     EnvironmentOption,
+    get_configs,
 )
 from app.domain.exceptions.base import DomainException
 from app.infrastructure.db.session import session_scope
@@ -98,8 +99,9 @@ class AppFactory:
             user_repo = get_user_repository(db_session)
             account_repo = get_account_repository(db_session)
             password_hasher = get_password_hasher()
+            configs = get_configs()
 
-            if await user_repo.count_including_deleted() == 0:
+            if not await user_repo.exists_by_email(configs.DEFAULT_ADMIN_MAIL):
                 use_case = SystemRegisterUseCase(
                     db_session=db_session,
                     user_repo=user_repo,

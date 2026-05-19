@@ -1,11 +1,8 @@
-import { Box, Image as ImageIcon } from 'lucide-react';
-import React, { useState, useEffect, Suspense } from 'react';
+import { BookOpen, Calendar, Globe, Hash, Layers, ShoppingBag, User } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
-import { BookViewer3D } from '@/components/3d-book/BookViewer3D';
-import { AddToCart } from '@/components/cart/AddToCart';
 import { PageLayout } from '@/components/layout/PageLayout';
-import Prose from '@/components/Prose';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,216 +11,183 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from '@/components/ui/navigation/breadcrumb';
-import { getCollection, getProduct } from '@/lib/sfcc';
-import { storeCatalog } from '@/lib/sfcc/constants';
-import { formatPrice } from '@/lib/sfcc/utils';
-import { cn } from '@/lib/utils';
+import mockProducts from '@/data/mock/products.json';
+import { bookApi } from '@/lib/apiClient';
+import { fromApiBook } from '@/lib/sfcc/utils';
+import { formatPrice, reshapeProduct } from '@/lib/sfcc/utils';
 
-import { DesktopGallery } from './product/DesktopGallery';
-import { MobileGallerySlider } from './product/MobileGallerySlider';
-import { VariantSelectorSlots } from './product/VariantSelectorSlots';
+function formatDate(date) {
+  if (!date) return '—';
+  const d = new Date(date);
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
 
 export default function ProductDetailPage() {
   const { handle } = useParams();
   const [product, setProduct] = useState(null);
-  const [collection, setCollection] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState('3d');
 
   useEffect(() => {
     async function loadData() {
+      setLoading(true);
       try {
-        const prod = await getProduct(handle);
-        if (prod) {
-          setProduct(prod);
-          if (prod.categoryId) {
-            const coll = await getCollection(prod.categoryId);
-            setCollection(coll);
-          }
+        const res = await bookApi.viewBookDetail({ bookId: handle, status: 'activate' });
+        const reshaped = fromApiBook(res.data);
+        if (reshaped) {
+          setProduct(reshaped);
+          setLoading(false);
+          return;
         }
-      } catch (error) {
-        console.error('Failed to load product', error);
-      } finally {
-        setLoading(false);
+      } catch {
+        // API unavailable, fall through
       }
+
+      const mockProduct = mockProducts.find((p) => p.handle === handle || p.id === handle);
+      setProduct(mockProduct ? reshapeProduct(mockProduct) : null);
+      setLoading(false);
     }
     loadData();
   }, [handle]);
 
   if (loading) {
     return (
-      <PageLayout className='bg-muted'>
-        <div className='pt-48 font-serif italic text-center opacity-50'>Opening the pages...</div>
+      <PageLayout>
+        <div className='pt-48 text-lg italic text-center opacity-50'>Opening the pages...</div>
       </PageLayout>
     );
   }
 
   if (!product) {
     return (
-      <PageLayout className='bg-muted'>
-        <div className='pt-48 font-serif text-2xl text-center'>Book not found.</div>
+      <PageLayout>
+        <div className='pt-48 text-3xl text-center'>Book not found.</div>
       </PageLayout>
     );
   }
 
-  const rootParentCategory = collection?.parentCategoryTree?.find(
-    (c) => c.id !== storeCatalog.rootCategoryId
-  );
-
-  const hasVariants = product.variants?.length > 1;
+  const price = product.priceRange?.minVariantPrice?.amount || '0';
+  const currency = product.priceRange?.minVariantPrice?.currencyCode || 'MYR';
 
   return (
-    <PageLayout className='min-h-screen bg-muted'>
-      <div className='flex flex-col md:grid md:grid-cols-12 md:gap-sides'>
-        <div className='md:hidden col-span-full h-[60vh] min-h-[400px] relative'>
-          <div className='absolute z-10 flex gap-2 top-4 right-4'>
-            <button
-              onClick={() => setViewMode(viewMode === '2d' ? '3d' : '2d')}
-              className='p-3 transition-transform border rounded-full shadow-lg bg-white/80 backdrop-blur-md border-white/40 hover:scale-110 active:scale-95'>
-              {viewMode === '2d' ? <Box className='w-5 h-5' /> : <ImageIcon className='w-5 h-5' />}
-            </button>
-          </div>
-          <Suspense fallback={null}>
-            {viewMode === '2d' ? (
-              <MobileGallerySlider product={product} />
-            ) : (
-              <div className='w-full h-full bg-white/40 backdrop-blur-sm'>
-                <BookViewer3D
-                  frontCoverUrl={product.images?.[0]?.url}
-                  backCoverUrl={product.images?.[1]?.url}
+    <PageLayout>
+      <div className='px-sides max-w-6xl mx-auto pt-6 pb-24 text-black'>
+        {/* Breadcrumb */}
+        <Breadcrumb className='mb-6'>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to='/shop'>Shop</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{product.title}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
+        {/* Hero — cover + info */}
+        <div className='flex flex-col gap-8 md:flex-row md:gap-12'>
+          {/* Cover image */}
+          <div className='shrink-0 w-64 mx-auto md:w-80 md:mx-0'>
+            <div className='overflow-hidden rounded-xl shadow-xl aspect-[2/3] bg-gray-100'>
+              {product.featuredImage?.url ? (
+                <img
+                  src={product.featuredImage.url}
+                  alt={product.title}
+                  className='object-cover w-full h-full'
                 />
-              </div>
-            )}
-          </Suspense>
-        </div>
-
-        <div className='sticky top-0 flex flex-col col-span-5 2xl:col-span-4 max-md:col-span-full md:h-screen max-md:p-sides md:pl-sides md:pt-32 max-md:static'>
-          <div className='col-span-full'>
-            <Breadcrumb className='mb-3 col-span-full md:mb-8'>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to='/shop'>Shop</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                {rootParentCategory && (
-                  <>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                      <BreadcrumbLink asChild>
-                        <Link to={`/shop/${rootParentCategory.id}`}>{rootParentCategory.name}</Link>
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-                  </>
-                )}
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>{product.title}</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-
-            <div className='flex flex-col gap-4 mb-10 col-span-full max-md:order-2'>
-              <div className='flex flex-col px-10 py-8 border shadow-2xl rounded-3xl bg-white/80 backdrop-blur-3xl border-white/40'>
-                <div className='mb-6'>
-                  <h1 className='mb-2 font-serif text-4xl font-black tracking-tighter lg:text-5xl text-primary'>
-                    {product.title}
-                  </h1>
-                  <p className='text-sm italic font-bold text-primary/40'>
-                    {product.vendor || 'Bukoo Editions'}
-                  </p>
+              ) : (
+                <div className='flex items-center justify-center w-full h-full'>
+                  <BookOpen className='w-20 h-20 text-gray-300' />
                 </div>
-
-                <p className='mb-10 text-sm font-medium leading-relaxed text-primary/70'>
-                  {product.description}
-                </p>
-
-                <div className='flex items-center justify-between pt-6 mt-auto border-t border-primary/5'>
-                  <p className='font-serif text-3xl font-black text-primary'>
-                    {formatPrice(
-                      product.priceRange?.minVariantPrice?.amount || '0',
-                      product.priceRange?.minVariantPrice?.currencyCode || 'GBP'
-                    )}
-                  </p>
-                  <div className='flex items-center gap-3'>
-                    <div className='px-4 py-1 bg-primary/5 rounded-full text-[10px] font-black uppercase tracking-widest text-primary/40'>
-                      Hardcover
-                    </div>
-                  </div>
-                </div>
-
-                <div className='flex flex-col gap-3 pt-6 mt-6 border-t border-primary/5'>
-                  <p className='text-[10px] font-black uppercase tracking-widest text-primary/30'>
-                    Display Mode
-                  </p>
-                  <div className='flex p-1 bg-primary/5 rounded-xl'>
-                    <button
-                      onClick={() => setViewMode('2d')}
-                      className={cn(
-                        'flex-1 py-2 px-4 rounded-lg text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2',
-                        {
-                          'bg-white shadow-sm text-primary': viewMode === '2d',
-                          'text-primary/40 hover:text-primary/60': viewMode !== '2d',
-                        }
-                      )}>
-                      <ImageIcon className='w-3.5 h-3.5' /> 2D Gallery
-                    </button>
-                    <button
-                      onClick={() => setViewMode('3d')}
-                      className={cn(
-                        'flex-1 py-2 px-4 rounded-lg text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2',
-                        {
-                          'bg-white shadow-sm text-primary': viewMode === '3d',
-                          'text-primary/40 hover:text-primary/60': viewMode !== '3d',
-                        }
-                      )}>
-                      <Box className='w-3.5 h-3.5' /> 3D Viewer
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className='grid grid-cols-1 gap-4'>
-                <Suspense fallback={null}>
-                  <VariantSelectorSlots product={product} />
-                </Suspense>
-
-                <Suspense fallback={null}>
-                  <AddToCart
-                    product={product}
-                    size='lg'
-                    className={cn(
-                      'w-full py-6 rounded-2xl bg-primary text-secondary font-sans font-bold uppercase tracking-[0.2em] shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all',
-                      {
-                        'col-span-full': !hasVariants,
-                      }
-                    )}
-                  />
-                </Suspense>
-              </div>
+              )}
             </div>
           </div>
 
-          <Prose
-            className='mb-auto prose-sm col-span-full opacity-70 max-md:order-3 max-md:mt-6'
-            html={product.descriptionHtml}
-          />
-        </div>
+          {/* Book info */}
+          <div className='flex-1'>
+            {/* Title & author */}
+            <div className='mb-6'>
+              <h1 className='text-4xl font-bold tracking-tight md:text-5xl'>{product.title}</h1>
+              <p className='mt-2 text-xl text-gray-500 italic'>
+                {product.vendor || 'Bukoo Editions'}
+              </p>
+            </div>
 
-        <div className='relative hidden w-full h-screen col-span-7 col-start-6 overflow-y-auto md:block bg-white/20'>
-          <div className='w-full h-full'>
-            <Suspense fallback={null}>
-              {viewMode === '2d' ? (
-                <DesktopGallery product={product} />
-              ) : (
-                <div className='w-full h-full duration-700 animate-in fade-in'>
-                  <BookViewer3D
-                    frontCoverUrl={product.images?.[0]?.url}
-                    backCoverUrl={product.images?.[1]?.url}
-                  />
+            {/* Tags */}
+            {product.tags?.length > 0 && (
+              <div className='flex flex-wrap gap-2 mb-6'>
+                {product.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className='px-4 py-2 text-sm font-medium rounded-full bg-gray-100 text-gray-500'>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Description */}
+            <h2 className='text-sm font-bold uppercase tracking-[0.2em] text-gray-400 mb-3'>
+              About This Book
+            </h2>
+            <p className='mb-8 text-base leading-relaxed text-gray-600'>
+              {product.description || 'No description available.'}
+            </p>
+
+            {/* Metadata */}
+            <div className='grid grid-cols-2 gap-4 p-6 mb-8 rounded-xl bg-gray-50 md:grid-cols-3'>
+              <div className='flex flex-col gap-1.5'>
+                <div className='flex items-center gap-2 text-gray-400'>
+                  <Hash className='w-4 h-4' />
+                  <span className='text-sm font-medium'>ISBN</span>
                 </div>
-              )}
-            </Suspense>
+                <p className='text-base text-gray-700'>{product.isbn || '—'}</p>
+              </div>
+              <div className='flex flex-col gap-1.5'>
+                <div className='flex items-center gap-2 text-gray-400'>
+                  <Layers className='w-4 h-4' />
+                  <span className='text-sm font-medium'>Pages</span>
+                </div>
+                <p className='text-base text-gray-700'>{product.pageCount || '—'}</p>
+              </div>
+              <div className='flex flex-col gap-1.5'>
+                <div className='flex items-center gap-2 text-gray-400'>
+                  <Globe className='w-4 h-4' />
+                  <span className='text-sm font-medium'>Language</span>
+                </div>
+                <p className='text-base text-gray-700'>{product.language || '—'}</p>
+              </div>
+              <div className='flex flex-col gap-1.5'>
+                <div className='flex items-center gap-2 text-gray-400'>
+                  <User className='w-4 h-4' />
+                  <span className='text-sm font-medium'>Publisher</span>
+                </div>
+                <p className='text-base text-gray-700'>
+                  {product.publisher?.name || product.vendor || '—'}
+                </p>
+              </div>
+              <div className='flex flex-col gap-1.5'>
+                <div className='flex items-center gap-2 text-gray-400'>
+                  <Calendar className='w-4 h-4' />
+                  <span className='text-sm font-medium'>Published</span>
+                </div>
+                <p className='text-base text-gray-700'>{formatDate(product.publishedDate)}</p>
+              </div>
+            </div>
+
+            {/* Price & CTA */}
+            <div className='flex items-center justify-between p-6 border border-gray-200 rounded-xl bg-gray-50'>
+              <div>
+                <p className='text-sm font-medium uppercase text-gray-400'>Price</p>
+                <p className='text-3xl font-bold text-gray-900'>{formatPrice(price, currency)}</p>
+              </div>
+              <button className='flex items-center gap-3 py-5 px-10 rounded-lg bg-black text-white text-sm font-medium uppercase tracking-wider shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all'>
+                <ShoppingBag className='w-5 h-5' />
+                Add to Bag
+              </button>
+            </div>
           </div>
         </div>
       </div>
