@@ -34,6 +34,7 @@ from .cache import CacheDeleteError, CacheReadError, CacheWriteError
 from .cart import CartItemNotFoundError, CartNotFoundError
 from .category import CategoryAlreadyExistsError, CategoryNotFoundError
 from .collection import CollectionAlreadyExistsError, CollectionNotFoundError
+from .common import AdminRoleRequiredError
 from .notification import NotificationNotFoundError
 from .order import (
     EmptyOrderError,
@@ -79,6 +80,7 @@ from .wishlist import (
 )
 
 __all__ = [
+    "AdminRoleRequiredError",
     "DomainException",
     "FacebookOAuthError",
     "GoogleOAuthError",
@@ -145,4 +147,5 @@ __all__ = [
     "ReviewNotFoundError",
     "ReviewNotOwnedError",
     "NotificationNotFoundError",
+    "Error",
 ]

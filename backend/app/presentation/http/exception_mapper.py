@@ -7,6 +7,7 @@ from app.core.constants import OrderStatus
 from app.domain.exceptions import (
     AddressNotFoundError,
     AdminAccessRequiredError,
+    AdminRoleRequiredError,
     AuthorNotFoundError,
     BookAlreadyActivatedError,
     BookAlreadyDeactivatedError,
@@ -97,6 +98,12 @@ def get_order_not_cancellable_message(exc: DomainException) -> str:
 
 
 EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
+    # Common
+    AdminRoleRequiredError: HttpExceptionMapping(
+        status.HTTP_403_FORBIDDEN,
+        ErrorCode.ADMIN_ROLE_REQUIRED,
+        lambda exc: exc.message,
+    ),
     # Auth
     InvalidCredentialsError: HttpExceptionMapping(
         status.HTTP_401_UNAUTHORIZED,

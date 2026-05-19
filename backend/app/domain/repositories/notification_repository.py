@@ -31,3 +31,7 @@ class INotificationRepository(ABC):
     @abstractmethod
     async def count_unread(self, user_id: str) -> int:
         pass
+
+    @abstractmethod
+    async def mark_all_as_read_user_id(self, user_id: str) -> int:
+        pass

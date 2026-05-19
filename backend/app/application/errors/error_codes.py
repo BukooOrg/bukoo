@@ -3,9 +3,20 @@ from enum import StrEnum
 
 class ErrorCode(StrEnum):
     # Generic
+    # note: not include in exception mapper
     INTERNAL_ERROR = "INTERNAL_ERROR"
     VALIDATION_ERROR = "VALIDATION_ERROR"
     BAD_REQUEST = "BAD_REQUEST"
+
+    # HTTP
+    # note: not include in exception mapper
+    NOT_FOUND = "NOT_FOUND"
+    METHOD_NOT_ALLOWED = "METHOD_NOT_ALLOWED"
+    CONFLICT = "CONFLICT"
+    RATE_LIMITED = "RATE_LIMITED"
+
+    # common
+    ADMIN_ROLE_REQUIRED = "ADMIN_ROLE_REQUIRED"
 
     # Auth
     INVALID_CREDENTIALS = "INVALID_CREDENTIALS"
@@ -53,12 +64,6 @@ class ErrorCode(StrEnum):
     # Payment
     PAYMENT_CREATION_FAILED = "PAYMENT_CREATION_FAILED"
     PAYMENT_VERIFICATION_FAILED = "PAYMENT_VERIFICATION_FAILED"
-
-    # HTTP
-    NOT_FOUND = "NOT_FOUND"
-    METHOD_NOT_ALLOWED = "METHOD_NOT_ALLOWED"
-    CONFLICT = "CONFLICT"
-    RATE_LIMITED = "RATE_LIMITED"
 
     # Admin
     ADMIN_ACCESS_REQUIRED = "ADMIN_ACCESS_REQUIRED"

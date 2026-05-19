@@ -2,22 +2,30 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from app.application.dtos.notification_dto import (
     GetUnreadNotificationCountCommand,
+    MarkAllNotificationsAsReadCommand,
     MarkNotificationAsReadCommand,
 )
 from app.application.use_cases.notification import (
     FindNotificationsUseCase,
     GetUnreadNotificationCountUseCase,
+    MarkAllNotificationsAsReadUseCase,
     MarkNotificationAsReadUseCase,
 )
 from app.core.constants import UserRole
-from app.presentation.dependencies.deps import CurrentUser, DbSession, NotificationRepo
+from app.presentation.dependencies.deps import (
+    CurrentUser,
+    DbSession,
+    NotificationRepo,
+    UserRepo,
+)
 from app.presentation.schemas.list_schema import PaginatedResponse, PaginationMeta
 from app.presentation.schemas.notification_schema import (
     BaseNotificationItemResponse,
+    MarkAllNotificationsAsReadResponse,
     MarkNotificationAsReadResponse,
     NotificationListQueryRequest,
     UnreadNotificationCountResponse,
@@ -111,3 +119,30 @@ async def mark_notification_as_read(
         read_at=result.read_at,
         created_at=result.created_at,
     )
+
+
+@router.patch(
+    "/read-all",
+    response_model=MarkAllNotificationsAsReadResponse,
+    operation_id="markAllNotificationsAsRead",
+)
+async def mark_all_notifications_as_read(
+    current_user: CurrentUser,
+    notification_repo: NotificationRepo,
+    user_repo: UserRepo,
+    db_session: DbSession,
+    user_id: str | None = Query(None),
+) -> MarkAllNotificationsAsReadResponse:
+    use_case = MarkAllNotificationsAsReadUseCase(
+        db_session=db_session,
+        notification_repo=notification_repo,
+        user_repo=user_repo,
+    )
+    result = await use_case.execute(
+        MarkAllNotificationsAsReadCommand(
+            user_id=current_user.id,
+            is_admin=current_user.role == UserRole.ADMIN,
+            target_user_id=user_id,
+        )
+    )
+    return MarkAllNotificationsAsReadResponse(marked_count=result.marked_count)

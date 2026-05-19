@@ -47,3 +47,7 @@ class BaseNotificationItemResponse(BaseNotificationResponse):
 
 class MarkNotificationAsReadResponse(BaseNotificationResponse):
     pass
+
+
+class MarkAllNotificationsAsReadResponse(BaseModel):
+    marked_count: int

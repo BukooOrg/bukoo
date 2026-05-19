@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import Any, ClassVar, override
 
-from sqlalchemy import ColumnElement, and_, func, select
+from sqlalchemy import ColumnElement, and_, func, select, update
+from sqlalchemy.engine import CursorResult
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute
 
@@ -102,3 +103,18 @@ class NotificationRepositoryImpl(INotificationRepository):
             )
         )
         return (await self._session.execute(stmt)).scalar_one()
+
+    @override
+    async def mark_all_as_read_user_id(self, user_id: str) -> int:
+        stmt = (
+            update(NotificationModel)
+            .where(
+                and_(
+                    NotificationModel.user_id == user_id,
+                    NotificationModel.read_at.is_(None),
+                )
+            )
+            .values(read_at=func.now())
+        )
+        cursor: CursorResult[Any] = await self._session.execute(stmt)  # type: ignore[assignment]
+        return cursor.rowcount

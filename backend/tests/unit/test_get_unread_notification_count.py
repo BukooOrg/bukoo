@@ -58,6 +58,9 @@ class FakeNotificationRepository(INotificationRepository):
             1 for n in self._notifications if n.user_id == user_id and n.read_at is None
         )
 
+    async def mark_all_as_read_user_id(self, user_id: str) -> int:
+        raise NotImplementedError
+
 
 def _make_use_case(
     notifications: list[NotificationEntity] | None = None,

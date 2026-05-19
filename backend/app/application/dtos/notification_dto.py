@@ -26,6 +26,13 @@ class MarkNotificationAsReadCommand:
     is_admin: bool
 
 
+@dataclass(frozen=True)
+class MarkAllNotificationsAsReadCommand:
+    user_id: str
+    is_admin: bool
+    target_user_id: str | None = None
+
+
 # results
 @dataclass(frozen=True)
 class BaseNotificationItem:
@@ -47,3 +54,8 @@ class GetUnreadNotificationCountResult:
 @dataclass(frozen=True)
 class MarkNotificationResult(BaseNotificationItem):
     pass
+
+
+@dataclass(frozen=True)
+class MarkAllNotificationsAsReadResult:
+    marked_count: int

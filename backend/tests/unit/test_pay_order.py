@@ -130,6 +130,9 @@ class FakeNotificationRepository(INotificationRepository):
     async def count_unread(self, *args: Any, **kwargs: Any) -> int:
         return 0
 
+    async def mark_all_as_read_user_id(self, user_id: str) -> int:
+        raise NotImplementedError
+
 
 class FakeBookRepository(IBookRepository):
     async def find_by_id(self, *args: Any, **kwargs: Any) -> Any:
