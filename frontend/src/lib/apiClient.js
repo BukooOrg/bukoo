@@ -12,6 +12,7 @@ import {
   OrderApi,
   PublisherApi,
   ReviewApi,
+  NotificationApi,
 } from '@bukoo/api-client';
 import Cookies from 'js-cookie';
 
@@ -40,6 +41,7 @@ export const cartApi = new CartApi(configuration);
 export const categoryApi = new CategoryApi(configuration);
 export const collectionApi = new CollectionApi(configuration);
 export const healthApi = new HealthApi(configuration);
+export const notificationApi = new NotificationApi(configuration);
 export const orderApi = new OrderApi(configuration);
 export const publisherApi = new PublisherApi(configuration);
 export const reviewApi = new ReviewApi(configuration);
