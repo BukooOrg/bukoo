@@ -171,6 +171,7 @@ class UploadBookCoverResponse(BaseBookResponse):
     pass
 
 
+# utils
 T = TypeVar("T", bound=BaseBookResult)
 P = TypeVar("P", bound=BaseBookResponse)
 
