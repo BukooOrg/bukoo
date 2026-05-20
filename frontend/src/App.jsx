@@ -80,6 +80,7 @@ import CategoryNewPage from './pages/admin/catalog/CategoryNewPage';
 import CollectionDetailPage from './pages/admin/catalog/CollectionDetailPage';
 import CollectionsPage from './pages/admin/catalog/CollectionsPage';
 import PublisherDetailPage from './pages/admin/catalog/PublisherDetailPage';
+import PublisherNewPage from './pages/admin/catalog/PublisherNewPage';
 import PublishersPage from './pages/admin/catalog/PublishersPage';
 // ─── Admin — Dashboard ───────────────────────────────────────────────────────
 import AdminDashboardPage from './pages/admin/DashboardPage';
@@ -183,6 +184,7 @@ function App() {
                 <Route path='/admin/authors/new' element={<AuthorNewPage />} />
                 <Route path='/admin/authors/:authorId' element={<AuthorDetailPage />} />
                 <Route path='/admin/publishers' element={<PublishersPage />} />
+                <Route path='/admin/publishers/new' element={<PublisherNewPage />} />
                 <Route path='/admin/publishers/:publisherId' element={<PublisherDetailPage />} />
 
                 {/* Users */}
