@@ -172,6 +172,9 @@ class FakeBookRepository(IBookRepository):
     ) -> None:
         self.saved_books.append(book)
 
+    async def get_inventory_metrics(self, low_stock_threshold: int) -> Any:
+        pass
+
 
 class FakeOrderRepository(IOrderRepository):
     def __init__(self) -> None:

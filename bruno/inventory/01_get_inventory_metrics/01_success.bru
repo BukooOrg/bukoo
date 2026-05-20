@@ -1,0 +1,45 @@
+meta {
+  name: success
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/inventory/metrics
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("data.total_sku_count is a number", function() {
+    expect(res.body.data.total_sku_count).to.be.a("number");
+  });
+
+  test("data.out_of_stock_count is a number", function() {
+    expect(res.body.data.out_of_stock_count).to.be.a("number");
+  });
+
+  test("data.low_stock_count is a number", function() {
+    expect(res.body.data.low_stock_count).to.be.a("number");
+  });
+
+  test("data.total_inventory_value is a string", function() {
+    expect(res.body.data.total_inventory_value).to.be.a("string");
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

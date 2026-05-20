@@ -168,6 +168,9 @@ class FakeBookRepository(IBookRepository):
     async def exists_by_isbn(self, isbn: str) -> bool:
         return False
 
+    async def get_inventory_metrics(self, low_stock_threshold: int) -> Any:
+        pass
+
 
 class FakeUserRepository(IUserRepository):
     def __init__(self, user: UserEntity | None = None) -> None:

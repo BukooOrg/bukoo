@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from decimal import Decimal
+from typing import Any
 from unittest.mock import AsyncMock
 
 import pytest
@@ -101,6 +102,9 @@ class FakeBookRepository(IBookRepository):
         self, book: BookEntity, should_skip_book_authors: bool = True
     ) -> None:
         raise NotImplementedError
+
+    async def get_inventory_metrics(self, low_stock_threshold: int) -> Any:
+        pass
 
 
 class FakeOrderRepository(IOrderRepository):

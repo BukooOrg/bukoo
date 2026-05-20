@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from decimal import Decimal
+from typing import Any
 from unittest.mock import AsyncMock
 
 import pytest
@@ -69,6 +70,9 @@ class FakeBookRepository(IBookRepository):
     async def save(self, book: BookEntity) -> None:
         self._books[book.id] = book
         self.saved = book
+
+    async def get_inventory_metrics(self, low_stock_threshold: int) -> Any:
+        pass
 
 
 def _build_use_case(

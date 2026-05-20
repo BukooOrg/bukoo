@@ -10,6 +10,14 @@ from app.domain.entities import BookEntity
 
 
 @dataclass(frozen=True)
+class BookInventoryMetrics:
+    total_sku_count: int
+    out_of_stock_count: int
+    low_stock_count: int
+    total_inventory_value: Decimal
+
+
+@dataclass(frozen=True)
 class BookStatusFilter:
     status: Literal["activate", "deactivate", "all"] = "activate"
 
@@ -48,4 +56,10 @@ class IBookRepository(ABC):
     async def save(
         self, book: BookEntity, should_skip_book_authors: bool = True
     ) -> None:
+        pass
+
+    @abstractmethod
+    async def get_inventory_metrics(
+        self, low_stock_threshold: int
+    ) -> BookInventoryMetrics:
         pass

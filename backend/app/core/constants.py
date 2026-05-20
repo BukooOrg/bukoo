@@ -84,8 +84,11 @@ ALLOWED_CANCELLED_STATUS_FOR_ADMIN = [OrderStatus.PENDING, OrderStatus.PAID]
 
 ALLOWED_UPDATE_STATUS_FOR_ADMIN = [OrderStatus.SHIPPED, OrderStatus.DELIVERED]
 
+
 ORDER_STATUS_TRANSITION_MAP: dict[OrderStatus, OrderStatus] = {
     OrderStatus.PENDING: OrderStatus.PAID,
     OrderStatus.PAID: OrderStatus.SHIPPED,
     OrderStatus.SHIPPED: OrderStatus.DELIVERED,
 }
+
+LOW_STOCK_THRESHOLD: int = 5

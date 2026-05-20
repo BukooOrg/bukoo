@@ -156,6 +156,9 @@ class FakeBookRepository(IBookRepository):
     async def exists_by_isbn(self, *args: Any, **kwargs: Any) -> bool:
         return False
 
+    async def get_inventory_metrics(self, low_stock_threshold: int) -> Any:
+        pass
+
 
 # ---------------------------------------------------------------------------
 # Fake payment service

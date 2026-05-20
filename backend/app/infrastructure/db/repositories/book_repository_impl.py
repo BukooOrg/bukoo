@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import Any, ClassVar, override
 
 from sqlalchemy import ColumnElement, and_, delete, exists, func, or_, select
@@ -9,7 +10,11 @@ from sqlalchemy.orm import InstrumentedAttribute, selectinload
 from app.core.query_params import PaginatedResult, QueryParams
 from app.domain.entities import BookEntity
 from app.domain.repositories import IBookRepository
-from app.domain.repositories.book_repository import BookFilters, BookStatusFilter
+from app.domain.repositories.book_repository import (
+    BookFilters,
+    BookInventoryMetrics,
+    BookStatusFilter,
+)
 from app.infrastructure.db.mappers import BookAuthorMapper, BookMapper
 from app.infrastructure.db.models import AuthorModel, BookAuthorModel, BookModel
 from app.infrastructure.db.models.category_model import CategoryModel
@@ -191,6 +196,37 @@ class BookRepositoryImpl(IBookRepository):
         result = await self._session.execute(stmt)
         model = result.scalar_one_or_none()
         return BookMapper.to_entity(model) if model else None
+
+    @override
+    async def get_inventory_metrics(
+        self, low_stock_threshold: int
+    ) -> BookInventoryMetrics:
+        stmt = select(
+            func.count().label("total_sku_count"),
+            func.count()
+            .filter(BookModel.stock_quantity == 0)
+            .label("out_of_stock_count"),
+            func.count()
+            .filter(
+                and_(
+                    BookModel.stock_quantity > 0,
+                    BookModel.stock_quantity <= low_stock_threshold,
+                )
+            )
+            .label("low_stock_count"),
+            func.coalesce(
+                func.sum(BookModel.price * BookModel.stock_quantity), 0
+            ).label("total_inventory_value"),
+        ).where(BookModel.deleted_at.is_(None))
+
+        result = await self._session.execute(stmt)
+        row = result.one()
+        return BookInventoryMetrics(
+            total_sku_count=row.total_sku_count,
+            out_of_stock_count=row.out_of_stock_count,
+            low_stock_count=row.low_stock_count,
+            total_inventory_value=Decimal(str(row.total_inventory_value)),
+        )
 
     @override
     async def save(

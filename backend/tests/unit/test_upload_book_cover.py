@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import AsyncGenerator
 from datetime import UTC, datetime
 from decimal import Decimal
-from typing import override
+from typing import Any, override
 from unittest.mock import AsyncMock
 
 import pytest
@@ -74,6 +74,9 @@ class FakeBookRepository(IBookRepository):
     async def save(self, book: BookEntity) -> None:
         self._books[book.id] = book
         self.saved = book
+
+    async def get_inventory_metrics(self, low_stock_threshold: int) -> Any:
+        pass
 
 
 class FakeStorageService(IStorageService):
