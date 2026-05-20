@@ -78,6 +78,7 @@ import CategoriesPage from './pages/admin/catalog/CategoriesPage';
 import CategoryDetailPage from './pages/admin/catalog/CategoryDetailPage';
 import CategoryNewPage from './pages/admin/catalog/CategoryNewPage';
 import CollectionDetailPage from './pages/admin/catalog/CollectionDetailPage';
+import CollectionNewPage from './pages/admin/catalog/CollectionNewPage';
 import CollectionsPage from './pages/admin/catalog/CollectionsPage';
 import PublisherDetailPage from './pages/admin/catalog/PublisherDetailPage';
 import PublisherNewPage from './pages/admin/catalog/PublisherNewPage';
@@ -176,6 +177,7 @@ function App() {
                 <Route path='/admin/books/new' element={<BookNewPage />} />
                 <Route path='/admin/books/:bookId' element={<BookDetailPage />} />
                 <Route path='/admin/collections' element={<CollectionsPage />} />
+                <Route path='/admin/collections/new' element={<CollectionNewPage />} />
                 <Route path='/admin/collections/:collectionId' element={<CollectionDetailPage />} />
                 <Route path='/admin/categories' element={<CategoriesPage />} />
                 <Route path='/admin/categories/new' element={<CategoryNewPage />} />
