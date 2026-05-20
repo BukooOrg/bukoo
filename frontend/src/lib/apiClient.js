@@ -14,6 +14,7 @@ import {
   ReviewApi,
   NotificationApi,
   InventoryApi,
+  ReportApi,
 } from '@bukoo/api-client';
 import Cookies from 'js-cookie';
 
@@ -66,6 +67,7 @@ export const publisherApi = new PublisherApi(configuration);
 export const reviewApi = new ReviewApi(configuration);
 export const userApi = new UserApi(configuration);
 export const wishlistApi = new WishlistApi(configuration);
+export const reportApi = new ReportApi(configuration);
 
 export async function uploadBookCover(bookId, file) {
   const formData = new FormData();
