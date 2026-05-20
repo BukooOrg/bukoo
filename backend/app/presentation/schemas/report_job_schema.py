@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 
 from pydantic import BaseModel, Field
 
@@ -20,3 +20,11 @@ class CreateReportJobRequest(BaseModel):
 class CreateReportJobResponse(BaseModel):
     job_id: str
     status: ReportJobStatus
+
+
+class ViewReportJobStatusResponse(BaseModel):
+    job_id: str
+    status: ReportJobStatus
+    created_at: datetime
+    completed_at: datetime | None
+    download_url: str | None

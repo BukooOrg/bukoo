@@ -1,0 +1,42 @@
+meta {
+  name: success completed job
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/reports/jobs/{{reportJobId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+
+  test("data.status is completed", function() {
+    expect(res.body.data.status).to.equal("completed");
+  });
+
+  test("data.download_url is a non-empty string", function() {
+    expect(res.body.data.download_url).to.be.a("string");
+    expect(res.body.data.download_url.length).to.be.greaterThan(0);
+  });
+
+  test("data.completed_at is a string", function() {
+    expect(res.body.data.completed_at).to.be.a("string");
+  });
+
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

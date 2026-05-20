@@ -50,6 +50,7 @@ from app.domain.exceptions import (
     OutOfStockError,
     PasswordNotSetError,
     PublisherNotFoundError,
+    ReportJobNotFoundError,
     ReviewAlreadyExistsError,
     ReviewNotEligibleError,
     ReviewNotFoundError,
@@ -423,5 +424,10 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_400_BAD_REQUEST,
         ErrorCode.INVALID_REPORT_DATE_RANGE,
         "date_from must be strictly before date_to.",
+    ),
+    ReportJobNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.REPORT_JOB_NOT_FOUND,
+        lambda exc: exc.message,
     ),
 }
