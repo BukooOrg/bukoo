@@ -1,0 +1,33 @@
+meta {
+  name: success pdf download
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/reports/jobs/{{reportJobId}}/download
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Content-Type is application/pdf", function() {
+    expect(res.headers["content-type"]).to.include("application/pdf");
+  });
+
+  test("Content-Disposition is attachment", function() {
+    expect(res.headers["content-disposition"]).to.include("attachment");
+  });
+
+  test("Content-Disposition filename has .pdf extension", function() {
+    expect(res.headers["content-disposition"]).to.include(".pdf");
+  });
+}

@@ -5,8 +5,9 @@ from datetime import date, datetime
 
 from app.core.constants import ReportFormat, ReportJobStatus, ReportType
 
-
 # commands
+
+
 @dataclass(frozen=True)
 class CreateReportJobCommand:
     admin_id: str
@@ -19,6 +20,11 @@ class CreateReportJobCommand:
 
 @dataclass(frozen=True)
 class ViewReportJobStatusCommand:
+    job_id: str
+
+
+@dataclass(frozen=True)
+class DownloadReportCommand:
     job_id: str
 
 
@@ -36,3 +42,12 @@ class ViewReportJobStatusResult:
     created_at: datetime
     completed_at: datetime | None
     download_url: str | None
+
+
+@dataclass(frozen=True)
+class DownloadReportResult:
+    file_key: str
+    report_format: ReportFormat
+    report_type: ReportType
+    date_from: date
+    date_to: date

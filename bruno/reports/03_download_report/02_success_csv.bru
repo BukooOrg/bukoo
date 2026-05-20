@@ -1,0 +1,33 @@
+meta {
+  name: success csv download
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/reports/jobs/{{reportJobId}}/download
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Content-Type is text/csv", function() {
+    expect(res.headers["content-type"]).to.include("text/csv");
+  });
+
+  test("Content-Disposition is attachment", function() {
+    expect(res.headers["content-disposition"]).to.include("attachment");
+  });
+
+  test("Content-Disposition filename has .csv extension", function() {
+    expect(res.headers["content-disposition"]).to.include(".csv");
+  });
+}

@@ -51,6 +51,7 @@ from app.domain.exceptions import (
     PasswordNotSetError,
     PublisherNotFoundError,
     ReportJobNotFoundError,
+    ReportNotReadyError,
     ReviewAlreadyExistsError,
     ReviewNotEligibleError,
     ReviewNotFoundError,
@@ -428,6 +429,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
     ReportJobNotFoundError: HttpExceptionMapping(
         status.HTTP_404_NOT_FOUND,
         ErrorCode.REPORT_JOB_NOT_FOUND,
+        lambda exc: exc.message,
+    ),
+    ReportNotReadyError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.REPORT_NOT_READY,
         lambda exc: exc.message,
     ),
 }
