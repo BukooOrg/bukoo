@@ -13,6 +13,11 @@ class FindLowStockItemsCommand:
     threshold: int
 
 
+@dataclass(frozen=True)
+class FindOutOfStockItemsCommand:
+    query_params: QueryParams
+
+
 # results
 @dataclass(frozen=True)
 class GetInventoryMetricsResult:

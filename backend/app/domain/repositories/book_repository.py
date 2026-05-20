@@ -69,3 +69,9 @@ class IBookRepository(ABC):
         self, query: QueryParams, threshold: int
     ) -> PaginatedResult[BookEntity]:
         pass
+
+    @abstractmethod
+    async def find_out_of_stock(
+        self, query: QueryParams
+    ) -> PaginatedResult[BookEntity]:
+        pass

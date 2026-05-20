@@ -176,6 +176,11 @@ class FakeBookRepository(IBookRepository):
     ) -> PaginatedResult[BookEntity]:
         return PaginatedResult(items=[], total_items=0, page=1, page_size=20)
 
+    async def find_out_of_stock(
+        self, query: QueryParams
+    ) -> PaginatedResult[BookEntity]:
+        return PaginatedResult(items=[], total_items=0, page=1, page_size=20)
+
 
 class FakeUserRepository(IUserRepository):
     def __init__(self, user: UserEntity | None = None) -> None:
