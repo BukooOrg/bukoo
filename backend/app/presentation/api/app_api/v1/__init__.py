@@ -11,6 +11,7 @@ from .inventory_routes import router as inventory_router
 from .notification_routes import router as notification_router
 from .order_routes import router as order_router
 from .publisher_routes import router as publisher_router
+from .report_routes import router as report_router
 from .review_routes import router as review_router
 from .user_routes import router as user_router
 from .wishlist_routes import router as wishlist_router
@@ -31,3 +32,4 @@ router.include_router(publisher_router)
 router.include_router(review_router)
 router.include_router(notification_router)
 router.include_router(inventory_router)
+router.include_router(report_router)

@@ -1,0 +1,40 @@
+meta {
+  name: limit out of range
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/reports/jobs
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // limit = 0 is below the minimum of 1 — should return 422
+  {
+    "type": "top_books",
+    "date_from": "2025-01-01",
+    "date_to": "2025-12-31",
+    "format": "csv",
+    "limit": 0
+  }
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+}

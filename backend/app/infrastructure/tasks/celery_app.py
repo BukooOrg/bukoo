@@ -1,9 +1,18 @@
 from __future__ import annotations
 
+from typing import Any
+
 from celery import Celery
+from celery.signals import setup_logging
 from kombu import Exchange, Queue
 
 from app.core.config import get_configs
+
+
+@setup_logging.connect
+def configure_worker_logging(**kwargs: Any) -> None:
+    import app.core.logger  # noqa: F401 — side effects configure root logger
+
 
 _DEFAULT_EXCHANGE = Exchange("default", type="direct")
 _MAIL_EXCHANGE = Exchange("mail", type="direct")
@@ -16,6 +25,7 @@ TASK_QUEUES = (
 TASK_ROUTES = {
     "email.*": {"queue": "mail", "routing_key": "mail"},
     "notification.*": {"queue": "default", "routing_key": "default"},
+    "report.*": {"queue": "default", "routing_key": "default"},
 }
 
 
@@ -23,6 +33,7 @@ def create_celery() -> Celery:
     tasks = [
         "app.infrastructure.tasks.email_tasks",
         "app.infrastructure.tasks.notification_tasks",
+        "app.infrastructure.tasks.report_tasks",
     ]
 
     configs = get_configs()

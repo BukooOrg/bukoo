@@ -1,0 +1,39 @@
+meta {
+  name: invalid date range reversed
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/reports/jobs
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  // date_from > date_to — should return 400 INVALID_REPORT_DATE_RANGE
+  {
+    "type": "sales_summary",
+    "date_from": "2025-12-31",
+    "date_to": "2025-01-01",
+    "format": "csv"
+  }
+}
+
+tests {
+  test("status 400", function() {
+    expect(res.status).to.equal(400);
+  });
+
+  test("error code is INVALID_REPORT_DATE_RANGE", function() {
+    expect(res.body.error.code).to.equal("INVALID_REPORT_DATE_RANGE");
+  });
+}

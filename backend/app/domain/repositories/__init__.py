@@ -9,6 +9,7 @@ from .notification_repository import INotificationRepository
 from .order_repository import IOrderRepository
 from .payment_repository import IPaymentRepository
 from .publisher_repository import IPublisherRepository
+from .report_job_repository import IReportJobRepository
 from .review_repository import IReviewRepository
 from .user_repository import IUserRepository
 from .verification_token_repository import IVerificationTokenRepository
@@ -25,6 +26,7 @@ __all__ = [
     "ICategoryRepository",
     "ICollectionRepository",
     "INotificationRepository",
+    "IReportJobRepository",
     "IOrderRepository",
     "IPaymentRepository",
     "IPublisherRepository",

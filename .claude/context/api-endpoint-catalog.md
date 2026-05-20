@@ -295,6 +295,6 @@ use case to build). Existing auth endpoints (`POST /auth/register`,
 | 11. Order                       | 6              | Checkout & fulfillment             |
 | 12. Review                      | 8              | Ratings & moderation               |
 | 13. Notification                | 5              | In-app inbox                       |
-| 14. Admin – Inventory Dashboard | 2              | Stock metrics                      |
+| 14. Admin – Inventory Dashboard | 3              | Stock metrics                      |
 | 15. Admin – Reports & Analytics | 4              | Async report jobs                  |
-| **Total**                       | **88**         |                                    |
+| **Total**                       | **89**         |                                    |

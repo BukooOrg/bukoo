@@ -1,0 +1,59 @@
+meta {
+  name: success top books pdf with limit
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/reports/jobs
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // happy path: top_books report, pdf format, explicit limit
+  // {
+  //   "type": "top_books",
+  //   "date_from": "2025-01-01",
+  //   "date_to": "2026-12-31",
+  //   "format": "pdf",
+  //   "limit": 30
+  // }
+  // {
+  //   "type": "top_authors",
+  //   "date_from": "2025-01-01",
+  //   "date_to": "2026-12-31",
+  //   "format": "csv",
+  //   "limit": 30
+  // }
+  
+  {
+    "type": "monthly_volume",
+    "date_from": "2025-01-01",
+    "date_to": "2040-12-31",
+    "format": "pdf",
+    "limit": 30
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.status is pending", function() {
+    expect(res.body.data.status).to.equal("pending");
+  });
+}

@@ -85,6 +85,25 @@ ALLOWED_CANCELLED_STATUS_FOR_ADMIN = [OrderStatus.PENDING, OrderStatus.PAID]
 ALLOWED_UPDATE_STATUS_FOR_ADMIN = [OrderStatus.SHIPPED, OrderStatus.DELIVERED]
 
 
+class ReportJobStatus(StrEnum):
+    PENDING = "pending"
+    PROCESSING = "processing"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+
+class ReportType(StrEnum):
+    SALES_SUMMARY = "sales_summary"
+    TOP_BOOKS = "top_books"
+    TOP_AUTHORS = "top_authors"
+    MONTHLY_VOLUME = "monthly_volume"
+
+
+class ReportFormat(StrEnum):
+    PDF = "pdf"
+    CSV = "csv"
+
+
 ORDER_STATUS_TRANSITION_MAP: dict[OrderStatus, OrderStatus] = {
     OrderStatus.PENDING: OrderStatus.PAID,
     OrderStatus.PAID: OrderStatus.SHIPPED,

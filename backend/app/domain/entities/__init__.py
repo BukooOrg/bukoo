@@ -12,6 +12,7 @@ from .order_entity import OrderEntity
 from .order_item_entity import OrderItemEntity
 from .payment_entity import PaymentEntity
 from .publisher_entity import PublisherEntity
+from .report_job_entity import ReportJobEntity
 from .review_entity import ReviewEntity
 from .user_entity import UserEntity
 from .verification_token_entity import VerificationTokenEntity
@@ -34,6 +35,7 @@ __all__ = [
     "OrderItemEntity",
     "PaymentEntity",
     "PublisherEntity",
+    "ReportJobEntity",
     "ReviewEntity",
     "UserEntity",
     "WishlistEntity",

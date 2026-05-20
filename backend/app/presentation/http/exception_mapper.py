@@ -34,6 +34,7 @@ from app.domain.exceptions import (
     InvalidCredentialsError,
     InvalidFileTypeError,
     InvalidISBNError,
+    InvalidReportDateRangeError,
     InvalidTokenError,
     NewPasswordSameAsCurrentError,
     NoAuthHeaderError,
@@ -416,5 +417,11 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_404_NOT_FOUND,
         ErrorCode.NOTIFICATION_NOT_FOUND,
         "Notification not found",
+    ),
+    # report
+    InvalidReportDateRangeError: HttpExceptionMapping(
+        status.HTTP_400_BAD_REQUEST,
+        ErrorCode.INVALID_REPORT_DATE_RANGE,
+        "date_from must be strictly before date_to.",
     ),
 }

@@ -29,11 +29,15 @@ def format_sql_processor(_: Any, __: str, event_dict: EventDict) -> EventDict:
             kw in event.upper()
             for kw in ("SELECT", "INSERT", "UPDATE", "DELETE", "CREATE", "DROP")
         ):
-            event_dict["event"] = "\n\n" + sqlparse.format(
-                event,
-                reindent=True,
-                keyword_case="upper",
-                indent_width=2,
+            event_dict["event"] = (
+                "\n\n"
+                + sqlparse.format(
+                    event,
+                    reindent=True,
+                    keyword_case="upper",
+                    indent_width=2,
+                )
+                + "\n\n"
             )
     return event_dict
 

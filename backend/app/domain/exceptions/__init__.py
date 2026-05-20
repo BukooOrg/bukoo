@@ -51,6 +51,7 @@ from .payment import (
     PaymentVerificationError,
 )
 from .publisher import PublisherNotFoundError
+from .report import InvalidReportDateRangeError, ReportJobNotFoundError
 from .review import (
     ReviewAlreadyExistsError,
     ReviewNotEligibleError,
@@ -149,5 +150,7 @@ __all__ = [
     "ReviewNotFoundError",
     "ReviewNotOwnedError",
     "NotificationNotFoundError",
+    "InvalidReportDateRangeError",
+    "ReportJobNotFoundError",
     "Error",
 ]
