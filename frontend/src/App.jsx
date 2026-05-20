@@ -68,6 +68,7 @@ import PasswordPage from './pages/account/PasswordPage';
 import ProfilePage from './pages/account/ProfilePage';
 import AccountReviewsPage from './pages/account/ReviewsPage';
 import AuthorDetailPage from './pages/admin/catalog/AuthorDetailPage';
+import AuthorNewPage from './pages/admin/catalog/AuthorNewPage';
 import AuthorsPage from './pages/admin/catalog/AuthorsPage';
 import BookDetailPage from './pages/admin/catalog/BookDetailPage';
 import BookNewPage from './pages/admin/catalog/BookNewPage';
@@ -179,6 +180,7 @@ function App() {
                 <Route path='/admin/categories/new' element={<CategoryNewPage />} />
                 <Route path='/admin/categories/:categoryId' element={<CategoryDetailPage />} />
                 <Route path='/admin/authors' element={<AuthorsPage />} />
+                <Route path='/admin/authors/new' element={<AuthorNewPage />} />
                 <Route path='/admin/authors/:authorId' element={<AuthorDetailPage />} />
                 <Route path='/admin/publishers' element={<PublishersPage />} />
                 <Route path='/admin/publishers/:publisherId' element={<PublisherDetailPage />} />
