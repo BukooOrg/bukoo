@@ -11,6 +11,7 @@ src/apis/InventoryApi.ts
 src/apis/NotificationApi.ts
 src/apis/OrderApi.ts
 src/apis/PublisherApi.ts
+src/apis/ReportApi.ts
 src/apis/ReviewApi.ts
 src/apis/UserApi.ts
 src/apis/WishlistApi.ts
@@ -53,6 +54,8 @@ src/models/CreateCollectionRequest.ts
 src/models/CreateCollectionResponse.ts
 src/models/CreatePublisherRequest.ts
 src/models/CreatePublisherResponse.ts
+src/models/CreateReportJobRequest.ts
+src/models/CreateReportJobResponse.ts
 src/models/CreateReviewRequest.ts
 src/models/CreateReviewResponse.ts
 src/models/DeactivateBookResponse.ts
@@ -84,6 +87,7 @@ src/models/PaginatedResponseBaseNotificationItemResponse.ts
 src/models/PaginatedResponseBasePublisherResponse.ts
 src/models/PaginatedResponseOrderSummaryResponse.ts
 src/models/PaginatedResponsePublicReviewItemResponse.ts
+src/models/PaginatedResponseReportJobListItemResponse.ts
 src/models/PaginatedResponseReviewWithBookItemResponse.ts
 src/models/PaginatedResponseUserListItemResponse.ts
 src/models/PaginationMeta.ts
@@ -100,6 +104,10 @@ src/models/PublicReviewItemResponse.ts
 src/models/RegisterAdminRequest.ts
 src/models/RegisterCustomerRequest.ts
 src/models/RegisterResponse.ts
+src/models/ReportFormat.ts
+src/models/ReportJobListItemResponse.ts
+src/models/ReportJobStatus.ts
+src/models/ReportType.ts
 src/models/ResendVerificationRequest.ts
 src/models/ResendVerificationResponse.ts
 src/models/ResetPasswordRequest.ts
@@ -117,9 +125,11 @@ src/models/ResponseWrapperCreateBookResponse.ts
 src/models/ResponseWrapperCreateCategoryResponse.ts
 src/models/ResponseWrapperCreateCollectionResponse.ts
 src/models/ResponseWrapperCreatePublisherResponse.ts
+src/models/ResponseWrapperCreateReportJobResponse.ts
 src/models/ResponseWrapperCreateReviewResponse.ts
 src/models/ResponseWrapperData.ts
 src/models/ResponseWrapperData1.ts
+src/models/ResponseWrapperData2.ts
 src/models/ResponseWrapperDeactivateBookResponse.ts
 src/models/ResponseWrapperForceSetUserPasswordResponse.ts
 src/models/ResponseWrapperForgotPasswordResponse.ts
@@ -139,6 +149,7 @@ src/models/ResponseWrapperPaginatedResponseBaseNotificationItemResponse.ts
 src/models/ResponseWrapperPaginatedResponseBasePublisherResponse.ts
 src/models/ResponseWrapperPaginatedResponseOrderSummaryResponse.ts
 src/models/ResponseWrapperPaginatedResponsePublicReviewItemResponse.ts
+src/models/ResponseWrapperPaginatedResponseReportJobListItemResponse.ts
 src/models/ResponseWrapperPaginatedResponseReviewWithBookItemResponse.ts
 src/models/ResponseWrapperPaginatedResponseUserListItemResponse.ts
 src/models/ResponseWrapperPayOrderResponse.ts
@@ -174,6 +185,7 @@ src/models/ResponseWrapperViewCategoryDetailResponse.ts
 src/models/ResponseWrapperViewCollectionDetailResponse.ts
 src/models/ResponseWrapperViewOrderDetailResponse.ts
 src/models/ResponseWrapperViewPublisherDetailResponse.ts
+src/models/ResponseWrapperViewReportJobStatusResponse.ts
 src/models/ReviewWithBookItemResponse.ts
 src/models/SoftDeleteAuthorResponse.ts
 src/models/SoftDeleteBookResponse.ts
@@ -220,6 +232,7 @@ src/models/ViewCategoryDetailResponse.ts
 src/models/ViewCollectionDetailResponse.ts
 src/models/ViewOrderDetailResponse.ts
 src/models/ViewPublisherDetailResponse.ts
+src/models/ViewReportJobStatusResponse.ts
 src/models/WishlistItemBookResponse.ts
 src/models/index.ts
 src/runtime.ts

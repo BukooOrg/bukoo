@@ -1,0 +1,57 @@
+meta {
+  name: success sales summary csv
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}{{apiBase}}/reports/jobs
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // happy path: sales_summary report, csv format
+  {
+    "type": "sales_summary",
+    "date_from": "2025-01-01",
+    "date_to": "2026-12-31",
+    "format": "csv"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("reportJobId", res.body.data.job_id);
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  
+  test("success flag is true", function() {
+    expect(res.body.success).to.be.true;
+  });
+  
+  test("data.job_id is a string", function() {
+    expect(res.body.data.job_id).to.be.a("string");
+  });
+  
+  test("data.status is pending", function() {
+    expect(res.body.data.status).to.equal("pending");
+  });
+  
+  test("meta has requestId", function() {
+    expect(res.body.meta.requestId).to.be.a("string");
+  });
+}

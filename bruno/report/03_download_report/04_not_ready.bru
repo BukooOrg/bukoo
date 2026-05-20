@@ -1,0 +1,29 @@
+meta {
+  name: not ready
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/reports/jobs/{{reportJobId}}/download
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+  
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+  
+  test("error code is REPORT_NOT_READY", function() {
+    expect(res.body.error.code).to.equal("REPORT_NOT_READY");
+  });
+}

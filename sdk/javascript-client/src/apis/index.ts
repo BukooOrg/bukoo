@@ -11,6 +11,7 @@ export * from './InventoryApi';
 export * from './NotificationApi';
 export * from './OrderApi';
 export * from './PublisherApi';
+export * from './ReportApi';
 export * from './ReviewApi';
 export * from './UserApi';
 export * from './WishlistApi';

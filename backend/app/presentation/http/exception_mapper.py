@@ -34,6 +34,7 @@ from app.domain.exceptions import (
     InvalidCredentialsError,
     InvalidFileTypeError,
     InvalidISBNError,
+    InvalidReportDateRangeError,
     InvalidTokenError,
     NewPasswordSameAsCurrentError,
     NoAuthHeaderError,
@@ -49,6 +50,8 @@ from app.domain.exceptions import (
     OutOfStockError,
     PasswordNotSetError,
     PublisherNotFoundError,
+    ReportJobNotFoundError,
+    ReportNotReadyError,
     ReviewAlreadyExistsError,
     ReviewNotEligibleError,
     ReviewNotFoundError,
@@ -416,5 +419,21 @@ EXCEPTION_MAP: dict[type[DomainException], HttpExceptionMapping] = {
         status.HTTP_404_NOT_FOUND,
         ErrorCode.NOTIFICATION_NOT_FOUND,
         "Notification not found",
+    ),
+    # report
+    InvalidReportDateRangeError: HttpExceptionMapping(
+        status.HTTP_400_BAD_REQUEST,
+        ErrorCode.INVALID_REPORT_DATE_RANGE,
+        "date_from must be strictly before date_to.",
+    ),
+    ReportJobNotFoundError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.REPORT_JOB_NOT_FOUND,
+        lambda exc: exc.message,
+    ),
+    ReportNotReadyError: HttpExceptionMapping(
+        status.HTTP_404_NOT_FOUND,
+        ErrorCode.REPORT_NOT_READY,
+        lambda exc: exc.message,
     ),
 }

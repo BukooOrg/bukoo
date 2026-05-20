@@ -9,6 +9,7 @@ from .notification_repository_impl import NotificationRepositoryImpl
 from .order_repository_impl import OrderRepositoryImpl
 from .payment_repository_impl import PaymentRepositoryImpl
 from .publisher_repository_impl import PublisherRepositoryImpl
+from .report_job_repository_impl import ReportJobRepositoryImpl
 from .review_repository_impl import ReviewRepositoryImpl
 from .user_repository_impl import UserRepositoryImpl
 from .verification_token_repository_impl import VerificationTokenRepositoryImpl
@@ -28,6 +29,7 @@ __all__ = [
     "PublisherRepositoryImpl",
     "UserRepositoryImpl",
     "VerificationTokenRepositoryImpl",
+    "ReportJobRepositoryImpl",
     "ReviewRepositoryImpl",
     "WishlistRepositoryImpl",
 ]

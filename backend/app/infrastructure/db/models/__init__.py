@@ -31,6 +31,7 @@ from .order_item_model import OrderItemModel
 from .order_model import OrderModel
 from .payment_model import PaymentModel
 from .publisher_model import PublisherModel
+from .report_job_model import ReportJobModel
 from .review_model import ReviewModel
 from .user_model import UserModel
 from .verification_token_model import VerificationTokenModel
@@ -56,5 +57,6 @@ __all__ = [
     "PaymentModel",
     "ReviewModel",
     "NotificationModel",
+    "ReportJobModel",
     "VerificationTokenModel",
 ]

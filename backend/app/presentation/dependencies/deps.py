@@ -12,6 +12,7 @@ from app.application.interfaces import (
     ICacheService,
     IEmailNotificationService,
     IPasswordHasher,
+    IReportJobService,
     IStorageService,
     ITokenService,
 )
@@ -39,6 +40,7 @@ from app.domain.repositories import (
     IOrderRepository,
     IPaymentRepository,
     IPublisherRepository,
+    IReportJobRepository,
     IReviewRepository,
     IUserRepository,
     IVerificationTokenRepository,
@@ -64,6 +66,7 @@ from app.infrastructure.db.repositories import (
     OrderRepositoryImpl,
     PaymentRepositoryImpl,
     PublisherRepositoryImpl,
+    ReportJobRepositoryImpl,
     ReviewRepositoryImpl,
     UserRepositoryImpl,
     VerificationTokenRepositoryImpl,
@@ -75,6 +78,7 @@ from app.infrastructure.storage import MinIOStorage, S3Storage
 from app.infrastructure.tasks.email_notification_service import (
     CeleryEmailNotificationService,
 )
+from app.infrastructure.tasks.report_job_service import CeleryReportJobService
 
 logger = structlog.getLogger(__name__)
 
@@ -300,6 +304,21 @@ def get_email_notification_service() -> IEmailNotificationService:
 EmailNotificationService = Annotated[
     IEmailNotificationService, Depends(get_email_notification_service)
 ]
+
+
+# Report jobs
+def get_report_job_repository(session: DbSession) -> IReportJobRepository:
+    return ReportJobRepositoryImpl(session)
+
+
+ReportJobRepo = Annotated[IReportJobRepository, Depends(get_report_job_repository)]
+
+
+def get_report_job_service() -> IReportJobService:
+    return CeleryReportJobService()
+
+
+ReportJobSvc = Annotated[IReportJobService, Depends(get_report_job_service)]
 
 # Current user guard
 _bearer = HTTPBearer(auto_error=False)

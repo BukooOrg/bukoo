@@ -44,6 +44,7 @@ from app.infrastructure.db.models import (
     PaymentModel, # noqa: F401
     ReviewModel, # noqa: F401
     NotificationModel, # noqa: F401
+    ReportJobModel, # noqa: F401
     VerificationTokenModel, # noqa: F401
 )
 target_metadata = Base.metadata
