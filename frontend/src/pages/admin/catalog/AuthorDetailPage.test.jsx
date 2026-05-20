@@ -19,6 +19,9 @@ vi.mock('@/lib/apiClient', () => ({
     updateAuthor: vi.fn(),
     softDeleteAuthor: vi.fn(),
   },
+  bookApi: {
+    findBooks: vi.fn(),
+  },
 }));
 
 vi.mock('sonner', () => ({
@@ -36,14 +39,17 @@ const mockAuthor = {
 
 describe('AuthorDetailPage', () => {
   let authorApi;
+  let bookApi;
 
   beforeEach(async () => {
     vi.clearAllMocks();
     const mod = await import('@/lib/apiClient');
     authorApi = mod.authorApi;
+    bookApi = mod.bookApi;
     authorApi.viewAuthorDetail.mockResolvedValue({ data: mockAuthor });
     authorApi.updateAuthor.mockResolvedValue({ data: {} });
     authorApi.softDeleteAuthor.mockResolvedValue({ data: {} });
+    bookApi.findBooks.mockResolvedValue({ data: { items: [] } });
   });
 
   it('renders author name', async () => {

@@ -22,6 +22,9 @@ vi.mock('@/lib/apiClient', () => ({
   collectionApi: {
     findCollections: vi.fn(),
   },
+  bookApi: {
+    findBooks: vi.fn(),
+  },
 }));
 
 vi.mock('sonner', () => ({
@@ -48,16 +51,19 @@ const mockCollections = [
 describe('CategoryDetailPage', () => {
   let categoryApi;
   let collectionApi;
+  let bookApi;
 
   beforeEach(async () => {
     vi.clearAllMocks();
     const mod = await import('@/lib/apiClient');
     categoryApi = mod.categoryApi;
     collectionApi = mod.collectionApi;
+    bookApi = mod.bookApi;
     categoryApi.viewCategoryDetail.mockResolvedValue({ data: mockCategory });
-    collectionApi.findCollections.mockResolvedValue({ data: { items: mockCollections } });
+    collectionApi.findCollections.mockResolvedValue({ data: mockCollections });
     categoryApi.updateCategory.mockResolvedValue({ data: {} });
     categoryApi.softDeleteCategory.mockResolvedValue({ data: {} });
+    bookApi.findBooks.mockResolvedValue({ data: { items: [] } });
   });
 
   it('renders category name', async () => {

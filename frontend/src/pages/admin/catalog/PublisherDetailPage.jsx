@@ -1,4 +1,15 @@
-import { ArrowLeft, Loader2, AlertCircle, Building2, Link2, Trash2, Pencil } from 'lucide-react';
+import {
+  ArrowLeft,
+  Loader2,
+  AlertCircle,
+  Building2,
+  Link2,
+  Trash2,
+  Pencil,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -23,7 +34,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/overlays/dialog';
-import { publisherApi } from '@/lib/apiClient';
+import { bookApi, publisherApi } from '@/lib/apiClient';
 
 function formatDate(dateStr) {
   if (!dateStr) return '—';
@@ -41,6 +52,9 @@ export default function PublisherDetailPage() {
   const navigate = useNavigate();
 
   const [publisher, setPublisher] = useState(null);
+  const [relatedBooks, setRelatedBooks] = useState([]);
+  const [bookSearch, setBookSearch] = useState('');
+  const [bookPage, setBookPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -58,8 +72,12 @@ export default function PublisherDetailPage() {
     setLoading(true);
     setError('');
     try {
-      const res = await publisherApi.viewPublisherDetail({ publisherId });
-      setPublisher(res.data);
+      const [pubRes, booksRes] = await Promise.all([
+        publisherApi.viewPublisherDetail({ publisherId }),
+        bookApi.findBooks({ publisherId, pageSize: 50, sort: 'title:asc' }),
+      ]);
+      setPublisher(pubRes.data);
+      setRelatedBooks(booksRes.data?.items || []);
     } catch (err) {
       console.error('Failed to load publisher:', err);
       setError('Failed to load publisher');
@@ -223,6 +241,111 @@ export default function PublisherDetailPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Related Books */}
+      <div className='p-6 bg-white/40 border border-primary/5 rounded-2xl'>
+        <h3 className='text-xs font-black uppercase tracking-[0.2em] text-primary/60 mb-4'>
+          Related Books ({relatedBooks.length})
+        </h3>
+
+        {/* Search */}
+        <div className='relative mb-4'>
+          <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+            <Search className='w-4 h-4 text-primary/30' />
+          </div>
+          <input
+            type='text'
+            value={bookSearch}
+            onChange={(e) => {
+              setBookSearch(e.target.value);
+              setBookPage(1);
+            }}
+            placeholder='Search books...'
+            className='w-full pl-10 pr-4 py-2 bg-white/40 border border-primary/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm'
+          />
+        </div>
+
+        {(() => {
+          const filtered = bookSearch
+            ? relatedBooks.filter((b) => b.title.toLowerCase().includes(bookSearch.toLowerCase()))
+            : relatedBooks;
+          const pageSize = 10;
+          const totalPages = Math.ceil(filtered.length / pageSize) || 1;
+          const startIndex = (bookPage - 1) * pageSize;
+          const pageBooks = filtered.slice(startIndex, startIndex + pageSize);
+          const hasPrev = bookPage > 1;
+          const hasNext = bookPage < totalPages;
+
+          if (relatedBooks.length === 0) {
+            return (
+              <p className='text-sm text-primary/30 italic'>No books published by this publisher</p>
+            );
+          }
+
+          return (
+            <>
+              <div className='space-y-2'>
+                {pageBooks.length === 0 ? (
+                  <p className='text-sm text-primary/30 italic py-4'>
+                    No books matching &quot;{bookSearch}&quot;
+                  </p>
+                ) : (
+                  pageBooks.map((book) => (
+                    <div
+                      key={book.id}
+                      className='flex items-center justify-between p-3 bg-white/60 rounded-xl'>
+                      <div>
+                        <Link
+                          to={`/admin/books/${book.id}`}
+                          className='text-sm font-sans font-bold text-primary hover:underline'>
+                          {book.title}
+                        </Link>
+                        {book.isbn && (
+                          <p className='text-xs font-mono text-primary/40'>{book.isbn}</p>
+                        )}
+                      </div>
+                      <Link
+                        to={`/admin/books/${book.id}`}
+                        className='text-xs font-bold text-primary/40 hover:text-primary transition-colors'>
+                        View →
+                      </Link>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className='flex items-center justify-between mt-4 pt-4 border-t border-primary/5'>
+                  <p className='text-xs font-bold text-primary/40'>
+                    Page {bookPage} of {totalPages}
+                  </p>
+                  <div className='flex gap-1'>
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      disabled={!hasPrev}
+                      onClick={() => setBookPage(bookPage - 1)}
+                      className='gap-1 rounded-xl'>
+                      <ChevronLeft className='w-4 h-4' />
+                      Previous
+                    </Button>
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      disabled={!hasNext}
+                      onClick={() => setBookPage(bookPage + 1)}
+                      className='gap-1 rounded-xl'>
+                      Next
+                      <ChevronRight className='w-4 h-4' />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
+          );
+        })()}
       </div>
 
       {/* Actions */}
