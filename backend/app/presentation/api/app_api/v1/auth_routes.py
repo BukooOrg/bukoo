@@ -225,11 +225,9 @@ async def oauth_callback(
         )
         result = await use_case.execute(OAuthCallbackCommand(code=code, state=state))
 
-        # redirect = RedirectResponse(
-        #     url=f"{frontend_callback}#token={result.access_token}", status_code=302
-        # )
-        redirect = RedirectResponse(url=frontend_callback, status_code=302)
-        set_auth_cookie(redirect, result.access_token)
+        redirect = RedirectResponse(
+            url=f"{frontend_callback}#token={result.access_token}", status_code=302
+        )
         return redirect
 
     except DomainException as exc:

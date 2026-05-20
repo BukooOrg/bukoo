@@ -2,83 +2,47 @@
 
 import { PlusCircleIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import React, { useState, useMemo } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
 
-import { useSelectedVariant } from '@/components/products/VariantSelector';
-import { addToCart as apiAddToCart } from '@/lib/sfcc';
-
-import { Loader } from '../ui/feedback/loader';
-import { Button } from '../ui/forms/button';
-import { Tooltip, TooltipTrigger, TooltipContent } from '../ui/overlays/tooltip';
-
-import { useCart } from './CartContext';
-
-const getBaseProductVariant = (product) => {
-  return {
-    id: product.id,
-    title: product.title,
-    availableForSale: product.availableForSale,
-    selectedOptions: [],
-    price: product.priceRange.minVariantPrice,
-  };
-};
+import { useCart } from '@/components/cart/CartContext';
+import { Loader } from '@/components/ui/feedback/loader';
+import { Button } from '@/components/ui/forms/button';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/overlays/tooltip';
 
 export function AddToCart({
-  product,
+  bookId,
+  available = true,
   className,
   iconOnly = false,
   icon = <PlusCircleIcon />,
   ...buttonProps
 }) {
-  const { variants, availableForSale } = product;
-  const { addCartItem, mode } = useCart();
+  const { addToCart } = useCart();
   const [isLoading, setIsLoading] = useState(false);
-  const selectedVariant = useSelectedVariant(product);
-  const params = useParams();
-  const [searchParams] = useSearchParams();
-
-  const hasNoVariants = variants.length === 0;
-  const defaultVariantId = variants.length === 1 ? variants[0]?.id : undefined;
-  const selectedVariantId = selectedVariant?.id || defaultVariantId;
-  const isTargetingProduct = params.handle === product.id || searchParams.get('pid') === product.id;
-
-  const resolvedVariant = useMemo(() => {
-    if (hasNoVariants) return getBaseProductVariant(product);
-    if (!isTargetingProduct && !defaultVariantId) return undefined;
-    return variants.find((variant) => variant.id === selectedVariantId);
-  }, [hasNoVariants, product, isTargetingProduct, defaultVariantId, variants, selectedVariantId]);
 
   const handleAddToCart = async (e) => {
     e.preventDefault();
-    if (!resolvedVariant) return;
+    if (!bookId || !available) return;
 
     setIsLoading(true);
     try {
-      // Optimistic update
-      addCartItem(resolvedVariant, product);
-
-      // API call
-      await apiAddToCart([
-        {
-          merchandiseId: resolvedVariant.id,
-        },
-      ]);
-    } catch (error) {
-      console.error('Failed to add to cart', error);
+      await addToCart(bookId, 1);
+      toast.success('Added to cart');
+    } catch {
+      toast.error('Failed to add to cart');
     } finally {
       setIsLoading(false);
     }
   };
 
   const getButtonText = () => {
-    if (mode === 'mock') return 'Bag disabled';
-    if (!availableForSale) return 'Out Of Stock';
-    if (!resolvedVariant) return 'Select an option';
+    if (!available) return 'Out Of Stock';
+    if (isLoading) return 'Adding...';
     return 'Add To Bag';
   };
 
-  const isDisabled = !availableForSale || !resolvedVariant || isLoading || mode === 'mock';
+  const isDisabled = !available || isLoading || !bookId;
 
   const getLoaderSize = () => {
     const buttonSize = buttonProps.size;
@@ -92,7 +56,7 @@ export function AddToCart({
     <Button
       type='button'
       onClick={handleAddToCart}
-      aria-label={!resolvedVariant ? 'Please select an option' : 'Add to bag'}
+      aria-label={!bookId ? 'Select a book' : 'Add to bag'}
       disabled={isDisabled}
       className={iconOnly ? undefined : 'w-full relative flex items-center justify-between'}
       {...buttonProps}>
@@ -137,13 +101,13 @@ export function AddToCart({
 
   return (
     <div className={className}>
-      {mode === 'mock' ? (
+      {!available ? (
         <Tooltip>
           <TooltipTrigger asChild>
             <div className='w-full'>{buttonElement}</div>
           </TooltipTrigger>
           <TooltipContent portal={false} className='pointer-events-none'>
-            <span className='relative z-10'>You need to complete SFCC setup</span>
+            <span className='relative z-10'>This book is currently unavailable</span>
           </TooltipContent>
         </Tooltip>
       ) : (

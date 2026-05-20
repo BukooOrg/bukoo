@@ -1,37 +1,38 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
 
-import { removeFromCart } from '@/lib/sfcc';
+import { useCart } from '@/components/cart/CartContext';
+import { Button } from '@/components/ui/forms/button';
 
-import { Button } from '../ui/forms/button';
-
-export function DeleteItemButton({ item, optimisticUpdate }) {
-  const merchandiseId = item.merchandise.id;
+export function DeleteItemButton({ item }) {
+  const { removeFromCart } = useCart();
+  const [loading, setLoading] = useState(false);
 
   const handleRemove = async (e) => {
     e.preventDefault();
-    optimisticUpdate(merchandiseId, 'delete');
+    setLoading(true);
     try {
-      if (item.id) {
-        await removeFromCart([item.id]);
-      }
-    } catch (error) {
-      console.error('Failed to remove item', error);
+      await removeFromCart(item.id);
+      toast.success('Removed from cart');
+    } catch {
+      toast.error('Failed to remove item');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className='-mr-1 -mb-1 opacity-70'>
-      <Button
-        onClick={handleRemove}
-        type='button'
-        size='sm'
-        variant='ghost'
-        aria-label='Remove item'
-        className='px-2 text-sm'>
-        Remove
-      </Button>
-    </div>
+    <Button
+      onClick={handleRemove}
+      type='button'
+      size='sm'
+      variant='ghost'
+      disabled={loading}
+      aria-label='Remove item'
+      className='px-2 text-sm text-destructive hover:text-destructive'>
+      {loading ? 'Removing...' : 'Remove'}
+    </Button>
   );
 }

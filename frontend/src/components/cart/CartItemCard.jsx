@@ -1,90 +1,53 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { ColorSwatch } from '@/components/ui/forms/color-picker';
-import { DEFAULT_OPTION } from '@/lib/constants';
-import { formatPrice } from '@/lib/sfcc/utils';
-import { createUrl, getColorHex } from '@/lib/utils';
-
-import { useProductImages } from '../products/VariantSelector';
-
 import { DeleteItemButton } from './DeleteItemButton';
 import { EditItemQuantityButton } from './EditItemQuantityButton';
 
-export function CartItemCard({ item, optimisticUpdate, onCloseCart }) {
-  const merchandiseSearchParams = {};
+function formatPrice(amount, currency = 'GBP') {
+  return `${currency} ${Number(amount).toFixed(2)}`;
+}
 
-  item.merchandise.selectedOptions.forEach(({ name, value }) => {
-    if (value !== DEFAULT_OPTION) {
-      merchandiseSearchParams[name.toLowerCase()] = value.toLowerCase();
-    }
-  });
-
-  const merchandiseUrl = createUrl(
-    `/product/${item.merchandise.product.handle}`,
-    new URLSearchParams(merchandiseSearchParams)
-  );
-
-  const colorOption = item.merchandise.selectedOptions.find(
-    (option) => option.name.toLowerCase() === 'color'
-  );
-
-  const imgs = useProductImages(item.merchandise.product, item.merchandise.selectedOptions);
-  const [renderImage] = imgs;
+export function CartItemCard({ item }) {
+  const subtotal = (Number(item.book.price) * item.quantity).toFixed(2);
 
   return (
-    <div className='bg-card rounded-lg p-2'>
-      <div className='flex flex-row gap-6'>
-        <div className='relative size-[120px] overflow-hidden rounded-sm shrink-0'>
-          <img
-            className='size-full object-cover'
-            width={240}
-            height={240}
-            alt={renderImage.altText || item.merchandise.product.title}
-            src={renderImage.url}
-          />
-
-          {colorOption && (
-            <div className='flex absolute bottom-1 left-1'>
-              <ColorSwatch
-                color={(() => {
-                  const color = getColorHex(colorOption.value);
-                  return Array.isArray(color)
-                    ? [
-                        { name: colorOption.value, value: color[0] },
-                        { name: colorOption.value, value: color[1] },
-                      ]
-                    : { name: colorOption.value, value: color };
-                })()}
-                isSelected={false}
-                onColorChange={() => {}}
-                size='sm'
-                atLeastOneColorSelected={false}
-              />
+    <div className='bg-card border border-border rounded-lg p-4'>
+      <div className='flex gap-4'>
+        <div className='relative w-24 h-32 shrink-0 overflow-hidden rounded-sm bg-muted'>
+          {item.book.coverUrl ? (
+            <img
+              src={item.book.coverUrl}
+              alt={item.book.title}
+              className='w-full h-full object-cover'
+            />
+          ) : (
+            <div className='w-full h-full flex items-center justify-center text-muted-foreground text-xs'>
+              No cover
             </div>
           )}
         </div>
-        <div className='flex flex-col gap-2 2xl:gap-3 flex-1'>
+
+        <div className='flex flex-col flex-1 min-w-0'>
           <Link
-            to={merchandiseUrl}
-            onClick={onCloseCart}
-            className='z-30 flex flex-col justify-center'>
-            <span className='2xl:text-lg font-semibold'>{item.merchandise.product.title}</span>
+            to={`/product/${item.bookId}`}
+            className='font-serif text-lg font-semibold text-primary hover:underline truncate'>
+            {item.book.title}
           </Link>
-          <p className='2xl:text-lg font-semibold'>
-            {formatPrice(item.cost.totalAmount.amount, item.cost.totalAmount.currencyCode)}
-          </p>
-          <div className='flex justify-between items-end mt-auto'>
-            <div className='flex h-8 flex-row items-center rounded-md border border-neutral-200 dark:border-neutral-700'>
-              <EditItemQuantityButton
-                item={item}
-                type='minus'
-                optimisticUpdate={optimisticUpdate}
-              />
+
+          <p className='text-sm text-muted-foreground mt-1'>{formatPrice(item.book.price)} each</p>
+
+          <div className='flex items-center justify-between mt-auto pt-3'>
+            <div className='flex items-center h-8 rounded-md border border-border'>
+              <EditItemQuantityButton item={item} type='minus' />
               <span className='w-8 text-center text-sm'>{item.quantity}</span>
-              <EditItemQuantityButton item={item} type='plus' optimisticUpdate={optimisticUpdate} />
+              <EditItemQuantityButton item={item} type='plus' />
             </div>
-            <DeleteItemButton item={item} optimisticUpdate={optimisticUpdate} />
+
+            <div className='flex items-center gap-4'>
+              <span className='font-semibold text-primary'>{formatPrice(subtotal)}</span>
+              <DeleteItemButton item={item} />
+            </div>
           </div>
         </div>
       </div>

@@ -3,10 +3,10 @@
 import clsx from 'clsx';
 import { Minus, Plus } from 'lucide-react';
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 
-import { updateCart, removeFromCart } from '@/lib/sfcc';
-
-import { Loader } from '../ui/feedback/loader';
+import { useCart } from '@/components/cart/CartContext';
+import { Loader } from '@/components/ui/feedback/loader';
 
 function QuantityButton({ type, onClick, disabled, loading }) {
   return (
@@ -32,32 +32,20 @@ function QuantityButton({ type, onClick, disabled, loading }) {
   );
 }
 
-export function EditItemQuantityButton({ item, type, optimisticUpdate }) {
+export function EditItemQuantityButton({ item, type }) {
+  const { updateQuantity } = useCart();
   const [isLoading, setIsLoading] = useState(false);
-  const merchandiseId = item.merchandise.id;
 
   const handleUpdate = async (e) => {
     e.preventDefault();
     const newQuantity = type === 'plus' ? item.quantity + 1 : item.quantity - 1;
-
-    // Optimistic update
-    optimisticUpdate(merchandiseId, type);
+    if (newQuantity <= 0) return;
 
     setIsLoading(true);
     try {
-      if (newQuantity <= 0) {
-        if (item.id) await removeFromCart([item.id]);
-      } else {
-        await updateCart([
-          {
-            id: item.id,
-            merchandiseId,
-            quantity: newQuantity,
-          },
-        ]);
-      }
-    } catch (error) {
-      console.error('Failed to update quantity', error);
+      await updateQuantity(item.id, newQuantity);
+    } catch {
+      toast.error('Failed to update quantity');
     } finally {
       setIsLoading(false);
     }
