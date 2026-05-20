@@ -25,13 +25,13 @@ class DownloadReportUseCase(BaseUseCase):
         self._report_job_repo = report_job_repo
 
     @override
-    async def execute(self, command: DownloadReportCommand) -> DownloadReportResult:
-        job = await self._report_job_repo.find_by_id(command.job_id)
+    async def execute(self, cmd: DownloadReportCommand) -> DownloadReportResult:
+        job = await self._report_job_repo.find_by_id(cmd.job_id)
         if job is None:
-            raise ReportJobNotFoundError(command.job_id)
+            raise ReportJobNotFoundError(cmd.job_id)
 
         if job.status != ReportJobStatus.COMPLETED or job.file_key is None:
-            raise ReportNotReadyError(command.job_id)
+            raise ReportNotReadyError(cmd.job_id)
 
         return DownloadReportResult(
             file_key=job.file_key,

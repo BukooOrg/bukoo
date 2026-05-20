@@ -29,11 +29,11 @@ class ViewReportJobStatusUseCase(BaseUseCase):
 
     @override
     async def execute(
-        self, command: ViewReportJobStatusCommand
+        self, cmd: ViewReportJobStatusCommand
     ) -> ViewReportJobStatusResult:
-        job = await self._report_job_repo.find_by_id(command.job_id)
+        job = await self._report_job_repo.find_by_id(cmd.job_id)
         if job is None:
-            raise ReportJobNotFoundError(command.job_id)
+            raise ReportJobNotFoundError(cmd.job_id)
 
         download_url: str | None = None
         if job.status == ReportJobStatus.COMPLETED and job.file_key is not None:

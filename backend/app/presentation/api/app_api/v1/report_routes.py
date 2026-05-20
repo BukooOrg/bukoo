@@ -1,19 +1,24 @@
 from __future__ import annotations
 
-from fastapi import APIRouter
+from typing import Annotated
+
+from fastapi import APIRouter, Depends
 from starlette.responses import StreamingResponse
 
 from app.application.dtos.report_job_dtos import (
     CreateReportJobCommand,
     DownloadReportCommand,
+    FindReportJobsCommand,
     ViewReportJobStatusCommand,
 )
 from app.application.use_cases.report import (
     CreateReportJobUseCase,
     DownloadReportUseCase,
+    FindReportJobsUseCase,
     ViewReportJobStatusUseCase,
 )
 from app.core.constants import ReportFormat
+from app.core.query_params import PageParams, QueryParams, parse_sort
 from app.presentation.dependencies.deps import (
     AdminUser,
     DbSession,
@@ -21,9 +26,15 @@ from app.presentation.dependencies.deps import (
     ReportJobSvc,
     StorageService,
 )
+from app.presentation.schemas.list_schema import (
+    PaginatedResponse,
+    PaginationMeta,
+)
 from app.presentation.schemas.report_job_schema import (
     CreateReportJobRequest,
     CreateReportJobResponse,
+    FindReportJobsQueryRequest,
+    ReportJobListItemResponse,
     ViewReportJobStatusResponse,
 )
 
@@ -118,4 +129,48 @@ async def download_report(
         storage_svc.load_stream(result.file_key),
         media_type=content_type,
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@router.get(
+    "/jobs",
+    response_model=PaginatedResponse[ReportJobListItemResponse],
+    status_code=200,
+    operation_id="findReportJobs",
+)
+async def find_report_jobs(
+    admin: AdminUser,
+    db_session: DbSession,
+    report_job_repo: ReportJobRepo,
+    query: Annotated[FindReportJobsQueryRequest, Depends()],
+) -> PaginatedResponse[ReportJobListItemResponse]:
+    cmd = FindReportJobsCommand(
+        query_params=QueryParams(
+            page=PageParams(page=query.page, page_size=query.page_size),
+            sorts=parse_sort(query.sort),
+        ),
+        status=query.status,
+        report_type=query.type,
+    )
+    use_case = FindReportJobsUseCase(
+        db_session=db_session,
+        report_job_repo=report_job_repo,
+    )
+    result = await use_case.execute(cmd)
+    return PaginatedResponse(
+        items=[
+            ReportJobListItemResponse(
+                job_id=item.id,
+                type=item.report_type,
+                date_from=item.date_from,
+                date_to=item.date_to,
+                format=item.report_format,
+                limit=item.limit,
+                status=item.status,
+                created_at=item.created_at,
+                completed_at=item.completed_at,
+            )
+            for item in result.items
+        ],
+        pagination=PaginationMeta.from_result(result),
     )

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from typing import Any
 from unittest.mock import AsyncMock
 
 import pytest
@@ -27,6 +28,9 @@ class FakeReportJobRepository(IReportJobRepository):
 
     async def find_by_id(self, job_id: str) -> ReportJobEntity | None:
         return self._store.get(job_id)
+
+    async def find_all(self, *args: Any, **kwargs: Any) -> Any:
+        pass
 
 
 def _make_job(

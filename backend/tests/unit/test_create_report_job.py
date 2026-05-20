@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import override
+from typing import Any, override
 from unittest.mock import AsyncMock
 
 import pytest
@@ -35,6 +35,10 @@ class FakeReportJobRepository(IReportJobRepository):
     @override
     async def find_by_id(self, job_id: str) -> ReportJobEntity | None:
         return self._store.get(job_id)
+
+    @override
+    async def find_all(self, *args: Any, **kwargs: Any) -> Any:
+        pass
 
 
 class FakeReportJobService(IReportJobService):

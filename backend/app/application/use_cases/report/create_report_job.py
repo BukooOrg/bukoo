@@ -31,20 +31,20 @@ class CreateReportJobUseCase(BaseUseCase):
         self._report_job_svc = report_job_svc
 
     @override
-    async def execute(self, command: CreateReportJobCommand) -> CreateReportJobResult:
-        if command.date_from >= command.date_to:
+    async def execute(self, cmd: CreateReportJobCommand) -> CreateReportJobResult:
+        if cmd.date_from >= cmd.date_to:
             raise InvalidReportDateRangeError
 
         now = datetime.now(UTC)
         job = ReportJobEntity(
             _id=str(uuid7()),
-            _admin_id=command.admin_id,
-            _report_type=command.report_type,
-            _date_from=command.date_from,
-            _date_to=command.date_to,
-            _report_format=command.report_format,
+            _admin_id=cmd.admin_id,
+            _report_type=cmd.report_type,
+            _date_from=cmd.date_from,
+            _date_to=cmd.date_to,
+            _report_format=cmd.report_format,
             _status=ReportJobStatus.PENDING,
-            _limit=command.limit,
+            _limit=cmd.limit,
             _created_at=now,
             _updated_at=now,
         )
