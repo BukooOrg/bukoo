@@ -54,6 +54,11 @@ class FakeBookRepository(IBookRepository):
         self.last_threshold = low_stock_threshold
         return self._metrics
 
+    async def find_low_stock(
+        self, query: QueryParams, threshold: int
+    ) -> PaginatedResult[BookEntity]:
+        return PaginatedResult(items=[], total_items=0, page=1, page_size=20)
+
 
 @pytest.mark.unit
 class TestGetInventoryMetricsUseCase:

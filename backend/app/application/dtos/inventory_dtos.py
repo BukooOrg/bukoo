@@ -3,7 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from decimal import Decimal
 
+from app.core.query_params import QueryParams
+
+
 # commands
+@dataclass(frozen=True)
+class FindLowStockItemsCommand:
+    query_params: QueryParams
+    threshold: int
 
 
 # results

@@ -229,6 +229,62 @@ class BookRepositoryImpl(IBookRepository):
         )
 
     @override
+    async def find_low_stock(
+        self, query: QueryParams, threshold: int
+    ) -> PaginatedResult[BookEntity]:
+        where_clause = and_(
+            BookModel.deleted_at.is_(None),
+            BookModel.stock_quantity > 0,
+            BookModel.stock_quantity <= threshold,
+        )
+
+        total_items: int = (
+            await self._session.execute(
+                select(func.count()).select_from(
+                    select(BookModel).where(where_clause).subquery()
+                )
+            )
+        ).scalar_one()
+
+        order_clauses = [
+            self.SORTABLE_FIELDS[s.field].asc()
+            if s.direction == "asc"
+            else self.SORTABLE_FIELDS[s.field].desc()
+            for s in query.sorts
+            if s.field in self.SORTABLE_FIELDS
+        ]
+        if not order_clauses:
+            order_clauses = [BookModel.stock_quantity.asc()]
+
+        models = (
+            (
+                await self._session.execute(
+                    select(BookModel)
+                    .where(where_clause)
+                    .options(
+                        selectinload(BookModel.publisher),
+                        selectinload(BookModel.category),
+                        selectinload(BookModel.author_associations).selectinload(
+                            BookAuthorModel.author
+                        ),
+                    )
+                    .order_by(*order_clauses)
+                    .offset(query.page.offset)
+                    .limit(query.page.limit)
+                )
+            )
+            .scalars()
+            .all()
+        )
+
+        return PaginatedResult(
+            items=[BookMapper.to_entity(m) for m in models],
+            total_items=total_items,
+            page=query.page.page,
+            page_size=query.page.page_size,
+        )
+
+    @override
     async def save(
         self, book: BookEntity, should_skip_book_authors: bool = True
     ) -> None:

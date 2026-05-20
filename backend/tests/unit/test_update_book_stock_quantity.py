@@ -79,6 +79,11 @@ class FakeBookRepository(IBookRepository):
     async def get_inventory_metrics(self, low_stock_threshold: int) -> Any:
         pass
 
+    async def find_low_stock(
+        self, query: QueryParams, threshold: int
+    ) -> PaginatedResult[BookEntity]:
+        return PaginatedResult(items=[], total_items=0, page=1, page_size=20)
+
 
 def _build_use_case(
     book_repo: FakeBookRepository | None = None,

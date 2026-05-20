@@ -63,3 +63,9 @@ class IBookRepository(ABC):
         self, low_stock_threshold: int
     ) -> BookInventoryMetrics:
         pass
+
+    @abstractmethod
+    async def find_low_stock(
+        self, query: QueryParams, threshold: int
+    ) -> PaginatedResult[BookEntity]:
+        pass

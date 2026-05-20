@@ -1,0 +1,29 @@
+meta {
+  name: invalid threshold
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}{{apiBase}}/inventory/low-stock?threshold=0
+  body: none
+  auth: bearer
+}
+
+params:query {
+  threshold: 0
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status 422", function() {
+    expect(res.status).to.equal(422);
+  });
+  
+  test("success flag is false", function() {
+    expect(res.body.success).to.be.false;
+  });
+}
