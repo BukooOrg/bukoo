@@ -345,7 +345,10 @@ export default function CategoryDetailPage() {
             <Button variant='outline' onClick={() => setEditDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={handleEditSubmit} disabled={editLoading}>
+            <Button
+              onClick={handleEditSubmit}
+              disabled={editLoading}
+              className='bg-primary text-secondary'>
               {editLoading ? <Loader2 className='w-4 h-4 animate-spin' /> : 'Save Changes'}
             </Button>
           </DialogFooter>
