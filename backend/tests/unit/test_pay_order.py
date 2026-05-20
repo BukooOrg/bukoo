@@ -156,6 +156,19 @@ class FakeBookRepository(IBookRepository):
     async def exists_by_isbn(self, *args: Any, **kwargs: Any) -> bool:
         return False
 
+    async def get_inventory_metrics(self, low_stock_threshold: int) -> Any:
+        pass
+
+    async def find_low_stock(
+        self, query: QueryParams, threshold: int
+    ) -> PaginatedResult[BookEntity]:
+        return PaginatedResult(items=[], total_items=0, page=1, page_size=20)
+
+    async def find_out_of_stock(
+        self, query: QueryParams
+    ) -> PaginatedResult[BookEntity]:
+        return PaginatedResult(items=[], total_items=0, page=1, page_size=20)
+
 
 # ---------------------------------------------------------------------------
 # Fake payment service

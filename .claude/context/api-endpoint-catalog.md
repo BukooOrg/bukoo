@@ -253,10 +253,11 @@ use case to build). Existing auth endpoints (`POST /auth/register`,
 > Aggregated stock metrics for the admin inventory view. Synchronous (small
 > aggregation queries, not report-scale).
 
-| #    | Endpoint               | Method | Access | Notes                                                                                |
-| ---- | ---------------------- | ------ | ------ | ------------------------------------------------------------------------------------ |
-| 14.1 | `/inventory/metrics`   | GET    | 🔑     | Returns: total SKU count, out-of-stock count, low-stock count, total inventory value |
-| 14.2 | `/inventory/low-stock` | GET    | 🔑     | Paginated list of books below a stock threshold (default or query param)             |
+| #    | Endpoint                  | Method | Access | Notes                                                                                |
+| ---- | ------------------------- | ------ | ------ | ------------------------------------------------------------------------------------ |
+| 14.1 | `/inventory/metrics`      | GET    | 🔑     | Returns: total SKU count, out-of-stock count, low-stock count, total inventory value |
+| 14.2 | `/inventory/low-stock`    | GET    | 🔑     | Paginated list of books below a stock threshold (default or query param)             |
+| 14.3 | `/inventory/out-of-stock` | GET    | 🔑     | Paginated list of out-of-stock books                                                 |
 
 ---
 

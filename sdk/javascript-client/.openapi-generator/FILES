@@ -7,6 +7,7 @@ src/apis/CartApi.ts
 src/apis/CategoryApi.ts
 src/apis/CollectionApi.ts
 src/apis/HealthApi.ts
+src/apis/InventoryApi.ts
 src/apis/NotificationApi.ts
 src/apis/OrderApi.ts
 src/apis/PublisherApi.ts
@@ -67,6 +68,7 @@ src/models/HTTPValidationError.ts
 src/models/HealthCheckResponse.ts
 src/models/HideOrRestoreReviewRequest.ts
 src/models/HideOrRestoreReviewResponse.ts
+src/models/InventoryMetricsResponse.ts
 src/models/LoginRequest.ts
 src/models/LogoutResponse.ts
 src/models/MarkAllNotificationsAsReadResponse.ts
@@ -125,6 +127,7 @@ src/models/ResponseWrapperGetMyCartResponse.ts
 src/models/ResponseWrapperGetMyWishlistResponse.ts
 src/models/ResponseWrapperHealthCheckResponse.ts
 src/models/ResponseWrapperHideOrRestoreReviewResponse.ts
+src/models/ResponseWrapperInventoryMetricsResponse.ts
 src/models/ResponseWrapperLogoutResponse.ts
 src/models/ResponseWrapperMarkAllNotificationsAsReadResponse.ts
 src/models/ResponseWrapperMarkNotificationAsReadResponse.ts

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import Any, ClassVar, override
 
 from sqlalchemy import ColumnElement, and_, delete, exists, func, or_, select
@@ -9,7 +10,11 @@ from sqlalchemy.orm import InstrumentedAttribute, selectinload
 from app.core.query_params import PaginatedResult, QueryParams
 from app.domain.entities import BookEntity
 from app.domain.repositories import IBookRepository
-from app.domain.repositories.book_repository import BookFilters, BookStatusFilter
+from app.domain.repositories.book_repository import (
+    BookFilters,
+    BookInventoryMetrics,
+    BookStatusFilter,
+)
 from app.infrastructure.db.mappers import BookAuthorMapper, BookMapper
 from app.infrastructure.db.models import AuthorModel, BookAuthorModel, BookModel
 from app.infrastructure.db.models.category_model import CategoryModel
@@ -191,6 +196,148 @@ class BookRepositoryImpl(IBookRepository):
         result = await self._session.execute(stmt)
         model = result.scalar_one_or_none()
         return BookMapper.to_entity(model) if model else None
+
+    @override
+    async def get_inventory_metrics(
+        self, low_stock_threshold: int
+    ) -> BookInventoryMetrics:
+        stmt = select(
+            func.count().label("total_sku_count"),
+            func.count()
+            .filter(BookModel.stock_quantity == 0)
+            .label("out_of_stock_count"),
+            func.count()
+            .filter(
+                and_(
+                    BookModel.stock_quantity > 0,
+                    BookModel.stock_quantity <= low_stock_threshold,
+                )
+            )
+            .label("low_stock_count"),
+            func.coalesce(
+                func.sum(BookModel.price * BookModel.stock_quantity), 0
+            ).label("total_inventory_value"),
+        ).where(BookModel.deleted_at.is_(None))
+
+        result = await self._session.execute(stmt)
+        row = result.one()
+        return BookInventoryMetrics(
+            total_sku_count=row.total_sku_count,
+            out_of_stock_count=row.out_of_stock_count,
+            low_stock_count=row.low_stock_count,
+            total_inventory_value=Decimal(str(row.total_inventory_value)),
+        )
+
+    @override
+    async def find_low_stock(
+        self, query: QueryParams, threshold: int
+    ) -> PaginatedResult[BookEntity]:
+        where_clause = and_(
+            BookModel.deleted_at.is_(None),
+            BookModel.stock_quantity > 0,
+            BookModel.stock_quantity <= threshold,
+        )
+
+        total_items: int = (
+            await self._session.execute(
+                select(func.count()).select_from(
+                    select(BookModel).where(where_clause).subquery()
+                )
+            )
+        ).scalar_one()
+
+        order_clauses = [
+            self.SORTABLE_FIELDS[s.field].asc()
+            if s.direction == "asc"
+            else self.SORTABLE_FIELDS[s.field].desc()
+            for s in query.sorts
+            if s.field in self.SORTABLE_FIELDS
+        ]
+        if not order_clauses:
+            order_clauses = [BookModel.stock_quantity.asc()]
+
+        models = (
+            (
+                await self._session.execute(
+                    select(BookModel)
+                    .where(where_clause)
+                    .options(
+                        selectinload(BookModel.publisher),
+                        selectinload(BookModel.category),
+                        selectinload(BookModel.author_associations).selectinload(
+                            BookAuthorModel.author
+                        ),
+                    )
+                    .order_by(*order_clauses)
+                    .offset(query.page.offset)
+                    .limit(query.page.limit)
+                )
+            )
+            .scalars()
+            .all()
+        )
+
+        return PaginatedResult(
+            items=[BookMapper.to_entity(m) for m in models],
+            total_items=total_items,
+            page=query.page.page,
+            page_size=query.page.page_size,
+        )
+
+    @override
+    async def find_out_of_stock(
+        self, query: QueryParams
+    ) -> PaginatedResult[BookEntity]:
+        where_clause = and_(
+            BookModel.deleted_at.is_(None),
+            BookModel.stock_quantity == 0,
+        )
+
+        total_items: int = (
+            await self._session.execute(
+                select(func.count()).select_from(
+                    select(BookModel).where(where_clause).subquery()
+                )
+            )
+        ).scalar_one()
+
+        order_clauses = [
+            self.SORTABLE_FIELDS[s.field].asc()
+            if s.direction == "asc"
+            else self.SORTABLE_FIELDS[s.field].desc()
+            for s in query.sorts
+            if s.field in self.SORTABLE_FIELDS
+        ]
+        if not order_clauses:
+            order_clauses = [BookModel.title.asc()]
+
+        models = (
+            (
+                await self._session.execute(
+                    select(BookModel)
+                    .where(where_clause)
+                    .options(
+                        selectinload(BookModel.publisher),
+                        selectinload(BookModel.category),
+                        selectinload(BookModel.author_associations).selectinload(
+                            BookAuthorModel.author
+                        ),
+                    )
+                    .order_by(*order_clauses)
+                    .offset(query.page.offset)
+                    .limit(query.page.limit)
+                )
+            )
+            .scalars()
+            .all()
+        )
+
+        return PaginatedResult(
+            items=[BookMapper.to_entity(m) for m in models],
+            total_items=total_items,
+            page=query.page.page,
+            page_size=query.page.page_size,
+        )
 
     @override
     async def save(

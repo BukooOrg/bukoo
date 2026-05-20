@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-from typing import TypeVar
-
 from fastapi import APIRouter, Response
 
 from app.application.dtos.wishlist_dto import (
     AddWishlistItemCommand,
-    BaseWishlistItemResult,
     GetMyWishlistCommand,
     MoveWishlistItemToCartCommand,
     RemoveWishlistItemCommand,
@@ -17,7 +14,6 @@ from app.application.use_cases.wishlist import (
     MoveWishlistItemToCartUseCase,
     RemoveWishlistItemUseCase,
 )
-from app.core.util import build_public_url
 from app.presentation.dependencies.deps import (
     BookRepo,
     CartRepo,
@@ -25,37 +21,17 @@ from app.presentation.dependencies.deps import (
     DbSession,
     WishlistRepo,
 )
+from app.presentation.schemas.cart_schema import build_base_cart_item_response
 from app.presentation.schemas.wishlist_schema import (
     AddWishlistItemRequest,
     AddWishlistItemResponse,
     BaseWishlistItemResponse,
     GetMyWishlistResponse,
     MoveWishlistItemToCartResponse,
-    WishlistItemBookResponse,
+    build_base_wishlist_item_response,
 )
 
-from .cart_routes import build_base_cart_item_response
-
 router = APIRouter(prefix="/wishlist", tags=["wishlist"])
-
-
-T = TypeVar("T", bound=BaseWishlistItemResult)
-P = TypeVar("P", bound=BaseWishlistItemResponse)
-
-
-def build_base_wishlist_item_response(result: T, response_cls: type[P]) -> P:  # noqa: UP047 # type: ignore
-    return response_cls(
-        id=result.id,
-        wishlist_id=result.wishlist_id,
-        book_id=result.book_id,
-        added_at=result.added_at,
-        book=WishlistItemBookResponse(
-            id=result.book.id,
-            title=result.book.title,
-            price=result.book.price,
-            cover_url=build_public_url(result.book.cover_url),
-        ),
-    )
 
 
 @router.get("", response_model=GetMyWishlistResponse, operation_id="getMyWishlist")

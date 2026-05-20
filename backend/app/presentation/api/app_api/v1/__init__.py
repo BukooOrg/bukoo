@@ -7,6 +7,7 @@ from .cart_routes import router as cart_router
 from .category_routes import router as category_router
 from .collection_routes import router as collection_router
 from .health_routes import router as health_router
+from .inventory_routes import router as inventory_router
 from .notification_routes import router as notification_router
 from .order_routes import router as order_router
 from .publisher_routes import router as publisher_router
@@ -29,3 +30,4 @@ router.include_router(order_router)
 router.include_router(publisher_router)
 router.include_router(review_router)
 router.include_router(notification_router)
+router.include_router(inventory_router)
