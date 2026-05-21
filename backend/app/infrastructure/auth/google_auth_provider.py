@@ -70,7 +70,7 @@ class GoogleAuthProvider(IAuthProvider, IOAuthProvider):
                     headers={"Accept": "application/json"},
                 )
                 response.raise_for_status()
-            except httpx.HTTPStatusError as exc:
+            except httpx.HTTPError as exc:
                 raise GoogleOAuthError() from exc
 
             data: dict[str, str] = response.json()
@@ -89,7 +89,7 @@ class GoogleAuthProvider(IAuthProvider, IOAuthProvider):
                     headers={"Authorization": f"Bearer {token}"},
                 )
                 response.raise_for_status()
-            except httpx.HTTPStatusError as exc:
+            except httpx.HTTPError as exc:
                 raise GoogleOAuthError() from exc
 
             info: dict[str, Any] = response.json()
@@ -115,11 +115,10 @@ class GoogleAuthProvider(IAuthProvider, IOAuthProvider):
                     if year and month and day:
                         dob = date(year=year, month=month, day=day)
 
-            except httpx.HTTPStatusError as exc:
+            except httpx.HTTPError as exc:
                 logger.error(
                     "google_dob_not_available",
-                    status_code=exc.response.status_code,
-                    response=exc.response.text,
+                    error=str(exc),
                 )
 
             return OAuthUserInfo(

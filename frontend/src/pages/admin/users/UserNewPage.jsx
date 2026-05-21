@@ -97,7 +97,7 @@ export default function UserNewPage() {
     'w-full pl-12 pr-4 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm';
 
   return (
-    <div className='space-y-8 max-w-2xl'>
+    <div className='space-y-8 '>
       <Link
         to='/admin/users'
         className='inline-flex items-center gap-2 text-xs font-sans font-black uppercase tracking-widest text-primary/40 hover:text-primary transition-colors'>
@@ -112,7 +112,7 @@ export default function UserNewPage() {
         <p className='text-primary/40 font-bold italic text-sm'>Register a new admin account</p>
       </div>
 
-      <form onSubmit={handleSubmit} className='max-w-2xl space-y-5'>
+      <form onSubmit={handleSubmit} className='space-y-5'>
         {/* Email */}
         <div className='space-y-2'>
           <label className='block text-xs font-black uppercase tracking-[0.2em] text-primary/60 pl-1'>

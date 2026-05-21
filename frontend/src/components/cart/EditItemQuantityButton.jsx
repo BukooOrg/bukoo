@@ -1,45 +1,28 @@
 'use client';
 
-import clsx from 'clsx';
-import { Minus, Plus } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 
 import { useCart } from '@/components/cart/CartContext';
-import { Loader } from '@/components/ui/feedback/loader';
+import { ConfirmDialog } from '@/components/cart/ConfirmDialog';
 
-function QuantityButton({ type, onClick, disabled, loading }) {
-  return (
-    <button
-      type='button'
-      onClick={onClick}
-      disabled={disabled || loading}
-      aria-label={type === 'plus' ? 'Increase item quantity' : 'Reduce item quantity'}
-      className={clsx(
-        'ease flex h-full min-w-[36px] max-w-[36px] flex-none items-center justify-center rounded-full p-2 transition-all duration-200 hover:border-neutral-800 hover:opacity-80 disabled:opacity-30',
-        {
-          'ml-auto': type === 'minus',
-        }
-      )}>
-      {loading ? (
-        <Loader size='sm' />
-      ) : type === 'plus' ? (
-        <Plus className='h-4 w-4 dark:text-neutral-500' />
-      ) : (
-        <Minus className='h-4 w-4 dark:text-neutral-500' />
-      )}
-    </button>
-  );
-}
-
-export function EditItemQuantityButton({ item, type }) {
-  const { updateQuantity } = useCart();
+export function EditItemQuantityButton({ item, type, setRemoveDialog }) {
+  const { updateQuantity, removeFromCart } = useCart();
   const [isLoading, setIsLoading] = useState(false);
+  const [removeDialog, setLocalRemoveDialog] = useState(false);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
     const newQuantity = type === 'plus' ? item.quantity + 1 : item.quantity - 1;
-    if (newQuantity <= 0) return;
+
+    if (newQuantity <= 0) {
+      if (setRemoveDialog) {
+        setRemoveDialog(true);
+      } else {
+        setLocalRemoveDialog(true);
+      }
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -51,5 +34,37 @@ export function EditItemQuantityButton({ item, type }) {
     }
   };
 
-  return <QuantityButton type={type} onClick={handleUpdate} loading={isLoading} />;
+  const handleRemove = async () => {
+    setIsLoading(true);
+    try {
+      await removeFromCart(item.id);
+      toast.success('Removed from cart');
+    } catch {
+      toast.error('Failed to remove item');
+    } finally {
+      setIsLoading(false);
+      setLocalRemoveDialog(false);
+    }
+  };
+
+  return (
+    <>
+      <button
+        type='button'
+        onClick={handleUpdate}
+        disabled={isLoading}
+        className='w-10 h-10 flex items-center justify-center text-lg text-gray-500 hover:text-black border border-gray-200 rounded disabled:opacity-30'>
+        {type === 'plus' ? '+' : '−'}
+      </button>
+
+      <ConfirmDialog
+        open={removeDialog}
+        onOpenChange={setLocalRemoveDialog}
+        title='Remove from cart?'
+        description={`This will remove "${item.book.title}" from your cart.`}
+        onConfirm={handleRemove}
+        loading={isLoading}
+      />
+    </>
+  );
 }

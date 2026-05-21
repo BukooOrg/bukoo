@@ -33,18 +33,18 @@ export default function CartPage() {
     );
   }
 
-  if (cart.items.length === 0) {
+  if (!cart?.items?.length) {
     return (
-      <div className='px-sides py-16'>
+      <div className='px-sides py-24'>
         <div className='max-w-2xl mx-auto text-center'>
-          <h1 className='font-serif text-4xl font-black text-primary tracking-tighter'>
+          <h1 className='font-serif text-5xl font-black text-black tracking-tighter'>
             Your Bag is Empty
           </h1>
-          <p className='mt-4 text-muted-foreground'>
+          <p className='mt-6 text-lg text-gray-500'>
             Find your next favorite story and add it to your bag.
           </p>
           <Link to='/shop'>
-            <Button className='mt-8 bg-primary text-secondary' size='lg'>
+            <Button className='mt-10 bg-black text-white h-14 text-lg' size='lg'>
               Continue Shopping
             </Button>
           </Link>
@@ -54,17 +54,19 @@ export default function CartPage() {
   }
 
   return (
-    <div className='px-sides py-12'>
+    <div className='px-sides py-16'>
       <div className='max-w-6xl mx-auto'>
-        <div className='flex items-center justify-between mb-8'>
-          <h1 className='font-serif text-4xl font-black text-primary tracking-tighter'>Your Bag</h1>
-          <Button variant='outline' size='sm' onClick={handleClearAll} disabled={clearing}>
+        <div className='flex items-center justify-between mb-10'>
+          <h1 className='font-serif text-5xl font-black text-black tracking-tighter'>
+            Your Bag ({cart.totalQuantity})
+          </h1>
+          <Button variant='outline' size='lg' onClick={handleClearAll} disabled={clearing}>
             {clearing ? 'Clearing...' : 'Clear All'}
           </Button>
         </div>
 
-        <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
-          <div className='lg:col-span-2 space-y-4'>
+        <div className='grid grid-cols-1 lg:grid-cols-3 gap-10'>
+          <div className='lg:col-span-2 space-y-6'>
             {cart.items
               .sort((a, b) => a.book.title.localeCompare(b.book.title))
               .map((item) => (
@@ -75,14 +77,14 @@ export default function CartPage() {
           <div className='lg:col-span-1'>
             <div className='sticky top-24'>
               <CartSummary totalQuantity={cart.totalQuantity} totalPrice={cart.totalPrice} />
-              <div className='mt-4 space-y-3'>
+              <div className='mt-6 space-y-6'>
                 <Link to='/checkout'>
-                  <Button className='w-full bg-primary text-secondary' size='lg'>
+                  <Button className='w-full bg-black text-white h-14 text-lg' size='lg'>
                     Proceed to Checkout
                   </Button>
                 </Link>
                 <Link to='/shop'>
-                  <Button variant='outline' className='w-full' size='lg'>
+                  <Button variant='outline' className='w-full h-14 text-lg' size='lg'>
                     Continue Shopping
                   </Button>
                 </Link>

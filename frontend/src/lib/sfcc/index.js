@@ -3,6 +3,7 @@ import Cookies from 'js-cookie';
 import mockCollections from '@/data/mock/collections.json';
 // Import mock data
 import mockProducts from '@/data/mock/products.json';
+import { collectionApi } from '@/lib/apiClient';
 
 import { apiFetch } from '../api';
 
@@ -10,18 +11,19 @@ import { reshapeProduct, reshapeCategory, reshapeCategories, reshapeProducts } f
 
 const USE_MOCK = import.meta.env.VITE_MOCK_MODE === 'true';
 
-export async function getSFCCMode() {
-  return 'live';
-}
-
 export async function getCollections() {
-  if (USE_MOCK) {
-    return reshapeCategories(mockCollections);
-  }
   try {
-    return await apiFetch('/collections');
-  } catch (error) {
-    console.warn('API failed, falling back to mock data', error);
+    const res = await collectionApi.findCollections();
+    const items = res.data || [];
+    return items
+      .filter((c) => c.urlSlug !== 'joyco-root')
+      .map((c) => ({
+        handle: c.urlSlug,
+        title: c.name,
+        path: `/shop/${c.urlSlug}`,
+      }));
+  } catch {
+    if (USE_MOCK) return reshapeCategories(mockCollections);
     return reshapeCategories(mockCollections);
   }
 }

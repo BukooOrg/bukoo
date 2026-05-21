@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { toast } from 'sonner';
 
 import { useCart } from '@/components/cart/CartContext';
-import { Button } from '@/components/ui/forms/button';
 
 export function DeleteItemButton({ item }) {
   const { removeFromCart } = useCart();
@@ -15,24 +14,20 @@ export function DeleteItemButton({ item }) {
     setLoading(true);
     try {
       await removeFromCart(item.id);
-      toast.success('Removed from cart');
+      toast.success('Removed');
     } catch {
-      toast.error('Failed to remove item');
+      toast.error('Failed');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Button
+    <button
       onClick={handleRemove}
-      type='button'
-      size='sm'
-      variant='ghost'
       disabled={loading}
-      aria-label='Remove item'
-      className='px-2 text-sm text-destructive hover:text-destructive'>
-      {loading ? 'Removing...' : 'Remove'}
-    </Button>
+      className='text-base text-gray-400 hover:text-red-600 disabled:opacity-40'>
+      {loading ? '...' : 'Remove'}
+    </button>
   );
 }

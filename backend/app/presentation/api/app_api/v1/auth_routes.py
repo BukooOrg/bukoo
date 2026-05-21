@@ -236,6 +236,10 @@ async def oauth_callback(
         return RedirectResponse(
             url=f"{frontend_callback}?error={error_code}", status_code=302
         )
+    except Exception:
+        return RedirectResponse(
+            url=f"{frontend_callback}?error=INTERNAL_ERROR", status_code=302
+        )
 
 
 @router.post("/logout", response_model=LogoutResponse, operation_id="logout")

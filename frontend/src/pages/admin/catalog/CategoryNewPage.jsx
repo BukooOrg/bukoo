@@ -109,7 +109,7 @@ export default function CategoryNewPage() {
 
   if (loadingCollections) {
     return (
-      <div className='space-y-8 max-w-2xl'>
+      <div className='space-y-8 '>
         <div className='animate-pulse space-y-6'>
           <div className='h-6 bg-primary/5 rounded-lg w-32' />
           <div className='h-10 bg-primary/5 rounded-2xl' />
@@ -123,7 +123,7 @@ export default function CategoryNewPage() {
 
   if (collections.length === 0) {
     return (
-      <div className='space-y-8 max-w-2xl'>
+      <div className='space-y-8 '>
         <Link
           to='/admin/categories'
           className='inline-flex items-center gap-2 text-xs font-sans font-black uppercase tracking-widest text-primary/40 hover:text-primary transition-colors'>
@@ -153,7 +153,7 @@ export default function CategoryNewPage() {
   }
 
   return (
-    <div className='space-y-8 max-w-2xl'>
+    <div className='space-y-8 '>
       <Link
         to='/admin/categories'
         className='inline-flex items-center gap-2 text-xs font-sans font-black uppercase tracking-widest text-primary/40 hover:text-primary transition-colors'>

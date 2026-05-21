@@ -27,6 +27,7 @@ function computeTotals(items) {
 export function CartProvider({ children }) {
   const [cart, setCart] = useState(createEmptyCart());
   const [loading, setLoading] = useState(true);
+  const [justAdded, setJustAdded] = useState(false);
 
   const fetchCart = useCallback(async () => {
     if (!getToken()) {
@@ -69,6 +70,7 @@ export function CartProvider({ children }) {
         const { totalQuantity, totalPrice } = computeTotals(updatedItems);
         return { ...prev, items: updatedItems, totalQuantity, totalPrice };
       });
+      setJustAdded(true);
     } catch (error) {
       console.error('Failed to add to cart', error);
       throw error;
@@ -120,6 +122,8 @@ export function CartProvider({ children }) {
     }
   }, []);
 
+  const clearJustAdded = useCallback(() => setJustAdded(false), []);
+
   const value = useMemo(
     () => ({
       cart,
@@ -129,8 +133,20 @@ export function CartProvider({ children }) {
       updateQuantity,
       clearCart,
       refreshCart: fetchCart,
+      justAdded,
+      clearJustAdded,
     }),
-    [cart, loading, addToCart, removeFromCart, updateQuantity, clearCart, fetchCart]
+    [
+      cart,
+      loading,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      clearCart,
+      fetchCart,
+      justAdded,
+      clearJustAdded,
+    ]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

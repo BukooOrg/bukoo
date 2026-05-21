@@ -29,7 +29,6 @@ export default function OAuthCallbackPage() {
       return;
     }
 
-    // Extract token from URL hash (e.g., #token=abc123)
     const hashParams = new URLSearchParams(window.location.hash.slice(1));
     const token = hashParams.get('token');
 
@@ -39,7 +38,6 @@ export default function OAuthCallbackPage() {
       return;
     }
 
-    // Store token for SDK middleware
     setToken(token);
 
     async function completeOAuth() {
