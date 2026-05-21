@@ -5,6 +5,7 @@ import { formatPrice } from '@/lib/sfcc/utils';
 import { cn } from '@/lib/utils';
 
 import { AddToCart } from '../cart/AddToCart';
+import { AddToWishlist } from '../wishlist/AddToWishlist';
 
 import { FeaturedProductLabel } from './FeaturedProductLabel';
 
@@ -42,13 +43,14 @@ export function LatestProductCard({ product, principal = false, className }) {
           />
         )}
 
-        <div className='absolute bottom-6 left-1/2 -translate-x-1/2 w-[80%] opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto z-20'>
+        <div className='absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto z-30'>
           <Suspense fallback={null}>
             <AddToCart
               product={product}
               variant='default'
-              className='rounded-full bg-black text-white shadow-lg'
+              className='w-36 h-10 rounded-full bg-black text-white text-sm shadow-lg'
             />
+            <AddToWishlist bookId={product.id} size='sm' className='shadow-lg' />
           </Suspense>
         </div>
       </Link>

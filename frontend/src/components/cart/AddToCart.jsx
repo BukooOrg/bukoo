@@ -2,12 +2,14 @@
 
 import { PlusCircleIcon } from 'lucide-react';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useCart } from '@/components/cart/CartContext';
 import { Loader } from '@/components/ui/feedback/loader';
 import { Button } from '@/components/ui/forms/button';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/overlays/tooltip';
+import { getToken } from '@/lib/apiClient';
 import { cn } from '@/lib/utils';
 
 export function AddToCart({
@@ -20,6 +22,7 @@ export function AddToCart({
   ...buttonProps
 }) {
   const { addToCart } = useCart();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   const resolvedBookId = bookId || product?.id;
@@ -27,6 +30,11 @@ export function AddToCart({
   const handleAddToCart = async (e) => {
     e.preventDefault();
     if (!resolvedBookId || !available) return;
+
+    if (!getToken()) {
+      navigate('/login', { state: { from: window.location.pathname } });
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -70,7 +78,7 @@ export function AddToCart({
       ) : iconOnly ? (
         <span className='inline-block'>{icon}</span>
       ) : (
-        <div className='w-full flex items-center justify-between'>
+        <div className='w-full flex items-center justify-center gap-3'>
           <span className='font-sans font-bold uppercase tracking-tight'>{getButtonText()}</span>
           <PlusCircleIcon />
         </div>

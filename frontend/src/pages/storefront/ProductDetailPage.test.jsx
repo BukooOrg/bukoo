@@ -16,6 +16,19 @@ vi.mock('@/components/cart/CartContext', () => ({
   CartProvider: ({ children }) => children,
 }));
 
+vi.mock('@/components/wishlist/WishlistContext', () => ({
+  useWishlist: () => ({
+    wishlist: { items: [] },
+    loading: false,
+    addToWishlist: vi.fn(),
+    removeFromWishlist: vi.fn(),
+    moveToCart: vi.fn(),
+    isInWishlist: () => false,
+    refreshWishlist: vi.fn(),
+  }),
+  WishlistProvider: ({ children }) => children,
+}));
+
 vi.mock('@/lib/apiClient', () => ({
   bookApi: {
     viewBookDetail: vi.fn().mockResolvedValue({
@@ -36,6 +49,7 @@ vi.mock('@/lib/apiClient', () => ({
       },
     }),
   },
+  getToken: () => 'mock-token',
 }));
 
 describe('ProductDetailPage', () => {
@@ -109,7 +123,7 @@ describe('ProductDetailPage', () => {
     });
   });
 
-  it('renders add to bag button', async () => {
+  it('renders add to cart button', async () => {
     render(
       <MemoryRouter>
         <ProductDetailPage />
@@ -117,7 +131,7 @@ describe('ProductDetailPage', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Add to Bag')).toBeInTheDocument();
+      expect(screen.getByText('Add to cart')).toBeInTheDocument();
     });
   });
 
