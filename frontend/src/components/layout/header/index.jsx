@@ -1,4 +1,4 @@
-import { UserIcon } from 'lucide-react';
+import { Heart, UserIcon } from 'lucide-react';
 import { LogOut } from 'lucide-react';
 import { Shield } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
@@ -12,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/overlays/dropdown-menu';
+import { useWishlist } from '@/components/wishlist/WishlistContext';
 import { useAuth } from '@/context/AuthContext';
 import { getCollections } from '@/lib/sfcc';
 
@@ -21,6 +22,7 @@ import Search from './Search';
 export function Header() {
   const [collections, setCollections] = useState([]);
   const { user, logout } = useAuth();
+  const { wishlist } = useWishlist();
 
   useEffect(() => {
     async function loadCollections() {
@@ -54,6 +56,17 @@ export function Header() {
 
         {/* Action Buttons (Right) */}
         <nav className='flex items-center gap-4 ml-auto md:gap-8'>
+          <Link
+            to='/account/wishlist'
+            className='relative transition-colors text-black hover:bg-gray-100 rounded-full p-2'>
+            <Heart className='size-5' />
+            {(wishlist?.items?.length || 0) > 0 && (
+              <span className='absolute -top-0.5 -right-0.5 size-4 flex items-center justify-center text-[9px] font-bold bg-black text-white rounded-full'>
+                {wishlist.items.length}
+              </span>
+            )}
+          </Link>
+
           <CartModal />
 
           {user ? (

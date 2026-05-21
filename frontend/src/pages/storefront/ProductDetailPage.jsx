@@ -1,7 +1,8 @@
-import { BookOpen, Calendar, Globe, Hash, Layers, ShoppingBag, User } from 'lucide-react';
+import { BookOpen, Calendar, Globe, Hash, Layers, User } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
+import { AddToCart } from '@/components/cart/AddToCart';
 import { PageLayout } from '@/components/layout/PageLayout';
 import {
   Breadcrumb,
@@ -11,6 +12,7 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from '@/components/ui/navigation/breadcrumb';
+import { AddToWishlist } from '@/components/wishlist/AddToWishlist';
 import mockProducts from '@/data/mock/products.json';
 import { bookApi } from '@/lib/apiClient';
 import { fromApiBook } from '@/lib/sfcc/utils';
@@ -183,10 +185,10 @@ export default function ProductDetailPage() {
                 <p className='text-sm font-medium uppercase text-gray-400'>Price</p>
                 <p className='text-3xl font-bold text-gray-900'>{formatPrice(price, currency)}</p>
               </div>
-              <button className='flex items-center gap-3 py-5 px-10 rounded-lg bg-black text-white text-sm font-medium uppercase tracking-wider shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all'>
-                <ShoppingBag className='w-5 h-5' />
-                Add to Bag
-              </button>
+              <div className='flex items-center gap-3'>
+                <AddToWishlist bookId={product.id} size='lg' />
+                <AddToCart bookId={product.id} available={true} size='lg' />
+              </div>
             </div>
           </div>
         </div>

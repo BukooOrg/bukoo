@@ -5,6 +5,7 @@ import { formatPrice } from '@/lib/sfcc/utils';
 import { cn } from '@/lib/utils';
 
 import { AddToCart } from '../cart/AddToCart';
+import { AddToWishlist } from '../wishlist/AddToWishlist';
 
 import { FeaturedProductLabel } from './FeaturedProductLabel';
 
@@ -41,6 +42,10 @@ export function LatestProductCard({ product, principal = false, className }) {
             className='object-cover transition-transform duration-500 ease-out size-full group-hover:scale-110'
           />
         )}
+
+        <div className='absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto z-30'>
+          <AddToWishlist bookId={product.id} size='sm' className='bg-white/90 backdrop-blur-sm' />
+        </div>
 
         <div className='absolute bottom-6 left-1/2 -translate-x-1/2 w-[80%] opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto z-20'>
           <Suspense fallback={null}>
