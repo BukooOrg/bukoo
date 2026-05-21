@@ -158,7 +158,7 @@ export default function AuthorDetailPage() {
   }
 
   return (
-    <div className='space-y-8 max-w-4xl'>
+    <div className='space-y-8 '>
       <BreadcrumbNav />
 
       <Link

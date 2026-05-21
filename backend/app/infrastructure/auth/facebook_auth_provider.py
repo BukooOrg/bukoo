@@ -69,7 +69,7 @@ class FacebookAuthProvider(IAuthProvider, IOAuthProvider):
                     },
                 )
                 response.raise_for_status()
-            except httpx.HTTPStatusError as exc:
+            except httpx.HTTPError as exc:
                 raise FacebookOAuthError() from exc
 
             data: dict[str, str] = response.json()
@@ -87,7 +87,7 @@ class FacebookAuthProvider(IAuthProvider, IOAuthProvider):
                     params={"fields": _USERINFO_FIELDS, "access_token": token},
                 )
                 response.raise_for_status()
-            except httpx.HTTPStatusError as exc:
+            except httpx.HTTPError as exc:
                 raise FacebookOAuthError() from exc
 
             info: dict[str, object] = response.json()

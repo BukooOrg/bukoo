@@ -1,11 +1,14 @@
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 
 import { PageLayout } from '@/components/layout/PageLayout';
 import { LatestProductCard } from '@/components/products/LatestProductCard';
 import mockProducts from '@/data/mock/products.json';
-import { bookApi } from '@/lib/apiClient';
+import { bookApi, collectionApi } from '@/lib/apiClient';
 import { fromApiBooks, reshapeProducts } from '@/lib/sfcc/utils';
+
+const PAGE_SIZE = 24;
 
 export default function ShopPage() {
   const { collection: collectionHandle } = useParams();
@@ -14,22 +17,32 @@ export default function ShopPage() {
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
     async function loadData() {
       setLoading(true);
       try {
+        let collectionId = undefined;
+        if (collectionHandle && collectionHandle !== 'joyco-root') {
+          const collRes = await collectionApi.findCollections();
+          const found = (collRes.data || []).find((c) => c.urlSlug === collectionHandle);
+          collectionId = found?.id;
+        }
+
         const bookRes = await bookApi.findBooks({
           status: 'activate',
           search: query || undefined,
-          pageSize: 48,
+          collectionId,
+          page,
+          pageSize: PAGE_SIZE,
         });
-        const reshaped = fromApiBooks(bookRes.data?.items || []);
-        if (reshaped.length > 0) {
-          setProducts(reshaped);
-          setLoading(false);
-          return;
-        }
+        const items = bookRes.data?.items || [];
+        setProducts(fromApiBooks(items));
+        setTotalItems(bookRes.data?.pagination?.totalItems || 0);
+        setLoading(false);
+        return;
       } catch {
         // API unavailable, fall through
       }
@@ -42,24 +55,19 @@ export default function ShopPage() {
         const q = query.toLowerCase();
         filtered = filtered.filter((p) => p.title.toLowerCase().includes(q));
       }
-      setProducts(filtered);
+      setTotalItems(filtered.length);
+      const start = (page - 1) * PAGE_SIZE;
+      setProducts(filtered.slice(start, start + PAGE_SIZE));
       setLoading(false);
     }
     loadData();
-  }, [collectionHandle, query]);
+  }, [collectionHandle, query, page]);
+
+  const totalPages = Math.ceil(totalItems / PAGE_SIZE);
 
   return (
     <PageLayout>
       <div className='pt-8 pb-24 px-sides max-w-[1440px] mx-auto'>
-        <div className='flex items-center justify-between pb-6 mb-10 border-b border-border'>
-          <p className='text-[10px] font-sans font-black uppercase tracking-[0.3em] text-primary'>
-            {products.length} Results
-          </p>
-          <div className='flex gap-4 text-[10px] font-sans font-black uppercase tracking-widest text-primary/60'>
-            <span>Sort by: Newest</span>
-          </div>
-        </div>
-
         {loading ? (
           <div className='grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-x-6 gap-y-12 animate-pulse'>
             {[...Array(12)].map((_, i) => (
@@ -67,13 +75,15 @@ export default function ShopPage() {
             ))}
           </div>
         ) : (
-          <div className='grid grid-cols-2 duration-700 lg:grid-cols-4 xl:grid-cols-6 gap-x-6 gap-y-12 animate-in fade-in'>
+          <>
             {products.length > 0 ? (
-              products.map((product) => (
-                <LatestProductCard key={product.id || product.handle} product={product} />
-              ))
+              <div className='grid grid-cols-2 duration-700 lg:grid-cols-4 xl:grid-cols-6 gap-x-6 gap-y-12 animate-in fade-in'>
+                {products.map((product) => (
+                  <LatestProductCard key={product.id || product.handle} product={product} />
+                ))}
+              </div>
             ) : (
-              <div className='py-32 text-center col-span-full'>
+              <div className='py-32 text-center'>
                 <p className='font-serif text-2xl italic opacity-30'>
                   No books found matching your criteria.
                 </p>
@@ -84,7 +94,29 @@ export default function ShopPage() {
                 </Link>
               </div>
             )}
-          </div>
+
+            {totalPages > 1 && (
+              <div className='flex items-center justify-center gap-6 mt-16'>
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page <= 1}
+                  className='flex items-center gap-1 px-4 py-2 text-xs font-sans font-bold uppercase tracking-widest text-primary/60 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors'>
+                  <ChevronLeft className='w-4 h-4' />
+                  Previous
+                </button>
+                <span className='text-xs font-sans font-bold text-primary/40'>
+                  {page} / {totalPages}
+                </span>
+                <button
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page >= totalPages}
+                  className='flex items-center gap-1 px-4 py-2 text-xs font-sans font-bold uppercase tracking-widest text-primary/60 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors'>
+                  Next
+                  <ChevronRight className='w-4 h-4' />
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </PageLayout>

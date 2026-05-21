@@ -225,11 +225,9 @@ async def oauth_callback(
         )
         result = await use_case.execute(OAuthCallbackCommand(code=code, state=state))
 
-        # redirect = RedirectResponse(
-        #     url=f"{frontend_callback}#token={result.access_token}", status_code=302
-        # )
-        redirect = RedirectResponse(url=frontend_callback, status_code=302)
-        set_auth_cookie(redirect, result.access_token)
+        redirect = RedirectResponse(
+            url=f"{frontend_callback}#token={result.access_token}", status_code=302
+        )
         return redirect
 
     except DomainException as exc:
@@ -237,6 +235,10 @@ async def oauth_callback(
         error_code = mapping.code if mapping else "INTERNAL_ERROR"
         return RedirectResponse(
             url=f"{frontend_callback}?error={error_code}", status_code=302
+        )
+    except Exception:
+        return RedirectResponse(
+            url=f"{frontend_callback}?error=INTERNAL_ERROR", status_code=302
         )
 
 

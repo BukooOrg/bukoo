@@ -27,8 +27,9 @@ describe('AccountLayout', () => {
     );
 
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('Profile')).toBeInTheDocument();
+    expect(screen.getAllByText('Profile')).toHaveLength(2);
     expect(screen.getByText('Address')).toBeInTheDocument();
+    expect(screen.getByText('Cart')).toBeInTheDocument();
     expect(screen.getByText('Orders')).toBeInTheDocument();
     expect(screen.getByText('Reviews')).toBeInTheDocument();
     expect(screen.getByText('Notifications')).toBeInTheDocument();
@@ -53,8 +54,8 @@ describe('AccountLayout', () => {
       </MemoryRouter>
     );
 
-    const profileLink = screen.getByText('Profile').closest('a');
-    expect(profileLink).toHaveClass('bg-primary/10');
+    const profileLink = screen.getAllByText('Profile').find((el) => el.closest('a'));
+    expect(profileLink.closest('a')).toHaveClass('bg-primary/10');
   });
 
   it('renders Back to Store link', () => {

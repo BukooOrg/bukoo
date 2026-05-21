@@ -1,193 +1,152 @@
 'use client';
 
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useReducer,
-  useState,
-} from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
-import { getCart } from '@/lib/sfcc';
+import { cartApi } from '@/lib/apiClient';
+import { getToken } from '@/lib/apiClient';
 
 const CartContext = createContext(undefined);
-
-function calculateItemCost(quantity, price) {
-  return (Number(price) * quantity).toString();
-}
-
-function updateCartItemHelper(item, updateType) {
-  if (updateType === 'delete') return null;
-
-  const newQuantity = updateType === 'plus' ? item.quantity + 1 : item.quantity - 1;
-  if (newQuantity === 0) return null;
-
-  const singleItemAmount = Number(item.cost.totalAmount.amount) / item.quantity;
-  const newTotalAmount = calculateItemCost(newQuantity, singleItemAmount.toString());
-
-  return {
-    ...item,
-    quantity: newQuantity,
-    cost: {
-      ...item.cost,
-      totalAmount: {
-        ...item.cost.totalAmount,
-        amount: newTotalAmount,
-      },
-    },
-  };
-}
-
-function createOrUpdateCartItem(existingItem, variant, product) {
-  const quantity = existingItem ? existingItem.quantity + 1 : 1;
-  const totalAmount = calculateItemCost(quantity, variant.price.amount);
-
-  return {
-    id: existingItem?.id,
-    quantity,
-    cost: {
-      totalAmount: {
-        amount: totalAmount,
-        currencyCode: variant.price.currencyCode,
-      },
-    },
-    merchandise: {
-      id: variant.id,
-      title: variant.title,
-      selectedOptions: variant.selectedOptions,
-      product: {
-        id: product.id,
-        handle: product.handle,
-        title: product.title,
-        featuredImage: product.featuredImage,
-        images: product.images,
-        variationValues: product.variationValues,
-        description: product.description,
-      },
-    },
-  };
-}
-
-function updateCartTotals(lines) {
-  const totalQuantity = lines.reduce((sum, item) => sum + item.quantity, 0);
-  const totalAmount = lines.reduce((sum, item) => sum + Number(item.cost.totalAmount.amount), 0);
-  const currencyCode = lines[0]?.cost.totalAmount.currencyCode ?? 'USD';
-
-  return {
-    totalQuantity,
-    cost: {
-      subtotalAmount: { amount: totalAmount.toString(), currencyCode },
-      totalAmount: { amount: totalAmount.toString(), currencyCode },
-      totalTaxAmount: { amount: '0', currencyCode },
-    },
-  };
-}
 
 function createEmptyCart() {
   return {
     id: undefined,
-    checkoutUrl: 'https://your-checkout-url.com',
+    items: [],
     totalQuantity: 0,
-    lines: [],
-    cost: {
-      subtotalAmount: { amount: '0', currencyCode: 'USD' },
-      totalAmount: { amount: '0', currencyCode: 'USD' },
-      totalTaxAmount: { amount: '0', currencyCode: 'USD' },
-    },
+    totalPrice: '0',
   };
 }
 
-function cartReducer(state, action) {
-  const currentCart = state || createEmptyCart();
-
-  switch (action.type) {
-    case 'SET_CART':
-      return action.payload || createEmptyCart();
-    case 'UPDATE_ITEM': {
-      const { merchandiseId, updateType } = action.payload;
-      const updatedLines = currentCart.lines
-        .map((item) =>
-          item.merchandise.id === merchandiseId ? updateCartItemHelper(item, updateType) : item
-        )
-        .filter(Boolean);
-
-      if (updatedLines.length === 0) {
-        return {
-          ...currentCart,
-          lines: [],
-          totalQuantity: 0,
-          cost: {
-            ...currentCart.cost,
-            totalAmount: { ...currentCart.cost.totalAmount, amount: '0' },
-          },
-        };
-      }
-
-      return {
-        ...currentCart,
-        ...updateCartTotals(updatedLines),
-        lines: updatedLines,
-      };
-    }
-    case 'ADD_ITEM': {
-      const { variant, product } = action.payload;
-      const existingItem = currentCart.lines.find((item) => item.merchandise.id === variant.id);
-      const updatedItem = createOrUpdateCartItem(existingItem, variant, product);
-
-      const updatedLines = existingItem
-        ? currentCart.lines.map((item) => (item.merchandise.id === variant.id ? updatedItem : item))
-        : [...currentCart.lines, updatedItem];
-
-      return {
-        ...currentCart,
-        ...updateCartTotals(updatedLines),
-        lines: updatedLines,
-      };
-    }
-    default:
-      return currentCart;
-  }
+function computeTotals(items) {
+  const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
+  const totalPrice = items
+    .reduce((sum, item) => sum + Number(item.book.price) * item.quantity, 0)
+    .toFixed(2);
+  return { totalQuantity, totalPrice };
 }
 
 export function CartProvider({ children }) {
-  const [cart, dispatch] = useReducer(cartReducer, createEmptyCart());
+  const [cart, setCart] = useState(createEmptyCart());
   const [loading, setLoading] = useState(true);
+  const [justAdded, setJustAdded] = useState(false);
+
+  const fetchCart = useCallback(async () => {
+    if (!getToken()) {
+      setCart(createEmptyCart());
+      setLoading(false);
+      return;
+    }
+    try {
+      const response = await cartApi.getMyCart();
+      const data = response.data;
+      const items = data.items || [];
+      const { totalQuantity, totalPrice } = computeTotals(items);
+      setCart({ id: data.id, items, totalQuantity, totalPrice });
+    } catch {
+      setCart(createEmptyCart());
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    async function loadCart() {
-      try {
-        const initialCart = await getCart();
-        dispatch({ type: 'SET_CART', payload: initialCart });
-      } catch (error) {
-        console.error('Failed to load cart', error);
-      } finally {
-        setLoading(false);
-      }
+    fetchCart();
+  }, [fetchCart]);
+
+  const addToCart = useCallback(async (bookId, quantity = 1) => {
+    if (!getToken()) return;
+    try {
+      const response = await cartApi.addCartItem({
+        addCartItemRequest: { bookId, quantity },
+      });
+      const newItem = response.data;
+      setCart((prev) => {
+        const existingIndex = prev.items.findIndex((item) => item.bookId === newItem.bookId);
+        let updatedItems;
+        if (existingIndex >= 0) {
+          updatedItems = prev.items.map((item, i) => (i === existingIndex ? newItem : item));
+        } else {
+          updatedItems = [...prev.items, newItem];
+        }
+        const { totalQuantity, totalPrice } = computeTotals(updatedItems);
+        return { ...prev, items: updatedItems, totalQuantity, totalPrice };
+      });
+      setJustAdded(true);
+    } catch (error) {
+      console.error('Failed to add to cart', error);
+      throw error;
     }
-    loadCart();
   }, []);
 
-  const updateCartItem = useCallback((merchandiseId, updateType) => {
-    dispatch({
-      type: 'UPDATE_ITEM',
-      payload: { merchandiseId, updateType },
-    });
+  const removeFromCart = useCallback(async (itemId) => {
+    if (!getToken()) return;
+    try {
+      await cartApi.removeCartItem({ itemId });
+      setCart((prev) => {
+        const updatedItems = prev.items.filter((item) => item.id !== itemId);
+        const { totalQuantity, totalPrice } = computeTotals(updatedItems);
+        return { ...prev, items: updatedItems, totalQuantity, totalPrice };
+      });
+    } catch (error) {
+      console.error('Failed to remove from cart', error);
+      throw error;
+    }
   }, []);
 
-  const addCartItem = useCallback((variant, product) => {
-    dispatch({ type: 'ADD_ITEM', payload: { variant, product } });
+  const updateQuantity = useCallback(async (itemId, quantity) => {
+    if (!getToken()) return;
+    try {
+      const response = await cartApi.updateCartItemQuantity({
+        itemId,
+        updateCartItemQuantityRequest: { quantity },
+      });
+      const updatedItem = response.data;
+      setCart((prev) => {
+        const updatedItems = prev.items.map((item) => (item.id === itemId ? updatedItem : item));
+        const { totalQuantity, totalPrice } = computeTotals(updatedItems);
+        return { ...prev, items: updatedItems, totalQuantity, totalPrice };
+      });
+    } catch (error) {
+      console.error('Failed to update quantity', error);
+      throw error;
+    }
   }, []);
+
+  const clearCart = useCallback(async () => {
+    if (!getToken()) return;
+    try {
+      await cartApi.clearAllCartItems();
+      setCart(createEmptyCart());
+    } catch (error) {
+      console.error('Failed to clear cart', error);
+      throw error;
+    }
+  }, []);
+
+  const clearJustAdded = useCallback(() => setJustAdded(false), []);
 
   const value = useMemo(
     () => ({
       cart,
       loading,
-      updateCartItem,
-      addCartItem,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      clearCart,
+      refreshCart: fetchCart,
+      justAdded,
+      clearJustAdded,
     }),
-    [cart, loading, updateCartItem, addCartItem]
+    [
+      cart,
+      loading,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      clearCart,
+      fetchCart,
+      justAdded,
+      clearJustAdded,
+    ]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

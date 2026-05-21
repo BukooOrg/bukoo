@@ -156,9 +156,9 @@ function App() {
                   <Route path='/account/orders/:orderId' element={<AccountOrderDetailPage />} />
                   <Route path='/account/reviews' element={<AccountReviewsPage />} />
                   <Route path='/account/notifications' element={<AccountNotificationsPage />} />
+                  <Route path='/account/cart' element={<CartPage />} />
                 </Route>
               </Route>
-              <Route path='/cart' element={<CartPage />} />
               <Route path='/wishlist' element={<WishlistPage />} />
               <Route path='/checkout' element={<CheckoutPage />} />
               <Route path='/checkout/payment' element={<CheckoutPaymentPage />} />

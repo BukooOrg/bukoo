@@ -12,16 +12,19 @@ import { Header } from './header';
 export function StorefrontLayout() {
   const location = useLocation();
   const isAccountPage = location.pathname.startsWith('/account');
+  const showGenreNav = location.pathname === '/' || location.pathname.startsWith('/shop');
 
   const [collections, setCollections] = useState([]);
 
   useEffect(() => {
-    async function load() {
-      const data = await getCollections();
-      setCollections(data);
+    if (showGenreNav) {
+      async function load() {
+        const data = await getCollections();
+        setCollections(data);
+      }
+      load();
     }
-    load();
-  }, []);
+  }, [showGenreNav]);
 
   const activeHandle = location.pathname.startsWith('/shop/')
     ? location.pathname.replace('/shop/', '')
@@ -31,7 +34,7 @@ export function StorefrontLayout() {
     <div className='flex flex-col min-h-screen font-sans antialiased bg-background text-foreground'>
       <SkipLink />
       <Header />
-      {!isAccountPage && (
+      {showGenreNav && (
         <div className='mt-24 md:mt-32'>
           <GenreNav collections={collections} activeHandle={activeHandle} />
         </div>

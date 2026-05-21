@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
-import { authApi, clearToken, userApi } from '@/lib/apiClient';
+import { authApi, clearToken, getToken, userApi } from '@/lib/apiClient';
 
 const AuthContext = createContext();
 
@@ -9,12 +9,16 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!getToken()) {
+      setLoading(false);
+      return;
+    }
     async function loadUser() {
       try {
         const userData = await userApi.getMe();
         setUser(userData.data);
-      } catch (error) {
-        console.error('Auth check failed', error);
+      } catch {
+        setUser(null);
       }
       setLoading(false);
     }

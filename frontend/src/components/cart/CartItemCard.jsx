@@ -1,93 +1,85 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
-import { ColorSwatch } from '@/components/ui/forms/color-picker';
-import { DEFAULT_OPTION } from '@/lib/constants';
-import { formatPrice } from '@/lib/sfcc/utils';
-import { createUrl, getColorHex } from '@/lib/utils';
+import { useCart } from '@/components/cart/CartContext';
+import { ConfirmDialog } from '@/components/cart/ConfirmDialog';
 
-import { useProductImages } from '../products/VariantSelector';
-
-import { DeleteItemButton } from './DeleteItemButton';
 import { EditItemQuantityButton } from './EditItemQuantityButton';
 
-export function CartItemCard({ item, optimisticUpdate, onCloseCart }) {
-  const merchandiseSearchParams = {};
+export function CartItemCard({ item }) {
+  const { removeFromCart } = useCart();
+  const [removeDialog, setRemoveDialog] = useState(false);
+  const [removing, setRemoving] = useState(false);
 
-  item.merchandise.selectedOptions.forEach(({ name, value }) => {
-    if (value !== DEFAULT_OPTION) {
-      merchandiseSearchParams[name.toLowerCase()] = value.toLowerCase();
+  const subtotal = (Number(item.book.price) * item.quantity).toFixed(2);
+
+  const handleRemove = async () => {
+    setRemoving(true);
+    try {
+      await removeFromCart(item.id);
+      toast.success('Removed from cart');
+    } catch {
+      toast.error('Failed to remove item');
+    } finally {
+      setRemoving(false);
+      setRemoveDialog(false);
     }
-  });
-
-  const merchandiseUrl = createUrl(
-    `/product/${item.merchandise.product.handle}`,
-    new URLSearchParams(merchandiseSearchParams)
-  );
-
-  const colorOption = item.merchandise.selectedOptions.find(
-    (option) => option.name.toLowerCase() === 'color'
-  );
-
-  const imgs = useProductImages(item.merchandise.product, item.merchandise.selectedOptions);
-  const [renderImage] = imgs;
+  };
 
   return (
-    <div className='bg-card rounded-lg p-2'>
-      <div className='flex flex-row gap-6'>
-        <div className='relative size-[120px] overflow-hidden rounded-sm shrink-0'>
-          <img
-            className='size-full object-cover'
-            width={240}
-            height={240}
-            alt={renderImage.altText || item.merchandise.product.title}
-            src={renderImage.url}
-          />
-
-          {colorOption && (
-            <div className='flex absolute bottom-1 left-1'>
-              <ColorSwatch
-                color={(() => {
-                  const color = getColorHex(colorOption.value);
-                  return Array.isArray(color)
-                    ? [
-                        { name: colorOption.value, value: color[0] },
-                        { name: colorOption.value, value: color[1] },
-                      ]
-                    : { name: colorOption.value, value: color };
-                })()}
-                isSelected={false}
-                onColorChange={() => {}}
-                size='sm'
-                atLeastOneColorSelected={false}
-              />
+    <>
+      <div className='flex gap-8 p-8 border border-gray-200 rounded-lg bg-white'>
+        <div className='w-32 h-44 shrink-0 overflow-hidden rounded bg-gray-100'>
+          {item.book.coverUrl ? (
+            <img
+              src={item.book.coverUrl}
+              alt={item.book.title}
+              className='w-full h-full object-cover'
+            />
+          ) : (
+            <div className='w-full h-full flex items-center justify-center text-gray-400 text-base'>
+              No cover
             </div>
           )}
         </div>
-        <div className='flex flex-col gap-2 2xl:gap-3 flex-1'>
+
+        <div className='flex-1 min-w-0'>
           <Link
-            to={merchandiseUrl}
-            onClick={onCloseCart}
-            className='z-30 flex flex-col justify-center'>
-            <span className='2xl:text-lg font-semibold'>{item.merchandise.product.title}</span>
+            to={`/product/${item.bookId}`}
+            className='text-2xl font-medium font-serif hover:underline line-clamp-1'>
+            {item.book.title}
           </Link>
-          <p className='2xl:text-lg font-semibold'>
-            {formatPrice(item.cost.totalAmount.amount, item.cost.totalAmount.currencyCode)}
-          </p>
-          <div className='flex justify-between items-end mt-auto'>
-            <div className='flex h-8 flex-row items-center rounded-md border border-neutral-200 dark:border-neutral-700'>
-              <EditItemQuantityButton
-                item={item}
-                type='minus'
-                optimisticUpdate={optimisticUpdate}
-              />
-              <span className='w-8 text-center text-sm'>{item.quantity}</span>
-              <EditItemQuantityButton item={item} type='plus' optimisticUpdate={optimisticUpdate} />
+          <p className='text-lg text-gray-500 mt-2'>RM {item.book.price}</p>
+
+          <div className='flex items-center justify-between mt-6'>
+            <div className='flex items-center gap-3'>
+              <EditItemQuantityButton item={item} type='minus' setRemoveDialog={setRemoveDialog} />
+              <span className='w-10 text-center text-lg'>{item.quantity}</span>
+              <EditItemQuantityButton item={item} type='plus' />
             </div>
-            <DeleteItemButton item={item} optimisticUpdate={optimisticUpdate} />
+            <div className='flex items-center gap-6'>
+              <span className='text-xl font-medium'>RM {subtotal}</span>
+              <button
+                onClick={() => setRemoveDialog(true)}
+                className='text-base text-gray-400 hover:text-red-600'>
+                Remove
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <ConfirmDialog
+        open={removeDialog}
+        onOpenChange={setRemoveDialog}
+        title='Remove from cart?'
+        description={`This will remove "${item.book.title}" from your cart.`}
+        onConfirm={handleRemove}
+        loading={removing}
+      />
+    </>
   );
 }
