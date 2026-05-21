@@ -78,7 +78,7 @@ export function AddToCart({
       ) : iconOnly ? (
         <span className='inline-block'>{icon}</span>
       ) : (
-        <div className='w-full flex items-center justify-between'>
+        <div className='w-full flex items-center justify-center gap-3'>
           <span className='font-sans font-bold uppercase tracking-tight'>{getButtonText()}</span>
           <PlusCircleIcon />
         </div>

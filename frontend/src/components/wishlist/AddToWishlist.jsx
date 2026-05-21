@@ -45,15 +45,15 @@ export function AddToWishlist({ bookId, className, size = 'default' }) {
   };
 
   const sizeClasses = {
+    sm: 'size-10',
+    default: 'size-12',
+    lg: 'size-14',
+  };
+
+  const iconSizeClasses = {
     sm: 'size-4',
     default: 'size-5',
     lg: 'size-6',
-  };
-
-  const buttonSizeClasses = {
-    sm: 'w-8 h-8',
-    default: 'w-10 h-10',
-    lg: 'w-12 h-12',
   };
 
   return (
@@ -63,16 +63,15 @@ export function AddToWishlist({ bookId, className, size = 'default' }) {
       disabled={isLoading}
       aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
       className={cn(
-        'flex items-center justify-center rounded-full border border-gray-200 transition-all hover:border-black disabled:opacity-40',
-        buttonSizeClasses[size],
-        inWishlist && 'bg-black border-black',
+        'flex items-center justify-center shrink-0 rounded-full bg-black transition-all hover:bg-black/90 disabled:opacity-40',
+        sizeClasses[size],
         className
       )}>
       <Heart
         className={cn(
-          'transition-colors',
-          sizeClasses[size],
-          inWishlist ? 'text-white fill-white' : 'text-gray-400'
+          'text-white transition-all',
+          iconSizeClasses[size],
+          inWishlist && 'fill-white'
         )}
       />
     </button>

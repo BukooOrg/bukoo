@@ -180,15 +180,17 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Price & CTA */}
-            <div className='flex items-center justify-between p-6 border border-gray-200 rounded-xl bg-gray-50'>
-              <div>
+            <div className='flex items-center gap-3 p-6 border border-gray-200 rounded-xl bg-gray-50'>
+              <div className='flex-1'>
                 <p className='text-sm font-medium uppercase text-gray-400'>Price</p>
                 <p className='text-3xl font-bold text-gray-900'>{formatPrice(price, currency)}</p>
               </div>
-              <div className='flex items-center gap-3'>
-                <AddToWishlist bookId={product.id} size='lg' />
-                <AddToCart bookId={product.id} available={true} size='lg' />
-              </div>
+              <AddToCart
+                bookId={product.id}
+                available={true}
+                className='flex-1 h-14 bg-black text-white text-base font-medium rounded-lg'
+              />
+              <AddToWishlist bookId={product.id} size='lg' />
             </div>
           </div>
         </div>
