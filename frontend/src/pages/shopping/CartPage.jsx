@@ -37,9 +37,12 @@ export default function CartPage() {
     return (
       <div className='px-sides py-24'>
         <div className='max-w-2xl mx-auto text-center'>
-          <h1 className='font-serif text-5xl font-black text-black tracking-tighter'>
+          <h1 className='font-serif text-4xl font-black tracking-tighter text-primary'>
             Your Bag is Empty
           </h1>
+          <p className='text-primary/40 font-bold italic text-sm mt-2'>
+            Find your next favorite story and add it to your bag.
+          </p>
           <p className='mt-6 text-lg text-gray-500'>
             Find your next favorite story and add it to your bag.
           </p>
@@ -57,9 +60,14 @@ export default function CartPage() {
     <div className='px-sides py-16'>
       <div className='max-w-6xl mx-auto'>
         <div className='flex items-center justify-between mb-10'>
-          <h1 className='font-serif text-5xl font-black text-black tracking-tighter'>
-            Your Bag ({cart.totalQuantity})
-          </h1>
+          <div>
+            <h1 className='font-serif text-4xl font-black tracking-tighter text-primary'>
+              Your Bag ({cart.totalQuantity})
+            </h1>
+            <p className='text-primary/40 font-bold italic text-sm mt-1'>
+              Review your items before checkout
+            </p>
+          </div>
           <Button variant='outline' size='lg' onClick={handleClearAll} disabled={clearing}>
             {clearing ? 'Clearing...' : 'Clear All'}
           </Button>

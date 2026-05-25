@@ -41,6 +41,7 @@ class BaseOrderItemResponse(BaseModel):
     id: str
     book_id: str
     book_title: str
+    book_cover_url: str | None
     unit_price: Decimal
     quantity: int
     line_total: Decimal

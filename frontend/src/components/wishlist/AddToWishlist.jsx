@@ -45,9 +45,9 @@ export function AddToWishlist({ bookId, className, size = 'default' }) {
   };
 
   const sizeClasses = {
-    sm: 'size-10',
-    default: 'size-12',
-    lg: 'size-14',
+    sm: 'w-10 h-10',
+    default: 'w-12 h-12',
+    lg: 'h-14 w-14',
   };
 
   const iconSizeClasses = {
@@ -63,7 +63,7 @@ export function AddToWishlist({ bookId, className, size = 'default' }) {
       disabled={isLoading}
       aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
       className={cn(
-        'flex items-center justify-center shrink-0 rounded-full bg-black transition-all hover:bg-black/90 disabled:opacity-40',
+        'flex items-center justify-center rounded-lg bg-black transition-all hover:bg-black/90 disabled:opacity-40',
         sizeClasses[size],
         className
       )}>

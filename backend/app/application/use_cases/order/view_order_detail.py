@@ -50,6 +50,9 @@ class ViewOrderDetailUseCase(BaseUseCase):
                     id=order_item.id,
                     book_id=order_item.book_id,
                     book_title=order_item.book_title,
+                    book_cover_url=order_item.book.cover_url
+                    if order_item.book
+                    else None,
                     unit_price=order_item.unit_price,
                     quantity=order_item.quantity,
                     line_total=order_item.line_total,

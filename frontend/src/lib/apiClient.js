@@ -23,20 +23,26 @@ const TOKEN_KEY = 'bukoo_jwt';
 export function getToken() {
   const sessionToken = sessionStorage.getItem(TOKEN_KEY);
   if (sessionToken) return sessionToken;
-  return Cookies.get('jwt') || null;
+  const cookieToken = Cookies.get('access_token');
+  if (cookieToken && cookieToken.startsWith('Bearer ')) {
+    return cookieToken.slice(7);
+  }
+  return null;
 }
 
 export function setToken(token) {
   sessionStorage.setItem(TOKEN_KEY, token);
+  Cookies.set('access_token', `Bearer ${token}`, { expires: 7 });
 }
 
 export function clearToken() {
   sessionStorage.removeItem(TOKEN_KEY);
-  Cookies.remove('jwt');
+  Cookies.remove('access_token');
 }
 
 const configuration = new Configuration({
   basePath: '',
+  accessToken: () => getToken() || '',
   middleware: [
     {
       pre: async (context) => {
