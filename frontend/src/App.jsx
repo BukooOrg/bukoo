@@ -50,6 +50,7 @@ import { AdminRoute } from './components/guards/AdminRoute';
 //     </AuthProvider>
 //   );
 // }
+import { CustomerRoute } from './components/guards/CustomerRoute';
 import { ProtectedRoute } from './components/guards/ProtectedRoute';
 // ─── Layouts ────────────────────────────────────────────────────────────────
 import { AccountLayout } from './components/layout/AccountLayout';
@@ -146,8 +147,8 @@ function App() {
                 <Route path='/search' element={<ShopPage />} />
                 <Route path='/product/:handle' element={<ProductDetailPage />} />
 
-                {/* 👤 Account pages — with header/footer */}
-                <Route element={<ProtectedRoute />}>
+                {/* 👤 Account pages — customers only, admins redirected to /admin */}
+                <Route element={<CustomerRoute />}>
                   <Route element={<AccountLayout />}>
                     <Route path='/account' element={<AccountPage />} />
                     <Route path='/account/profile' element={<ProfilePage />} />
