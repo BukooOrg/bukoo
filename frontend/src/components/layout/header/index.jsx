@@ -56,18 +56,20 @@ export function Header() {
 
         {/* Action Buttons (Right) */}
         <nav className='flex items-center gap-4 ml-auto md:gap-8'>
-          <Link
-            to='/account/wishlist'
-            className='relative transition-colors text-black hover:bg-gray-100 rounded-full p-2'>
-            <Heart className='size-5' />
-            {(wishlist?.items?.length || 0) > 0 && (
-              <span className='absolute -top-0.5 -right-0.5 size-4 flex items-center justify-center text-[9px] font-bold bg-black text-white rounded-full'>
-                {wishlist.items.length}
-              </span>
-            )}
-          </Link>
+          {user?.role !== 'admin' && (
+            <Link
+              to='/account/wishlist'
+              className='relative transition-colors text-black hover:bg-gray-100 rounded-full p-2'>
+              <Heart className='size-5' />
+              {(wishlist?.items?.length || 0) > 0 && (
+                <span className='absolute -top-0.5 -right-0.5 size-4 flex items-center justify-center text-[9px] font-bold bg-black text-white rounded-full'>
+                  {wishlist.items.length}
+                </span>
+              )}
+            </Link>
+          )}
 
-          <CartModal />
+          {user?.role !== 'admin' && <CartModal />}
 
           {user ? (
             <DropdownMenu>
@@ -91,12 +93,14 @@ export function Header() {
                   <p className='text-xs truncate text-muted-foreground'>{user.email}</p>
                 </div>
 
-                <DropdownMenuItem asChild className='cursor-pointer'>
-                  <Link to='/account/profile'>
-                    <UserIcon className='mr-2 size-4' />
-                    Profile
-                  </Link>
-                </DropdownMenuItem>
+                {user?.role !== 'admin' && (
+                  <DropdownMenuItem asChild className='cursor-pointer'>
+                    <Link to='/account/profile'>
+                      <UserIcon className='mr-2 size-4' />
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                )}
 
                 {user?.role === 'admin' && (
                   <DropdownMenuItem asChild className='cursor-pointer'>
