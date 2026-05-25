@@ -42,6 +42,12 @@ export interface BaseOrderItemResponse {
      * @type {string}
      * @memberof BaseOrderItemResponse
      */
+    bookCoverUrl: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof BaseOrderItemResponse
+     */
     unitPrice: string;
     /**
      * 
@@ -64,6 +70,7 @@ export function instanceOfBaseOrderItemResponse(value: object): value is BaseOrd
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('bookId' in value) || value['bookId'] === undefined) return false;
     if (!('bookTitle' in value) || value['bookTitle'] === undefined) return false;
+    if (!('bookCoverUrl' in value) || value['bookCoverUrl'] === undefined) return false;
     if (!('unitPrice' in value) || value['unitPrice'] === undefined) return false;
     if (!('quantity' in value) || value['quantity'] === undefined) return false;
     if (!('lineTotal' in value) || value['lineTotal'] === undefined) return false;
@@ -83,6 +90,7 @@ export function BaseOrderItemResponseFromJSONTyped(json: any, ignoreDiscriminato
         'id': json['id'],
         'bookId': json['book_id'],
         'bookTitle': json['book_title'],
+        'bookCoverUrl': json['book_cover_url'],
         'unitPrice': json['unit_price'],
         'quantity': json['quantity'],
         'lineTotal': json['line_total'],
@@ -103,6 +111,7 @@ export function BaseOrderItemResponseToJSONTyped(value?: BaseOrderItemResponse |
         'id': value['id'],
         'book_id': value['bookId'],
         'book_title': value['bookTitle'],
+        'book_cover_url': value['bookCoverUrl'],
         'unit_price': value['unitPrice'],
         'quantity': value['quantity'],
         'line_total': value['lineTotal'],

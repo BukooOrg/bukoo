@@ -25,6 +25,7 @@ from app.application.use_cases.order import (
     ViewOrderDetailUseCase,
 )
 from app.core.constants import UserRole
+from app.core.util import build_public_url
 from app.domain.repositories.order_repository import OrderFilters
 from app.presentation.dependencies.deps import (
     AddressRepo,
@@ -96,6 +97,7 @@ async def place_order(
                 id=item.id,
                 book_id=item.book_id,
                 book_title=item.book_title,
+                book_cover_url=build_public_url(item.book_cover_url),
                 unit_price=item.unit_price,
                 quantity=item.quantity,
                 line_total=item.line_total,
@@ -257,6 +259,7 @@ async def view_order_detail(
                 id=item.id,
                 book_id=item.book_id,
                 book_title=item.book_title,
+                book_cover_url=build_public_url(item.book_cover_url),
                 unit_price=item.unit_price,
                 quantity=item.quantity,
                 line_total=item.line_total,

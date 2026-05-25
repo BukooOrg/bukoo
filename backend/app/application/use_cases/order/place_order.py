@@ -116,11 +116,15 @@ class PlaceOrderUseCase(BaseUseCase):
         item_results: list[BaseOrderItemResult] = []
         for order_item in order.order_items:
             assert order_item.book_id is not None
+            book = next(
+                (b for _, b in selected_items if b.id == order_item.book_id), None
+            )
             item_results.append(
                 BaseOrderItemResult(
                     id=order_item.id,
                     book_id=order_item.book_id,
                     book_title=order_item.book_title,
+                    book_cover_url=book.cover_url if book else None,
                     unit_price=order_item.unit_price,
                     quantity=order_item.quantity,
                     line_total=order_item.line_total,

@@ -21,9 +21,12 @@ export default function WishlistPage() {
     return (
       <div className='px-sides py-24'>
         <div className='max-w-2xl mx-auto text-center'>
-          <h1 className='font-serif text-5xl font-black text-black tracking-tighter'>
+          <h1 className='font-serif text-4xl font-black tracking-tighter text-primary'>
             Your Wishlist is Empty
           </h1>
+          <p className='text-primary/40 font-bold italic text-sm mt-2'>
+            Save books you love and come back to them anytime.
+          </p>
           <p className='mt-6 text-lg text-gray-500'>
             Save books you love and come back to them anytime.
           </p>
@@ -40,9 +43,14 @@ export default function WishlistPage() {
   return (
     <div className='px-sides py-16'>
       <div className='max-w-6xl mx-auto'>
-        <h1 className='font-serif text-5xl font-black text-black tracking-tighter mb-10'>
-          Your Wishlist ({wishlist.items.length})
-        </h1>
+        <div>
+          <h1 className='font-serif text-4xl font-black tracking-tighter text-primary'>
+            Your Wishlist ({wishlist.items.length})
+          </h1>
+          <p className='text-primary/40 font-bold italic text-sm mt-1'>
+            Books you've saved for later
+          </p>
+        </div>
 
         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
           {wishlist.items

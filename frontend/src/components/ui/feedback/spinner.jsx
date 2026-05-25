@@ -2,12 +2,19 @@ import { Loader2Icon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
-function Spinner({ className, ...props }) {
+const sizeMap = {
+  sm: 'size-3',
+  md: 'size-4',
+  lg: 'size-6',
+  xl: 'size-8',
+};
+
+function Spinner({ className, size = 'md', ...props }) {
   return (
     <Loader2Icon
       role='status'
       aria-label='Loading'
-      className={cn('size-4 animate-spin', className)}
+      className={cn(sizeMap[size] || sizeMap.md, 'animate-spin', className)}
       {...props}
     />
   );
