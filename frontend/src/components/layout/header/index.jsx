@@ -17,6 +17,7 @@ import { useAuth } from '@/context/AuthContext';
 import { getCollections } from '@/lib/sfcc';
 
 import MobileMenu from './MobileMenu';
+import { NotificationBell } from './NotificationBell';
 import Search from './Search';
 
 export function Header() {
@@ -92,6 +93,8 @@ export function Header() {
                   <p className='text-sm font-semibold'>{user.fullName}</p>
                   <p className='text-xs truncate text-muted-foreground'>{user.email}</p>
                 </div>
+
+                {user?.role !== 'admin' && <NotificationBell />}
 
                 {user?.role !== 'admin' && (
                   <DropdownMenuItem asChild className='cursor-pointer'>
