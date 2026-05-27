@@ -3,8 +3,8 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { useCart } from '@/components/cart/CartContext';
-import { wishlistApi } from '@/lib/apiClient';
-import { getToken } from '@/lib/apiClient';
+import { useAuth } from '@/context/AuthContext';
+import { wishlistApi, getToken } from '@/lib/apiClient';
 
 const WishlistContext = createContext(undefined);
 
@@ -16,12 +16,18 @@ function createEmptyWishlist() {
 }
 
 export function WishlistProvider({ children }) {
+  const { user, loading: authLoading } = useAuth();
   const [wishlist, setWishlist] = useState(createEmptyWishlist());
   const [loading, setLoading] = useState(true);
   const { refreshCart } = useCart();
 
   const fetchWishlist = useCallback(async () => {
     if (!getToken()) {
+      setWishlist(createEmptyWishlist());
+      setLoading(false);
+      return;
+    }
+    if (user?.role === 'admin') {
       setWishlist(createEmptyWishlist());
       setLoading(false);
       return;
@@ -35,11 +41,12 @@ export function WishlistProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
+    if (authLoading) return;
     fetchWishlist();
-  }, [fetchWishlist]);
+  }, [fetchWishlist, authLoading]);
 
   const addToWishlist = useCallback(async (bookId) => {
     if (!getToken()) return;
