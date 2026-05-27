@@ -4,24 +4,21 @@ import { toast } from 'sonner';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/data-display/avatar';
 import { useApiMutation } from '@/hooks/useApiMutation';
-import { userApi } from '@/lib/apiClient';
+import { uploadAvatar, userApi } from '@/lib/apiClient';
 import { cn } from '@/lib/utils';
 
 export function AvatarUpload({ currentAvatarUrl, fullName, onAvatarChange }) {
   const fileInputRef = useRef(null);
   const [preview, setPreview] = useState(currentAvatarUrl);
 
-  const { mutate: uploadAvatar, loading: uploading } = useApiMutation(
-    (variables) => userApi.updateAvatar(variables),
-    {
-      onSuccess: (data) => {
-        setPreview(data.data.avatarUrl);
-        onAvatarChange?.(data.data);
-        toast.success('Avatar updated!');
-      },
-      onError: () => toast.error('Failed to upload avatar'),
-    }
-  );
+  const { mutate: upload, loading: uploading } = useApiMutation((file) => uploadAvatar(file), {
+    onSuccess: (data) => {
+      setPreview(data.avatar_url ? `${data.avatar_url}?t=${Date.now()}` : null);
+      onAvatarChange?.(data);
+      toast.success('Avatar updated!');
+    },
+    onError: () => toast.error('Failed to upload avatar'),
+  });
 
   const { mutate: removeAvatar, loading: removing } = useApiMutation(() => userApi.removeAvatar(), {
     onSuccess: (data) => {
@@ -46,7 +43,7 @@ export function AvatarUpload({ currentAvatarUrl, fullName, onAvatarChange }) {
       return;
     }
 
-    uploadAvatar({ file });
+    upload(file);
   };
 
   const loading = uploading || removing;
@@ -65,7 +62,7 @@ export function AvatarUpload({ currentAvatarUrl, fullName, onAvatarChange }) {
           <button
             type='button'
             onClick={() => fileInputRef.current?.click()}
-            className='absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity'>
+            className='absolute inset-0 flex items-center justify-center transition-opacity rounded-full opacity-0 bg-black/40 group-hover:opacity-100'>
             <Camera className='w-6 h-6 text-white' />
           </button>
         )}

@@ -86,7 +86,7 @@ export function AdminLayout() {
     <TooltipProvider delayDuration={0}>
       <div className='min-h-screen font-sans antialiased bg-background text-foreground'>
         <SkipLink />
-        <Header />
+        <Header shouldRenderSearchBar={false} />
 
         <div className='flex'>
           {/* Sidebar — below fixed header */}
@@ -158,7 +158,7 @@ export function AdminLayout() {
                                 <Link
                                   to={item.to}
                                   onClick={() => setMobileOpen(false)}
-                                  className='flex items-center justify-center p-3 rounded-lg text-primary/70 hover:bg-primary/5 hover:text-primary transition-colors cursor-pointer'>
+                                  className='flex items-center justify-center p-3 transition-colors rounded-lg cursor-pointer text-primary/70 hover:bg-primary/5 hover:text-primary'>
                                   <Icon className='w-5 h-5 shrink-0' />
                                 </Link>
                               </TooltipTrigger>
@@ -199,7 +199,7 @@ export function AdminLayout() {
                     <TooltipTrigger asChild>
                       <Link
                         to='/'
-                        className='flex items-center justify-center p-3 rounded-lg text-primary/40 hover:text-primary hover:bg-primary/5 transition-colors cursor-pointer'>
+                        className='flex items-center justify-center p-3 transition-colors rounded-lg cursor-pointer text-primary/40 hover:text-primary hover:bg-primary/5'>
                         <span className='text-base'>←</span>
                       </Link>
                     </TooltipTrigger>
@@ -210,7 +210,7 @@ export function AdminLayout() {
                 ) : (
                   <Link
                     to='/'
-                    className='flex items-center gap-2 text-sm font-sans font-bold uppercase tracking-widest text-primary/40 hover:text-primary transition-colors'>
+                    className='flex items-center gap-2 font-sans text-sm font-bold tracking-widest uppercase transition-colors text-primary/40 hover:text-primary'>
                     ← Back to Store
                   </Link>
                 )}

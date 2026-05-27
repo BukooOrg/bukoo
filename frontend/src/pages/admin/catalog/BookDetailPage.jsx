@@ -30,6 +30,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/overlays/dialog';
+import { useApiMutation } from '@/hooks/useApiMutation';
 import { bookApi, publisherApi, categoryApi, authorApi, uploadBookCover } from '@/lib/apiClient';
 import { cn } from '@/lib/utils';
 
@@ -78,7 +79,20 @@ export default function BookDetailPage() {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [stockVal, setStockVal] = useState('');
   const [stockLoading, setStockLoading] = useState(false);
-  const [coverUploading, setCoverUploading] = useState(false);
+
+  const { mutate: uploadCover, loading: coverUploading } = useApiMutation(
+    (file) => uploadBookCover(bookId, file),
+    {
+      onSuccess: (data) => {
+        setBook({
+          ...data,
+          coverUrl: data.coverUrl ? `${data.coverUrl}?t=${Date.now()}` : data.coverUrl,
+        });
+        toast.success('Cover uploaded!');
+      },
+      onError: (err) => setError(err?.message || 'Failed to upload cover'),
+    }
+  );
 
   // Fetch book
   useEffect(() => {
@@ -248,22 +262,9 @@ export default function BookDetailPage() {
     }
   };
 
-  // Upload cover
-  const handleCoverUpload = async (e) => {
+  const handleCoverUpload = (e) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    setCoverUploading(true);
-    setError('');
-    try {
-      const res = await uploadBookCover(bookId, file);
-      setBook(res.data);
-      toast.success('Cover uploaded!');
-    } catch (err) {
-      const msg = err?.response?.data?.error?.message || err?.message || 'Failed to upload cover';
-      setError(msg);
-    } finally {
-      setCoverUploading(false);
-    }
+    if (file) uploadCover(file);
   };
 
   const inputClass =

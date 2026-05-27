@@ -75,6 +75,31 @@ export const userApi = new UserApi(configuration);
 export const wishlistApi = new WishlistApi(configuration);
 export const reportApi = new ReportApi(configuration);
 
+export async function uploadAvatar(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const headers = {};
+  const token = getToken();
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch('/api/app/v1/users/me/avatar', {
+    method: 'POST',
+    headers,
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    const message = body?.error?.message || body?.detail || 'Upload failed';
+    throw new Error(message);
+  }
+
+  return response.json();
+}
+
 export async function uploadBookCover(bookId, file) {
   const formData = new FormData();
   formData.append('file', file);

@@ -157,7 +157,23 @@ async def soft_delete_me(
 
 
 @router.post(
-    "/me/avatar", response_model=UserProfileResponse, operation_id="updateAvatar"
+    "/me/avatar",
+    response_model=UserProfileResponse,
+    operation_id="updateAvatar",
+    openapi_extra={
+        "requestBody": {
+            "content": {
+                "multipart/form-data": {
+                    "schema": {
+                        "type": "object",
+                        "required": ["file"],
+                        "properties": {"file": {"type": "string", "format": "binary"}},
+                    }
+                }
+            },
+            "required": True,
+        }
+    },
 )
 async def update_avatar(
     file: UploadFile,

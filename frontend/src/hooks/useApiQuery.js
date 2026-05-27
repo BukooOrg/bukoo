@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 /**
  * Generic hook for fetching data using the SDK client
@@ -9,6 +9,9 @@ import { useEffect, useState } from 'react';
  */
 export function useApiQuery(queryFn, options = {}) {
   const { skip = false } = options;
+
+  const queryFnRef = useRef(queryFn);
+  queryFnRef.current = queryFn;
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(!skip);
@@ -24,7 +27,7 @@ export function useApiQuery(queryFn, options = {}) {
 
     async function fetchData() {
       try {
-        const response = await queryFn();
+        const response = await queryFnRef.current();
         if (!cancelled) {
           setData(response.data);
         }
@@ -44,7 +47,7 @@ export function useApiQuery(queryFn, options = {}) {
     return () => {
       cancelled = true;
     };
-  }, [queryFn, skip]);
+  }, [skip]);
 
   return { data, loading, error };
 }

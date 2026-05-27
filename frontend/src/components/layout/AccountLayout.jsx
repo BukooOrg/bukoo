@@ -28,6 +28,8 @@ import { useAuth } from '@/context/AuthContext';
 import { useSidebarCollapse } from '@/hooks/useSidebarCollapse';
 import { cn } from '@/lib/utils';
 
+import { Header } from './header';
+
 const navItems = [
   { to: '/account', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/account/profile', label: 'Profile', icon: User },
@@ -66,6 +68,7 @@ export function AccountLayout() {
           <div />
         </div>
 
+        <Header shouldRenderSearchBar={false} />
         <div className='flex'>
           {/* Sidebar — below fixed header, full remaining height */}
           <aside
@@ -84,15 +87,15 @@ export function AccountLayout() {
                 <div className='flex items-center gap-4 p-4 mb-6 md:mb-8 rounded-xl bg-primary/5 shrink-0'>
                   <Avatar className='w-12 h-12 border-2 border-primary/20'>
                     <AvatarImage src={user?.avatarUrl} alt={user?.fullName} />
-                    <AvatarFallback className='font-bold text-base bg-primary text-background'>
+                    <AvatarFallback className='text-base font-bold bg-primary text-background'>
                       {user?.fullName?.charAt(0)?.toUpperCase() ?? 'U'}
                     </AvatarFallback>
                   </Avatar>
                   <div className='min-w-0'>
-                    <p className='text-base font-sans font-bold truncate text-primary'>
+                    <p className='font-sans text-base font-bold truncate text-primary'>
                       {user?.fullName}
                     </p>
-                    <p className='text-sm font-sans truncate text-muted-foreground'>
+                    <p className='font-sans text-sm truncate text-muted-foreground'>
                       {user?.email}
                     </p>
                   </div>
@@ -145,7 +148,7 @@ export function AccountLayout() {
                           <Link
                             to={item.to}
                             onClick={() => setMobileOpen(false)}
-                            className='flex items-center justify-center p-3 rounded-lg text-primary/70 hover:bg-primary/5 hover:text-primary transition-colors cursor-pointer'>
+                            className='flex items-center justify-center p-3 transition-colors rounded-lg cursor-pointer text-primary/70 hover:bg-primary/5 hover:text-primary'>
                             <Icon className='w-5 h-5 shrink-0' />
                           </Link>
                         </TooltipTrigger>
@@ -183,7 +186,7 @@ export function AccountLayout() {
                     <TooltipTrigger asChild>
                       <Link
                         to='/'
-                        className='flex items-center justify-center p-3 rounded-lg text-primary/40 hover:text-primary hover:bg-primary/5 transition-colors cursor-pointer'>
+                        className='flex items-center justify-center p-3 transition-colors rounded-lg cursor-pointer text-primary/40 hover:text-primary hover:bg-primary/5'>
                         <span className='text-base'>←</span>
                       </Link>
                     </TooltipTrigger>
@@ -194,7 +197,7 @@ export function AccountLayout() {
                 ) : (
                   <Link
                     to='/'
-                    className='flex items-center gap-2 text-sm font-sans font-bold uppercase tracking-widest text-primary/40 hover:text-primary transition-colors'>
+                    className='flex items-center gap-2 font-sans text-sm font-bold tracking-widest uppercase transition-colors text-primary/40 hover:text-primary'>
                     ← Back to Store
                   </Link>
                 )}

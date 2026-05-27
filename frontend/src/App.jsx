@@ -56,6 +56,7 @@ import { ProtectedRoute } from './components/guards/ProtectedRoute';
 import { AccountLayout } from './components/layout/AccountLayout';
 import { AdminLayout } from './components/layout/AdminLayout';
 import { AuthLayout } from './components/layout/AuthLayout';
+import { Header } from './components/layout/header';
 import { StorefrontLayout } from './components/layout/StorefrontLayout';
 import { WishlistProvider } from './components/wishlist/WishlistContext';
 import { AuthProvider } from './context/AuthContext';
@@ -145,28 +146,34 @@ function App() {
                 <Route path='/shop' element={<ShopPage />} />
                 <Route path='/shop/:collection' element={<ShopPage />} />
                 <Route path='/search' element={<ShopPage />} />
-                <Route path='/product/:handle' element={<ProductDetailPage />} />
-
-                {/* 👤 Account pages — customers only, admins redirected to /admin */}
-                <Route element={<CustomerRoute />}>
-                  <Route element={<AccountLayout />}>
-                    <Route path='/account' element={<AccountPage />} />
-                    <Route path='/account/profile' element={<ProfilePage />} />
-                    <Route path='/account/password' element={<PasswordPage />} />
-                    <Route path='/account/address' element={<AddressPage />} />
-                    <Route path='/account/wishlist' element={<WishlistPage />} />
-                    <Route path='/account/delete' element={<DeleteAccountPage />} />
-                    <Route path='/account/orders' element={<AccountOrdersPage />} />
-                    <Route path='/account/orders/:orderId' element={<AccountOrderDetailPage />} />
-                    <Route path='/account/reviews' element={<AccountReviewsPage />} />
-                    <Route path='/account/notifications' element={<AccountNotificationsPage />} />
-                    <Route path='/account/cart' element={<CartPage />} />
-                  </Route>
-                  <Route path='/checkout' element={<CheckoutPage />} />
-                  <Route path='/checkout/payment' element={<CheckoutPaymentPage />} />
-                  <Route path='/checkout/confirmation' element={<CheckoutConfirmationPage />} />
-                </Route>
               </Route>
+              <Route
+                element={
+                  <StorefrontLayout customHeader={<Header shouldRenderSearchBar={false} />} />
+                }>
+                <Route path='/product/:handle' element={<ProductDetailPage />} />
+              </Route>
+
+              {/* 👤 Account pages — customers only, admins redirected to /admin */}
+              <Route element={<CustomerRoute />}>
+                <Route element={<AccountLayout />}>
+                  <Route path='/account' element={<AccountPage />} />
+                  <Route path='/account/profile' element={<ProfilePage />} />
+                  <Route path='/account/password' element={<PasswordPage />} />
+                  <Route path='/account/address' element={<AddressPage />} />
+                  <Route path='/account/wishlist' element={<WishlistPage />} />
+                  <Route path='/account/delete' element={<DeleteAccountPage />} />
+                  <Route path='/account/orders' element={<AccountOrdersPage />} />
+                  <Route path='/account/orders/:orderId' element={<AccountOrderDetailPage />} />
+                  <Route path='/account/reviews' element={<AccountReviewsPage />} />
+                  <Route path='/account/notifications' element={<AccountNotificationsPage />} />
+                  <Route path='/account/cart' element={<CartPage />} />
+                </Route>
+                <Route path='/checkout' element={<CheckoutPage />} />
+                <Route path='/checkout/payment' element={<CheckoutPaymentPage />} />
+                <Route path='/checkout/confirmation' element={<CheckoutConfirmationPage />} />
+              </Route>
+              {/* </Route> */}
 
               {/* ── ADMIN LAYOUT — sidebar shell ─────────────────────────── */}
               <Route element={<AdminRoute />}>

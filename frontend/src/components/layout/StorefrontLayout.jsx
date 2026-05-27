@@ -9,7 +9,7 @@ import { Footer } from './Footer';
 import { GenreNav } from './GenreNav';
 import { Header } from './header';
 
-export function StorefrontLayout() {
+export function StorefrontLayout({ customHeader = null }) {
   const location = useLocation();
   const isAccountPage = location.pathname.startsWith('/account');
   const showGenreNav = location.pathname === '/' || location.pathname.startsWith('/shop');
@@ -33,15 +33,13 @@ export function StorefrontLayout() {
   return (
     <div className='flex flex-col min-h-screen font-sans antialiased bg-background text-foreground'>
       <SkipLink />
-      <Header />
-      {showGenreNav && (
-        <div className='mt-24 md:mt-32'>
-          <GenreNav collections={collections} activeHandle={activeHandle} />
-        </div>
-      )}
-      <main id='main-content' className='min-h-screen pt-0'>
-        <Outlet />
-      </main>
+      {customHeader ?? <Header />}
+      <div className='mt-24 md:mt-32'>
+        {showGenreNav && <GenreNav collections={collections} activeHandle={activeHandle} />}
+        <main id='main-content' className='min-h-screen pt-0'>
+          <Outlet />
+        </main>
+      </div>
       {!isAccountPage && <Footer />}
       <Toaster closeButton position='bottom-right' />
     </div>

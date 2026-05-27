@@ -123,14 +123,14 @@ export default function AdminOrdersPage() {
   }
 
   return (
-    <div className='px-sides py-16'>
-      <div className='max-w-7xl mx-auto'>
+    <div className='py-16 px-sides'>
+      <div className='flex flex-col gap-4 mx-auto max-w-7xl'>
         {/* Header */}
-        <div className='text-center pt-8'>
-          <h1 className='text-4xl font-serif font-black mb-2 text-primary tracking-tighter'>
+        <div className='pt-8 text-center'>
+          <h1 className='mb-2 font-serif text-4xl font-black tracking-tighter text-primary'>
             Orders
           </h1>
-          <p className='text-primary/40 font-bold italic text-sm'>
+          <p className='text-sm italic font-bold text-primary/40'>
             Manage and track all customer orders
           </p>
         </div>
@@ -145,7 +145,7 @@ export default function AdminOrdersPage() {
               setPage(1);
             }}
             placeholder='Search orders...'
-            className='h-10 px-3 border rounded-lg text-sm w-64 border-primary/10 focus:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all'
+            className='w-64 h-10 px-3 text-sm transition-all border rounded-lg border-primary/10 focus:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/10'
           />
           <select
             value={statusFilter}
@@ -153,7 +153,7 @@ export default function AdminOrdersPage() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className='h-10 px-3 border rounded-lg text-sm border-primary/10 focus:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all'>
+            className='h-10 px-3 text-sm transition-all border rounded-lg border-primary/10 focus:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/10'>
             <option value=''>All Status</option>
             <option value='pending'>Pending</option>
             <option value='paid'>Paid</option>
@@ -173,7 +173,7 @@ export default function AdminOrdersPage() {
                 <TableHead className='w-32'>Date</TableHead>
                 <TableHead className='w-28'>Status</TableHead>
                 <TableHead className='w-20'>Items</TableHead>
-                <TableHead className='w-28 text-right'>Total</TableHead>
+                <TableHead className='text-right w-28'>Total</TableHead>
                 <TableHead className='w-20 text-right'>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -201,7 +201,7 @@ export default function AdminOrdersPage() {
                           #{order.id.slice(0, 8)}
                         </Link>
                       </TableCell>
-                      <TableCell className='text-primary/60 text-sm'>
+                      <TableCell className='text-sm text-primary/60'>
                         {order.userId ? (
                           <Link
                             to={`/admin/users/${order.userId}`}

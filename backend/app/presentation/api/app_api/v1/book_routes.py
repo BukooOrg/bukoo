@@ -277,6 +277,20 @@ async def update_book_stock_quantity(
     "/{book_id}/cover",
     response_model=UploadBookCoverResponse,
     operation_id="uploadBookCover",
+    openapi_extra={
+        "requestBody": {
+            "content": {
+                "multipart/form-data": {
+                    "schema": {
+                        "type": "object",
+                        "required": ["file"],
+                        "properties": {"file": {"type": "string", "format": "binary"}},
+                    }
+                }
+            },
+            "required": True,
+        }
+    },
 )
 async def upload_book_cover(
     book_id: str,

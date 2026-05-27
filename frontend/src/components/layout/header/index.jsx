@@ -19,7 +19,7 @@ import { getCollections } from '@/lib/sfcc';
 import MobileMenu from './MobileMenu';
 import Search from './Search';
 
-export function Header() {
+export function Header({ shouldRenderSearchBar = true }) {
   const [collections, setCollections] = useState([]);
   const { user, logout } = useAuth();
   const { wishlist } = useWishlist();
@@ -48,18 +48,20 @@ export function Header() {
         </Link>
 
         {/* Wide Search Bar (Centered/Expanded) */}
-        <div className='flex justify-center flex-1 md:px-12 max-md:hidden'>
-          <div className='w-full max-w-3xl px-6 py-2 border rounded-full bg-secondary/80 border-secondary/30 backdrop-blur-md'>
-            <Search />
+        {shouldRenderSearchBar && (
+          <div className='flex justify-center flex-1 md:px-12 max-md:hidden'>
+            <div className='w-full max-w-3xl px-6 py-2 border rounded-full bg-secondary/80 border-secondary/30 backdrop-blur-md'>
+              <Search />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Action Buttons (Right) */}
         <nav className='flex items-center gap-4 ml-auto md:gap-8'>
           {user?.role !== 'admin' && (
             <Link
               to='/account/wishlist'
-              className='relative transition-colors text-black hover:bg-gray-100 rounded-full p-2'>
+              className='relative p-2 text-black transition-colors rounded-full hover:bg-gray-100'>
               <Heart className='size-5' />
               {(wishlist?.items?.length || 0) > 0 && (
                 <span className='absolute -top-0.5 -right-0.5 size-4 flex items-center justify-center text-[9px] font-bold bg-black text-white rounded-full'>
