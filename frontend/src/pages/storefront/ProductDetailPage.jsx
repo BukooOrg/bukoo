@@ -4,6 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 
 import { AddToCart } from '@/components/cart/AddToCart';
 import { PageLayout } from '@/components/layout/PageLayout';
+import { ReviewsSection } from '@/components/reviews';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -72,7 +73,7 @@ export default function ProductDetailPage() {
 
   return (
     <PageLayout>
-      <div className='px-sides max-w-6xl mx-auto pt-6 pb-24 text-black'>
+      <div className='px-sides max-w-6xl mx-auto pt-24 pb-24 md:pt-32 text-black'>
         {/* Breadcrumb */}
         <Breadcrumb className='mb-6'>
           <BreadcrumbList>
@@ -194,6 +195,9 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* Reviews section */}
+        <ReviewsSection bookId={product.id} />
       </div>
     </PageLayout>
   );

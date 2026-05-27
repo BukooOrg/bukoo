@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 
 import { ConfirmDialog } from '@/components/cart/ConfirmDialog';
 import { OrderStatusBadge } from '@/components/orders/OrderStatusBadge';
+import { ReviewSubmissionDialog } from '@/components/reviews';
 import { Spinner } from '@/components/ui/feedback/spinner';
 import { Button } from '@/components/ui/forms/button';
 import { orderApi } from '@/lib/apiClient';
@@ -22,7 +23,9 @@ function formatPrice(amount, currency = 'RM') {
   return `${currency} ${Number(amount).toFixed(2)}`;
 }
 
-function OrderItemCard({ item }) {
+function OrderItemCard({ item, onWriteReview, orderStatus }) {
+  const isDelivered = orderStatus?.toLowerCase() === 'delivered';
+
   return (
     <div className='flex gap-8 p-8 border border-gray-200 rounded-lg bg-white'>
       <div className='w-32 h-44 shrink-0 overflow-hidden rounded bg-gray-100'>
@@ -45,7 +48,17 @@ function OrderItemCard({ item }) {
 
         <div className='flex items-center justify-between mt-6'>
           <span className='text-lg text-gray-500'>Qty: {item.quantity}</span>
-          <span className='text-xl font-medium'>RM {Number(item.lineTotal).toFixed(2)}</span>
+          <div className='flex items-center gap-4'>
+            <span className='text-xl font-medium'>RM {Number(item.lineTotal).toFixed(2)}</span>
+            {isDelivered && onWriteReview && (
+              <Button
+                onClick={() => onWriteReview(item)}
+                variant='outline'
+                className='h-9 text-sm border-primary/20 text-primary hover:bg-primary/5'>
+                Write Review
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -133,6 +146,7 @@ export default function AccountOrderDetailPage() {
   const [loading, setLoading] = useState(true);
   const [cancelDialog, setCancelDialog] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  const [reviewItem, setReviewItem] = useState(null);
 
   useEffect(() => {
     async function loadOrder() {
@@ -214,7 +228,12 @@ export default function AccountOrderDetailPage() {
                 Items ({order.items.length})
               </h2>
               {order.items.map((item) => (
-                <OrderItemCard key={item.id} item={item} />
+                <OrderItemCard
+                  key={item.id}
+                  item={item}
+                  orderStatus={order.status}
+                  onWriteReview={setReviewItem}
+                />
               ))}
             </div>
 
@@ -240,6 +259,18 @@ export default function AccountOrderDetailPage() {
         onConfirm={handleCancel}
         loading={cancelling}
       />
+
+      {reviewItem && (
+        <ReviewSubmissionDialog
+          bookId={reviewItem.bookId}
+          orderItemId={reviewItem.id}
+          bookTitle={reviewItem.bookTitle}
+          open={!!reviewItem}
+          onOpenChange={(open) => {
+            if (!open) setReviewItem(null);
+          }}
+        />
+      )}
     </>
   );
 }
