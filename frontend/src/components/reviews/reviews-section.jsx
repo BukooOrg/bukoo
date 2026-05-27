@@ -53,7 +53,7 @@ export function ReviewsSection({ bookId, className }) {
 
   // Check if user already has a review for this book
   useEffect(() => {
-    if (!user) return;
+    if (!user || user.role === 'admin') return;
 
     async function checkExistingReview() {
       setCheckingExisting(true);
