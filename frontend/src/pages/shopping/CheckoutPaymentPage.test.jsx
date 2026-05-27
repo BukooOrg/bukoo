@@ -25,9 +25,7 @@ vi.mock('@/lib/apiClient', () => ({
         subtotal: '45.00',
         shippingCost: '5.00',
         total: '50.00',
-        items: [
-          { id: 'item-1', bookTitle: 'Test Book', quantity: 1 },
-        ],
+        items: [{ id: 'item-1', bookTitle: 'Test Book', quantity: 1 }],
       },
     }),
     payOrder: vi.fn(),
