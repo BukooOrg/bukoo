@@ -51,7 +51,9 @@ export function ConfirmDialog({
           <AlertDialogAction
             onClick={onConfirm}
             disabled={loading}
-            className={cn(variant === 'destructive' && 'bg-destructive hover:bg-destructive/90')}>
+            className={cn(
+              variant === 'destructive' && 'bg-destructive text-white hover:bg-destructive/90'
+            )}>
             {loading ? (
               <>
                 <Loader2 className='w-4 h-4 animate-spin' />

@@ -32,3 +32,8 @@ vi.mock('sonner', () => ({
     warning: vi.fn(),
   },
 }));
+
+vi.mock('@/context/AuthContext', () => ({
+  useAuth: () => ({ user: null, loading: false, login: vi.fn(), logout: vi.fn() }),
+  AuthProvider: ({ children }) => children,
+}));

@@ -29,6 +29,10 @@ vi.mock('@/components/wishlist/WishlistContext', () => ({
   WishlistProvider: ({ children }) => children,
 }));
 
+vi.mock('@/context/AuthContext', () => ({
+  useAuth: () => ({ user: null, loading: false }),
+}));
+
 vi.mock('@/lib/apiClient', () => ({
   bookApi: {
     viewBookDetail: vi.fn().mockResolvedValue({
@@ -46,6 +50,12 @@ vi.mock('@/lib/apiClient', () => ({
         authors: [{ id: 'a1', name: 'Jane Austen', displayOrder: 1 }],
         publisher: { id: 'p1', name: 'Penguin Classics' },
         category: { id: 'c1', name: 'Romance' },
+      },
+    }),
+    findReviews: vi.fn().mockResolvedValue({
+      data: {
+        items: [],
+        meta: { totalPages: 1, totalCount: 0 },
       },
     }),
   },
