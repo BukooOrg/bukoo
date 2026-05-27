@@ -1,7 +1,13 @@
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { authApi, userApi } from '@/lib/apiClient';
+import { authApi, userApi, getToken } from '@/lib/apiClient';
+
+// Re-mock AuthContext to use the real implementation (override the global mock from setup.js)
+vi.mock('@/context/AuthContext', async () => {
+  const actual = await vi.importActual('@/context/AuthContext');
+  return actual;
+});
 
 import { AuthProvider, useAuth } from './AuthContext';
 
@@ -13,6 +19,7 @@ vi.mock('@/lib/apiClient', () => ({
     getMe: vi.fn(),
   },
   clearToken: vi.fn(),
+  getToken: vi.fn(),
 }));
 
 function TestConsumer() {
@@ -42,9 +49,11 @@ function renderWithContext() {
 describe('AuthContext', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    getToken.mockReturnValue(null);
   });
 
   it('starts with loading=true and user=null', () => {
+    getToken.mockReturnValue('some-token');
     userApi.getMe.mockReturnValue(new Promise(() => {}));
 
     renderWithContext();
@@ -54,6 +63,7 @@ describe('AuthContext', () => {
   });
 
   it('fetches user on mount and sets loading=false', async () => {
+    getToken.mockReturnValue('some-token');
     userApi.getMe.mockResolvedValue({
       data: { id: '1', email: 'test@test.com', role: 'user' },
     });
@@ -68,6 +78,7 @@ describe('AuthContext', () => {
   });
 
   it('handles fetch error gracefully', async () => {
+    getToken.mockReturnValue('some-token');
     userApi.getMe.mockRejectedValue(new Error('Auth check failed'));
 
     renderWithContext();
@@ -80,6 +91,7 @@ describe('AuthContext', () => {
   });
 
   it('login sets user directly when userData has role', async () => {
+    getToken.mockReturnValue('some-token');
     userApi.getMe.mockResolvedValue({ data: null });
 
     renderWithContext();
@@ -100,6 +112,7 @@ describe('AuthContext', () => {
   });
 
   it('logout clears user and calls authApi.logout', async () => {
+    getToken.mockReturnValue('some-token');
     userApi.getMe.mockResolvedValue({
       data: { id: '1', role: 'user' },
     });

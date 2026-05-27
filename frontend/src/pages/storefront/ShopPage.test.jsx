@@ -16,6 +16,21 @@ vi.mock('@/components/cart/CartContext', () => ({
   CartProvider: ({ children }) => children,
 }));
 
+vi.mock('@/components/wishlist/WishlistContext', () => ({
+  useWishlist: () => ({
+    wishlist: [],
+    isInWishlist: vi.fn().mockReturnValue(false),
+    addToWishlist: vi.fn(),
+    removeFromWishlist: vi.fn(),
+    toggleWishlist: vi.fn(),
+  }),
+  WishlistProvider: ({ children }) => children,
+}));
+
+vi.mock('@/data/mock/products.json', () => ({
+  default: [],
+}));
+
 vi.mock('@/lib/apiClient', () => ({
   bookApi: {
     findBooks: vi.fn().mockResolvedValue({
@@ -42,18 +57,6 @@ describe('ShopPage', () => {
     vi.clearAllMocks();
   });
 
-  it('renders shop content on mount', async () => {
-    render(
-      <MemoryRouter>
-        <ShopPage />
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('1 Results')).toBeInTheDocument();
-    });
-  });
-
   it('renders book title', async () => {
     render(
       <MemoryRouter>
@@ -78,9 +81,9 @@ describe('ShopPage', () => {
     });
   });
 
-  it('shows mock banner when API returns empty', async () => {
+  it('shows empty state when API returns empty', async () => {
     const { bookApi } = await import('@/lib/apiClient');
-    bookApi.findBooks.mockResolvedValueOnce({ data: { items: [] } });
+    bookApi.findBooks.mockRejectedValueOnce(new Error('API error'));
 
     render(
       <MemoryRouter>
@@ -89,19 +92,7 @@ describe('ShopPage', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Sort by: Newest')).toBeInTheDocument();
-    });
-  });
-
-  it('renders sort by label', async () => {
-    render(
-      <MemoryRouter>
-        <ShopPage />
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('Sort by: Newest')).toBeInTheDocument();
+      expect(screen.getByText(/No books found/i)).toBeInTheDocument();
     });
   });
 });

@@ -18,6 +18,18 @@ vi.mock('react-router-dom', async () => {
 
 vi.mock('@/lib/apiClient', () => ({
   orderApi: {
+    viewOrderDetail: vi.fn().mockResolvedValue({
+      data: {
+        id: 'test-order-123',
+        status: 'pending',
+        subtotal: '45.00',
+        shippingCost: '5.00',
+        total: '50.00',
+        items: [
+          { id: 'item-1', bookTitle: 'Test Book', quantity: 1 },
+        ],
+      },
+    }),
     payOrder: vi.fn(),
   },
 }));
@@ -44,33 +56,45 @@ describe('CheckoutPaymentPage', () => {
     mockSearchParams.set('orderId', 'test-order-123');
   });
 
-  it('renders payment heading', () => {
+  it('renders payment heading', async () => {
     renderPage();
-    expect(screen.getByText('Payment')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Payment')).toBeInTheDocument();
+    });
   });
 
-  it('shows online banking option by default', () => {
+  it('shows online banking option by default', async () => {
     renderPage();
-    expect(screen.getByText('Online Banking')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('e.g. Maybank')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('e.g. 1234567890')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Online Banking')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('e.g. Maybank')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('e.g. 1234567890')).toBeInTheDocument();
+    });
   });
 
-  it('shows credit card option', () => {
+  it('shows credit card option', async () => {
     renderPage();
-    expect(screen.getByText('Credit / Debit Card')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Credit / Debit Card')).toBeInTheDocument();
+    });
   });
 
-  it('shows card fields when card payment is selected', () => {
+  it('shows card fields when card payment is selected', async () => {
     renderPage();
+    await waitFor(() => {
+      expect(screen.getByText('Credit / Debit Card')).toBeInTheDocument();
+    });
     fireEvent.click(screen.getByText('Credit / Debit Card'));
     expect(screen.getByPlaceholderText('e.g. 4111111111111111')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('MM/YY')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('123')).toBeInTheDocument();
   });
 
-  it('hides bank fields when card payment is selected', () => {
+  it('hides bank fields when card payment is selected', async () => {
     renderPage();
+    await waitFor(() => {
+      expect(screen.getByText('Credit / Debit Card')).toBeInTheDocument();
+    });
     fireEvent.click(screen.getByText('Credit / Debit Card'));
     expect(screen.queryByPlaceholderText('e.g. Maybank')).not.toBeInTheDocument();
   });
@@ -78,7 +102,10 @@ describe('CheckoutPaymentPage', () => {
   it('shows error when online banking fields are empty', async () => {
     const { toast } = await import('sonner');
     renderPage();
-    fireEvent.click(screen.getByText('Pay Now'));
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Pay RM 50\.00/ })).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Pay RM 50\.00/ }));
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith('Please fill in all bank details');
     });
@@ -87,8 +114,11 @@ describe('CheckoutPaymentPage', () => {
   it('shows error when card fields are empty', async () => {
     const { toast } = await import('sonner');
     renderPage();
+    await waitFor(() => {
+      expect(screen.getByText('Credit / Debit Card')).toBeInTheDocument();
+    });
     fireEvent.click(screen.getByText('Credit / Debit Card'));
-    fireEvent.click(screen.getByText('Pay Now'));
+    fireEvent.click(screen.getByRole('button', { name: /Pay RM 50\.00/ }));
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith('Please fill in all card details');
     });
@@ -99,13 +129,16 @@ describe('CheckoutPaymentPage', () => {
     orderApi.payOrder.mockResolvedValueOnce({});
 
     renderPage();
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('e.g. Maybank')).toBeInTheDocument();
+    });
     fireEvent.change(screen.getByPlaceholderText('e.g. Maybank'), {
       target: { value: 'Maybank' },
     });
     fireEvent.change(screen.getByPlaceholderText('e.g. 1234567890'), {
       target: { value: '1234567890' },
     });
-    fireEvent.click(screen.getByText('Pay Now'));
+    fireEvent.click(screen.getByRole('button', { name: /Pay RM 50\.00/ }));
 
     await waitFor(() => {
       expect(orderApi.payOrder).toHaveBeenCalledWith({
@@ -126,6 +159,9 @@ describe('CheckoutPaymentPage', () => {
     orderApi.payOrder.mockResolvedValueOnce({});
 
     renderPage();
+    await waitFor(() => {
+      expect(screen.getByText('Credit / Debit Card')).toBeInTheDocument();
+    });
     fireEvent.click(screen.getByText('Credit / Debit Card'));
     fireEvent.change(screen.getByPlaceholderText('e.g. 4111111111111111'), {
       target: { value: '4111111111111111' },
@@ -136,7 +172,7 @@ describe('CheckoutPaymentPage', () => {
     fireEvent.change(screen.getByPlaceholderText('123'), {
       target: { value: '123' },
     });
-    fireEvent.click(screen.getByText('Pay Now'));
+    fireEvent.click(screen.getByRole('button', { name: /Pay RM 50\.00/ }));
 
     await waitFor(() => {
       expect(orderApi.payOrder).toHaveBeenCalledWith({
@@ -159,13 +195,16 @@ describe('CheckoutPaymentPage', () => {
     orderApi.payOrder.mockRejectedValueOnce(new Error('Payment failed'));
 
     renderPage();
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('e.g. Maybank')).toBeInTheDocument();
+    });
     fireEvent.change(screen.getByPlaceholderText('e.g. Maybank'), {
       target: { value: 'Maybank' },
     });
     fireEvent.change(screen.getByPlaceholderText('e.g. 1234567890'), {
       target: { value: '1234567890' },
     });
-    fireEvent.click(screen.getByText('Pay Now'));
+    fireEvent.click(screen.getByRole('button', { name: /Pay RM 50\.00/ }));
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith('Payment failed');
@@ -177,13 +216,16 @@ describe('CheckoutPaymentPage', () => {
     orderApi.payOrder.mockImplementation(() => new Promise((resolve) => setTimeout(resolve, 5000)));
 
     renderPage();
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('e.g. Maybank')).toBeInTheDocument();
+    });
     fireEvent.change(screen.getByPlaceholderText('e.g. Maybank'), {
       target: { value: 'Maybank' },
     });
     fireEvent.change(screen.getByPlaceholderText('e.g. 1234567890'), {
       target: { value: '1234567890' },
     });
-    fireEvent.click(screen.getByText('Pay Now'));
+    fireEvent.click(screen.getByRole('button', { name: /Pay RM 50\.00/ }));
     expect(screen.getByText('Processing...')).toBeInTheDocument();
   });
 
@@ -191,6 +233,6 @@ describe('CheckoutPaymentPage', () => {
     mockSearchParams.delete('orderId');
     renderPage();
     expect(screen.getByText('Invalid Order')).toBeInTheDocument();
-    expect(screen.getByText('Return to Checkout')).toBeInTheDocument();
+    expect(screen.getByText('Back to Orders')).toBeInTheDocument();
   });
 });

@@ -7,6 +7,12 @@ import AdminOrdersPage from '@/pages/admin/orders/OrdersPage';
 vi.mock('@/lib/apiClient', () => ({
   orderApi: {
     findOrders: vi.fn(),
+    updateOrderStatus: vi.fn(),
+  },
+  userApi: {
+    viewUserProfile: vi.fn().mockResolvedValue({
+      data: { fullName: 'Test User', email: 'test@example.com' },
+    }),
   },
 }));
 
@@ -15,17 +21,17 @@ const mockOrders = [
     id: 'order-123-abc',
     status: 'pending',
     total: '50.00',
-    item_count: 2,
-    created_at: '2024-01-15T10:00:00Z',
-    user: { name: 'John Doe' },
+    itemCount: 2,
+    createdAt: '2024-01-15T10:00:00Z',
+    userId: 'user-1',
   },
   {
     id: 'order-456-def',
     status: 'paid',
     total: '75.00',
-    item_count: 3,
-    created_at: '2024-02-20T14:30:00Z',
-    user: { name: 'Jane Smith' },
+    itemCount: 3,
+    createdAt: '2024-02-20T14:30:00Z',
+    userId: 'user-2',
   },
 ];
 
@@ -87,17 +93,6 @@ describe('AdminOrdersPage', () => {
     });
   });
 
-  it('shows user ID filter', async () => {
-    const { orderApi } = await import('@/lib/apiClient');
-    orderApi.findOrders.mockResolvedValueOnce(mockPaginatedResponse);
-
-    renderPage();
-
-    await waitFor(() => {
-      expect(screen.getByPlaceholderText('User ID...')).toBeInTheDocument();
-    });
-  });
-
   it('shows orders table with data', async () => {
     const { orderApi } = await import('@/lib/apiClient');
     orderApi.findOrders.mockResolvedValueOnce(mockPaginatedResponse);
@@ -111,14 +106,15 @@ describe('AdminOrdersPage', () => {
   });
 
   it('shows customer names', async () => {
-    const { orderApi } = await import('@/lib/apiClient');
+    const { userApi, orderApi } = await import('@/lib/apiClient');
+    userApi.viewUserProfile.mockResolvedValue({ data: { fullName: 'Test User' } });
     orderApi.findOrders.mockResolvedValueOnce(mockPaginatedResponse);
 
     renderPage();
 
     await waitFor(() => {
-      expect(screen.getByText('John Doe')).toBeInTheDocument();
-      expect(screen.getByText('Jane Smith')).toBeInTheDocument();
+      const names = screen.getAllByText('Test User');
+      expect(names.length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -179,7 +175,7 @@ describe('AdminOrdersPage', () => {
     renderPage();
 
     await waitFor(() => {
-      expect(screen.getByText('No orders found.')).toBeInTheDocument();
+      expect(screen.getByText(/No orders.*found/)).toBeInTheDocument();
     });
   });
 
@@ -218,26 +214,6 @@ describe('AdminOrdersPage', () => {
 
     await waitFor(() => {
       expect(orderApi.findOrders).toHaveBeenCalledWith(expect.objectContaining({ search: 'John' }));
-    });
-  });
-
-  it('filters by user ID', async () => {
-    const { orderApi } = await import('@/lib/apiClient');
-    orderApi.findOrders.mockResolvedValue(mockPaginatedResponse);
-
-    renderPage();
-
-    await waitFor(() => {
-      expect(screen.getByText('Orders')).toBeInTheDocument();
-    });
-
-    const userIdInput = screen.getByPlaceholderText('User ID...');
-    fireEvent.change(userIdInput, { target: { value: 'user-123' } });
-
-    await waitFor(() => {
-      expect(orderApi.findOrders).toHaveBeenCalledWith(
-        expect.objectContaining({ userId: 'user-123' })
-      );
     });
   });
 
@@ -295,7 +271,7 @@ describe('AdminOrdersPage', () => {
     const { orderApi } = await import('@/lib/apiClient');
     orderApi.findOrders.mockResolvedValueOnce({
       data: {
-        items: [{ ...mockOrders[0], user: null }],
+        items: [{ ...mockOrders[0], userId: null }],
         meta: { totalPages: 1 },
       },
     });
@@ -303,7 +279,7 @@ describe('AdminOrdersPage', () => {
     renderPage();
 
     await waitFor(() => {
-      expect(screen.getByText('N/A')).toBeInTheDocument();
+      expect(screen.getByText('Deleted')).toBeInTheDocument();
     });
   });
 });

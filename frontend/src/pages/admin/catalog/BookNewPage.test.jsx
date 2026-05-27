@@ -124,7 +124,7 @@ describe('BookNewPage', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText('978-0-123456-47-2')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('9781234567897')).toBeInTheDocument();
     });
   });
 

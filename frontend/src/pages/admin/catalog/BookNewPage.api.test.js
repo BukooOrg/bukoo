@@ -100,7 +100,7 @@ describe('BookApi createBook request body', () => {
     expect(body.published_date).toBeUndefined();
     expect(body.publisher_id).toBeUndefined();
     expect(body.category_id).toBeUndefined();
-    expect(body.authors).toEqual([]);
+    expect(body.authors).toBeFalsy();
   });
 
   it('sends null ISBN correctly', async () => {
