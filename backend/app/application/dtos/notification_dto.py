@@ -9,7 +9,7 @@ from app.core.query_params import QueryParams
 # commands
 @dataclass(frozen=True)
 class FindNotificationsCommand:
-    user_id: str
+    user_id: str | None
     query_params: QueryParams
     is_read: bool | None = None
 
