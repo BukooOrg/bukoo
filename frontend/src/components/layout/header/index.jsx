@@ -1,4 +1,4 @@
-import { Heart, UserIcon } from 'lucide-react';
+import { Bell, Heart, UserIcon } from 'lucide-react';
 import { LogOut } from 'lucide-react';
 import { Shield } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/overlays/dropdown-menu';
 import { useWishlist } from '@/components/wishlist/WishlistContext';
 import { useAuth } from '@/context/AuthContext';
+import { notificationApi } from '@/lib/apiClient';
 import { getCollections } from '@/lib/sfcc';
 
 import MobileMenu from './MobileMenu';
@@ -23,6 +24,7 @@ export function Header({ shouldRenderSearchBar = true }) {
   const [collections, setCollections] = useState([]);
   const { user, logout } = useAuth();
   const { wishlist } = useWishlist();
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     async function loadCollections() {
@@ -31,6 +33,19 @@ export function Header({ shouldRenderSearchBar = true }) {
     }
     loadCollections();
   }, []);
+
+  useEffect(() => {
+    if (!user || user.role === 'admin') return;
+    async function fetchUnreadCount() {
+      try {
+        const response = await notificationApi.getUnreadNotificationCount();
+        setUnreadCount(response.data.unreadCount || 0);
+      } catch {
+        // Silently fail
+      }
+    }
+    fetchUnreadCount();
+  }, [user]);
 
   return (
     <header className='fixed top-0 left-0 z-50 w-full transition-all duration-300'>
@@ -91,8 +106,24 @@ export function Header({ shouldRenderSearchBar = true }) {
                 align='end'
                 className='w-56 mt-2 rounded-2xl border-secondary/20 backdrop-blur-xl'>
                 <div className='px-3 py-2 border-b border-secondary/10'>
-                  <p className='text-sm font-semibold'>{user.fullName}</p>
-                  <p className='text-xs truncate text-muted-foreground'>{user.email}</p>
+                  <div className='flex items-center justify-between'>
+                    <div className='min-w-0 flex-1'>
+                      <p className='text-sm font-semibold'>{user.fullName}</p>
+                      <p className='text-xs truncate text-muted-foreground'>{user.email}</p>
+                    </div>
+                    {user?.role !== 'admin' && (
+                      <Link
+                        to='/account/notifications'
+                        className='relative flex-none ml-2 p-1.5 rounded-lg hover:bg-primary/5 transition-colors'>
+                        <Bell className='size-4 text-primary/60' />
+                        {unreadCount > 0 && (
+                          <span className='absolute -top-0.5 -right-0.5 size-3.5 flex items-center justify-center text-[8px] font-bold bg-red-500 text-white rounded-full'>
+                            {unreadCount > 9 ? '9+' : unreadCount}
+                          </span>
+                        )}
+                      </Link>
+                    )}
+                  </div>
                 </div>
 
                 {user?.role !== 'admin' && (

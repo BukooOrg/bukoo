@@ -14,6 +14,14 @@ vi.mock('@/context/AuthContext', () => ({
   }),
 }));
 
+vi.mock('@/components/wishlist/WishlistContext', () => ({
+  useWishlist: () => ({ items: [], addItem: vi.fn(), removeItem: vi.fn(), clearWishlist: vi.fn() }),
+}));
+
+vi.mock('@/components/cart/CartContext', () => ({
+  useCart: () => ({ items: [], itemCount: 0, refreshCart: vi.fn() }),
+}));
+
 describe('AccountLayout', () => {
   beforeEach(() => {
     vi.clearAllMocks();

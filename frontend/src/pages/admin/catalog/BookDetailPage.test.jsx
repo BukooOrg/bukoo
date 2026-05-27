@@ -135,7 +135,7 @@ vi.mock('@/lib/apiClient', () => ({
   },
   categoryApi: {
     findCategories: vi.fn().mockResolvedValue({
-      data: { items: [{ id: 'c1', name: 'Romance' }] },
+      data: [{ id: 'c1', name: 'Romance' }],
     }),
   },
   authorApi: {

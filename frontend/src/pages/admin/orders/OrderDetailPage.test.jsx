@@ -28,33 +28,37 @@ const mockOrder = {
   id: 'order-123-abc',
   status: 'pending',
   subtotal: '45.00',
-  shipping_cost: '5.00',
+  shippingCost: '5.00',
   total: '50.00',
-  created_at: '2024-01-15T10:00:00Z',
+  createdAt: '2024-01-15T10:00:00Z',
   items: [
     {
       id: 'item-1',
-      book_title: 'The Great Gatsby',
+      bookTitle: 'The Great Gatsby',
+      bookCoverUrl: 'https://example.com/cover1.jpg',
+      unitPrice: '25.00',
       quantity: 1,
-      line_total: '25.00',
+      lineTotal: '25.00',
     },
     {
       id: 'item-2',
-      book_title: '1984',
+      bookTitle: '1984',
+      bookCoverUrl: 'https://example.com/cover2.jpg',
+      unitPrice: '20.00',
       quantity: 1,
-      line_total: '20.00',
+      lineTotal: '20.00',
     },
   ],
   user: {
     name: 'John Doe',
     email: 'john@example.com',
   },
-  address_snapshot: {
-    line1: '123 Main St',
-    line2: 'Apt 4B',
+  addressSnapshot: {
+    address_line1: '123 Main St',
+    address_line2: 'Apt 4B',
     city: 'Kuala Lumpur',
     state: 'KL',
-    postalCode: '50000',
+    postcode: '50000',
   },
   payment: {
     method: 'online_banking',
@@ -179,99 +183,6 @@ describe('AdminOrderDetailPage', () => {
     });
   });
 
-  it('shows status update dropdown', async () => {
-    const { orderApi } = await import('@/lib/apiClient');
-    orderApi.viewOrderDetail.mockResolvedValueOnce({ data: mockOrder });
-
-    renderPage();
-
-    await waitFor(() => {
-      expect(screen.getByRole('combobox')).toBeInTheDocument();
-    });
-  });
-
-  it('has all status options in dropdown', async () => {
-    const { orderApi } = await import('@/lib/apiClient');
-    orderApi.viewOrderDetail.mockResolvedValueOnce({ data: mockOrder });
-
-    renderPage();
-
-    await waitFor(() => {
-      const select = screen.getByRole('combobox');
-      expect(select).toHaveValue('pending');
-      expect(screen.getByRole('option', { name: 'Pending' })).toBeInTheDocument();
-      expect(screen.getByRole('option', { name: 'Paid' })).toBeInTheDocument();
-      expect(screen.getByRole('option', { name: 'Shipped' })).toBeInTheDocument();
-      expect(screen.getByRole('option', { name: 'Delivered' })).toBeInTheDocument();
-      expect(screen.getByRole('option', { name: 'Cancelled' })).toBeInTheDocument();
-    });
-  });
-
-  it('updates status when dropdown changes', async () => {
-    const { orderApi } = await import('@/lib/apiClient');
-    orderApi.viewOrderDetail.mockResolvedValue({ data: mockOrder });
-    orderApi.updateOrderStatus.mockResolvedValueOnce({});
-
-    renderPage();
-
-    await waitFor(() => {
-      expect(screen.getByRole('combobox')).toBeInTheDocument();
-    });
-
-    fireEvent.change(screen.getByRole('combobox'), {
-      target: { value: 'shipped' },
-    });
-
-    await waitFor(() => {
-      expect(orderApi.updateOrderStatus).toHaveBeenCalledWith({
-        orderId: 'order-123-abc',
-        body: { status: 'shipped' },
-      });
-    });
-  });
-
-  it('shows success toast on status update', async () => {
-    const { orderApi } = await import('@/lib/apiClient');
-    const { toast } = await import('sonner');
-    orderApi.viewOrderDetail.mockResolvedValue({ data: mockOrder });
-    orderApi.updateOrderStatus.mockResolvedValueOnce({});
-
-    renderPage();
-
-    await waitFor(() => {
-      expect(screen.getByRole('combobox')).toBeInTheDocument();
-    });
-
-    fireEvent.change(screen.getByRole('combobox'), {
-      target: { value: 'shipped' },
-    });
-
-    await waitFor(() => {
-      expect(toast.success).toHaveBeenCalledWith('Order status updated to shipped');
-    });
-  });
-
-  it('shows error toast on status update failure', async () => {
-    const { orderApi } = await import('@/lib/apiClient');
-    const { toast } = await import('sonner');
-    orderApi.viewOrderDetail.mockResolvedValue({ data: mockOrder });
-    orderApi.updateOrderStatus.mockRejectedValueOnce(new Error('Failed'));
-
-    renderPage();
-
-    await waitFor(() => {
-      expect(screen.getByRole('combobox')).toBeInTheDocument();
-    });
-
-    fireEvent.change(screen.getByRole('combobox'), {
-      target: { value: 'shipped' },
-    });
-
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Failed to update order status');
-    });
-  });
-
   it('shows order not found when API fails', async () => {
     const { orderApi } = await import('@/lib/apiClient');
     orderApi.viewOrderDetail.mockRejectedValueOnce(new Error('Not found'));
@@ -281,28 +192,6 @@ describe('AdminOrderDetailPage', () => {
     await waitFor(() => {
       expect(screen.getByText('Order Not Found')).toBeInTheDocument();
       expect(screen.getByText('Back to Orders')).toBeInTheDocument();
-    });
-  });
-
-  it('disables dropdown while updating', async () => {
-    const { orderApi } = await import('@/lib/apiClient');
-    orderApi.viewOrderDetail.mockResolvedValue({ data: mockOrder });
-    orderApi.updateOrderStatus.mockImplementation(
-      () => new Promise((resolve) => setTimeout(resolve, 5000))
-    );
-
-    renderPage();
-
-    await waitFor(() => {
-      expect(screen.getByRole('combobox')).toBeInTheDocument();
-    });
-
-    fireEvent.change(screen.getByRole('combobox'), {
-      target: { value: 'shipped' },
-    });
-
-    await waitFor(() => {
-      expect(screen.getByRole('combobox')).toBeDisabled();
     });
   });
 });

@@ -13,7 +13,7 @@ from app.presentation.schemas.list_schema import ListQueryRequest
 class NotificationListQueryRequest(ListQueryRequest):
     is_read: bool | None = None
 
-    def to_command(self, user_id: str) -> FindNotificationsCommand:
+    def to_command(self, user_id: str | None) -> FindNotificationsCommand:
         return FindNotificationsCommand(
             query_params=QueryParams(
                 page=PageParams(page=self.page, page_size=self.page_size),

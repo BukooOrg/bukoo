@@ -52,7 +52,8 @@ async def find_notifications(
     use_case = FindNotificationsUseCase(
         db_session=db_session, notification_repo=notification_repo
     )
-    result = await use_case.execute(query_params.to_command(current_user.id))
+    target_user_id = None if current_user.role == UserRole.ADMIN else current_user.id
+    result = await use_case.execute(query_params.to_command(target_user_id))
     return PaginatedResponse(
         items=[
             BaseNotificationItemResponse(
@@ -81,6 +82,9 @@ async def get_unread_notification_count(
     notification_repo: NotificationRepo,
     db_session: DbSession,
 ) -> UnreadNotificationCountResponse:
+    # Admins don't receive personal notifications
+    if current_user.role == UserRole.ADMIN:
+        return UnreadNotificationCountResponse(unread_count=0)
     use_case = GetUnreadNotificationCountUseCase(
         db_session=db_session, notification_repo=notification_repo
     )

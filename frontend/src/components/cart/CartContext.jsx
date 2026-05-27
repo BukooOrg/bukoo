@@ -2,8 +2,8 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
-import { cartApi } from '@/lib/apiClient';
-import { getToken } from '@/lib/apiClient';
+import { useAuth } from '@/context/AuthContext';
+import { cartApi, getToken } from '@/lib/apiClient';
 
 const CartContext = createContext(undefined);
 
@@ -25,12 +25,18 @@ function computeTotals(items) {
 }
 
 export function CartProvider({ children }) {
+  const { user, loading: authLoading } = useAuth();
   const [cart, setCart] = useState(createEmptyCart());
   const [loading, setLoading] = useState(true);
   const [justAdded, setJustAdded] = useState(false);
 
   const fetchCart = useCallback(async () => {
     if (!getToken()) {
+      setCart(createEmptyCart());
+      setLoading(false);
+      return;
+    }
+    if (user?.role === 'admin') {
       setCart(createEmptyCart());
       setLoading(false);
       return;
@@ -46,11 +52,12 @@ export function CartProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
+    if (authLoading) return;
     fetchCart();
-  }, [fetchCart]);
+  }, [fetchCart, authLoading]);
 
   const addToCart = useCallback(async (bookId, quantity = 1) => {
     if (!getToken()) return;

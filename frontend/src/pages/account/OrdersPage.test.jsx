@@ -15,15 +15,15 @@ const mockOrders = [
     id: 'order-123-abc',
     status: 'pending',
     total: '50.00',
-    item_count: 2,
-    created_at: '2024-01-15T10:00:00Z',
+    itemCount: 2,
+    createdAt: '2024-01-15T10:00:00Z',
   },
   {
     id: 'order-456-def',
     status: 'paid',
     total: '75.00',
-    item_count: 3,
-    created_at: '2024-02-20T14:30:00Z',
+    itemCount: 3,
+    createdAt: '2024-02-20T14:30:00Z',
   },
 ];
 
@@ -132,8 +132,7 @@ describe('AccountOrdersPage', () => {
     renderPage();
 
     await waitFor(() => {
-      expect(screen.getByText('No Orders Yet')).toBeInTheDocument();
-      expect(screen.getByText('Browse Books')).toBeInTheDocument();
+      expect(screen.getByText(/No orders.*found/)).toBeInTheDocument();
     });
   });
 

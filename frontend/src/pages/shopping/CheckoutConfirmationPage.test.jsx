@@ -25,24 +25,34 @@ vi.mock('@/lib/apiClient', () => ({
   },
 }));
 
+vi.mock('@/components/cart/CartContext', () => ({
+  useCart: () => ({
+    refreshCart: vi.fn().mockResolvedValue(undefined),
+  }),
+  CartProvider: ({ children }) => children,
+}));
+
 const mockOrder = {
-  id: 'test-order-123-abc',
+  id: 'test-order-123',
   status: 'paid',
   subtotal: '45.00',
-  shipping_cost: '5.00',
+  shippingCost: '5.00',
   total: '50.00',
+  createdAt: '2024-01-15T10:00:00Z',
   items: [
     {
       id: 'item-1',
-      book_title: 'The Great Gatsby',
+      bookTitle: 'The Great Gatsby',
+      unitPrice: '25.00',
       quantity: 1,
-      line_total: '25.00',
+      lineTotal: '25.00',
     },
     {
       id: 'item-2',
-      book_title: '1984',
+      bookTitle: '1984',
+      unitPrice: '20.00',
       quantity: 1,
-      line_total: '20.00',
+      lineTotal: '20.00',
     },
   ],
 };
@@ -84,7 +94,7 @@ describe('CheckoutConfirmationPage', () => {
     renderPage();
 
     await waitFor(() => {
-      expect(screen.getByText('Order #test-ord')).toBeInTheDocument();
+      expect(screen.getByText(/Order #test-ord/)).toBeInTheDocument();
     });
   });
 
