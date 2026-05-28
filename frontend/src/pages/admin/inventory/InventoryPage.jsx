@@ -1,5 +1,5 @@
 import { AlertCircle, AlertTriangle, Package } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 import { InventoryTable } from '@/components/inventory/inventory-table';
 import { MetricCard } from '@/components/inventory/metric-card';
@@ -100,6 +100,11 @@ function OverviewTab() {
 export default function InventoryPage() {
   const [activeTab, setActiveTab] = useState('overview');
 
+  const lowStockRangeSelector = useMemo(
+    () => ({ default: 0, options: LOW_STOCK_RANGES }),
+    []
+  );
+
   return (
     <div className='py-16 px-sides'>
       <div className='mx-auto max-w-7xl space-y-8'>
@@ -170,7 +175,7 @@ export default function InventoryPage() {
               description='Books below the selected stock threshold'
               fetchItems={inventoryApi.findLowStockItems.bind(inventoryApi)}
               emptyMessage='All books are well-stocked'
-              rangeSelector={{ default: 0, options: LOW_STOCK_RANGES }}
+              rangeSelector={lowStockRangeSelector}
             />
           </TabsContent>
 

@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
@@ -139,6 +140,39 @@ describe('InventoryTable', () => {
     });
 
     expect(screen.getByText('< 5 units')).toBeInTheDocument();
+  });
+
+  it('reloads data when range selector changes', async () => {
+    const user = userEvent.setup();
+    const fetchItems = vi.fn().mockResolvedValue(mockPaginatedResponse);
+
+    renderTable({
+      fetchItems,
+      rangeSelector: { default: 0, options: LOW_STOCK_RANGES },
+    });
+
+    // Wait for initial load
+    await waitFor(() => {
+      expect(fetchItems).toHaveBeenCalledTimes(1);
+    });
+
+    // Initial call should have threshold=4 (max of first range "< 5")
+    expect(fetchItems).toHaveBeenLastCalledWith(
+      expect.objectContaining({ threshold: 4, page: 1 })
+    );
+
+    // Change range to "5–10" (index 1, max=10)
+    const select = screen.getByLabelText('Stock range');
+    await user.selectOptions(select, '1');
+
+    await waitFor(() => {
+      expect(fetchItems).toHaveBeenCalledTimes(2);
+    });
+
+    // Second call should have threshold=10 (max of "5–10" range)
+    expect(fetchItems).toHaveBeenLastCalledWith(
+      expect.objectContaining({ threshold: 10, page: 1 })
+    );
   });
 
   it('does NOT show range selector when rangeSelector is not provided', async () => {

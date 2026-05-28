@@ -23,13 +23,6 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
   const searchTimeout = useRef(null);
   const searchTerm = useRef('');
   const [rangeIndex, setRangeIndex] = useState(rangeSelector?.default ?? 0);
-  const rangeRef = useRef(rangeSelector?.options?.[rangeSelector?.default ?? 0]);
-
-  // Keep range ref in sync so debounce/async callbacks always have current range
-  const selectedRange = rangeSelector?.options?.[rangeIndex];
-  useEffect(() => {
-    rangeRef.current = selectedRange;
-  }, [selectedRange]);
 
   const loadData = async (pageNum, searchVal, range) => {
     setLoading(true);
@@ -61,8 +54,10 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
     }
   };
 
+  // Single effect: look up range from stable rangeSelector.options
   useEffect(() => {
-    loadData(page, searchTerm.current, rangeRef.current);
+    const range = rangeSelector?.options?.[rangeIndex];
+    loadData(page, searchTerm.current, range);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rangeIndex]);
 
@@ -73,12 +68,14 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
     searchTimeout.current = setTimeout(() => {
       setPage(1);
-      loadData(1, val, rangeRef.current);
+      const range = rangeSelector?.options?.[rangeIndex];
+      loadData(1, val, range);
     }, 400);
   };
 
   const handleRetry = () => {
-    loadData(page, searchTerm.current, rangeRef.current);
+    const range = rangeSelector?.options?.[rangeIndex];
+    loadData(page, searchTerm.current, range);
   };
 
   const hasPrev = page > 1;
@@ -207,8 +204,9 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
                           'font-sans font-bold text-sm',
                           book.stockQuantity === 0 && 'text-destructive',
                           book.stockQuantity > 0 &&
-                            selectedRange &&
-                            book.stockQuantity <= (selectedRange.max ?? Infinity) &&
+                            rangeSelector.options[rangeIndex] &&
+                            book.stockQuantity <=
+                              (rangeSelector.options[rangeIndex].max ?? Infinity) &&
                             'text-amber-600'
                         )}>
                         {book.stockQuantity}
