@@ -60,7 +60,7 @@ describe('InventoryPage', () => {
     expect(outOfStockTab).toHaveAttribute('data-state', 'inactive');
   });
 
-  it('renders 4 metric cards on Overview tab', async () => {
+  it('renders 3 metric cards on Overview tab', async () => {
     const { inventoryApi } = await import('@/lib/apiClient');
     inventoryApi.getInventoryMetrics.mockResolvedValueOnce(mockMetrics);
 
@@ -68,7 +68,6 @@ describe('InventoryPage', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Total SKUs')).toBeInTheDocument();
-      expect(screen.getByText('Total Value')).toBeInTheDocument();
     });
 
     // These labels appear in both tab triggers and metric cards
@@ -78,7 +77,10 @@ describe('InventoryPage', () => {
     expect(screen.getByText('150')).toBeInTheDocument();
     expect(screen.getByText('12')).toBeInTheDocument();
     expect(screen.getByText('25')).toBeInTheDocument();
-    expect(screen.getByText('RM 15000.00')).toBeInTheDocument();
+
+    // Total Value card removed
+    expect(screen.queryByText('Total Value')).not.toBeInTheDocument();
+    expect(screen.queryByText('RM 15000.00')).not.toBeInTheDocument();
   });
 
   it('fetches metrics on mount for Overview tab', async () => {
@@ -144,7 +146,7 @@ describe('InventoryPage', () => {
     renderPage();
 
     const skeletons = document.querySelectorAll('.animate-pulse');
-    expect(skeletons.length).toBe(4);
+    expect(skeletons.length).toBe(3);
   });
 
   it('shows error state with retry button on metrics fetch failure', async () => {

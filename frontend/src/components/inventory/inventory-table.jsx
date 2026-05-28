@@ -13,13 +13,7 @@ import {
 import { Button } from '@/components/ui/forms/button';
 import { cn } from '@/lib/utils';
 
-export function InventoryTable({
-  title,
-  description,
-  fetchItems,
-  emptyMessage,
-  thresholdSelector,
-}) {
+export function InventoryTable({ title, description, fetchItems, emptyMessage, rangeSelector }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -28,9 +22,11 @@ export function InventoryTable({
   const [search, setSearch] = useState('');
   const searchTimeout = useRef(null);
   const searchTerm = useRef('');
-  const [threshold, setThreshold] = useState(thresholdSelector?.default || 10);
+  const [rangeIndex, setRangeIndex] = useState(rangeSelector?.default ?? 0);
 
-  const loadData = async (pageNum, searchVal, thresholdVal) => {
+  const selectedRange = rangeSelector?.options?.[rangeIndex];
+
+  const loadData = async (pageNum, searchVal, range) => {
     setLoading(true);
     setError('');
     try {
@@ -39,12 +35,18 @@ export function InventoryTable({
         pageSize: 10,
         search: searchVal || undefined,
       };
-      if (thresholdVal !== undefined) {
-        params.threshold = thresholdVal;
+      // Backend threshold = range upper bound (null means no limit)
+      if (range?.max !== null && range?.max !== undefined) {
+        params.threshold = range.max;
       }
       const res = await fetchItems(params);
       const data = res.data;
-      setItems(data.items || []);
+      let results = data.items || [];
+      // Client-side filter for range lower bound
+      if (range?.min > 0) {
+        results = results.filter((item) => item.stockQuantity >= range.min);
+      }
+      setItems(results);
       setTotalPages(data.pagination?.totalPages || 1);
     } catch {
       setError('Failed to load inventory data');
@@ -55,8 +57,8 @@ export function InventoryTable({
   };
 
   useEffect(() => {
-    loadData(page, searchTerm.current, threshold);
-  }, [page, threshold]);
+    loadData(page, searchTerm.current, selectedRange);
+  }, [page, rangeIndex]);
 
   const handleSearchChange = (e) => {
     const val = e.target.value;
@@ -65,12 +67,12 @@ export function InventoryTable({
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
     searchTimeout.current = setTimeout(() => {
       setPage(1);
-      loadData(1, val, threshold);
+      loadData(1, val, selectedRange);
     }, 400);
   };
 
   const handleRetry = () => {
-    loadData(page, searchTerm.current, threshold);
+    loadData(page, searchTerm.current, selectedRange);
   };
 
   const hasPrev = page > 1;
@@ -115,18 +117,18 @@ export function InventoryTable({
             aria-label='Search inventory'
           />
         </div>
-        {thresholdSelector && (
+        {rangeSelector && (
           <select
-            value={threshold}
+            value={rangeIndex}
             onChange={(e) => {
-              setThreshold(Number(e.target.value));
+              setRangeIndex(Number(e.target.value));
               setPage(1);
             }}
             className='h-10 px-3 text-sm transition-all border rounded-lg border-primary/10 focus:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/10'
-            aria-label='Stock threshold'>
-            {thresholdSelector.options.map((opt) => (
-              <option key={opt} value={opt}>
-                {'<'} {opt} units
+            aria-label='Stock range'>
+            {rangeSelector.options.map((opt, i) => (
+              <option key={i} value={i}>
+                {opt.label} units
               </option>
             ))}
           </select>
@@ -154,14 +156,14 @@ export function InventoryTable({
               <TableHead className='w-20'>Cover</TableHead>
               <TableHead>Title</TableHead>
               <TableHead className='w-32'>ISBN</TableHead>
-              {thresholdSelector && <TableHead className='w-24'>Stock Qty</TableHead>}
+              {rangeSelector && <TableHead className='w-24'>Stock Qty</TableHead>}
               <TableHead className='w-20 text-right'>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {items.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={thresholdSelector ? 5 : 4} className='py-16 text-center'>
+                <TableCell colSpan={rangeSelector ? 5 : 4} className='py-16 text-center'>
                   <BookOpen className='w-10 h-10 mx-auto mb-3 text-primary/20' />
                   <p className='font-serif text-lg italic text-primary/30'>{emptyMessage}</p>
                 </TableCell>
@@ -192,14 +194,15 @@ export function InventoryTable({
                   <TableCell className='font-mono text-xs text-primary/50'>
                     {book.isbn || '—'}
                   </TableCell>
-                  {thresholdSelector && (
+                  {rangeSelector && (
                     <TableCell>
                       <span
                         className={cn(
                           'font-sans font-bold text-sm',
                           book.stockQuantity === 0 && 'text-destructive',
                           book.stockQuantity > 0 &&
-                            book.stockQuantity <= threshold &&
+                            selectedRange &&
+                            book.stockQuantity <= (selectedRange.max ?? Infinity) &&
                             'text-amber-600'
                         )}>
                         {book.stockQuantity}

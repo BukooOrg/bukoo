@@ -30,6 +30,14 @@ const mockBooks = [
   },
 ];
 
+const LOW_STOCK_RANGES = [
+  { label: '< 5', min: 0, max: 4 },
+  { label: '5–10', min: 5, max: 10 },
+  { label: '10–20', min: 10, max: 20 },
+  { label: '20–50', min: 20, max: 50 },
+  { label: '50+', min: 50, max: null },
+];
+
 const mockPaginatedResponse = {
   data: {
     items: mockBooks,
@@ -68,7 +76,7 @@ describe('InventoryTable', () => {
 
     renderTable({
       fetchItems,
-      thresholdSelector: { default: 10, options: [5, 10, 20] },
+      rangeSelector: { default: 0, options: LOW_STOCK_RANGES },
     });
 
     await waitFor(() => {
@@ -118,22 +126,22 @@ describe('InventoryTable', () => {
     });
   });
 
-  it('shows threshold selector when type is low-stock', async () => {
+  it('shows range selector when rangeSelector is provided', async () => {
     const fetchItems = vi.fn().mockResolvedValue(mockPaginatedResponse);
 
     renderTable({
       fetchItems,
-      thresholdSelector: { default: 10, options: [5, 10, 20, 50] },
+      rangeSelector: { default: 0, options: LOW_STOCK_RANGES },
     });
 
     await waitFor(() => {
-      expect(screen.getByLabelText('Stock threshold')).toBeInTheDocument();
+      expect(screen.getByLabelText('Stock range')).toBeInTheDocument();
     });
 
-    expect(screen.getByText('< 10 units')).toBeInTheDocument();
+    expect(screen.getByText('< 5 units')).toBeInTheDocument();
   });
 
-  it('does NOT show threshold selector when type is out-of-stock', async () => {
+  it('does NOT show range selector when rangeSelector is not provided', async () => {
     const fetchItems = vi.fn().mockResolvedValue(mockPaginatedResponse);
 
     renderTable({
@@ -145,7 +153,7 @@ describe('InventoryTable', () => {
       expect(screen.getByText('Out of Stock')).toBeInTheDocument();
     });
 
-    expect(screen.queryByLabelText('Stock threshold')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Stock range')).not.toBeInTheDocument();
     expect(screen.queryByText('Stock Qty')).not.toBeInTheDocument();
   });
 

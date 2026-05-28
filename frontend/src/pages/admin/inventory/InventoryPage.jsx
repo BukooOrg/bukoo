@@ -1,4 +1,4 @@
-import { AlertCircle, AlertTriangle, DollarSign, Package } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Package } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 
 import { InventoryTable } from '@/components/inventory/inventory-table';
@@ -7,11 +7,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/naviga
 import { inventoryApi } from '@/lib/apiClient';
 import { cn } from '@/lib/utils';
 
-function formatCurrency(value) {
-  const num = typeof value === 'string' ? parseFloat(value) : value;
-  if (isNaN(num)) return 'RM 0.00';
-  return `RM ${num.toFixed(2)}`;
-}
+const LOW_STOCK_RANGES = [
+  { label: '< 5', min: 0, max: 4 },
+  { label: '5–10', min: 5, max: 10 },
+  { label: '10–20', min: 10, max: 20 },
+  { label: '20–50', min: 20, max: 50 },
+  { label: '50+', min: 50, max: null },
+];
 
 function OverviewTab() {
   const [metrics, setMetrics] = useState(null);
@@ -49,8 +51,8 @@ function OverviewTab() {
 
   if (loading) {
     return (
-      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
-        {[...Array(4)].map((_, i) => (
+      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+        {[...Array(3)].map((_, i) => (
           <div key={i} className='rounded-xl border p-5 animate-pulse bg-primary/5 h-24' />
         ))}
       </div>
@@ -72,7 +74,7 @@ function OverviewTab() {
   }
 
   return (
-    <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+    <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
       <MetricCard
         icon={Package}
         label='Total SKUs'
@@ -90,12 +92,6 @@ function OverviewTab() {
         label='Low Stock'
         value={metrics?.lowStockCount ?? 0}
         accent='amber'
-      />
-      <MetricCard
-        icon={DollarSign}
-        label='Total Value'
-        value={formatCurrency(metrics?.totalInventoryValue ?? 0)}
-        accent='green'
       />
     </div>
   );
@@ -174,7 +170,7 @@ export default function InventoryPage() {
               description='Books below the selected stock threshold'
               fetchItems={inventoryApi.findLowStockItems.bind(inventoryApi)}
               emptyMessage='All books are well-stocked'
-              thresholdSelector={{ default: 10, options: [5, 10, 20, 50] }}
+              rangeSelector={{ default: 0, options: LOW_STOCK_RANGES }}
             />
           </TabsContent>
 
