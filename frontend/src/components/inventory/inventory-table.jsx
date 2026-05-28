@@ -31,7 +31,7 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
     setError('');
     try {
       const params = { page: p, pageSize: 10, ...(s && { search: s }) };
-      if (r?.max !== null && r?.max !== undefined) params.threshold = r.max;
+      if (r?.threshold !== null && r?.threshold !== undefined) params.threshold = r.threshold;
       const res = await fetchItems(params);
       const data = res.data;
       setItems(data.items || []);
@@ -175,7 +175,7 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
                   <TableCell className='font-mono text-xs text-primary/50'>{book.isbn || '—'}</TableCell>
                   {rangeSelector && (
                     <TableCell>
-                      <span className={cn('font-sans font-bold text-sm', book.stockQuantity === 0 && 'text-destructive', book.stockQuantity > 0 && range && book.stockQuantity <= (range.max ?? Infinity) && 'text-amber-600')}>
+                      <span className={cn('font-sans font-bold text-sm', book.stockQuantity === 0 && 'text-destructive', book.stockQuantity > 0 && range && range.threshold !== null && book.stockQuantity <= range.threshold && 'text-amber-600')}>
                         {book.stockQuantity}
                       </span>
                     </TableCell>
