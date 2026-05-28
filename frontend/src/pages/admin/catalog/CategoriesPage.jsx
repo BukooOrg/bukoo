@@ -45,7 +45,7 @@ export default function CategoriesPage() {
         collectionApi.findCollections(),
       ]);
       setCategories(catRes.data || []);
-      setCollections(colRes.data?.items || []);
+      setCollections(colRes.data || []);
     } catch (err) {
       console.error('Failed to load categories:', err);
       setError('Failed to load categories');

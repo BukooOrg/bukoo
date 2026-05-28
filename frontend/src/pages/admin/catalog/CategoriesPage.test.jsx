@@ -58,7 +58,7 @@ function mockCategoryResponse(items) {
 }
 
 function mockCollectionResponse(items) {
-  return { data: { items } };
+  return { data: items };
 }
 
 describe('CategoriesPage', () => {
