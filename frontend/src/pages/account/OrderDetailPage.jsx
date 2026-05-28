@@ -27,8 +27,8 @@ function OrderItemCard({ item, onWriteReview, orderStatus }) {
   const isDelivered = orderStatus?.toLowerCase() === 'delivered';
 
   return (
-    <div className='flex gap-8 p-8 border border-gray-200 rounded-lg bg-white'>
-      <div className='w-32 h-44 shrink-0 overflow-hidden rounded bg-gray-100'>
+    <div className='flex gap-8 p-8 border border-primary/5 rounded-lg bg-white'>
+      <div className='w-32 h-44 shrink-0 overflow-hidden rounded bg-primary/5'>
         {item.bookCoverUrl ? (
           <img
             src={item.bookCoverUrl}
@@ -36,7 +36,7 @@ function OrderItemCard({ item, onWriteReview, orderStatus }) {
             className='w-full h-full object-cover'
           />
         ) : (
-          <div className='w-full h-full flex items-center justify-center text-gray-400 text-base'>
+          <div className='w-full h-full flex items-center justify-center text-primary/40 text-base'>
             No cover
           </div>
         )}
@@ -44,10 +44,10 @@ function OrderItemCard({ item, onWriteReview, orderStatus }) {
 
       <div className='flex-1 min-w-0'>
         <p className='text-2xl font-medium font-serif line-clamp-1'>{item.bookTitle}</p>
-        <p className='text-lg text-gray-500 mt-2'>RM {Number(item.unitPrice).toFixed(2)}</p>
+        <p className='text-lg text-primary/40 mt-2'>RM {Number(item.unitPrice).toFixed(2)}</p>
 
         <div className='flex items-center justify-between mt-6'>
-          <span className='text-lg text-gray-500'>Qty: {item.quantity}</span>
+          <span className='text-lg text-primary/40'>Qty: {item.quantity}</span>
           <div className='flex items-center gap-4'>
             <span className='text-xl font-medium'>RM {Number(item.lineTotal).toFixed(2)}</span>
             {isDelivered && onWriteReview && (
@@ -67,31 +67,31 @@ function OrderItemCard({ item, onWriteReview, orderStatus }) {
 
 function OrderSummary({ order, canCancel, onCancel, onPay }) {
   return (
-    <div className='bg-white border border-gray-200 rounded-lg p-8 space-y-6'>
-      <h2 className='font-serif text-2xl font-bold text-black'>Summary</h2>
+    <div className='bg-white border border-primary/5 rounded-lg p-8 space-y-6'>
+      <h2 className='font-serif text-2xl font-bold text-primary'>Summary</h2>
       <div className='space-y-4 text-base'>
         <div className='flex justify-between'>
-          <span className='text-gray-500'>Subtotal</span>
+          <span className='text-primary/40'>Subtotal</span>
           <span>{formatPrice(order.subtotal)}</span>
         </div>
         <div className='flex justify-between'>
-          <span className='text-gray-500'>Shipping</span>
+          <span className='text-primary/40'>Shipping</span>
           <span>{formatPrice(order.shippingCost)}</span>
         </div>
       </div>
-      <div className='pt-6 border-t border-gray-200'>
+      <div className='pt-6 border-t border-primary/5'>
         <div className='flex justify-between items-baseline'>
-          <span className='font-serif text-xl font-bold text-black'>Total</span>
-          <span className='font-serif text-3xl font-black text-black'>
+          <span className='font-serif text-xl font-bold text-primary'>Total</span>
+          <span className='font-serif text-3xl font-black text-primary'>
             {formatPrice(order.total)}
           </span>
         </div>
       </div>
 
       {order.addressSnapshot && (
-        <div className='pt-6 border-t border-gray-200'>
-          <h3 className='text-base font-bold text-gray-700 mb-2'>Shipping Address</h3>
-          <p className='text-base text-gray-600'>
+        <div className='pt-6 border-t border-primary/5'>
+          <h3 className='text-base font-bold text-primary mb-2'>Shipping Address</h3>
+          <p className='text-sm text-primary/60'>
             {order.addressSnapshot.address_line1}
             {order.addressSnapshot.address_line2 && (
               <>
@@ -107,14 +107,14 @@ function OrderSummary({ order, canCancel, onCancel, onPay }) {
       )}
 
       {order.payment && (
-        <div className='pt-6 border-t border-gray-200'>
-          <h3 className='text-base font-bold text-gray-700 mb-2'>Payment</h3>
-          <p className='text-base text-gray-600 capitalize'>
+        <div className='pt-6 border-t border-primary/5'>
+          <h3 className='text-base font-bold text-primary mb-2'>Payment</h3>
+          <p className='text-sm text-primary/60 capitalize'>
             Method: {order.payment.method?.replace('_', ' ')}
           </p>
-          <p className='text-base text-gray-600 capitalize'>Status: {order.payment.status}</p>
+          <p className='text-sm text-primary/60 capitalize'>Status: {order.payment.status}</p>
           {order.payment.simulatedRef && (
-            <p className='text-base text-gray-500 mt-1'>Ref: {order.payment.simulatedRef}</p>
+            <p className='text-sm text-primary/40 mt-1'>Ref: {order.payment.simulatedRef}</p>
           )}
         </div>
       )}
@@ -131,7 +131,7 @@ function OrderSummary({ order, canCancel, onCancel, onPay }) {
         <Button
           onClick={onCancel}
           variant='outline'
-          className='w-full h-14 text-lg text-red-600 border-red-300 hover:bg-red-50'>
+          className='w-full h-14 text-lg text-destructive border-destructive/30 hover:bg-destructive/5'>
           Cancel Order
         </Button>
       )}
@@ -195,8 +195,8 @@ export default function AccountOrderDetailPage() {
     return (
       <div className='px-sides py-24'>
         <div className='max-w-2xl mx-auto text-center'>
-          <h1 className='font-serif text-4xl font-black text-black'>Order Not Found</h1>
-          <Link to='/account/orders' className='mt-4 text-black underline'>
+          <h1 className='font-serif text-4xl font-black text-primary'>Order Not Found</h1>
+          <Link to='/account/orders' className='mt-4 text-primary underline'>
             Back to Orders
           </Link>
         </div>
@@ -224,7 +224,7 @@ export default function AccountOrderDetailPage() {
 
           <div className='grid grid-cols-1 lg:grid-cols-3 gap-10'>
             <div className='lg:col-span-2 space-y-6'>
-              <h2 className='font-serif text-2xl font-bold text-black'>
+              <h2 className='font-serif text-2xl font-bold text-primary'>
                 Items ({order.items.length})
               </h2>
               {order.items.map((item) => (

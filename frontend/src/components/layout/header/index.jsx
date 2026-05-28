@@ -76,10 +76,10 @@ export function Header({ shouldRenderSearchBar = true }) {
           {user?.role !== 'admin' && (
             <Link
               to='/account/wishlist'
-              className='relative p-2 text-black transition-colors rounded-full hover:bg-gray-100'>
+              className='relative p-2 text-primary transition-colors rounded-full hover:bg-primary/5'>
               <Heart className='size-5' />
               {(wishlist?.items?.length || 0) > 0 && (
-                <span className='absolute -top-0.5 -right-0.5 size-4 flex items-center justify-center text-[9px] font-bold bg-black text-white rounded-full'>
+                <span className='absolute -top-0.5 -right-0.5 size-4 flex items-center justify-center text-[9px] font-bold bg-primary text-secondary rounded-full'>
                   {wishlist.items.length}
                 </span>
               )}
@@ -117,7 +117,7 @@ export function Header({ shouldRenderSearchBar = true }) {
                         className='relative flex-none ml-2 p-1.5 rounded-lg hover:bg-primary/5 transition-colors'>
                         <Bell className='size-4 text-primary/60' />
                         {unreadCount > 0 && (
-                          <span className='absolute -top-0.5 -right-0.5 size-3.5 flex items-center justify-center text-[8px] font-bold bg-red-500 text-white rounded-full'>
+                          <span className='absolute -top-0.5 -right-0.5 size-3.5 flex items-center justify-center text-[8px] font-bold bg-destructive text-secondary rounded-full'>
                             {unreadCount > 9 ? '9+' : unreadCount}
                           </span>
                         )}

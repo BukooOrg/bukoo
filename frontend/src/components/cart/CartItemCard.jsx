@@ -31,8 +31,8 @@ export function CartItemCard({ item }) {
 
   return (
     <>
-      <div className='flex gap-8 p-8 border border-gray-200 rounded-lg bg-white'>
-        <div className='w-32 h-44 shrink-0 overflow-hidden rounded bg-gray-100'>
+      <div className='flex gap-8 p-8 border border-primary/5 rounded-lg bg-white'>
+        <div className='w-32 h-44 shrink-0 overflow-hidden rounded bg-primary/5'>
           {item.book.coverUrl ? (
             <img
               src={item.book.coverUrl}
@@ -40,7 +40,7 @@ export function CartItemCard({ item }) {
               className='w-full h-full object-cover'
             />
           ) : (
-            <div className='w-full h-full flex items-center justify-center text-gray-400 text-base'>
+            <div className='w-full h-full flex items-center justify-center text-primary/40 text-base'>
               No cover
             </div>
           )}
@@ -52,7 +52,7 @@ export function CartItemCard({ item }) {
             className='text-2xl font-medium font-serif hover:underline line-clamp-1'>
             {item.book.title}
           </Link>
-          <p className='text-lg text-gray-500 mt-2'>RM {item.book.price}</p>
+          <p className='text-lg text-primary/40 mt-2'>RM {item.book.price}</p>
 
           <div className='flex items-center justify-between mt-6'>
             <div className='flex items-center gap-3'>
@@ -64,7 +64,7 @@ export function CartItemCard({ item }) {
               <span className='text-xl font-medium'>RM {subtotal}</span>
               <button
                 onClick={() => setRemoveDialog(true)}
-                className='text-base text-gray-400 hover:text-red-600'>
+                className='text-base text-primary/40 hover:text-destructive'>
                 Remove
               </button>
             </div>

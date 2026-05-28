@@ -43,11 +43,11 @@ export default function CartPage() {
           <p className='text-primary/40 font-bold italic text-sm mt-2'>
             Find your next favorite story and add it to your bag.
           </p>
-          <p className='mt-6 text-lg text-gray-500'>
+          <p className='mt-6 text-lg text-primary/40'>
             Find your next favorite story and add it to your bag.
           </p>
           <Link to='/shop'>
-            <Button className='mt-10 bg-black text-white h-14 text-lg' size='lg'>
+            <Button className='mt-10 bg-primary text-secondary h-14 text-lg' size='lg'>
               Continue Shopping
             </Button>
           </Link>
@@ -87,7 +87,7 @@ export default function CartPage() {
               <CartSummary totalQuantity={cart.totalQuantity} totalPrice={cart.totalPrice} />
               <div className='mt-6 space-y-6'>
                 <Link to='/checkout'>
-                  <Button className='w-full bg-black text-white h-14 text-lg' size='lg'>
+                  <Button className='w-full bg-primary text-secondary h-14 text-lg' size='lg'>
                     Proceed to Checkout
                   </Button>
                 </Link>

@@ -27,11 +27,11 @@ export default function WishlistPage() {
           <p className='text-primary/40 font-bold italic text-sm mt-2'>
             Save books you love and come back to them anytime.
           </p>
-          <p className='mt-6 text-lg text-gray-500'>
+          <p className='mt-6 text-lg text-primary/40'>
             Save books you love and come back to them anytime.
           </p>
           <Link to='/shop'>
-            <Button className='mt-10 bg-black text-white h-14 text-lg' size='lg'>
+            <Button className='mt-10 bg-primary text-secondary h-14 text-lg' size='lg'>
               Browse Books
             </Button>
           </Link>

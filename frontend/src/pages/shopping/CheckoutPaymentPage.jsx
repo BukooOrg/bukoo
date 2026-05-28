@@ -138,9 +138,9 @@ export default function CheckoutPaymentPage() {
 
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-10'>
           <div className='lg:col-span-2'>
-            <div className='bg-white border border-gray-200 rounded-lg p-8 space-y-6'>
+            <div className='bg-white border border-primary/5 rounded-lg p-8 space-y-6'>
               <div className='space-y-3'>
-                <label className='flex items-center gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-primary'>
+                <label className='flex items-center gap-3 p-4 border border-primary/5 rounded-lg cursor-pointer hover:border-primary'>
                   <input
                     type='radio'
                     name='payment'
@@ -155,7 +155,7 @@ export default function CheckoutPaymentPage() {
                 {paymentMethod === 'online_banking' && (
                   <div className='space-y-3 pl-4'>
                     <div>
-                      <label className='block text-sm font-medium text-gray-700 mb-1'>
+                      <label className='block text-sm font-medium text-primary mb-1'>
                         Bank Name
                       </label>
                       <input
@@ -163,11 +163,11 @@ export default function CheckoutPaymentPage() {
                         value={bankName}
                         onChange={(e) => setBankName(e.target.value)}
                         placeholder='e.g. Maybank'
-                        className='w-full h-10 px-3 border border-gray-200 rounded text-sm'
+                        className='w-full h-10 px-3 border border-primary/5 rounded text-sm'
                       />
                     </div>
                     <div>
-                      <label className='block text-sm font-medium text-gray-700 mb-1'>
+                      <label className='block text-sm font-medium text-primary mb-1'>
                         Account Number
                       </label>
                       <input
@@ -175,7 +175,7 @@ export default function CheckoutPaymentPage() {
                         value={accountNumber}
                         onChange={(e) => setAccountNumber(e.target.value)}
                         placeholder='e.g. 1234567890'
-                        className='w-full h-10 px-3 border border-gray-200 rounded text-sm'
+                        className='w-full h-10 px-3 border border-primary/5 rounded text-sm'
                       />
                     </div>
                   </div>
@@ -183,7 +183,7 @@ export default function CheckoutPaymentPage() {
               </div>
 
               <div className='space-y-3'>
-                <label className='flex items-center gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-primary'>
+                <label className='flex items-center gap-3 p-4 border border-primary/5 rounded-lg cursor-pointer hover:border-primary'>
                   <input
                     type='radio'
                     name='payment'
@@ -198,7 +198,7 @@ export default function CheckoutPaymentPage() {
                 {paymentMethod === 'card' && (
                   <div className='space-y-3 pl-4'>
                     <div>
-                      <label className='block text-sm font-medium text-gray-700 mb-1'>
+                      <label className='block text-sm font-medium text-primary mb-1'>
                         Card Number
                       </label>
                       <input
@@ -206,12 +206,12 @@ export default function CheckoutPaymentPage() {
                         value={cardNumber}
                         onChange={(e) => setCardNumber(e.target.value)}
                         placeholder='e.g. 4111111111111111'
-                        className='w-full h-10 px-3 border border-gray-200 rounded text-sm'
+                        className='w-full h-10 px-3 border border-primary/5 rounded text-sm'
                       />
                     </div>
                     <div className='grid grid-cols-2 gap-3'>
                       <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-1'>
+                        <label className='block text-sm font-medium text-primary mb-1'>
                           Expiry Date
                         </label>
                         <input
@@ -219,17 +219,17 @@ export default function CheckoutPaymentPage() {
                           value={expiryDate}
                           onChange={(e) => setExpiryDate(e.target.value)}
                           placeholder='MM/YY'
-                          className='w-full h-10 px-3 border border-gray-200 rounded text-sm'
+                          className='w-full h-10 px-3 border border-primary/5 rounded text-sm'
                         />
                       </div>
                       <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-1'>CVV</label>
+                        <label className='block text-sm font-medium text-primary mb-1'>CVV</label>
                         <input
                           type='text'
                           value={cvv}
                           onChange={(e) => setCvv(e.target.value)}
                           placeholder='123'
-                          className='w-full h-10 px-3 border border-gray-200 rounded text-sm'
+                          className='w-full h-10 px-3 border border-primary/5 rounded text-sm'
                         />
                       </div>
                     </div>
@@ -248,36 +248,36 @@ export default function CheckoutPaymentPage() {
           </div>
 
           <div className='lg:col-span-1'>
-            <div className='sticky top-24 bg-white border border-gray-200 rounded-lg p-8 space-y-6'>
-              <h2 className='font-serif text-2xl font-bold text-black'>Order Summary</h2>
+            <div className='sticky top-24 bg-white border border-primary/5 rounded-lg p-8 space-y-6'>
+              <h2 className='font-serif text-2xl font-bold text-primary'>Order Summary</h2>
               <div className='space-y-4 text-base'>
                 <div className='flex justify-between'>
-                  <span className='text-gray-500'>Subtotal</span>
+                  <span className='text-primary/40'>Subtotal</span>
                   <span>{formatPrice(order.subtotal)}</span>
                 </div>
                 <div className='flex justify-between'>
-                  <span className='text-gray-500'>Shipping</span>
+                  <span className='text-primary/40'>Shipping</span>
                   <span>{formatPrice(order.shippingCost)}</span>
                 </div>
               </div>
-              <div className='pt-6 border-t border-gray-200'>
+              <div className='pt-6 border-t border-primary/5'>
                 <div className='flex justify-between items-baseline'>
-                  <span className='font-serif text-xl font-bold text-black'>Total</span>
-                  <span className='font-serif text-3xl font-black text-black'>
+                  <span className='font-serif text-xl font-bold text-primary'>Total</span>
+                  <span className='font-serif text-3xl font-black text-primary'>
                     {formatPrice(order.total)}
                   </span>
                 </div>
               </div>
 
-              <div className='pt-6 border-t border-gray-200'>
-                <h3 className='text-base font-bold text-gray-700 mb-2'>
+              <div className='pt-6 border-t border-primary/5'>
+                <h3 className='text-base font-bold text-primary mb-2'>
                   Items ({order.items.length})
                 </h3>
                 <div className='space-y-3'>
                   {order.items.map((item) => (
                     <div key={item.id} className='flex justify-between text-sm'>
-                      <span className='text-gray-600 truncate mr-2'>{item.bookTitle}</span>
-                      <span className='text-gray-500 shrink-0'>x{item.quantity}</span>
+                      <span className='text-primary/60 truncate mr-2'>{item.bookTitle}</span>
+                      <span className='text-primary/40 shrink-0'>x{item.quantity}</span>
                     </div>
                   ))}
                 </div>

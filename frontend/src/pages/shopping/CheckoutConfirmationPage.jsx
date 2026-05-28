@@ -19,8 +19,8 @@ function formatDate(dateValue) {
 
 function ConfirmationItem({ item }) {
   return (
-    <div className='flex gap-4 py-3 border-b border-gray-100 last:border-0'>
-      <div className='w-12 h-16 shrink-0 overflow-hidden rounded bg-gray-100'>
+    <div className='flex gap-4 py-3 border-b border-primary/5 last:border-0'>
+      <div className='w-12 h-16 shrink-0 overflow-hidden rounded bg-primary/5'>
         {item.bookCoverUrl ? (
           <img
             src={item.bookCoverUrl}
@@ -28,14 +28,14 @@ function ConfirmationItem({ item }) {
             className='w-full h-full object-cover'
           />
         ) : (
-          <div className='w-full h-full flex items-center justify-center text-gray-400 text-xs'>
+          <div className='w-full h-full flex items-center justify-center text-primary/40 text-xs'>
             No cover
           </div>
         )}
       </div>
       <div className='flex-1 min-w-0'>
         <p className='text-base font-medium truncate'>{item.bookTitle}</p>
-        <p className='text-sm text-gray-500'>
+        <p className='text-sm text-primary/40'>
           RM {Number(item.unitPrice).toFixed(2)} &middot; Qty: {item.quantity}
         </p>
       </div>
@@ -82,8 +82,8 @@ export default function CheckoutConfirmationPage() {
     return (
       <div className='px-sides py-24'>
         <div className='max-w-2xl mx-auto text-center'>
-          <h1 className='font-serif text-4xl font-black text-black'>Order Not Found</h1>
-          <Link to='/shop' className='mt-4 text-black underline'>
+          <h1 className='font-serif text-4xl font-black text-primary'>Order Not Found</h1>
+          <Link to='/shop' className='mt-4 text-primary underline'>
             Continue Shopping
           </Link>
         </div>
@@ -95,9 +95,9 @@ export default function CheckoutConfirmationPage() {
     <div className='px-sides py-16'>
       <div className='max-w-2xl mx-auto'>
         <div className='text-center mb-8'>
-          <div className='inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4'>
+          <div className='inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4'>
             <svg
-              className='w-8 h-8 text-green-600'
+              className='w-8 h-8 text-primary'
               fill='none'
               viewBox='0 0 24 24'
               stroke='currentColor'>
@@ -109,28 +109,28 @@ export default function CheckoutConfirmationPage() {
               />
             </svg>
           </div>
-          <h1 className='font-serif text-4xl font-black text-black tracking-tighter'>
+          <h1 className='font-serif text-4xl font-black text-primary tracking-tighter'>
             Order Confirmed
           </h1>
-          <p className='mt-2 text-gray-500'>
+          <p className='mt-2 text-primary/40'>
             Order #{order.id.slice(0, 8)} &middot; {formatDate(order.createdAt)}
           </p>
           <OrderStatusBadge status={order.status} className='mt-3' />
         </div>
 
-        <div className='bg-white border border-gray-200 rounded-lg p-6 space-y-4'>
-          <h2 className='text-lg font-bold text-black'>Order Items ({order.items.length})</h2>
+        <div className='bg-white border border-primary/5 rounded-lg p-6 space-y-4'>
+          <h2 className='text-lg font-bold text-primary'>Order Items ({order.items.length})</h2>
           {order.items.map((item) => (
             <ConfirmationItem key={item.id} item={item} />
           ))}
 
           <div className='pt-4 space-y-2'>
             <div className='flex justify-between text-sm'>
-              <span className='text-gray-500'>Subtotal</span>
+              <span className='text-primary/40'>Subtotal</span>
               <span>RM {Number(order.subtotal).toFixed(2)}</span>
             </div>
             <div className='flex justify-between text-sm'>
-              <span className='text-gray-500'>Shipping</span>
+              <span className='text-primary/40'>Shipping</span>
               <span>RM {Number(order.shippingCost).toFixed(2)}</span>
             </div>
             <div className='flex justify-between text-lg font-bold pt-2 border-t'>
@@ -142,7 +142,7 @@ export default function CheckoutConfirmationPage() {
 
         <div className='flex gap-3 mt-6'>
           <Link to={`/account/orders/${order.id}`} className='flex-1'>
-            <Button className='w-full bg-black text-white h-14 text-lg' size='lg'>
+            <Button className='w-full bg-primary text-secondary h-14 text-lg' size='lg'>
               View Order
             </Button>
           </Link>

@@ -40,10 +40,10 @@ export function WishlistItemCard({ item }) {
 
   return (
     <>
-      <div className='flex flex-col border border-gray-200 rounded-lg bg-white overflow-hidden'>
+      <div className='flex flex-col border border-primary/5 rounded-lg bg-white overflow-hidden'>
         <Link
           to={`/product/${item.bookId}`}
-          className='block aspect-[3/4] overflow-hidden bg-gray-100'>
+          className='block aspect-[3/4] overflow-hidden bg-primary/5'>
           {item.book.coverUrl ? (
             <img
               src={item.book.coverUrl}
@@ -51,7 +51,7 @@ export function WishlistItemCard({ item }) {
               className='w-full h-full object-cover hover:scale-105 transition-transform duration-500'
             />
           ) : (
-            <div className='w-full h-full flex items-center justify-center text-gray-400 text-base'>
+            <div className='w-full h-full flex items-center justify-center text-primary/40 text-base'>
               No cover
             </div>
           )}
@@ -63,19 +63,19 @@ export function WishlistItemCard({ item }) {
             className='text-xl font-medium font-serif hover:underline line-clamp-2'>
             {item.book.title}
           </Link>
-          <p className='text-lg text-gray-500 mt-2'>RM {item.book.price}</p>
+          <p className='text-lg text-primary/40 mt-2'>RM {item.book.price}</p>
 
           <div className='flex items-center gap-3 mt-auto pt-4'>
             <button
               onClick={handleMoveToCart}
               disabled={moving}
-              className='flex-1 h-12 bg-black text-white text-base font-medium rounded hover:bg-black/90 transition-colors disabled:opacity-40'>
+              className='flex-1 h-12 bg-primary text-secondary text-base font-medium rounded hover:bg-primary/90 transition-colors disabled:opacity-40'>
               {moving ? 'Moving...' : 'Move to Cart'}
             </button>
             <button
               onClick={() => setRemoveDialog(true)}
               disabled={removing}
-              className='h-12 px-4 border border-gray-200 text-base text-gray-500 hover:text-red-600 hover:border-red-300 rounded transition-colors disabled:opacity-40'>
+              className='h-12 px-4 border border-primary/5 text-base text-primary/40 hover:text-destructive hover:border-destructive/30 rounded transition-colors disabled:opacity-40'>
               Remove
             </button>
           </div>

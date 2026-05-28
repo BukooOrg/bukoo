@@ -29,9 +29,9 @@ export function StatusBadge({ status }) {
     },
     active: {
       label: 'Active',
-      bg: 'bg-green-500/10',
-      text: 'text-green-700',
-      border: 'border-green-500/20',
+      bg: 'bg-primary/10',
+      text: 'text-primary',
+      border: 'border-primary/20',
     },
     suspended: {
       label: 'Suspended',

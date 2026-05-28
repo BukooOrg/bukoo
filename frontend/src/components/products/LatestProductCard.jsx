@@ -48,7 +48,7 @@ export function LatestProductCard({ product, principal = false, className }) {
             <AddToCart
               product={product}
               variant='default'
-              className='w-36 h-10 rounded-full bg-black text-white text-sm shadow-lg'
+              className='w-36 h-10 rounded-full bg-primary text-secondary text-sm shadow-lg'
             />
             <AddToWishlist bookId={product.id} size='sm' className='shadow-lg' />
           </Suspense>

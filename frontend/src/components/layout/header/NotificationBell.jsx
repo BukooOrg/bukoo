@@ -70,7 +70,7 @@ export function NotificationBell() {
     return (
       <Link
         to='/account/notifications'
-        className='relative transition-colors text-black hover:bg-gray-100 rounded-full p-2'>
+        className='relative transition-colors text-primary hover:bg-primary/5 rounded-full p-2'>
         <Bell className='size-5' />
       </Link>
     );
@@ -79,9 +79,9 @@ export function NotificationBell() {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <button className='relative transition-colors text-black hover:bg-gray-100 rounded-full p-2'>
+        <button className='relative transition-colors text-primary hover:bg-primary/5 rounded-full p-2'>
           <Bell className='size-5' />
-          <span className='absolute -top-0.5 -right-0.5 size-4 flex items-center justify-center text-[9px] font-bold bg-red-500 text-white rounded-full'>
+          <span className='absolute -top-0.5 -right-0.5 size-4 flex items-center justify-center text-[9px] font-bold bg-destructive text-secondary rounded-full'>
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         </button>

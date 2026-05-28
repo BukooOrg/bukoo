@@ -87,7 +87,7 @@ export default function AccountNotificationsPage() {
                 )}>
                 {f.label}
                 {f.key === 'unread' && unreadCount > 0 && (
-                  <span className='ml-1.5 px-1.5 py-0.5 text-[10px] font-bold bg-primary text-white rounded-full'>
+                  <span className='ml-1.5 px-1.5 py-0.5 text-[10px] font-bold bg-primary text-secondary rounded-full'>
                     {unreadCount}
                   </span>
                 )}

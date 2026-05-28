@@ -53,7 +53,7 @@ export function ReviewCard({
               </span>
             )}
             {isHidden && (
-              <span className='flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-red-50 text-red-600'>
+              <span className='flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-destructive/5 text-destructive'>
                 <EyeOff className='w-3 h-3' />
                 Hidden
               </span>
@@ -108,7 +108,7 @@ export function ReviewCard({
                 </DropdownMenuItem>
               )}
               {onDelete && (
-                <DropdownMenuItem onClick={onDelete} className='text-red-600 focus:text-red-600'>
+                <DropdownMenuItem onClick={onDelete} className='text-destructive focus:text-destructive'>
                   <Trash2 className='w-4 h-4 mr-2' />
                   Delete
                 </DropdownMenuItem>

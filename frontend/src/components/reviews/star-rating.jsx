@@ -41,7 +41,7 @@ export function StarRating({ value = 0, size = 'md', interactive = false, onChan
           <Star
             className={cn(
               starSize,
-              star <= value ? 'fill-amber-400 text-amber-400' : 'fill-transparent text-gray-300'
+              star <= value ? 'fill-primary text-primary' : 'fill-transparent text-primary/30'
             )}
           />
         </button>

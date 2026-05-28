@@ -135,15 +135,15 @@ export default function CategoryNewPage() {
             New Category
           </h1>
         </div>
-        <div className='flex items-start gap-3 p-4 border bg-amber-500/5 border-amber-500/10 rounded-2xl'>
-          <AlertCircle className='w-5 h-5 text-amber-600 shrink-0' />
+        <div className='flex items-start gap-3 p-4 border bg-primary/5 border-primary/10 rounded-2xl'>
+          <AlertCircle className='w-5 h-5 text-primary shrink-0' />
           <div>
-            <p className='text-xs font-bold leading-relaxed text-amber-700'>
+            <p className='text-xs font-bold leading-relaxed text-primary'>
               No collections exist. Create a collection first before adding categories.
             </p>
             <Link
               to='/admin/collections/new'
-              className='text-xs font-bold text-amber-700 underline mt-2 inline-block'>
+              className='text-xs font-bold text-primary underline mt-2 inline-block'>
               Go to Collections →
             </Link>
           </div>

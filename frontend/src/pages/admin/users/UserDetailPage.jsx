@@ -308,7 +308,7 @@ export default function UserDetailPage() {
               <Button
                 variant='outline'
                 onClick={() => setActivateDialog(true)}
-                className='gap-2 rounded-xl text-xs font-bold uppercase tracking-widest border-green-500/20 text-green-700 hover:bg-green-500/5'>
+                className='gap-2 rounded-xl text-xs font-bold uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5'>
                 <Power className='w-4 h-4' />
                 Activate User
               </Button>
@@ -350,7 +350,7 @@ export default function UserDetailPage() {
             <AlertDialogAction
               onClick={handleSuspend}
               disabled={actionLoading}
-              className='bg-destructive text-white'>
+              className='bg-destructive text-secondary'>
               {actionLoading ? <Loader2 className='w-4 h-4 animate-spin' /> : 'Suspend User'}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -390,7 +390,7 @@ export default function UserDetailPage() {
             <AlertDialogAction
               onClick={handleDelete}
               disabled={deleteLoading}
-              className='bg-destructive text-white'>
+              className='bg-destructive text-secondary'>
               {deleteLoading ? <Loader2 className='w-4 h-4 animate-spin' /> : 'Delete User'}
             </AlertDialogAction>
           </AlertDialogFooter>

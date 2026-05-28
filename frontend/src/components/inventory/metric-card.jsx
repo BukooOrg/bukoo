@@ -2,16 +2,16 @@ import { cn } from '@/lib/utils';
 
 const accentMap = {
   default: 'border-primary/10 bg-primary/[0.03]',
-  red: 'border-red-500/20 bg-red-500/[0.04]',
-  amber: 'border-amber-500/20 bg-amber-500/[0.04]',
-  green: 'border-green-500/20 bg-green-500/[0.04]',
+  red: 'border-destructive/20 bg-destructive/[0.04]',
+  amber: 'border-primary/20 bg-primary/[0.04]',
+  green: 'border-primary/20 bg-primary/[0.04]',
 };
 
 const iconBgMap = {
   default: 'bg-primary/10 text-primary',
-  red: 'bg-red-500/10 text-red-600',
-  amber: 'bg-amber-500/10 text-amber-600',
-  green: 'bg-green-500/10 text-green-600',
+  red: 'bg-destructive/10 text-destructive',
+  amber: 'bg-primary/10 text-primary',
+  green: 'bg-primary/10 text-primary',
 };
 
 export function MetricCard({ icon: Icon, label, value, accent = 'default', className }) {

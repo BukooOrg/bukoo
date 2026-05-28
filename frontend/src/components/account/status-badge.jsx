@@ -1,9 +1,9 @@
 import { cn } from '@/lib/utils';
 
 const statusConfig = {
-  active: { label: 'Active', color: 'bg-green-100 text-green-800' },
+  active: { label: 'Active', color: 'bg-primary/10 text-primary' },
   pending: { label: 'Pending', color: 'bg-yellow-100 text-yellow-800' },
-  suspended: { label: 'Suspended', color: 'bg-red-100 text-red-800' },
+  suspended: { label: 'Suspended', color: 'bg-destructive/10 text-red-800' },
 };
 
 export function StatusBadge({ status = 'pending', className }) {

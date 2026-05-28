@@ -79,7 +79,7 @@ export function ReviewForm({ review, onSubmit, onCancel, loading = false, classN
         <Button
           type='submit'
           disabled={loading || currentRating === 0}
-          className='h-10 bg-primary text-white hover:bg-primary/90'>
+          className='h-10 bg-primary text-secondary hover:bg-primary/90'>
           {loading
             ? isEditing
               ? 'Saving...'

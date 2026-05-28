@@ -95,14 +95,14 @@ export default function CheckoutPage() {
     return (
       <div className='px-sides py-24'>
         <div className='max-w-2xl mx-auto text-center'>
-          <h1 className='font-serif text-5xl font-black text-black tracking-tighter'>
+          <h1 className='font-serif text-5xl font-black text-primary tracking-tighter'>
             Your Cart is Empty
           </h1>
-          <p className='mt-6 text-lg text-gray-500'>
+          <p className='mt-6 text-lg text-primary/40'>
             Add some books to your cart before checking out.
           </p>
           <Link to='/shop'>
-            <Button className='mt-10 bg-black text-white h-14 text-lg' size='lg'>
+            <Button className='mt-10 bg-primary text-secondary h-14 text-lg' size='lg'>
               Browse Books
             </Button>
           </Link>
@@ -170,20 +170,20 @@ export default function CheckoutPage() {
   return (
     <div className='px-sides py-16'>
       <div className='max-w-4xl mx-auto'>
-        <h1 className='font-serif text-4xl font-black text-black tracking-tighter mb-8'>
+        <h1 className='font-serif text-4xl font-black text-primary tracking-tighter mb-8'>
           Checkout
         </h1>
 
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
           <div className='lg:col-span-2 space-y-4'>
-            <h2 className='text-lg font-bold text-black'>Order Items ({cart.items.length})</h2>
+            <h2 className='text-lg font-bold text-primary'>Order Items ({cart.items.length})</h2>
             {cart.items
               .sort((a, b) => a.book.title.localeCompare(b.book.title))
               .map((item) => (
                 <div
                   key={item.id}
-                  className='flex gap-4 p-4 border border-gray-200 rounded-lg bg-white'>
-                  <div className='w-16 h-24 shrink-0 overflow-hidden rounded bg-gray-100'>
+                  className='flex gap-4 p-4 border border-primary/5 rounded-lg bg-white'>
+                    <div className='w-16 h-24 shrink-0 overflow-hidden rounded bg-primary/5'>
                     {item.book.coverUrl ? (
                       <img
                         src={item.book.coverUrl}
@@ -191,14 +191,14 @@ export default function CheckoutPage() {
                         className='w-full h-full object-cover'
                       />
                     ) : (
-                      <div className='w-full h-full flex items-center justify-center text-gray-400 text-xs'>
+                      <div className='w-full h-full flex items-center justify-center text-primary/40 text-xs'>
                         No cover
                       </div>
                     )}
                   </div>
                   <div className='flex-1 min-w-0'>
                     <p className='text-base font-medium font-serif truncate'>{item.book.title}</p>
-                    <div className='flex items-center gap-4 mt-2 text-sm text-gray-500'>
+                    <div className='flex items-center gap-4 mt-2 text-sm text-primary/40'>
                       <span>RM {Number(item.book.price).toFixed(2)} each</span>
                       <span>&middot;</span>
                       <span>Qty: {item.quantity}</span>
@@ -214,28 +214,28 @@ export default function CheckoutPage() {
           </div>
 
           <div className='lg:col-span-1'>
-            <div className='sticky top-24 bg-white border border-gray-200 rounded-lg p-6 space-y-4'>
-              <h2 className='text-lg font-bold text-black'>Order Summary</h2>
+            <div className='sticky top-24 bg-white border border-primary/5 rounded-lg p-6 space-y-4'>
+              <h2 className='text-lg font-bold text-primary'>Order Summary</h2>
               <div className='space-y-2 text-sm'>
                 <div className='flex justify-between'>
-                  <span className='text-gray-500'>Subtotal</span>
+                  <span className='text-primary/40'>Subtotal</span>
                   <span>RM {subtotal.toFixed(2)}</span>
                 </div>
                 <div className='flex justify-between'>
-                  <span className='text-gray-500'>Shipping</span>
+                  <span className='text-primary/40'>Shipping</span>
                   <span>RM {shipping.toFixed(2)}</span>
                 </div>
               </div>
-              <div className='pt-4 border-t border-gray-200'>
+              <div className='pt-4 border-t border-primary/5'>
                 <div className='flex justify-between items-baseline'>
-                  <span className='text-lg font-bold text-black'>Total</span>
-                  <span className='text-2xl font-bold text-black'>RM {total.toFixed(2)}</span>
+                  <span className='text-lg font-bold text-primary'>Total</span>
+                  <span className='text-2xl font-bold text-primary'>RM {total.toFixed(2)}</span>
                 </div>
               </div>
               <Button
                 onClick={handlePlaceOrder}
                 disabled={placing}
-                className='w-full bg-black text-white h-14 text-lg'
+                className='w-full bg-primary text-secondary h-14 text-lg'
                 size='lg'>
                 {placing ? 'Placing Order...' : 'Place Order'}
               </Button>

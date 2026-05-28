@@ -73,7 +73,7 @@ export default function ProductDetailPage() {
 
   return (
     <PageLayout>
-      <div className='px-sides max-w-6xl mx-auto pt-24 pb-24 md:pt-32 text-black'>
+        <div className='px-sides max-w-6xl mx-auto pt-24 pb-24 md:pt-32 text-primary'>
         {/* Breadcrumb */}
         <Breadcrumb className='mb-6'>
           <BreadcrumbList>
@@ -93,7 +93,7 @@ export default function ProductDetailPage() {
         <div className='flex flex-col gap-8 md:flex-row md:gap-12'>
           {/* Cover image */}
           <div className='shrink-0 w-64 mx-auto md:w-80 md:mx-0'>
-            <div className='overflow-hidden rounded-xl shadow-xl aspect-[2/3] bg-gray-100'>
+            <div className='overflow-hidden rounded-xl shadow-xl aspect-[2/3] bg-primary/5'>
               {product.featuredImage?.url ? (
                 <img
                   src={product.featuredImage.url}
@@ -102,7 +102,7 @@ export default function ProductDetailPage() {
                 />
               ) : (
                 <div className='flex items-center justify-center w-full h-full'>
-                  <BookOpen className='w-20 h-20 text-gray-300' />
+                  <BookOpen className='w-20 h-20 text-primary/30' />
                 </div>
               )}
             </div>
@@ -113,7 +113,7 @@ export default function ProductDetailPage() {
             {/* Title & author */}
             <div className='mb-6'>
               <h1 className='text-4xl font-bold tracking-tight md:text-5xl'>{product.title}</h1>
-              <p className='mt-2 text-xl text-gray-500 italic'>
+              <p className='mt-2 text-xl text-primary/40 italic'>
                 {product.vendor || 'Bukoo Editions'}
               </p>
             </div>
@@ -124,7 +124,7 @@ export default function ProductDetailPage() {
                 {product.tags.map((tag) => (
                   <span
                     key={tag}
-                    className='px-4 py-2 text-sm font-medium rounded-full bg-gray-100 text-gray-500'>
+                    className='px-4 py-2 text-sm font-medium rounded-full bg-primary/5 text-primary/40'>
                     {tag}
                   </span>
                 ))}
@@ -132,64 +132,64 @@ export default function ProductDetailPage() {
             )}
 
             {/* Description */}
-            <h2 className='text-sm font-bold uppercase tracking-[0.2em] text-gray-400 mb-3'>
+            <h2 className='text-sm font-bold uppercase tracking-[0.2em] text-primary/40 mb-3'>
               About This Book
             </h2>
-            <p className='mb-8 text-base leading-relaxed text-gray-600'>
+            <p className='mb-8 text-base leading-relaxed text-primary/60'>
               {product.description || 'No description available.'}
             </p>
 
             {/* Metadata */}
-            <div className='grid grid-cols-2 gap-4 p-6 mb-8 rounded-xl bg-gray-50 md:grid-cols-3'>
+            <div className='grid grid-cols-2 gap-4 p-6 mb-8 rounded-xl bg-primary/5 md:grid-cols-3'>
               <div className='flex flex-col gap-1.5'>
-                <div className='flex items-center gap-2 text-gray-400'>
+                <div className='flex items-center gap-2 text-primary/40'>
                   <Hash className='w-4 h-4' />
                   <span className='text-sm font-medium'>ISBN</span>
                 </div>
-                <p className='text-base text-gray-700'>{product.isbn || '—'}</p>
+                <p className='text-base text-primary'>{product.isbn || '—'}</p>
               </div>
               <div className='flex flex-col gap-1.5'>
-                <div className='flex items-center gap-2 text-gray-400'>
+                <div className='flex items-center gap-2 text-primary/40'>
                   <Layers className='w-4 h-4' />
                   <span className='text-sm font-medium'>Pages</span>
                 </div>
-                <p className='text-base text-gray-700'>{product.pageCount || '—'}</p>
+                <p className='text-base text-primary'>{product.pageCount || '—'}</p>
               </div>
               <div className='flex flex-col gap-1.5'>
-                <div className='flex items-center gap-2 text-gray-400'>
+                <div className='flex items-center gap-2 text-primary/40'>
                   <Globe className='w-4 h-4' />
                   <span className='text-sm font-medium'>Language</span>
                 </div>
-                <p className='text-base text-gray-700'>{product.language || '—'}</p>
+                <p className='text-base text-primary'>{product.language || '—'}</p>
               </div>
               <div className='flex flex-col gap-1.5'>
-                <div className='flex items-center gap-2 text-gray-400'>
+                <div className='flex items-center gap-2 text-primary/40'>
                   <User className='w-4 h-4' />
                   <span className='text-sm font-medium'>Publisher</span>
                 </div>
-                <p className='text-base text-gray-700'>
+                <p className='text-base text-primary'>
                   {product.publisher?.name || product.vendor || '—'}
                 </p>
               </div>
               <div className='flex flex-col gap-1.5'>
-                <div className='flex items-center gap-2 text-gray-400'>
+                <div className='flex items-center gap-2 text-primary/40'>
                   <Calendar className='w-4 h-4' />
                   <span className='text-sm font-medium'>Published</span>
                 </div>
-                <p className='text-base text-gray-700'>{formatDate(product.publishedDate)}</p>
+                <p className='text-base text-primary'>{formatDate(product.publishedDate)}</p>
               </div>
             </div>
 
             {/* Price & CTA */}
-            <div className='flex items-center gap-3 p-6 border border-gray-200 rounded-xl bg-gray-50'>
+            <div className='flex items-center gap-3 p-6 border border-primary/5 rounded-xl bg-primary/5'>
               <div className='flex-1'>
-                <p className='text-sm font-medium uppercase text-gray-400'>Price</p>
-                <p className='text-3xl font-bold text-gray-900'>{formatPrice(price, currency)}</p>
+                <p className='text-sm font-medium uppercase text-primary/40'>Price</p>
+                <p className='text-3xl font-bold text-primary'>{formatPrice(price, currency)}</p>
               </div>
               <AddToCart
                 bookId={product.id}
                 available={true}
-                className='flex-1 h-14 bg-black text-white text-base font-medium rounded-lg'
+                className='flex-1 h-14 bg-primary text-secondary text-base font-medium rounded-lg'
               />
               <AddToWishlist bookId={product.id} size='lg' />
             </div>

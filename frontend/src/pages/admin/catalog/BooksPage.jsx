@@ -268,7 +268,7 @@ export default function BooksPage() {
                           className={cn(
                             'font-sans font-bold text-sm',
                             book.stockQuantity === 0 && 'text-destructive',
-                            book.stockQuantity > 0 && book.stockQuantity <= 5 && 'text-yellow-600'
+                            book.stockQuantity > 0 && book.stockQuantity <= 5 && 'text-primary'
                           )}>
                           {book.stockQuantity}
                         </span>
@@ -278,7 +278,7 @@ export default function BooksPage() {
                           variant={book.isActive ? 'default' : 'secondary'}
                           className={cn(
                             'text-[10px] font-black uppercase tracking-widest',
-                            book.isActive && 'bg-green-500/10 text-green-700 border-green-500/20',
+                            book.isActive && 'bg-primary/10 text-primary border-primary/20',
                             !book.isActive && 'bg-primary/5 text-primary/40 border-primary/10'
                           )}>
                           {book.isActive ? 'Active' : 'Inactive'}
@@ -301,9 +301,9 @@ export default function BooksPage() {
                             onClick={() => handleToggleActive(book)}
                             className={cn(
                               'w-8 h-8 rounded-lg',
-                              book.isActive
-                                ? 'text-primary/40 hover:text-yellow-600 hover:bg-yellow-50'
-                                : 'text-primary/40 hover:text-green-600 hover:bg-green-50'
+                                book.isActive
+                                  ? 'text-primary/40 hover:text-primary hover:bg-primary/5'
+                                  : 'text-primary/40 hover:text-primary hover:bg-primary/5'
                             )}>
                             {actionLoading === book.id ? (
                               <Loader2 className='w-4 h-4 animate-spin' />

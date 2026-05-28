@@ -82,8 +82,8 @@ export default function OAuthCallbackPage() {
           {status === 'success' && (
             <>
               <div className='flex justify-center mb-6'>
-                <div className='flex items-center justify-center rounded-full w-14 h-14 bg-green-50'>
-                  <CheckCircle2 className='text-green-600 w-7 h-7' />
+                <div className='flex items-center justify-center rounded-full w-14 h-14 bg-primary/5'>
+                  <CheckCircle2 className='text-primary w-7 h-7' />
                 </div>
               </div>
               <h1 className='mb-2 font-serif text-3xl font-black tracking-tighter text-primary'>

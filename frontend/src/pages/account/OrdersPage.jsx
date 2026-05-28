@@ -63,7 +63,7 @@ export default function AccountOrdersPage() {
             Start shopping to see your orders here.
           </p>
           <Link to='/shop'>
-            <Button className='mt-10 bg-black text-white h-14 text-lg' size='lg'>
+            <Button className='mt-10 bg-primary text-secondary h-14 text-lg' size='lg'>
               Browse Books
             </Button>
           </Link>
@@ -88,7 +88,7 @@ export default function AccountOrdersPage() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className='h-10 px-3 border border-gray-200 rounded text-sm'>
+            className='h-10 px-3 border border-primary/5 rounded text-sm'>
             <option value=''>All Status</option>
             <option value='pending'>Pending</option>
             <option value='paid'>Paid</option>
@@ -111,13 +111,13 @@ export default function AccountOrdersPage() {
               return (
                 <div
                   key={order.id}
-                  className='flex items-center justify-between p-6 border border-gray-200 rounded-lg bg-white hover:border-black transition-colors'>
+                  className='flex items-center justify-between p-6 border border-primary/5 rounded-lg bg-white hover:border-primary transition-colors'>
                   <Link to={`/account/orders/${order.id}`} className='flex-1'>
                     <div>
                       <p className='text-lg font-medium font-serif'>
                         Order #{order.id.slice(0, 8)}
                       </p>
-                      <p className='text-sm text-gray-500 mt-1'>
+                      <p className='text-sm text-primary/40 mt-1'>
                         {new Date(order.createdAt).toLocaleDateString('en-US', {
                           year: 'numeric',
                           month: 'long',
@@ -130,7 +130,7 @@ export default function AccountOrdersPage() {
                     <div className='text-right'>
                       <OrderStatusBadge status={order.status} />
                       <p className='text-lg font-bold mt-2'>RM {Number(order.total).toFixed(2)}</p>
-                      <p className='text-sm text-gray-500'>{order.itemCount} items</p>
+                      <p className='text-sm text-primary/40'>{order.itemCount} items</p>
                     </div>
                     {isPending && (
                       <Button
@@ -155,7 +155,7 @@ export default function AccountOrdersPage() {
               className='h-10'>
               Previous
             </Button>
-            <span className='text-sm text-gray-500'>
+            <span className='text-sm text-primary/40'>
               Page {page} of {totalPages}
             </span>
             <Button

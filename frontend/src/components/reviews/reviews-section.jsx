@@ -201,7 +201,7 @@ export function ReviewsSection({ bookId, className }) {
           <Button
             onClick={myReview ? handleEditReview : handleWriteReview}
             disabled={fetchingEligible || checkingExisting}
-            className='h-10 bg-primary text-white hover:bg-primary/90'>
+            className='h-10 bg-primary text-secondary hover:bg-primary/90'>
             <MessageSquare className='w-4 h-4 mr-1.5' />
             {checkingExisting
               ? 'Checking...'

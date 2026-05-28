@@ -305,7 +305,7 @@ export default function BookDetailPage() {
             variant={book.isActive ? 'default' : 'secondary'}
             className={cn(
               'text-[10px] font-black uppercase tracking-widest',
-              book.isActive && 'bg-green-500/10 text-green-700 border-green-500/20',
+              book.isActive && 'bg-primary/10 text-primary border-primary/20',
               !book.isActive && 'bg-primary/5 text-primary/40 border-primary/10'
             )}>
             {book.isActive ? 'Active' : 'Inactive'}
@@ -382,12 +382,12 @@ export default function BookDetailPage() {
               <BookOpen className='w-8 h-8 text-primary/20' />
             </div>
           )}
-          <label className='absolute bottom-0 left-0 right-0 p-1.5 bg-black/40 flex items-center justify-center cursor-pointer transition-colors hover:bg-black/60'>
+          <label className='absolute bottom-0 left-0 right-0 p-1.5 bg-primary/40 flex items-center justify-center cursor-pointer transition-colors hover:bg-black/60'>
             <input type='file' accept='image/*' className='hidden' onChange={handleCoverUpload} />
             {coverUploading ? (
-              <Loader2 className='w-4 h-4 text-white animate-spin' />
+              <Loader2 className='w-4 h-4 text-secondary animate-spin' />
             ) : (
-              <ImagePlus className='w-4 h-4 text-white' />
+              <ImagePlus className='w-4 h-4 text-secondary' />
             )}
           </label>
         </div>
@@ -410,7 +410,7 @@ export default function BookDetailPage() {
               className={cn(
                 'font-sans text-lg font-bold',
                 book.stockQuantity === 0 && 'text-destructive',
-                book.stockQuantity > 0 && book.stockQuantity <= 5 && 'text-yellow-600',
+                book.stockQuantity > 0 && book.stockQuantity <= 5 && 'text-primary',
                 book.stockQuantity > 5 && 'text-primary'
               )}>
               {book.stockQuantity}

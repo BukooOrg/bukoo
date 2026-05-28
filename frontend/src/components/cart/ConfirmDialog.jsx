@@ -26,7 +26,7 @@ export function ConfirmDialog({ open, onOpenChange, title, description, onConfir
           <AlertDialogAction
             onClick={onConfirm}
             disabled={loading}
-            className='bg-black text-white hover:bg-black/90'>
+            className='bg-primary text-secondary hover:bg-primary/90'>
             {loading ? 'Removing...' : 'Remove'}
           </AlertDialogAction>
         </AlertDialogFooter>

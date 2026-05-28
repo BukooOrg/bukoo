@@ -85,7 +85,7 @@ export default function DeleteAccountPage() {
         <button
           type='submit'
           disabled={isDisabled}
-          className='w-full py-5 bg-destructive text-white rounded-2xl font-sans font-bold uppercase tracking-[0.2em] shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:hover:scale-100'>
+          className='w-full py-5 bg-destructive text-secondary rounded-2xl font-sans font-bold uppercase tracking-[0.2em] shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:hover:scale-100'>
           {loading ? (
             <Loader2 className='w-5 h-5 animate-spin' />
           ) : (

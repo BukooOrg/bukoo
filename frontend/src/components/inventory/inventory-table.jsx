@@ -241,7 +241,7 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
                           book.stockQuantity > 0 &&
                             range &&
                             book.stockQuantity <= (range.max ?? Infinity) &&
-                            'text-amber-600'
+                            'text-primary'
                         )}>
                         {book.stockQuantity}
                       </span>

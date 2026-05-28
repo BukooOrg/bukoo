@@ -120,7 +120,7 @@ export default function VerifyEmailPage() {
           <div className='flex justify-center mb-6'>
             <div className='flex items-center justify-center rounded-full w-14 h-14 bg-primary/5'>
               {success ? (
-                <CheckCircle className='w-7 h-7 text-green-600' />
+                <CheckCircle className='w-7 h-7 text-primary' />
               ) : (
                 <Mail className='w-7 h-7 text-primary' />
               )}
@@ -140,8 +140,8 @@ export default function VerifyEmailPage() {
           {/* Success State */}
           {success ? (
             <div className='space-y-6'>
-              <div className='p-4 border bg-green-50 border-green-200 rounded-2xl'>
-                <p className='text-sm font-bold text-green-800 text-center'>
+              <div className='p-4 border bg-primary/5 border-primary/10 rounded-2xl'>
+                <p className='text-sm font-bold text-primary text-center'>
                   Your email has been successfully verified. You can now log in to your account.
                 </p>
               </div>

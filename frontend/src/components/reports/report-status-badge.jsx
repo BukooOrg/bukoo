@@ -7,22 +7,22 @@ import { cn } from '@/lib/utils';
 const statusConfig = {
   pending: {
     label: 'Pending',
-    className: 'bg-gray-100 text-gray-700 border-gray-200',
+    className: 'bg-primary/5 text-primary border-primary/5',
     icon: Clock,
   },
   processing: {
     label: 'Processing',
-    className: 'bg-blue-100 text-blue-700 border-blue-200',
+    className: 'bg-primary/10 text-primary border-primary/20',
     icon: Loader2,
   },
   completed: {
     label: 'Completed',
-    className: 'bg-green-100 text-green-700 border-green-200',
+    className: 'bg-primary/10 text-primary border-primary/10',
     icon: CheckCircle2,
   },
   failed: {
     label: 'Failed',
-    className: 'bg-red-100 text-red-700 border-red-200',
+    className: 'bg-destructive/10 text-destructive border-destructive/30',
     icon: XCircle,
   },
 };
@@ -34,7 +34,7 @@ export function ReportStatusBadge({ status, className }) {
   return (
     <Badge variant='outline' className={cn(config.className, 'gap-1.5', className)}>
       {status === 'processing' ? (
-        <Spinner size='sm' className='text-blue-600' />
+        <Spinner size='sm' className='text-primary' />
       ) : (
         <Icon className='size-3' />
       )}

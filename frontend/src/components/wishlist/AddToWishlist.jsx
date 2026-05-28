@@ -63,13 +63,13 @@ export function AddToWishlist({ bookId, className, size = 'default' }) {
       disabled={isLoading}
       aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
       className={cn(
-        'flex items-center justify-center rounded-lg bg-black transition-all hover:bg-black/90 disabled:opacity-40',
+        'flex items-center justify-center rounded-lg bg-primary transition-all hover:bg-primary/90 disabled:opacity-40',
         sizeClasses[size],
         className
       )}>
       <Heart
         className={cn(
-          'text-white transition-all',
+          'text-secondary transition-all',
           iconSizeClasses[size],
           inWishlist && 'fill-white'
         )}

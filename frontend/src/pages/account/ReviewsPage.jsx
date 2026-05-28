@@ -110,7 +110,7 @@ export default function AccountReviewsPage() {
             Share your thoughts on books you've purchased and received.
           </p>
           <Link to='/shop'>
-            <Button className='mt-10 bg-black text-white h-14 text-lg' size='lg'>
+            <Button className='mt-10 bg-primary text-secondary h-14 text-lg' size='lg'>
               Browse Books
             </Button>
           </Link>

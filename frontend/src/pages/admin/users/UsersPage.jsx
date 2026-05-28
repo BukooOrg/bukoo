@@ -290,7 +290,7 @@ export default function UsersPage() {
                               size='icon'
                               onClick={() => handleToggleStatus(user)}
                               disabled={actionLoading === user.id}
-                              className='w-8 h-8 rounded-lg text-primary/40 hover:text-green-600 hover:bg-green-500/5'>
+                              className='w-8 h-8 rounded-lg text-primary/40 hover:text-primary hover:bg-primary/5'>
                               {actionLoading === user.id ? (
                                 <Loader2 className='w-4 h-4 animate-spin' />
                               ) : (

@@ -24,8 +24,8 @@ function formatPrice(amount, currency = 'RM') {
 
 function OrderItemCard({ item }) {
   return (
-    <div className='flex gap-8 p-8 border border-gray-200 rounded-lg bg-white'>
-      <div className='w-32 h-44 shrink-0 overflow-hidden rounded bg-gray-100'>
+    <div className='flex gap-8 p-8 border border-primary/5 rounded-lg bg-white'>
+      <div className='w-32 h-44 shrink-0 overflow-hidden rounded bg-primary/5'>
         {item.bookCoverUrl ? (
           <img
             src={item.bookCoverUrl}
@@ -33,7 +33,7 @@ function OrderItemCard({ item }) {
             className='w-full h-full object-cover'
           />
         ) : (
-          <div className='w-full h-full flex items-center justify-center text-gray-400 text-base'>
+          <div className='w-full h-full flex items-center justify-center text-primary/40 text-base'>
             No cover
           </div>
         )}
@@ -41,10 +41,10 @@ function OrderItemCard({ item }) {
 
       <div className='flex-1 min-w-0'>
         <p className='text-2xl font-medium font-serif line-clamp-1'>{item.bookTitle}</p>
-        <p className='text-lg text-gray-500 mt-2'>RM {Number(item.unitPrice).toFixed(2)}</p>
+        <p className='text-lg text-primary/40 mt-2'>RM {Number(item.unitPrice).toFixed(2)}</p>
 
         <div className='flex items-center justify-between mt-6'>
-          <span className='text-lg text-gray-500'>Qty: {item.quantity}</span>
+          <span className='text-lg text-primary/40'>Qty: {item.quantity}</span>
           <span className='text-xl font-medium'>RM {Number(item.lineTotal).toFixed(2)}</span>
         </div>
       </div>
@@ -54,39 +54,39 @@ function OrderItemCard({ item }) {
 
 function AdminOrderSummary({ order }) {
   return (
-    <div className='bg-white border border-gray-200 rounded-lg p-8 space-y-6'>
-      <h2 className='font-serif text-2xl font-bold text-black'>Summary</h2>
+    <div className='bg-white border border-primary/5 rounded-lg p-8 space-y-6'>
+      <h2 className='font-serif text-2xl font-bold text-primary'>Summary</h2>
       <div className='space-y-4 text-base'>
         <div className='flex justify-between'>
-          <span className='text-gray-500'>Subtotal</span>
+          <span className='text-primary/40'>Subtotal</span>
           <span>{formatPrice(order.subtotal)}</span>
         </div>
         <div className='flex justify-between'>
-          <span className='text-gray-500'>Shipping</span>
+          <span className='text-primary/40'>Shipping</span>
           <span>{formatPrice(order.shippingCost)}</span>
         </div>
       </div>
-      <div className='pt-6 border-t border-gray-200'>
+      <div className='pt-6 border-t border-primary/5'>
         <div className='flex justify-between items-baseline'>
-          <span className='font-serif text-xl font-bold text-black'>Total</span>
-          <span className='font-serif text-3xl font-black text-black'>
+          <span className='font-serif text-xl font-bold text-primary'>Total</span>
+          <span className='font-serif text-3xl font-black text-primary'>
             {formatPrice(order.total)}
           </span>
         </div>
       </div>
 
       {order.user && (
-        <div className='pt-6 border-t border-gray-200'>
-          <h3 className='text-base font-bold text-gray-700 mb-2'>Customer</h3>
-          <p className='text-base text-gray-600'>{order.user?.name || 'N/A'}</p>
-          <p className='text-base text-gray-500'>{order.user?.email || 'N/A'}</p>
+        <div className='pt-6 border-t border-primary/5'>
+          <h3 className='text-base font-bold text-primary mb-2'>Customer</h3>
+          <p className='text-base text-primary/60'>{order.user?.name || 'N/A'}</p>
+          <p className='text-base text-primary/40'>{order.user?.email || 'N/A'}</p>
         </div>
       )}
 
       {order.addressSnapshot && (
-        <div className='pt-6 border-t border-gray-200'>
-          <h3 className='text-base font-bold text-gray-700 mb-2'>Shipping Address</h3>
-          <p className='text-base text-gray-600'>
+        <div className='pt-6 border-t border-primary/5'>
+          <h3 className='text-base font-bold text-primary mb-2'>Shipping Address</h3>
+          <p className='text-base text-primary/60'>
             {order.addressSnapshot.address_line1}
             {order.addressSnapshot.address_line2 && (
               <>
@@ -102,14 +102,14 @@ function AdminOrderSummary({ order }) {
       )}
 
       {order.payment && (
-        <div className='pt-6 border-t border-gray-200'>
-          <h3 className='text-base font-bold text-gray-700 mb-2'>Payment</h3>
-          <p className='text-base text-gray-600 capitalize'>
+        <div className='pt-6 border-t border-primary/5'>
+          <h3 className='text-base font-bold text-primary mb-2'>Payment</h3>
+          <p className='text-base text-primary/60 capitalize'>
             Method: {order.payment.method?.replace('_', ' ')}
           </p>
-          <p className='text-base text-gray-600 capitalize'>Status: {order.payment.status}</p>
+          <p className='text-base text-primary/60 capitalize'>Status: {order.payment.status}</p>
           {order.payment.simulatedRef && (
-            <p className='text-base text-gray-500 mt-1'>Ref: {order.payment.simulatedRef}</p>
+            <p className='text-base text-primary/40 mt-1'>Ref: {order.payment.simulatedRef}</p>
           )}
         </div>
       )}
@@ -231,7 +231,7 @@ export default function AdminOrderDetailPage() {
                 <Button
                   onClick={() => handleStatusUpdate('shipped')}
                   disabled={updating}
-                  className='h-12 text-base bg-primary text-white hover:bg-primary/90'>
+                  className='h-12 text-base bg-primary text-secondary hover:bg-primary/90'>
                   {updating ? 'Processing...' : 'Ship Order'}
                 </Button>
               )}
@@ -239,7 +239,7 @@ export default function AdminOrderDetailPage() {
                 <Button
                   onClick={() => handleStatusUpdate('delivered')}
                   disabled={updating}
-                  className='h-12 text-base bg-primary text-white hover:bg-primary/90'>
+                  className='h-12 text-base bg-primary text-secondary hover:bg-primary/90'>
                   {updating ? 'Processing...' : 'Mark as Delivered'}
                 </Button>
               )}
@@ -248,7 +248,7 @@ export default function AdminOrderDetailPage() {
                   onClick={() => setCancelDialog(true)}
                   disabled={cancelling}
                   variant='outline'
-                  className='h-12 text-base text-red-600 border-red-300 hover:bg-red-50'>
+                  className='h-12 text-base text-destructive border-destructive/30 hover:bg-destructive/5'>
                   {cancelling ? 'Cancelling...' : 'Cancel'}
                 </Button>
               )}
@@ -257,7 +257,7 @@ export default function AdminOrderDetailPage() {
 
           <div className='grid grid-cols-1 lg:grid-cols-3 gap-10'>
             <div className='lg:col-span-2 space-y-6'>
-              <h2 className='font-serif text-2xl font-bold text-black'>
+              <h2 className='font-serif text-2xl font-bold text-primary'>
                 Items ({order.items.length})
               </h2>
               {order.items.map((item) => (

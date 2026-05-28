@@ -18,11 +18,11 @@ const TYPE_ICONS = {
 };
 
 const TYPE_COLORS = {
-  order: 'bg-blue-100 text-blue-700',
-  payment: 'bg-green-100 text-green-700',
-  shipping: 'bg-amber-100 text-amber-700',
-  system: 'bg-purple-100 text-purple-700',
-  default: 'bg-gray-100 text-gray-700',
+  order: 'bg-primary/10 text-primary',
+  payment: 'bg-primary/10 text-primary',
+  shipping: 'bg-primary/10 text-primary',
+  system: 'bg-primary/10 text-primary',
+  default: 'bg-primary/5 text-primary',
 };
 
 function formatDate(date) {
