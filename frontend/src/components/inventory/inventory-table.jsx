@@ -30,19 +30,36 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
 
   const range = rangeSelector?.options?.[rangeIndex];
 
-  // Fetch ALL items from backend, then filter + paginate client-side
+  // Fetch ALL items from backend (in batches of 100), then filter + paginate client-side
   const doLoad = useCallback(async (s) => {
     setLoading(true);
     setError('');
     try {
-      const params = { page: 1, pageSize: 9999, ...(s && { search: s }) };
+      const params = { page: 1, pageSize: 100, ...(s && { search: s }) };
       // For ranges with max, use it as backend threshold to reduce data
       if (range?.max !== null && range?.max !== undefined) {
         params.threshold = range.max;
       }
+
+      // Fetch first page
       const res = await fetchItems(params);
       const data = res.data;
-      const allResults = data.items || [];
+      let allResults = data.items || [];
+      const totalPagesBackend = data.pagination?.totalPages || 1;
+
+      // Fetch remaining pages in parallel
+      if (totalPagesBackend > 1) {
+        const remainingPages = Array.from(
+          { length: totalPagesBackend - 1 },
+          (_, i) => i + 2
+        );
+        const results = await Promise.all(
+          remainingPages.map((p) =>
+            fetchItems({ ...params, page: p }).then((r) => r.data.items || [])
+          )
+        );
+        allResults = [...allResults, ...results.flat()];
+      }
 
       // Client-side filter for range min
       let filtered = allResults;

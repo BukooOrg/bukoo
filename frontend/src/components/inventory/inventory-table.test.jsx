@@ -153,9 +153,9 @@ describe('InventoryTable', () => {
       expect(fetchItems).toHaveBeenCalledTimes(1);
     });
 
-    // Initial call should have threshold=4 (max of first range "< 5") and pageSize=9999
+    // Initial call should have threshold=4 (max of first range "< 5") and pageSize=100
     expect(fetchItems).toHaveBeenLastCalledWith(
-      expect.objectContaining({ threshold: 4, page: 1, pageSize: 9999 })
+      expect.objectContaining({ threshold: 4, page: 1, pageSize: 100 })
     );
 
     // Change range to "≤ 10" (index 1, threshold=10)
@@ -211,7 +211,7 @@ describe('InventoryTable', () => {
       vi.advanceTimersByTime(400);
     });
 
-    expect(fetchItems).toHaveBeenCalledWith(expect.objectContaining({ search: 'gatsby', page: 1, pageSize: 9999 }));
+    expect(fetchItems).toHaveBeenCalledWith(expect.objectContaining({ search: 'gatsby', page: 1, pageSize: 100 }));
 
     vi.useRealTimers();
   });
