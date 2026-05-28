@@ -1,5 +1,5 @@
 import { AlertCircle, AlertTriangle, Package } from 'lucide-react';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
 import { InventoryTable } from '@/components/inventory/inventory-table';
 import { MetricCard } from '@/components/inventory/metric-card';
@@ -105,6 +105,16 @@ export default function InventoryPage() {
     []
   );
 
+  const fetchLowStock = useCallback(
+    (params) => inventoryApi.findLowStockItems(params),
+    []
+  );
+
+  const fetchOutOfStock = useCallback(
+    (params) => inventoryApi.findOutOfStockItems(params),
+    []
+  );
+
   return (
     <div className='py-16 px-sides'>
       <div className='mx-auto max-w-7xl space-y-8'>
@@ -173,7 +183,7 @@ export default function InventoryPage() {
             <InventoryTable
               title='Low Stock Items'
               description='Books below the selected stock threshold'
-              fetchItems={inventoryApi.findLowStockItems.bind(inventoryApi)}
+              fetchItems={fetchLowStock}
               emptyMessage='All books are well-stocked'
               rangeSelector={lowStockRangeSelector}
             />
@@ -186,7 +196,7 @@ export default function InventoryPage() {
             <InventoryTable
               title='Out of Stock'
               description='Books with zero inventory'
-              fetchItems={inventoryApi.findOutOfStockItems.bind(inventoryApi)}
+              fetchItems={fetchOutOfStock}
               emptyMessage='All books in stock'
             />
           </TabsContent>

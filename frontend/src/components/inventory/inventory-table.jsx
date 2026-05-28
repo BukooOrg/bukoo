@@ -1,5 +1,5 @@
 import { AlertCircle, BookOpen, ExternalLink, Search } from 'lucide-react';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
 import {
@@ -20,27 +20,34 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');
-  const searchTimeout = useRef(null);
-  const searchTerm = useRef('');
   const [rangeIndex, setRangeIndex] = useState(rangeSelector?.default ?? 0);
+  const searchTimeout = useRef(null);
 
-  const loadData = async (pageNum, searchVal, range) => {
+  // Stable refs for values used inside async callbacks
+  const pageRef = useRef(page);
+  const searchRef = useRef(search);
+  const rangeIndexRef = useRef(rangeIndex);
+
+  useEffect(() => { pageRef.current = page; }, [page]);
+  useEffect(() => { searchRef.current = search; }, [search]);
+  useEffect(() => { rangeIndexRef.current = rangeIndex; }, [rangeIndex]);
+
+  const load = useCallback(async (pageNum, searchVal, rangeIdx) => {
+    const range = rangeSelector?.options?.[rangeIdx];
     setLoading(true);
     setError('');
     try {
       const params = {
         page: pageNum,
         pageSize: 10,
-        search: searchVal || undefined,
+        ...(searchVal && { search: searchVal }),
       };
-      // Backend threshold = range upper bound (null means no limit)
       if (range?.max !== null && range?.max !== undefined) {
         params.threshold = range.max;
       }
       const res = await fetchItems(params);
       const data = res.data;
       let results = data.items || [];
-      // Client-side filter for range lower bound
       if (range?.min > 0) {
         results = results.filter((item) => item.stockQuantity >= range.min);
       }
@@ -52,30 +59,34 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchItems, rangeSelector]);
 
-  // Single effect: look up range from stable rangeSelector.options
+  // Initial load on mount
   useEffect(() => {
-    const range = rangeSelector?.options?.[rangeIndex];
-    loadData(page, searchTerm.current, range);
+    load(1, '', rangeIndex);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, rangeIndex]);
+  }, []);
 
   const handleSearchChange = (e) => {
     const val = e.target.value;
     setSearch(val);
-    searchTerm.current = val;
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
     searchTimeout.current = setTimeout(() => {
       setPage(1);
-      const range = rangeSelector?.options?.[rangeIndex];
-      loadData(1, val, range);
+      load(1, val, rangeIndexRef.current);
     }, 400);
   };
 
+  const handleRangeChange = (e) => {
+    const idx = Number(e.target.value);
+    setRangeIndex(idx);
+    setPage(1);
+    setSearch('');
+    load(1, '', idx);
+  };
+
   const handleRetry = () => {
-    const range = rangeSelector?.options?.[rangeIndex];
-    loadData(page, searchTerm.current, range);
+    load(pageRef.current, searchRef.current, rangeIndexRef.current);
   };
 
   const hasPrev = page > 1;
@@ -123,10 +134,7 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
         {rangeSelector && (
           <select
             value={rangeIndex}
-            onChange={(e) => {
-              setRangeIndex(Number(e.target.value));
-              setPage(1);
-            }}
+            onChange={handleRangeChange}
             className='h-10 px-3 text-sm transition-all border rounded-lg border-primary/10 focus:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/10'
             aria-label='Stock range'>
             {rangeSelector.options.map((opt, i) => (
@@ -236,7 +244,11 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
           <Button
             variant='outline'
             disabled={!hasPrev}
-            onClick={() => setPage((p) => p - 1)}
+            onClick={() => {
+              const newPage = page - 1;
+              setPage(newPage);
+              load(newPage, searchRef.current, rangeIndexRef.current);
+            }}
             className='h-9 rounded-lg'>
             Previous
           </Button>
@@ -246,7 +258,11 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
           <Button
             variant='outline'
             disabled={!hasNext}
-            onClick={() => setPage((p) => p + 1)}
+            onClick={() => {
+              const newPage = page + 1;
+              setPage(newPage);
+              load(newPage, searchRef.current, rangeIndexRef.current);
+            }}
             className='h-9 rounded-lg'>
             Next
           </Button>
