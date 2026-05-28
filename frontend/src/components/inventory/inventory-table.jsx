@@ -21,36 +21,21 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');
   const [rangeIndex, setRangeIndex] = useState(rangeSelector?.default ?? 0);
+  const [reloadKey, setReloadKey] = useState(0);
   const searchTimeout = useRef(null);
 
-  // Stable refs for values used inside async callbacks
-  const pageRef = useRef(page);
-  const searchRef = useRef(search);
-  const rangeIndexRef = useRef(rangeIndex);
+  const range = rangeSelector?.options?.[rangeIndex];
 
-  useEffect(() => { pageRef.current = page; }, [page]);
-  useEffect(() => { searchRef.current = search; }, [search]);
-  useEffect(() => { rangeIndexRef.current = rangeIndex; }, [rangeIndex]);
-
-  const load = useCallback(async (pageNum, searchVal, rangeIdx) => {
-    const range = rangeSelector?.options?.[rangeIdx];
+  const doLoad = useCallback(async (p, s, r) => {
     setLoading(true);
     setError('');
     try {
-      const params = {
-        page: pageNum,
-        pageSize: 10,
-        ...(searchVal && { search: searchVal }),
-      };
-      if (range?.max !== null && range?.max !== undefined) {
-        params.threshold = range.max;
-      }
+      const params = { page: p, pageSize: 10, ...(s && { search: s }) };
+      if (r?.max !== null && r?.max !== undefined) params.threshold = r.max;
       const res = await fetchItems(params);
       const data = res.data;
       let results = data.items || [];
-      if (range?.min > 0) {
-        results = results.filter((item) => item.stockQuantity >= range.min);
-      }
+      if (r?.min > 0) results = results.filter((item) => item.stockQuantity >= r.min);
       setItems(results);
       setTotalPages(data.pagination?.totalPages || 1);
     } catch {
@@ -59,13 +44,12 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
     } finally {
       setLoading(false);
     }
-  }, [fetchItems, rangeSelector]);
+  }, [fetchItems]);
 
-  // Initial load on mount
+  // Single source of truth: reloads when any of these change
   useEffect(() => {
-    load(1, '', rangeIndex);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    doLoad(page, search, range);
+  }, [page, rangeIndex, search, reloadKey, doLoad, range]);
 
   const handleSearchChange = (e) => {
     const val = e.target.value;
@@ -73,7 +57,7 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
     searchTimeout.current = setTimeout(() => {
       setPage(1);
-      load(1, val, rangeIndexRef.current);
+      setSearch(val);
     }, 400);
   };
 
@@ -82,12 +66,10 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
     setRangeIndex(idx);
     setPage(1);
     setSearch('');
-    load(1, '', idx);
+    setReloadKey((k) => k + 1);
   };
 
-  const handleRetry = () => {
-    load(pageRef.current, searchRef.current, rangeIndexRef.current);
-  };
+  const handleRetry = () => setReloadKey((k) => k + 1);
 
   const hasPrev = page > 1;
   const hasNext = page < totalPages;
@@ -110,13 +92,11 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
 
   return (
     <div className='space-y-6'>
-      {/* Header */}
       <div className='text-center pt-4'>
         <h2 className='text-2xl font-serif font-black tracking-tighter text-primary'>{title}</h2>
         <p className='text-primary/40 font-bold italic text-sm mt-1'>{description}</p>
       </div>
 
-      {/* Controls */}
       <div className='flex flex-wrap items-center gap-3'>
         <div className='relative flex-1 max-w-sm group'>
           <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
@@ -146,7 +126,6 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
         )}
       </div>
 
-      {/* Error */}
       {error && (
         <div className='flex items-center justify-between p-4 border bg-destructive/5 border-destructive/10 rounded-xl'>
           <div className='flex items-start gap-3'>
@@ -159,7 +138,6 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
         </div>
       )}
 
-      {/* Table */}
       <div className='overflow-hidden bg-white border rounded-2xl border-primary/5'>
         <Table>
           <TableHeader>
@@ -184,11 +162,7 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
                 <TableRow key={book.id}>
                   <TableCell>
                     {book.coverUrl ? (
-                      <img
-                        src={book.coverUrl}
-                        alt={book.title}
-                        className='object-cover w-12 h-16 rounded shadow-sm'
-                      />
+                      <img src={book.coverUrl} alt={book.title} className='object-cover w-12 h-16 rounded shadow-sm' />
                     ) : (
                       <div className='flex items-center justify-center w-12 h-16 rounded bg-primary/5'>
                         <BookOpen className='w-4 h-4 text-primary/20' />
@@ -196,37 +170,21 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
                     )}
                   </TableCell>
                   <TableCell>
-                    <Link
-                      to={`/admin/books/${book.id}`}
-                      className='font-sans font-bold transition-colors text-primary hover:text-primary/70'>
+                    <Link to={`/admin/books/${book.id}`} className='font-sans font-bold transition-colors text-primary hover:text-primary/70'>
                       {book.title}
                     </Link>
                   </TableCell>
-                  <TableCell className='font-mono text-xs text-primary/50'>
-                    {book.isbn || '—'}
-                  </TableCell>
+                  <TableCell className='font-mono text-xs text-primary/50'>{book.isbn || '—'}</TableCell>
                   {rangeSelector && (
                     <TableCell>
-                      <span
-                        className={cn(
-                          'font-sans font-bold text-sm',
-                          book.stockQuantity === 0 && 'text-destructive',
-                          book.stockQuantity > 0 &&
-                            rangeSelector.options[rangeIndex] &&
-                            book.stockQuantity <=
-                              (rangeSelector.options[rangeIndex].max ?? Infinity) &&
-                            'text-amber-600'
-                        )}>
+                      <span className={cn('font-sans font-bold text-sm', book.stockQuantity === 0 && 'text-destructive', book.stockQuantity > 0 && range && book.stockQuantity <= (range.max ?? Infinity) && 'text-amber-600')}>
                         {book.stockQuantity}
                       </span>
                     </TableCell>
                   )}
                   <TableCell className='text-right'>
                     <Link to={`/admin/books/${book.id}`} aria-label={`View ${book.title} details`}>
-                      <Button
-                        variant='ghost'
-                        size='icon-sm'
-                        className='w-8 h-8 rounded-lg text-primary/40 hover:text-primary hover:bg-primary/5'>
+                      <Button variant='ghost' size='icon-sm' className='w-8 h-8 rounded-lg text-primary/40 hover:text-primary hover:bg-primary/5'>
                         <ExternalLink className='w-4 h-4' />
                       </Button>
                     </Link>
@@ -238,34 +196,11 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
         </Table>
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className='flex items-center justify-center gap-3'>
-          <Button
-            variant='outline'
-            disabled={!hasPrev}
-            onClick={() => {
-              const newPage = page - 1;
-              setPage(newPage);
-              load(newPage, searchRef.current, rangeIndexRef.current);
-            }}
-            className='h-9 rounded-lg'>
-            Previous
-          </Button>
-          <span className='text-sm text-primary/40'>
-            Page {page} of {totalPages}
-          </span>
-          <Button
-            variant='outline'
-            disabled={!hasNext}
-            onClick={() => {
-              const newPage = page + 1;
-              setPage(newPage);
-              load(newPage, searchRef.current, rangeIndexRef.current);
-            }}
-            className='h-9 rounded-lg'>
-            Next
-          </Button>
+          <Button variant='outline' disabled={!hasPrev} onClick={() => setPage((p) => p - 1)} className='h-9 rounded-lg'>Previous</Button>
+          <span className='text-sm text-primary/40'>Page {page} of {totalPages}</span>
+          <Button variant='outline' disabled={!hasNext} onClick={() => setPage((p) => p + 1)} className='h-9 rounded-lg'>Next</Button>
         </div>
       )}
     </div>
