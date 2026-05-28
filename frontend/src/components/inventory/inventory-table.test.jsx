@@ -32,18 +32,15 @@ const mockBooks = [
 ];
 
 const LOW_STOCK_RANGES = [
-  { label: '< 5', threshold: 4 },
-  { label: '≤ 10', threshold: 10 },
-  { label: '≤ 20', threshold: 20 },
-  { label: '≤ 50', threshold: 50 },
-  { label: 'All', threshold: null },
+  { label: '< 5', min: 0, max: 4 },
+  { label: '5–10', min: 5, max: 10 },
+  { label: '10–20', min: 10, max: 20 },
+  { label: '20–50', min: 20, max: 50 },
+  { label: '50+', min: 50, max: null },
 ];
 
 const mockPaginatedResponse = {
-  data: {
-    items: mockBooks,
-    pagination: { totalPages: 3 },
-  },
+  data: { items: mockBooks, pagination: { totalPages: 1 } },
 };
 
 function renderTable(props = {}) {
@@ -156,9 +153,9 @@ describe('InventoryTable', () => {
       expect(fetchItems).toHaveBeenCalledTimes(1);
     });
 
-    // Initial call should have threshold=4 (first range "< 5")
+    // Initial call should have threshold=4 (max of first range "< 5") and pageSize=9999
     expect(fetchItems).toHaveBeenLastCalledWith(
-      expect.objectContaining({ threshold: 4, page: 1 })
+      expect.objectContaining({ threshold: 4, page: 1, pageSize: 9999 })
     );
 
     // Change range to "≤ 10" (index 1, threshold=10)
@@ -214,15 +211,25 @@ describe('InventoryTable', () => {
       vi.advanceTimersByTime(400);
     });
 
-    expect(fetchItems).toHaveBeenCalledWith(expect.objectContaining({ search: 'gatsby', page: 1 }));
+    expect(fetchItems).toHaveBeenCalledWith(expect.objectContaining({ search: 'gatsby', page: 1, pageSize: 9999 }));
 
     vi.useRealTimers();
   });
 
   it('shows pagination controls when multiple pages', async () => {
-    const fetchItems = vi.fn().mockResolvedValue(mockPaginatedResponse);
+    const manyBooks = Array.from({ length: 25 }, (_, i) => ({
+      id: `book-${i}`,
+      title: `Book ${i}`,
+      isbn: `978000000000${i}`,
+      stockQuantity: i + 1,
+      coverUrl: null,
+      price: '10.00',
+    }));
+    const fetchItems = vi.fn().mockResolvedValue({
+      data: { items: manyBooks, pagination: { totalPages: 1 } },
+    });
 
-    renderTable({ fetchItems });
+    renderTable({ fetchItems, rangeSelector: { default: 0, options: LOW_STOCK_RANGES } });
 
     await waitFor(() => {
       expect(screen.getByText('Page 1 of 3')).toBeInTheDocument();

@@ -8,11 +8,11 @@ import { inventoryApi } from '@/lib/apiClient';
 import { cn } from '@/lib/utils';
 
 const LOW_STOCK_RANGES = [
-  { label: '< 5', threshold: 4 },
-  { label: '≤ 10', threshold: 10 },
-  { label: '≤ 20', threshold: 20 },
-  { label: '≤ 50', threshold: 50 },
-  { label: 'All', threshold: null },
+  { label: '< 5', min: 0, max: 4 },
+  { label: '5–10', min: 5, max: 10 },
+  { label: '10–20', min: 10, max: 20 },
+  { label: '20–50', min: 20, max: 50 },
+  { label: '50+', min: 50, max: null },
 ];
 
 function OverviewTab() {

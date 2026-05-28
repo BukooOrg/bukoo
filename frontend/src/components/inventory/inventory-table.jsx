@@ -13,56 +13,84 @@ import {
 import { Button } from '@/components/ui/forms/button';
 import { cn } from '@/lib/utils';
 
+const PAGE_SIZE = 10;
+
 export function InventoryTable({ title, description, fetchItems, emptyMessage, rangeSelector }) {
+  const [allItems, setAllItems] = useState([]);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');
+  const [activeSearch, setActiveSearch] = useState('');
   const [rangeIndex, setRangeIndex] = useState(rangeSelector?.default ?? 0);
   const [reloadKey, setReloadKey] = useState(0);
   const searchTimeout = useRef(null);
 
   const range = rangeSelector?.options?.[rangeIndex];
 
-  const doLoad = useCallback(async (p, s, r) => {
+  // Fetch ALL items from backend, then filter + paginate client-side
+  const doLoad = useCallback(async (s) => {
     setLoading(true);
     setError('');
     try {
-      const params = { page: p, pageSize: 10, ...(s && { search: s }) };
-      if (r?.threshold !== null && r?.threshold !== undefined) params.threshold = r.threshold;
+      const params = { page: 1, pageSize: 9999, ...(s && { search: s }) };
+      // For ranges with max, use it as backend threshold to reduce data
+      if (range?.max !== null && range?.max !== undefined) {
+        params.threshold = range.max;
+      }
       const res = await fetchItems(params);
       const data = res.data;
-      setItems(data.items || []);
-      setTotalPages(data.pagination?.totalPages || 1);
+      const allResults = data.items || [];
+
+      // Client-side filter for range min
+      let filtered = allResults;
+      if (range?.min > 0) {
+        filtered = allResults.filter((item) => item.stockQuantity >= range.min);
+      }
+
+      setAllItems(filtered);
+      // Client-side pagination
+      const tp = Math.ceil(filtered.length / PAGE_SIZE) || 1;
+      setTotalPages(tp);
+      setItems(filtered.slice(0, PAGE_SIZE));
+      setPage(1);
     } catch {
       setError('Failed to load inventory data');
+      setAllItems([]);
       setItems([]);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
-  }, [fetchItems]);
+  }, [fetchItems, range]);
 
-  // Single source of truth: reloads when any of these change
+  // Reload when range, search, or reloadKey changes
   useEffect(() => {
-    doLoad(page, search, range);
-  }, [page, rangeIndex, search, reloadKey, doLoad, range]);
+    doLoad(activeSearch);
+  }, [rangeIndex, activeSearch, reloadKey, doLoad]);
+
+  // Client-side page change
+  const goToPage = useCallback((p) => {
+    setPage(p);
+    const start = (p - 1) * PAGE_SIZE;
+    setItems(allItems.slice(start, start + PAGE_SIZE));
+  }, [allItems]);
 
   const handleSearchChange = (e) => {
     const val = e.target.value;
     setSearch(val);
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
     searchTimeout.current = setTimeout(() => {
-      setPage(1);
-      setSearch(val);
+      setActiveSearch(val);
     }, 400);
   };
 
   const handleRangeChange = (e) => {
     const idx = Number(e.target.value);
     setRangeIndex(idx);
-    setPage(1);
+    setActiveSearch('');
     setSearch('');
     setReloadKey((k) => k + 1);
   };
@@ -175,7 +203,7 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
                   <TableCell className='font-mono text-xs text-primary/50'>{book.isbn || '—'}</TableCell>
                   {rangeSelector && (
                     <TableCell>
-                      <span className={cn('font-sans font-bold text-sm', book.stockQuantity === 0 && 'text-destructive', book.stockQuantity > 0 && range && range.threshold !== null && book.stockQuantity <= range.threshold && 'text-amber-600')}>
+                      <span className={cn('font-sans font-bold text-sm', book.stockQuantity === 0 && 'text-destructive', book.stockQuantity > 0 && range && book.stockQuantity <= (range.max ?? Infinity) && 'text-amber-600')}>
                         {book.stockQuantity}
                       </span>
                     </TableCell>
@@ -196,9 +224,9 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
 
       {totalPages > 1 && (
         <div className='flex items-center justify-center gap-3'>
-          <Button variant='outline' disabled={!hasPrev} onClick={() => setPage((p) => p - 1)} className='h-9 rounded-lg'>Previous</Button>
+          <Button variant='outline' disabled={!hasPrev} onClick={() => goToPage(page - 1)} className='h-9 rounded-lg'>Previous</Button>
           <span className='text-sm text-primary/40'>Page {page} of {totalPages}</span>
-          <Button variant='outline' disabled={!hasNext} onClick={() => setPage((p) => p + 1)} className='h-9 rounded-lg'>Next</Button>
+          <Button variant='outline' disabled={!hasNext} onClick={() => goToPage(page + 1)} className='h-9 rounded-lg'>Next</Button>
         </div>
       )}
     </div>
