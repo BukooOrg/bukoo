@@ -70,7 +70,11 @@ async function handleDownload(job) {
 
     const dateFrom = job.dateFrom instanceof Date ? job.dateFrom : new Date(job.dateFrom);
     const dateTo = job.dateTo instanceof Date ? job.dateTo : new Date(job.dateTo);
-    const typeStr = String(job.type || 'report').replace('sales_summary', 'sales').replace('top_books', 'top-books').replace('top_authors', 'top-authors').replace('monthly_volume', 'monthly-volume');
+    const typeStr = String(job.type || 'report')
+      .replace('sales_summary', 'sales')
+      .replace('top_books', 'top-books')
+      .replace('top_authors', 'top-authors')
+      .replace('monthly_volume', 'monthly-volume');
     const formatStr = String(job.format || 'pdf');
 
     a.download = `report_${typeStr}_${dateFrom.toISOString().split('T')[0]}_${dateTo.toISOString().split('T')[0]}.${formatStr}`;
