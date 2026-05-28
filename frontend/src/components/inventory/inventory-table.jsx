@@ -36,9 +36,12 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
     setError('');
     try {
       const params = { page: 1, pageSize: 100, ...(s && { search: s }) };
-      // For ranges with max, use it as backend threshold to reduce data
+      // For ranges with max, use it as backend threshold; for "50+" use a large number
       if (range?.max !== null && range?.max !== undefined) {
         params.threshold = range.max;
+      } else if (range?.min > 0) {
+        // "50+" range: send large threshold to get all items >= min
+        params.threshold = 999999;
       }
 
       // Fetch first page
