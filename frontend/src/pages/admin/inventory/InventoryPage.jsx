@@ -100,20 +100,11 @@ function OverviewTab() {
 export default function InventoryPage() {
   const [activeTab, setActiveTab] = useState('overview');
 
-  const lowStockRangeSelector = useMemo(
-    () => ({ default: 0, options: LOW_STOCK_RANGES }),
-    []
-  );
+  const lowStockRangeSelector = useMemo(() => ({ default: 0, options: LOW_STOCK_RANGES }), []);
 
-  const fetchLowStock = useCallback(
-    (params) => inventoryApi.findLowStockItems(params),
-    []
-  );
+  const fetchLowStock = useCallback((params) => inventoryApi.findLowStockItems(params), []);
 
-  const fetchOutOfStock = useCallback(
-    (params) => inventoryApi.findOutOfStockItems(params),
-    []
-  );
+  const fetchOutOfStock = useCallback((params) => inventoryApi.findOutOfStockItems(params), []);
 
   return (
     <div className='py-16 px-sides'>

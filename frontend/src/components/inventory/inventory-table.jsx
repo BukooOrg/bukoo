@@ -31,60 +31,60 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
   const range = rangeSelector?.options?.[rangeIndex];
 
   // Fetch ALL items from backend (in batches of 100), then filter + paginate client-side
-  const doLoad = useCallback(async (s) => {
-    setLoading(true);
-    setError('');
-    try {
-      const params = { page: 1, pageSize: 100, ...(s && { search: s }) };
-      // For ranges with max, use it as backend threshold; for "50+" use a large number
-      if (range?.max !== null && range?.max !== undefined) {
-        params.threshold = range.max;
-      } else if (range?.min > 0) {
-        // "50+" range: send large threshold to get all items >= min
-        params.threshold = 999999;
+  const doLoad = useCallback(
+    async (s) => {
+      setLoading(true);
+      setError('');
+      try {
+        const params = { page: 1, pageSize: 100, ...(s && { search: s }) };
+        // For ranges with max, use it as backend threshold; for "50+" use a large number
+        if (range?.max !== null && range?.max !== undefined) {
+          params.threshold = range.max;
+        } else if (range?.min > 0) {
+          // "50+" range: send large threshold to get all items >= min
+          params.threshold = 999999;
+        }
+
+        // Fetch first page
+        const res = await fetchItems(params);
+        const data = res.data;
+        let allResults = data.items || [];
+        const totalPagesBackend = data.pagination?.totalPages || 1;
+
+        // Fetch remaining pages in parallel
+        if (totalPagesBackend > 1) {
+          const remainingPages = Array.from({ length: totalPagesBackend - 1 }, (_, i) => i + 2);
+          const results = await Promise.all(
+            remainingPages.map((p) =>
+              fetchItems({ ...params, page: p }).then((r) => r.data.items || [])
+            )
+          );
+          allResults = [...allResults, ...results.flat()];
+        }
+
+        // Client-side filter for range min
+        let filtered = allResults;
+        if (range?.min > 0) {
+          filtered = allResults.filter((item) => item.stockQuantity >= range.min);
+        }
+
+        setAllItems(filtered);
+        // Client-side pagination
+        const tp = Math.ceil(filtered.length / PAGE_SIZE) || 1;
+        setTotalPages(tp);
+        setItems(filtered.slice(0, PAGE_SIZE));
+        setPage(1);
+      } catch {
+        setError('Failed to load inventory data');
+        setAllItems([]);
+        setItems([]);
+        setTotalPages(1);
+      } finally {
+        setLoading(false);
       }
-
-      // Fetch first page
-      const res = await fetchItems(params);
-      const data = res.data;
-      let allResults = data.items || [];
-      const totalPagesBackend = data.pagination?.totalPages || 1;
-
-      // Fetch remaining pages in parallel
-      if (totalPagesBackend > 1) {
-        const remainingPages = Array.from(
-          { length: totalPagesBackend - 1 },
-          (_, i) => i + 2
-        );
-        const results = await Promise.all(
-          remainingPages.map((p) =>
-            fetchItems({ ...params, page: p }).then((r) => r.data.items || [])
-          )
-        );
-        allResults = [...allResults, ...results.flat()];
-      }
-
-      // Client-side filter for range min
-      let filtered = allResults;
-      if (range?.min > 0) {
-        filtered = allResults.filter((item) => item.stockQuantity >= range.min);
-      }
-
-      setAllItems(filtered);
-      // Client-side pagination
-      const tp = Math.ceil(filtered.length / PAGE_SIZE) || 1;
-      setTotalPages(tp);
-      setItems(filtered.slice(0, PAGE_SIZE));
-      setPage(1);
-    } catch {
-      setError('Failed to load inventory data');
-      setAllItems([]);
-      setItems([]);
-      setTotalPages(1);
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchItems, range]);
+    },
+    [fetchItems, range]
+  );
 
   // Reload when range, search, or reloadKey changes
   useEffect(() => {
@@ -92,11 +92,14 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
   }, [rangeIndex, activeSearch, reloadKey, doLoad]);
 
   // Client-side page change
-  const goToPage = useCallback((p) => {
-    setPage(p);
-    const start = (p - 1) * PAGE_SIZE;
-    setItems(allItems.slice(start, start + PAGE_SIZE));
-  }, [allItems]);
+  const goToPage = useCallback(
+    (p) => {
+      setPage(p);
+      const start = (p - 1) * PAGE_SIZE;
+      setItems(allItems.slice(start, start + PAGE_SIZE));
+    },
+    [allItems]
+  );
 
   const handleSearchChange = (e) => {
     const val = e.target.value;
@@ -208,7 +211,11 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
                 <TableRow key={book.id}>
                   <TableCell>
                     {book.coverUrl ? (
-                      <img src={book.coverUrl} alt={book.title} className='object-cover w-12 h-16 rounded shadow-sm' />
+                      <img
+                        src={book.coverUrl}
+                        alt={book.title}
+                        className='object-cover w-12 h-16 rounded shadow-sm'
+                      />
                     ) : (
                       <div className='flex items-center justify-center w-12 h-16 rounded bg-primary/5'>
                         <BookOpen className='w-4 h-4 text-primary/20' />
@@ -216,21 +223,36 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
                     )}
                   </TableCell>
                   <TableCell>
-                    <Link to={`/admin/books/${book.id}`} className='font-sans font-bold transition-colors text-primary hover:text-primary/70'>
+                    <Link
+                      to={`/admin/books/${book.id}`}
+                      className='font-sans font-bold transition-colors text-primary hover:text-primary/70'>
                       {book.title}
                     </Link>
                   </TableCell>
-                  <TableCell className='font-mono text-xs text-primary/50'>{book.isbn || '—'}</TableCell>
+                  <TableCell className='font-mono text-xs text-primary/50'>
+                    {book.isbn || '—'}
+                  </TableCell>
                   {rangeSelector && (
                     <TableCell>
-                      <span className={cn('font-sans font-bold text-sm', book.stockQuantity === 0 && 'text-destructive', book.stockQuantity > 0 && range && book.stockQuantity <= (range.max ?? Infinity) && 'text-amber-600')}>
+                      <span
+                        className={cn(
+                          'font-sans font-bold text-sm',
+                          book.stockQuantity === 0 && 'text-destructive',
+                          book.stockQuantity > 0 &&
+                            range &&
+                            book.stockQuantity <= (range.max ?? Infinity) &&
+                            'text-amber-600'
+                        )}>
                         {book.stockQuantity}
                       </span>
                     </TableCell>
                   )}
                   <TableCell className='text-right'>
                     <Link to={`/admin/books/${book.id}`} aria-label={`View ${book.title} details`}>
-                      <Button variant='ghost' size='icon-sm' className='w-8 h-8 rounded-lg text-primary/40 hover:text-primary hover:bg-primary/5'>
+                      <Button
+                        variant='ghost'
+                        size='icon-sm'
+                        className='w-8 h-8 rounded-lg text-primary/40 hover:text-primary hover:bg-primary/5'>
                         <ExternalLink className='w-4 h-4' />
                       </Button>
                     </Link>
@@ -244,9 +266,23 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
 
       {totalPages > 1 && (
         <div className='flex items-center justify-center gap-3'>
-          <Button variant='outline' disabled={!hasPrev} onClick={() => goToPage(page - 1)} className='h-9 rounded-lg'>Previous</Button>
-          <span className='text-sm text-primary/40'>Page {page} of {totalPages}</span>
-          <Button variant='outline' disabled={!hasNext} onClick={() => goToPage(page + 1)} className='h-9 rounded-lg'>Next</Button>
+          <Button
+            variant='outline'
+            disabled={!hasPrev}
+            onClick={() => goToPage(page - 1)}
+            className='h-9 rounded-lg'>
+            Previous
+          </Button>
+          <span className='text-sm text-primary/40'>
+            Page {page} of {totalPages}
+          </span>
+          <Button
+            variant='outline'
+            disabled={!hasNext}
+            onClick={() => goToPage(page + 1)}
+            className='h-9 rounded-lg'>
+            Next
+          </Button>
         </div>
       )}
     </div>

@@ -211,7 +211,9 @@ describe('InventoryTable', () => {
       vi.advanceTimersByTime(400);
     });
 
-    expect(fetchItems).toHaveBeenCalledWith(expect.objectContaining({ search: 'gatsby', page: 1, pageSize: 100 }));
+    expect(fetchItems).toHaveBeenCalledWith(
+      expect.objectContaining({ search: 'gatsby', page: 1, pageSize: 100 })
+    );
 
     vi.useRealTimers();
   });
