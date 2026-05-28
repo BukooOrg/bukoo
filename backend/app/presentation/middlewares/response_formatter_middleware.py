@@ -76,6 +76,10 @@ EXCLUDED_PATHS = {
     "/health",
 }
 
+EXCLUDED_PATH_PREFIXES = (
+    "/api/app/v1/reports/jobs/",  # Report downloads are binary streams, not JSON
+)
+
 
 # todo: make sure this can handle set-cookie well
 class ResponseFormatterMiddleware:
@@ -93,7 +97,7 @@ class ResponseFormatterMiddleware:
 
         path = scope.get("path", "")
 
-        if path in EXCLUDED_PATHS:
+        if path in EXCLUDED_PATHS or path.startswith(EXCLUDED_PATH_PREFIXES):
             return await self.app(scope, receive, send)
 
         body_chunks = []
