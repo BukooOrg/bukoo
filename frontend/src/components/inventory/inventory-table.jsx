@@ -34,9 +34,7 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
       if (r?.max !== null && r?.max !== undefined) params.threshold = r.max;
       const res = await fetchItems(params);
       const data = res.data;
-      let results = data.items || [];
-      if (r?.min > 0) results = results.filter((item) => item.stockQuantity >= r.min);
-      setItems(results);
+      setItems(data.items || []);
       setTotalPages(data.pagination?.totalPages || 1);
     } catch {
       setError('Failed to load inventory data');
