@@ -4,54 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './components/cart/CartContext';
 // ─── Guards ─────────────────────────────────────────────────────────────────
 import { AdminRoute } from './components/guards/AdminRoute';
-// ─── Legacy router (kept for reference) ──────────────────────────────────────
-// import { Toaster } from 'sonner';
-// import { Footer } from './components/layout/footer';
-// import { Header } from './components/layout/header';
-// import Home from './pages/Home';
-// import Login from './pages/Login';
-// import OAuthCallback from './pages/OAuthCallback';
-// import ProductDetail from './pages/ProductDetail';
-// import Register from './pages/Register';
-// import Shop from './pages/Shop';
-//
-// function AppLegacy() {
-//   return (
-//     <AuthProvider>
-//       <CartProvider>
-//         <Router>
-//           <div className='flex flex-col min-h-screen font-sans antialiased bg-background text-foreground'>
-//             <Header />
-//             <main className='flex-1'>
-//               <Routes>
-//                 <Route path='/' element={<Home />} />
-//                 <Route path='/shop' element={<Shop />} />
-//                 <Route path='/shop/:collection' element={<Shop />} />
-//                 <Route path='/search' element={<Shop />} />
-//                 <Route path='/product/:handle' element={<ProductDetail />} />
-//                 <Route path='/login' element={<Login />} />
-//                 <Route path='/register' element={<Register />} />
-//                 <Route path='/oauth/callback' element={<OAuthCallback />} />
-//                 <Route
-//                   path='*'
-//                   element={
-//                     <div className='pt-48 font-serif text-2xl text-center opacity-40'>
-//                       404 - Chapter Not Found
-//                     </div>
-//                   }
-//                 />
-//               </Routes>
-//             </main>
-//             <Footer />
-//             <Toaster closeButton position='bottom-right' />
-//           </div>
-//         </Router>
-//       </CartProvider>
-//     </AuthProvider>
-//   );
-// }
 import { CustomerRoute } from './components/guards/CustomerRoute';
-import { ProtectedRoute } from './components/guards/ProtectedRoute';
+// import { ProtectedRoute } from './components/guards/ProtectedRoute';
 // ─── Layouts ────────────────────────────────────────────────────────────────
 import { AccountLayout } from './components/layout/AccountLayout';
 import { AdminLayout } from './components/layout/AdminLayout';
