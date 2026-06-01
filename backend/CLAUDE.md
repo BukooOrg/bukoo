@@ -204,13 +204,27 @@ Never call `session.commit()` in a repository. The calling use case commits.
 All inherit from `DomainException` in `app/domain/exceptions/base.py`.
 Exported from `app/domain/exceptions/__init__.py`.
 
-| Group   | Exceptions                                                                                                                                 |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| auth    | `InvalidCredentialsError`, `UserAlreadyExistsError`, `UserNotFoundError`, `TokenExpiredError`, `InvalidTokenError`, `UserNotVerifiedError` |
-| book    | `BookNotFoundError`, `BookAlreadyExistsError`, `InvalidISBNError`                                                                          |
-| order   | `OrderNotFoundError`, `OrderAlreadyPaidError`, `OutOfStockError`, `EmptyOrderError`                                                        |
-| payment | `PaymentCreationError`, `PaymentVerificationError`                                                                                         |
-| storage | `StorageUploadError`, `StorageNotFoundError`                                                                                               |
+| Group          | Key exceptions (non-exhaustive)                                                                                                                                                                                                   |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `auth`         | `InvalidCredentialsError`, `UserAlreadyExistsError`, `UserNotFoundError`, `TokenExpiredError`, `InvalidTokenError`, `TokenAlreadyRevokedError`, `UserNotVerifiedError`, `UserAlreadyVerifiedError`, `UserSuspendedError`, `OAuthStateInvalidError`, `OAuthProviderNotFoundError`, `GoogleOAuthError`, `FacebookOAuthError`, `CurrentPasswordIncorrectError`, `PasswordNotSetError`, `NewPasswordSameAsCurrentError`, `NoAuthHeaderError` |
+| `address`      | `AddressNotFoundError`                                                                                                                                                                                                            |
+| `admin`        | `AdminAccessRequiredError`                                                                                                                                                                                                        |
+| `author`       | `AuthorNotFoundError`                                                                                                                                                                                                             |
+| `book`         | `BookNotFoundError`, `BookAlreadyExistsError`, `InvalidISBNError`, `BookAlreadyDeactivatedError`, `BookAlreadyActivatedError`                                                                                                     |
+| `cache`        | `CacheError` (infrastructure-level, for cache operation failures)                                                                                                                                                                 |
+| `cart`         | `CartNotFoundError`, `CartItemNotFoundError`                                                                                                                                                                                      |
+| `category`     | `CategoryAlreadyExistsError`, `CategoryNotFoundError`                                                                                                                                                                             |
+| `collection`   | `CollectionAlreadyExistsError`, `CollectionNotFoundError`                                                                                                                                                                         |
+| `common`       | Shared base exceptions reused across groups                                                                                                                                                                                       |
+| `notification` | `NotificationNotFoundError`                                                                                                                                                                                                       |
+| `order`        | `OrderNotFoundError`, `OrderAlreadyPaidError`, `OutOfStockError`, `EmptyOrderError`, `OrderNotPayableError`, `OrderAccessDeniedError`, `OrderNotCancellableError`, `OrderStatusTransitionInvalidError`                            |
+| `payment`      | `PaymentCreationError`, `PaymentVerificationError`                                                                                                                                                                                |
+| `publisher`    | `PublisherNotFoundError`                                                                                                                                                                                                          |
+| `report`       | `InvalidReportDateRangeError`, `ReportJobNotFoundError`, `ReportNotReadyError`                                                                                                                                                    |
+| `review`       | `ReviewNotEligibleError`, `ReviewAlreadyExistsError`, `ReviewNotFoundError`, `ReviewNotOwnedError`                                                                                                                                |
+| `storage`      | `StorageUploadError`, `StorageNotFoundError`                                                                                                                                                                                      |
+| `user`         | `CustomerOnlyError`, `UserAlreadySuspendedError`, `CannotSuspendAdminError`, `UserAlreadyActiveError`, `CannotActivatePendingUserError`, `CannotResetAdminPasswordError`, `UserHasNoCredentialAccountError`, `CannotSoftDeleteAdminError`, `CannotDeleteSelfError` |
+| `wishlist`     | `WishlistNotFoundError`, `WishlistItemNotFoundError`, `WishlistItemAlreadyExistsError`                                                                                                                                            |
 
 To add a new domain exception:
 
@@ -252,20 +266,28 @@ Paths that bypass the envelope: `/health`, `/docs`, `/redoc`, `/openapi.json`.
 
 ## Current API Routes
 
-All routes are prefixed `/api/app/v1/`:
+All routes are prefixed `/api/app/v1/`. There are 15 route modules:
 
-| Method | Path                                   | Auth        | Description              |
-| ------ | -------------------------------------- | ----------- | ------------------------ |
-| POST   | `/api/app/v1/auth/register`            | None        | Register new user        |
-| POST   | `/api/app/v1/auth/verify-email`        | None        | Verify email with OTP    |
-| POST   | `/api/app/v1/auth/resend-verification` | None        | Resend verification OTP  |
-| POST   | `/api/app/v1/auth/login`               | None        | Credential login         |
-| POST   | `/api/app/v1/auth/login/google`        | None        | Google OAuth login       |
-| POST   | `/api/app/v1/auth/logout`              | `CurrentUser` | Revoke token + clear cookie |
-| GET    | `/api/app/v1/health`                   | None        | Health check             |
+| Module         | Prefix           | Endpoints                                                    |
+| -------------- | ---------------- | ------------------------------------------------------------ |
+| `auth`         | `/auth`          | Register, verify email, resend verification, credential login, OAuth login URL, OAuth callback, logout, forgot password, verify password reset OTP, reset password |
+| `user`         | `/users`         | Get/update/delete me, avatar upload/remove, change password, get/upsert address, admin: list users, view user, register admin, suspend/activate/force-set-password/soft-delete user |
+| `book`         | `/books`         | List, detail, create, update, soft delete, activate, deactivate, update stock, upload cover, find reviews for book |
+| `author`       | `/authors`       | List, detail, create, update, soft delete                    |
+| `publisher`    | `/publishers`    | List, detail, create, update, soft delete                    |
+| `category`     | `/categories`    | List, detail, create, update, soft delete                    |
+| `collection`   | `/collections`   | List, detail, create, update, soft delete                    |
+| `cart`         | `/cart`          | Get my cart, add item, update quantity, remove item, clear cart |
+| `wishlist`     | `/wishlist`      | Get my wishlist, add item, remove item, move item to cart    |
+| `order`        | `/orders`        | Place order, pay order, list orders, order detail, cancel order, update order status |
+| `review`       | `/reviews`       | Find reviews (by book or admin), hide/restore review, soft delete review (admin) |
+| `notification` | `/notifications` | List, unread count, mark one read, mark all read, delete     |
+| `inventory`    | `/inventory`     | Metrics, low stock items, out of stock items                 |
+| `report`       | `/reports`       | Create report job, list report jobs, job status, download report |
+| `health`       | `/health`        | Health check                                                 |
 
 To add new routes for the same version: create `<feature>_routes.py` under
-`app/presentation/api/app_api/v1/` and register in the `v1/__init__.py`.
+`app/presentation/api/app_api/v1/` and register in `v1/__init__.py`.
 
 ## Configuration
 
@@ -334,13 +356,18 @@ from `deps.py` — never access Redis directly in application or domain code.
 ## Celery Tasks
 
 - App definition: `app/infrastructure/tasks/celery_app.py`
-- Task modules: `app/infrastructure/tasks/email_tasks.py`
-- Two queues: `mail` (pattern `email.*`) and `default` (everything else)
+- Task modules:
+  - `app/infrastructure/tasks/email_tasks.py` — email delivery
+  - `app/infrastructure/tasks/notification_tasks.py` — in-app notification delivery
+  - `app/infrastructure/tasks/report_tasks.py` — async PDF report generation
+- Two queues: `mail` and `default`
+- Queue routing: `email.*` → `mail`; `notification.*` → `default`; `report.*` → `default`
 - Broker: Redis DB 0 (`BROKER_REDIS_URL`)
 - Start worker: `make worker`; monitor at `http://localhost:5555` (Flower)
 
 To add a task: create it in `app/infrastructure/tasks/`, add the module to the
-`include` list in `create_celery()` in `celery_app.py`.
+`include` list in `create_celery()`, and add a routing rule to `TASK_ROUTES` in
+`celery_app.py`.
 
 ## Database Migrations
 

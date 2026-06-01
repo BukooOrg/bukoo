@@ -42,7 +42,8 @@ Detailed reference documents for Claude are in `.claude/context/`:
 | `.claude/context/project-context.md`      | For orientation: what features exist, who uses them, what is out of scope, implementation status                        |
 | `.claude/context/architecture.md`         | Before implementing features that span multiple layers; understanding request lifecycle, session handling, or auth flow |
 | `.claude/context/domain-model.md`         | Before adding new entities or use cases; understanding entity relationships and invariants                              |
-| `.claude/context/api-endpoint-catalog.md` | Before implementing any route; the authoritative list of all 86 endpoints grouped by API set, with access levels        |
+| `.claude/context/api-endpoint-catalog.md` | Before implementing any route; the authoritative list of all endpoints grouped by API set, with access levels           |
+| `.claude/context/web_app_url_catalog.md`  | All frontend routes with their page components, layout group, and access level                                          |
 
 ## All Make Targets (run from repo root)
 
@@ -79,13 +80,21 @@ make fe-format        # ESLint fix + Prettier (auto-fix)
 make fe-format-check  # Prettier check (no writes)
 ```
 
-### Testing (backend only — no frontend tests)
+### Testing
 
 ```bash
-make test             # all pytest tests
+make test             # all backend pytest tests
 make test-unit        # pytest tests/unit/ -m unit
 make test-integration # pytest tests/integration/ -m integration
 make test-cov         # coverage report (HTML + terminal, output: backend/htmlcov/)
+```
+
+Frontend tests use Vitest and are run directly (no Makefile target):
+
+```bash
+cd frontend && pnpm test           # watch mode
+cd frontend && pnpm test:unit      # run once (components + hooks)
+cd frontend && pnpm test:coverage  # with coverage report
 ```
 
 ### Database

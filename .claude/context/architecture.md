@@ -35,6 +35,7 @@ External services (PostgreSQL, Redis, MinIO/S3, SMTP, Google OAuth)
 ```
 
 **Forbidden import directions (checked by mypy + ruff import-lint):**
+
 - `domain/` → any outer layer
 - `application/` → `infrastructure/` or `presentation/`
 - `infrastructure/` → `presentation/`
@@ -59,6 +60,7 @@ testing hard. `deps.py` is the explicit exception where crossing is allowed.
 ### How to extend it
 
 For every new repository or service add:
+
 1. A provider function that creates the implementation
 2. A typed `Annotated` alias for use in route handlers
 
@@ -134,11 +136,13 @@ ResponseFormatterMiddleware wraps it → client receives envelope
 ### On exceptions
 
 If the use case raises a `DomainException`:
+
 - `domain_exception_handler` in `app/presentation/http/base_handler.py` catches it
 - Looks up the exception type in `EXCEPTION_MAP` (exception_mapper.py)
 - Returns a structured error envelope with HTTP status, `ErrorCode`, and message
 
 If Pydantic fails request validation:
+
 - `validation_exception_handler` returns 422 with field-level error details
 
 ---
@@ -157,6 +161,7 @@ SoftDeleteMixin (standalone, add alongside DefaultFieldMixin)
 ```
 
 Concrete model declaration:
+
 ```python
 class OrderModel(DefaultFieldMixin, SoftDeleteMixin):
     __tablename__ = "orders"
@@ -221,10 +226,12 @@ Defined in `app/infrastructure/db/session.py`.
 - Session is closed automatically when the request ends (context manager in `get_db_session`)
 
 **Why use cases commit:**
+
 - Single unit-of-work responsibility — the use case decides when the transaction is complete
 - Repositories must not commit so that multi-repository operations (within one use case) form a single transaction
 
 `session_scope()` is an async context manager for non-request contexts (e.g. the `_create_system_admin_user` lifespan hook):
+
 ```python
 async with session_scope() as db_session:
     # create repositories, run use case, session is committed and closed automatically
@@ -264,30 +271,31 @@ CacheService = Annotated[ICacheService, Depends(get_cache_service)]
 
 **Interface contract** (`ICacheService`):
 
-| Method | Signature | Purpose |
-|--------|-----------|---------|
-| `set` | `async set(key, value, ttl_seconds=None) -> None` | Store with optional TTL |
-| `get` | `async get(key) -> str \| None` | Retrieve or `None` if missing/expired |
-| `delete` | `async delete(key) -> None` | Remove key (no-op if absent) |
-| `exists` | `async exists(key) -> bool` | True if key exists and has not expired |
+| Method   | Signature                                         | Purpose                                |
+| -------- | ------------------------------------------------- | -------------------------------------- |
+| `set`    | `async set(key, value, ttl_seconds=None) -> None` | Store with optional TTL                |
+| `get`    | `async get(key) -> str \| None`                   | Retrieve or `None` if missing/expired  |
+| `delete` | `async delete(key) -> None`                       | Remove key (no-op if absent)           |
+| `exists` | `async exists(key) -> bool`                       | True if key exists and has not expired |
 
 **`RedisCacheService` production decisions:**
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| DB | DB 1 (`CACHE_REDIS_URL`) | Isolated from Celery broker on DB 0; independent `FLUSHDB` |
-| Connection pool | `ConnectionPool.from_url(max_connections=20)` | Reused across requests; avoids per-call TCP handshake |
-| Key prefix | `bukoo:{key}` | Prevents namespace collision if Redis is shared |
-| Response decoding | `decode_responses=True` | Returns `str` directly; no per-site `.decode()` calls |
-| Error handling | Re-raise `redis.exceptions.RedisError` | Fail-hard on blocklist writes (security-critical path) |
+| Decision          | Choice                                        | Rationale                                                  |
+| ----------------- | --------------------------------------------- | ---------------------------------------------------------- |
+| DB                | DB 1 (`CACHE_REDIS_URL`)                      | Isolated from Celery broker on DB 0; independent `FLUSHDB` |
+| Connection pool   | `ConnectionPool.from_url(max_connections=20)` | Reused across requests; avoids per-call TCP handshake      |
+| Key prefix        | `bukoo:{key}`                                 | Prevents namespace collision if Redis is shared            |
+| Response decoding | `decode_responses=True`                       | Returns `str` directly; no per-site `.decode()` calls      |
+| Error handling    | Re-raise `redis.exceptions.RedisError`        | Fail-hard on blocklist writes (security-critical path)     |
 
 **Current usages:**
 
-| Caller | Key pattern | TTL |
-|--------|-------------|-----|
-| `JWTService.revoke_token` | `bukoo:blocklist:{jti}` | Remaining JWT lifetime (seconds) |
+| Caller                    | Key pattern             | TTL                                           |
+| ------------------------- | ----------------------- | --------------------------------------------- |
+| `JWTService.revoke_token` | `bukoo:blocklist:{jti}` | Remaining JWT lifetime (seconds)              |
+| `GetOAuthLoginUrlUseCase` | `oauth_state:{state}`   | 300 s (CSRF state nonce, deleted on callback) |
 
-All future short-lived key-value needs (OTP storage, rate limiting, feature flags)
+All future short-lived key-value needs (rate limiting, feature flags)
 should extend `ICacheService` rather than access Redis directly.
 
 ---
@@ -376,11 +384,15 @@ broker: Redis (BROKER_REDIS_URL from .env, DB 0 — e.g. redis://redis:6379/0)
 result_backend: Redis (same URL)
 
 Queue routing:
-  - "email.*" task names → "mail" queue
-  - all others → "default" queue
+  - "email.*" task names        → "mail" queue
+  - "notification.*" task names → "default" queue
+  - "report.*" task names       → "default" queue
+  - all others                  → "default" queue
 
 Task includes (must list every task module):
-  - app.infrastructure.tasks.email_tasks
+  - app.infrastructure.tasks.email_tasks         ← email delivery
+  - app.infrastructure.tasks.notification_tasks  ← in-app notification dispatch
+  - app.infrastructure.tasks.report_tasks        ← async PDF report generation
 
 Worker launch: make worker (QUEUES=mail,default by default)
 Monitor: http://localhost:5555 (Flower)
@@ -390,8 +402,8 @@ Monitor: http://localhost:5555 (Flower)
 uses DB 1 (`CACHE_REDIS_URL`). This isolates queue state from cache state — a
 `FLUSHDB` on the cache DB does not drop Celery task queues.
 
-To add a new queue, update the `task_routes` in `create_celery()` in
-`app/infrastructure/tasks/celery_app.py` and adjust `dev/start-worker`.
+To add a new task module: add it to the `include=` list in `create_celery()` and
+add a routing rule to `TASK_ROUTES` in `app/infrastructure/tasks/celery_app.py`.
 
 ---
 

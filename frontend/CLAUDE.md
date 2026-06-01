@@ -18,59 +18,99 @@ monorepo commands, infrastructure services, and commit rules.
 frontend/src/
 ├── App.jsx             ← root component: provider stack + router + route table
 ├── main.jsx            ← React 19 createRoot entry point
-├── actions/            ← thin API call wrappers (no state management)
+├── actions/            ← thin API call wrappers (legacy raw fetch)
 ├── components/
 │   ├── 3d-book/        ← Three.js / R3F 3D book visualization
-│   ├── cart/           ← cart context, cart modal, add-to-cart button
-│   ├── layout/         ← header, footer, PageLayout wrapper
+│   ├── account/        ← account page sections
+│   ├── admin/          ← admin page sections (shared across admin pages)
+│   ├── auth/           ← auth form components
+│   ├── cart/           ← CartContext, cart modal, add-to-cart button
+│   ├── guards/         ← AdminRoute, CustomerRoute (role-based route guards)
+│   ├── inventory/      ← inventory dashboard components
+│   ├── layout/         ← header/, sidebar/, layout wrapper components
+│   ├── notifications/  ← notification card, bell, inbox components
+│   ├── orders/         ← order status badge, order item, order detail
 │   ├── products/       ← product cards, variant selector
-│   └── ui/             ← design system primitives
-│       ├── forms/      ← button, input, field, select, checkbox
-│       ├── feedback/   ← spinner, skeleton, alert, badge
-│       ├── data-display/ ← table, list, card
-│       ├── navigation/ ← tabs, breadcrumbs, pagination
-│       ├── overlays/   ← dialog, sheet, tooltip, popover
-│       └── misc/       ← separator, scroll-area, aspect-ratio
-├── context/            ← React context providers (auth, cart)
-├── hooks/              ← custom React hooks
+│   ├── reports/        ← report form, status badge, history table
+│   ├── reviews/        ← review card, review form, rating display
+│   ├── ui/             ← design system primitives
+│   │   ├── forms/      ← button, input, field, select, checkbox
+│   │   ├── feedback/   ← spinner, skeleton, alert, badge
+│   │   ├── data-display/ ← table, list, card
+│   │   ├── navigation/ ← tabs, breadcrumbs, pagination
+│   │   ├── overlays/   ← dialog, sheet, tooltip, popover
+│   │   └── misc/       ← separator, scroll-area, aspect-ratio
+│   └── wishlist/       ← WishlistContext, wishlist item, move-to-cart button
+├── context/            ← AuthContext (AuthProvider + useAuth hook)
+├── hooks/              ← custom React hooks (useApiQuery, useApiMutation, etc.)
 ├── lib/                ← utilities, API client instances, constants
-├── pages/              ← route-level page components
-├── data/mock/          ← temporary mock JSON (replace with SDK calls as backend grows)
+├── pages/
+│   ├── account/        ← ProfilePage, PasswordPage, AddressPage, OrdersPage,
+│   │                      OrderDetailPage, ReviewsPage, NotificationsPage,
+│   │                      AccountPage, DeleteAccountPage
+│   ├── admin/
+│   │   ├── catalog/    ← BooksPage, BookDetailPage, BookNewPage,
+│   │   │                  AuthorsPage, AuthorDetailPage, AuthorNewPage,
+│   │   │                  PublishersPage, CategoriesPage, CollectionsPage, …
+│   │   ├── inventory/  ← InventoryPage, ReportsPage
+│   │   ├── orders/     ← OrdersPage, OrderDetailPage
+│   │   ├── reviews/    ← ReviewsPage
+│   │   ├── users/      ← UsersPage, UserDetailPage, UserNewPage
+│   │   ├── DashboardPage.jsx
+│   │   └── NotificationsPage.jsx
+│   ├── auth/           ← LoginPage, RegisterPage, OAuthCallbackPage,
+│   │                      VerifyEmailPage, ForgotPasswordPage,
+│   │                      VerifyPasswordResetOtpPage, ResetPasswordPage
+│   ├── shopping/       ← CartPage, WishlistPage, CheckoutPage,
+│   │                      CheckoutPaymentPage, CheckoutConfirmationPage
+│   └── storefront/     ← HomePage, ShopPage, ProductDetailPage, NotFoundPage
+├── data/mock/          ← remaining mock JSON (replace with SDK calls when endpoint is ready)
 └── styles/
     └── globals.css     ← Tailwind directives + CSS design token definitions
 ```
 
 ## Adding a New Page
 
-1. Create `src/pages/<PageName>.jsx`:
+1. Create the page in the appropriate subdirectory:
 
 ```jsx
-import { PageLayout } from "@/components/layout/PageLayout";
-
-export default function PageName() {
-  return <PageLayout>{/* content */}</PageLayout>;
+// src/pages/account/NewPage.jsx  (or admin/..., shopping/..., etc.)
+export default function NewPage() {
+  return <div>{/* content */}</div>;
 }
 ```
 
-2. Register a `<Route>` in `src/App.jsx`:
+2. Register a `<Route>` in `src/App.jsx` inside the correct layout group:
 
 ```jsx
-import PageName from "./pages/PageName";
+import NewPage from "./pages/account/NewPage";
 // ...
-<Route path='/your-path' element={<PageName />} />;
+// Inside the CustomerRoute → AccountLayout block:
+<Route path='/account/new' element={<NewPage />} />
 ```
+
+Pages always belong in a subdirectory (`account/`, `admin/catalog/`, `shopping/`, `auth/`, `storefront/`) — never flat in `pages/`.
 
 ## Adding a New Component
 
 Place in the correct subdirectory:
 
-| Component type                             | Location                           |
-| ------------------------------------------ | ---------------------------------- |
-| Generic UI primitive (button, input, card) | `src/components/ui/<category>/`    |
-| Cart-specific                              | `src/components/cart/`             |
-| Layout (header, footer, sidebar)           | `src/components/layout/`           |
-| Product display                            | `src/components/products/`         |
-| Page-specific (used in one page only)      | keep it inside `src/pages/<Page>/` |
+| Component type                             | Location                              |
+| ------------------------------------------ | ------------------------------------- |
+| Generic UI primitive (button, input, card) | `src/components/ui/<category>/`       |
+| Cart-specific                              | `src/components/cart/`                |
+| Wishlist-specific                          | `src/components/wishlist/`            |
+| Layout (header, footer, sidebar)           | `src/components/layout/`              |
+| Product display                            | `src/components/products/`            |
+| Order display                              | `src/components/orders/`              |
+| Review display                             | `src/components/reviews/`             |
+| Notification display                       | `src/components/notifications/`       |
+| Inventory display                          | `src/components/inventory/`           |
+| Report display                             | `src/components/reports/`             |
+| Route guards                               | `src/components/guards/`              |
+| Admin-specific (shared across admin pages) | `src/components/admin/`               |
+| Account-specific (shared across account)   | `src/components/account/`             |
+| Page-specific (used in one page only)      | keep it inside `src/pages/<section>/` |
 
 File naming: lowercase kebab-case (`product-card.jsx`, not `ProductCard.jsx`).
 
@@ -206,24 +246,88 @@ consistent horizontal page padding.
 The provider order in `App.jsx` is outer → inner:
 
 ```
-AuthProvider → CartProvider → BrowserRouter
+AuthProvider → CartProvider → WishlistProvider → BrowserRouter
 ```
 
-Add new context providers between `CartProvider` and `BrowserRouter` unless
-they need to wrap auth/cart (rare).
+Add new context providers between `WishlistProvider` and `BrowserRouter` unless
+they need to wrap auth/cart/wishlist (rare).
 
 ## Current Routes
 
-| Path                | Component     | Notes                     |
-| ------------------- | ------------- | ------------------------- |
-| `/`                 | Home          | Landing page              |
-| `/shop`             | Shop          | All books                 |
-| `/shop/:collection` | Shop          | Filtered by collection    |
-| `/search`           | Shop          | Search results            |
-| `/product/:handle`  | ProductDetail | Book detail page          |
-| `/login`            | Login         | Auth                      |
-| `/register`         | Register      | Auth                      |
-| `*`                 | 404 inline    | "404 - Chapter Not Found" |
+Routes are organized into four layout groups in `App.jsx`.
+
+**Auth layout** (no header/footer):
+
+| Path                           | Page                      |
+| ------------------------------ | ------------------------- |
+| `/login`                       | LoginPage                 |
+| `/register`                    | RegisterPage              |
+| `/oauth/callback`              | OAuthCallbackPage         |
+| `/verify-email`                | VerifyEmailPage           |
+| `/forgot-password`             | ForgotPasswordPage        |
+| `/verify-password-reset-otp`   | VerifyPasswordResetOtpPage |
+| `/reset-password`              | ResetPasswordPage         |
+
+**Storefront layout** (header + footer, public):
+
+| Path                | Page              | Notes                  |
+| ------------------- | ----------------- | ---------------------- |
+| `/`                 | HomePage          | Landing page           |
+| `/shop`             | ShopPage          | All books              |
+| `/shop/:collection` | ShopPage          | Filtered by collection |
+| `/search`           | ShopPage          | Search results         |
+| `/product/:handle`  | ProductDetailPage | Custom header variant  |
+
+**Customer layout** (requires customer role; admins redirected to `/admin`):
+
+| Path                           | Page                       |
+| ------------------------------ | -------------------------- |
+| `/account`                     | AccountPage                |
+| `/account/profile`             | ProfilePage                |
+| `/account/password`            | PasswordPage               |
+| `/account/address`             | AddressPage                |
+| `/account/wishlist`            | WishlistPage               |
+| `/account/delete`              | DeleteAccountPage          |
+| `/account/orders`              | AccountOrdersPage          |
+| `/account/orders/:orderId`     | AccountOrderDetailPage     |
+| `/account/reviews`             | AccountReviewsPage         |
+| `/account/notifications`       | AccountNotificationsPage   |
+| `/account/cart`                | CartPage                   |
+| `/checkout`                    | CheckoutPage               |
+| `/checkout/payment`            | CheckoutPaymentPage        |
+| `/checkout/confirmation`       | CheckoutConfirmationPage   |
+
+**Admin layout** (requires admin role):
+
+| Path                              | Page                   |
+| --------------------------------- | ---------------------- |
+| `/admin`                          | AdminDashboardPage     |
+| `/admin/notifications`            | AdminNotificationsPage |
+| `/admin/books`                    | BooksPage              |
+| `/admin/books/new`                | BookNewPage            |
+| `/admin/books/:bookId`            | BookDetailPage         |
+| `/admin/collections`              | CollectionsPage        |
+| `/admin/collections/new`          | CollectionNewPage      |
+| `/admin/collections/:collectionId`| CollectionDetailPage   |
+| `/admin/categories`               | CategoriesPage         |
+| `/admin/categories/new`           | CategoryNewPage        |
+| `/admin/categories/:categoryId`   | CategoryDetailPage     |
+| `/admin/authors`                  | AuthorsPage            |
+| `/admin/authors/new`              | AuthorNewPage          |
+| `/admin/authors/:authorId`        | AuthorDetailPage       |
+| `/admin/publishers`               | PublishersPage         |
+| `/admin/publishers/new`           | PublisherNewPage       |
+| `/admin/publishers/:publisherId`  | PublisherDetailPage    |
+| `/admin/users`                    | UsersPage              |
+| `/admin/users/new`                | UserNewPage            |
+| `/admin/users/:userId`            | UserDetailPage         |
+| `/admin/orders`                   | AdminOrdersPage        |
+| `/admin/orders/:orderId`          | AdminOrderDetailPage   |
+| `/admin/reviews`                  | AdminReviewsPage       |
+| `/admin/inventory`                | InventoryPage          |
+| `/admin/reports`                  | ReportsPage            |
+
+**Fallback:** `*` → NotFoundPage
 
 ## Forms
 
@@ -281,10 +385,23 @@ Import `BookViewer3D` (or the appropriate export) as the single entry point.
 
 ## Mock Data
 
-`src/data/mock/products.json` and `collections.json` are used while the backend
-product/collection endpoints are not yet implemented. When a real endpoint is
-available, replace the mock import with a call to the appropriate SDK client
-instance and delete the mock file.
+`src/data/mock/` contains JSON fixtures for any UI that hasn't been wired to a
+real backend endpoint yet. Most endpoints are now implemented — only replace a
+mock import with an SDK call once the corresponding endpoint is confirmed working.
+Delete the mock file after migration.
+
+## Testing
+
+Frontend uses Vitest + @testing-library/react. Tests are co-located next to the
+file they test (`component.test.jsx`, `hook.test.js`).
+
+```bash
+cd frontend && pnpm test           # Vitest watch mode
+cd frontend && pnpm test:unit      # run once (components + hooks only)
+cd frontend && pnpm test:coverage  # with coverage report
+```
+
+The root `make test*` targets run backend pytest only — they do not run frontend tests.
 
 ## Quality Checks
 
