@@ -31,8 +31,8 @@ export function CartItemCard({ item }) {
 
   return (
     <>
-      <div className='flex gap-8 p-8 border border-primary/5 rounded-lg bg-white'>
-        <div className='w-32 h-44 shrink-0 overflow-hidden rounded bg-primary/5'>
+      <div className='flex gap-8 p-8 border border-primary/5 rounded-2xl bg-white'>
+        <div className='w-32 h-44 shrink-0 overflow-hidden rounded-2xl bg-primary/5'>
           {item.book.coverUrl ? (
             <img
               src={item.book.coverUrl}

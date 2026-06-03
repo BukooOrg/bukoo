@@ -122,8 +122,8 @@ function CartItemRow({ item, onRemove, onQuantityChange, onCloseCart }) {
   const subtotal = (Number(item.book.price) * item.quantity).toFixed(2);
 
   return (
-    <div className='flex gap-5 p-5 border border-primary/5 rounded-lg bg-white'>
-      <div className='w-24 h-36 overflow-hidden rounded bg-primary/5 shrink-0'>
+    <div className='flex gap-5 p-5 border border-primary/5 rounded-2xl bg-white'>
+      <div className='w-24 h-36 overflow-hidden rounded-2xl bg-primary/5 shrink-0'>
         {item.book.coverUrl ? (
           <img
             src={item.book.coverUrl}
@@ -145,7 +145,7 @@ function CartItemRow({ item, onRemove, onQuantityChange, onCloseCart }) {
         </Link>
         <p className='text-base text-primary/40 mt-1'>RM {item.book.price} each</p>
         <div className='flex items-center justify-between mt-4'>
-          <div className='flex h-10 items-center border border-primary/5 rounded'>
+          <div className='flex h-10 items-center border border-primary/5 rounded-2xl'>
             <QuantityButton
               onClick={() => onQuantityChange(item.id, item.book.title, item.quantity - 1)}
               type='minus'

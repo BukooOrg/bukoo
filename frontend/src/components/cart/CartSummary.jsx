@@ -6,7 +6,7 @@ function formatPrice(amount, currency = 'RM') {
 
 export function CartSummary({ totalQuantity, totalPrice }) {
   return (
-    <div className='bg-white border border-primary/5 rounded-lg p-8 space-y-6'>
+    <div className='bg-white border border-primary/5 rounded-2xl p-8 space-y-6'>
       <h2 className='font-serif text-2xl font-bold text-primary'>Summary</h2>
       <div className='space-y-4 text-base'>
         <div className='flex justify-between'>

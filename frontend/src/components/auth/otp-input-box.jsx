@@ -70,7 +70,7 @@ export function OtpInputBox({
         'w-12 h-14 md:w-14 md:h-16',
         'text-center text-2xl md:text-3xl font-bold',
         'transition-all duration-200',
-        'border-2 rounded-xl',
+        'border-2 rounded-2xl',
         'bg-white/40 backdrop-blur-sm',
         'focus:outline-none focus:ring-2 focus:ring-primary/10',
         disabled && 'opacity-50 cursor-not-allowed',

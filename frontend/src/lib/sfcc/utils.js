@@ -124,3 +124,13 @@ export const fromApiCollection = (collection) => {
 export const fromApiCollections = (collections) => {
   return collections.map(fromApiCollection).filter(Boolean);
 };
+
+/**
+ * Sort products so that items with cover images appear first.
+ * Use as: products.sort(sortProductsByCover)
+ */
+export const sortProductsByCover = (a, b) => {
+  if (a.featuredImage?.url && !b.featuredImage?.url) return -1;
+  if (!a.featuredImage?.url && b.featuredImage?.url) return 1;
+  return 0;
+};

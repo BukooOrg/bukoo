@@ -259,7 +259,7 @@ export default function CollectionDetailPage() {
             {collection.categories.map((cat) => (
               <div
                 key={cat.id}
-                className='flex items-center justify-between p-3 bg-white/60 rounded-xl'>
+                className='flex items-center justify-between p-3 bg-white/60 rounded-2xl'>
                 <div>
                   <p className='text-sm font-sans font-bold text-primary'>{cat.name}</p>
                   <p className='text-xs font-mono text-primary/40'>{cat.urlSlug}</p>
@@ -284,14 +284,14 @@ export default function CollectionDetailPage() {
           <Button
             variant='outline'
             onClick={openEditDialog}
-            className='gap-2 rounded-xl text-xs font-bold uppercase tracking-widest'>
+            className='gap-2 rounded-2xl text-xs font-bold uppercase tracking-widest'>
             <Pencil className='w-4 h-4' />
             Edit Collection
           </Button>
           <Button
             variant='outline'
             onClick={() => setDeleteDialog(true)}
-            className='gap-2 rounded-xl text-xs font-bold uppercase tracking-widest border-destructive/20 text-destructive hover:bg-destructive/5'>
+            className='gap-2 rounded-2xl text-xs font-bold uppercase tracking-widest border-destructive/20 text-destructive hover:bg-destructive/5'>
             <Trash2 className='w-4 h-4' />
             Delete Collection
           </Button>
@@ -317,7 +317,7 @@ export default function CollectionDetailPage() {
                   type='text'
                   value={editName}
                   onChange={handleEditNameChange}
-                  className='w-full pl-12 pr-4 py-3 bg-white/40 border border-primary/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm'
+                  className='w-full pl-12 pr-4 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm'
                 />
               </div>
             </div>
@@ -336,7 +336,7 @@ export default function CollectionDetailPage() {
                     setEditSlug(e.target.value);
                     setAutoSlug(false);
                   }}
-                  className='w-full pl-12 pr-4 py-3 bg-white/40 border border-primary/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm font-mono'
+                  className='w-full pl-12 pr-4 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm font-mono'
                 />
               </div>
               <p className='text-xs text-primary/30 pl-1'>

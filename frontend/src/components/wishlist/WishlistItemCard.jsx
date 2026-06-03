@@ -40,7 +40,7 @@ export function WishlistItemCard({ item }) {
 
   return (
     <>
-      <div className='flex flex-col border border-primary/5 rounded-lg bg-white overflow-hidden'>
+      <div className='flex flex-col border border-primary/5 rounded-2xl bg-white overflow-hidden'>
         <Link
           to={`/product/${item.bookId}`}
           className='block aspect-[3/4] overflow-hidden bg-primary/5'>
@@ -69,13 +69,13 @@ export function WishlistItemCard({ item }) {
             <button
               onClick={handleMoveToCart}
               disabled={moving}
-              className='flex-1 h-12 bg-primary text-secondary text-base font-medium rounded hover:bg-primary/90 transition-colors disabled:opacity-40'>
+              className='flex-1 h-12 bg-primary text-secondary text-base font-medium rounded-2xl hover:bg-primary/90 transition-colors disabled:opacity-40'>
               {moving ? 'Moving...' : 'Move to Cart'}
             </button>
             <button
               onClick={() => setRemoveDialog(true)}
               disabled={removing}
-              className='h-12 px-4 border border-primary/5 text-base text-primary/40 hover:text-destructive hover:border-destructive/30 rounded transition-colors disabled:opacity-40'>
+              className='h-12 px-4 border border-primary/5 text-base text-primary/40 hover:text-destructive hover:border-destructive/30 rounded-2xl transition-colors disabled:opacity-40'>
               Remove
             </button>
           </div>

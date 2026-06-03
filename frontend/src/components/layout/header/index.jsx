@@ -65,7 +65,7 @@ export function Header({ shouldRenderSearchBar = true }) {
         {/* Wide Search Bar (Centered/Expanded) */}
         {shouldRenderSearchBar && (
           <div className='flex justify-center flex-1 md:px-12 max-md:hidden'>
-            <div className='w-full max-w-3xl px-6 py-2 border rounded-full bg-secondary/80 border-secondary/30 backdrop-blur-md'>
+            <div className='w-full max-w-4xl px-8 py-3 rounded-full bg-white'>
               <Search />
             </div>
           </div>
@@ -114,7 +114,7 @@ export function Header({ shouldRenderSearchBar = true }) {
                     {user?.role !== 'admin' && (
                       <Link
                         to='/account/notifications'
-                        className='relative flex-none ml-2 p-1.5 rounded-lg hover:bg-primary/5 transition-colors'>
+                        className='relative flex-none ml-2 p-1.5 rounded-2xl hover:bg-primary/5 transition-colors'>
                         <Bell className='size-4 text-primary/60' />
                         {unreadCount > 0 && (
                           <span className='absolute -top-0.5 -right-0.5 size-3.5 flex items-center justify-center text-[8px] font-bold bg-destructive text-secondary rounded-full'>

@@ -64,7 +64,7 @@ export function NotificationCard({
   return (
     <div
       className={cn(
-        'group flex items-start gap-4 p-4 border rounded-xl transition-colors',
+        'group flex items-start gap-4 p-4 border rounded-2xl transition-colors',
         notification.isRead
           ? 'bg-white border-primary/5'
           : 'bg-primary/[0.02] border-primary/10 hover:border-primary/20',
@@ -120,7 +120,7 @@ export function NotificationCard({
 
             <div className='flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity'>
               {showUser && notification.userId && (
-                <span className='flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded bg-primary/5 text-primary/50'>
+                <span className='flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded-2xl bg-primary/5 text-primary/50'>
                   <User className='w-3 h-3' />
                   {notification.userId.slice(0, 8)}
                 </span>
@@ -129,7 +129,7 @@ export function NotificationCard({
               <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
                 <DropdownMenuTrigger asChild>
                   <button
-                    className='p-1 rounded hover:bg-primary/5 transition-colors'
+                    className='p-1 rounded-2xl hover:bg-primary/5 transition-colors'
                     onClick={(e) => e.stopPropagation()}>
                     <MoreVertical className='w-4 h-4 text-primary/40' />
                   </button>
@@ -170,7 +170,7 @@ export function NotificationCard({
 
 export function NotificationCardSkeleton() {
   return (
-    <div className='flex items-start gap-4 p-4 border rounded-xl border-primary/5 bg-white animate-pulse'>
+    <div className='flex items-start gap-4 p-4 border rounded-2xl border-primary/5 bg-white animate-pulse'>
       <div className='flex-none w-10 h-10 rounded-full bg-primary/5' />
       <div className='flex-1 space-y-2'>
         <div className='w-1/3 h-4 rounded bg-primary/5' />

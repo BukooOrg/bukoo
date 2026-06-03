@@ -53,7 +53,7 @@ function OverviewTab() {
     return (
       <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
         {[...Array(3)].map((_, i) => (
-          <div key={i} className='rounded-xl border p-5 animate-pulse bg-primary/5 h-24' />
+          <div key={i} className='rounded-2xl border p-5 animate-pulse bg-primary/5 h-24' />
         ))}
       </div>
     );
@@ -66,7 +66,7 @@ function OverviewTab() {
         <p className='text-sm font-bold text-destructive'>{error}</p>
         <button
           onClick={handleRetry}
-          className='px-4 py-2 text-sm font-bold border rounded-lg border-primary/10 text-primary hover:bg-primary/5 transition-colors'>
+          className='px-4 py-2 text-sm font-bold border rounded-2xl border-primary/10 text-primary hover:bg-primary/5 transition-colors'>
           Retry
         </button>
       </div>
@@ -123,7 +123,7 @@ export default function InventoryPage() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className='w-full'>
           <TabsList
             className={cn(
-              'w-full max-w-md mx-auto h-auto p-1 rounded-xl bg-primary/5',
+              'w-full max-w-md mx-auto h-auto p-1 rounded-2xl bg-primary/5',
               'flex gap-1'
             )}
             role='tablist'
@@ -133,7 +133,7 @@ export default function InventoryPage() {
               role='tab'
               aria-selected={activeTab === 'overview'}
               className={cn(
-                'flex-1 rounded-lg py-2.5 text-xs font-bold uppercase tracking-widest transition-all',
+                'flex-1 rounded-2xl py-2.5 text-xs font-bold uppercase tracking-widest transition-all',
                 'data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary',
                 'data-[state=inactive]:text-primary/40 data-[state=inactive]:hover:text-primary/60'
               )}>
@@ -144,7 +144,7 @@ export default function InventoryPage() {
               role='tab'
               aria-selected={activeTab === 'low-stock'}
               className={cn(
-                'flex-1 rounded-lg py-2.5 text-xs font-bold uppercase tracking-widest transition-all',
+                'flex-1 rounded-2xl py-2.5 text-xs font-bold uppercase tracking-widest transition-all',
                 'data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary',
                 'data-[state=inactive]:text-primary/40 data-[state=inactive]:hover:text-primary/60'
               )}>
@@ -155,7 +155,7 @@ export default function InventoryPage() {
               role='tab'
               aria-selected={activeTab === 'out-of-stock'}
               className={cn(
-                'flex-1 rounded-lg py-2.5 text-xs font-bold uppercase tracking-widest transition-all',
+                'flex-1 rounded-2xl py-2.5 text-xs font-bold uppercase tracking-widest transition-all',
                 'data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary',
                 'data-[state=inactive]:text-primary/40 data-[state=inactive]:hover:text-primary/60'
               )}>

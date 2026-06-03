@@ -27,8 +27,8 @@ function OrderItemCard({ item, onWriteReview, orderStatus }) {
   const isDelivered = orderStatus?.toLowerCase() === 'delivered';
 
   return (
-    <div className='flex gap-8 p-8 border border-primary/5 rounded-lg bg-white'>
-      <div className='w-32 h-44 shrink-0 overflow-hidden rounded bg-primary/5'>
+    <div className='flex gap-8 p-8 border border-primary/5 rounded-2xl bg-white'>
+      <div className='w-32 h-44 shrink-0 overflow-hidden rounded-2xl bg-primary/5'>
         {item.bookCoverUrl ? (
           <img
             src={item.bookCoverUrl}
@@ -67,7 +67,7 @@ function OrderItemCard({ item, onWriteReview, orderStatus }) {
 
 function OrderSummary({ order, canCancel, onCancel, onPay }) {
   return (
-    <div className='bg-white border border-primary/5 rounded-lg p-8 space-y-6'>
+    <div className='bg-white border border-primary/5 rounded-2xl p-8 space-y-6'>
       <h2 className='font-serif text-2xl font-bold text-primary'>Summary</h2>
       <div className='space-y-4 text-base'>
         <div className='flex justify-between'>
@@ -122,7 +122,7 @@ function OrderSummary({ order, canCancel, onCancel, onPay }) {
       {order.status?.toLowerCase() === 'pending' && (
         <Button
           onClick={onPay}
-          className='w-full h-14 text-lg bg-primary text-white hover:bg-primary/90'>
+          className='w-full h-14 text-lg bg-primary text-secondary hover:bg-primary/90'>
           Pay Now
         </Button>
       )}

@@ -1,3 +1,4 @@
+import { motion } from 'motion/react';
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
@@ -21,5 +22,13 @@ export function CustomerRoute() {
     return <Navigate to='/admin' replace />;
   }
 
-  return <Outlet />;
+  return (
+    <motion.div
+      initial={{ y: 6 }}
+      animate={{ y: 0 }}
+      exit={{ opacity: 0, y: -6 }}
+      transition={{ duration: 0.1, ease: 'easeOut' }}>
+      <Outlet />
+    </motion.div>
+  );
 }

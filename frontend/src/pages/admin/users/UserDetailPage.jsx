@@ -299,7 +299,7 @@ export default function UserDetailPage() {
               <Button
                 variant='outline'
                 onClick={() => setSuspendDialog(true)}
-                className='gap-2 rounded-xl text-xs font-bold uppercase tracking-widest border-destructive/20 text-destructive hover:bg-destructive/5'>
+                className='gap-2 rounded-2xl text-xs font-bold uppercase tracking-widest border-destructive/20 text-destructive hover:bg-destructive/5'>
                 <Power className='w-4 h-4' />
                 Suspend User
               </Button>
@@ -308,7 +308,7 @@ export default function UserDetailPage() {
               <Button
                 variant='outline'
                 onClick={() => setActivateDialog(true)}
-                className='gap-2 rounded-xl text-xs font-bold uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5'>
+                className='gap-2 rounded-2xl text-xs font-bold uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5'>
                 <Power className='w-4 h-4' />
                 Activate User
               </Button>
@@ -317,7 +317,7 @@ export default function UserDetailPage() {
               <Button
                 variant='outline'
                 onClick={() => setResetDialog(true)}
-                className='gap-2 rounded-xl text-xs font-bold uppercase tracking-widest'>
+                className='gap-2 rounded-2xl text-xs font-bold uppercase tracking-widest'>
                 <Key className='w-4 h-4' />
                 Reset Password
               </Button>
@@ -326,7 +326,7 @@ export default function UserDetailPage() {
               <Button
                 variant='outline'
                 onClick={() => setDeleteDialog(true)}
-                className='gap-2 rounded-xl text-xs font-bold uppercase tracking-widest border-destructive/20 text-destructive hover:bg-destructive/5'>
+                className='gap-2 rounded-2xl text-xs font-bold uppercase tracking-widest border-destructive/20 text-destructive hover:bg-destructive/5'>
                 <Trash2 className='w-4 h-4' />
                 Delete User
               </Button>
@@ -413,7 +413,7 @@ export default function UserDetailPage() {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder='Enter new password'
-                className='w-full px-4 py-3 bg-white/40 border border-primary/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm pr-12'
+                className='w-full px-4 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm pr-12'
               />
               <button
                 type='button'

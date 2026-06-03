@@ -106,7 +106,7 @@ export function ReportForm({ onSuccess }) {
                 type='button'
                 onClick={() => setValue('type', option.value, { shouldValidate: true })}
                 className={cn(
-                  'rounded-xl border-2 p-4 text-left transition-all',
+                  'rounded-2xl border-2 p-4 text-left transition-all',
                   isSelected
                     ? 'border-primary bg-primary/5 shadow-sm'
                     : 'border-primary/10 hover:border-primary/30 hover:bg-primary/[0.02]'
@@ -132,7 +132,7 @@ export function ReportForm({ onSuccess }) {
               type='date'
               {...register('dateFrom')}
               className={cn(
-                'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                'flex h-10 w-full rounded-2xl border border-primary/5 bg-white/40 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold',
                 errors.dateFrom && 'border-destructive'
               )}
             />
@@ -153,7 +153,7 @@ export function ReportForm({ onSuccess }) {
               type='date'
               {...register('dateTo')}
               className={cn(
-                'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                'flex h-10 w-full rounded-2xl border border-primary/5 bg-white/40 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold',
                 errors.dateTo && 'border-destructive'
               )}
             />
@@ -168,7 +168,7 @@ export function ReportForm({ onSuccess }) {
       {/* Format Toggle */}
       <div>
         <label className='mb-3 block text-sm font-semibold text-primary/70'>Output Format</label>
-        <div className='inline-flex rounded-lg border-2 border-primary/20 p-1'>
+        <div className='inline-flex rounded-2xl border-2 border-primary/20 p-1'>
           {[
             { value: ReportFormat.PDF, label: 'PDF' },
             { value: ReportFormat.CSV, label: 'CSV' },
@@ -180,7 +180,7 @@ export function ReportForm({ onSuccess }) {
                 type='button'
                 onClick={() => setValue('format', option.value, { shouldValidate: true })}
                 className={cn(
-                  'rounded-md px-5 py-2 text-sm font-semibold transition-all',
+                  'rounded-2xl px-5 py-2 text-sm font-semibold transition-all',
                   isSelected
                     ? 'border border-primary/30 bg-primary/10 text-primary shadow-sm'
                     : 'border border-transparent text-primary/50 hover:text-primary hover:bg-primary/5'
@@ -206,7 +206,7 @@ export function ReportForm({ onSuccess }) {
             placeholder='e.g. 50'
             {...register('limit')}
             className={cn(
-              'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+              'flex h-10 w-full rounded-2xl border border-primary/5 bg-white/40 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold',
               errors.limit && 'border-destructive'
             )}
           />
@@ -222,7 +222,7 @@ export function ReportForm({ onSuccess }) {
           type='submit'
           disabled={isSubmitting}
           className={cn(
-            'inline-flex h-11 items-center justify-center gap-2 rounded-lg border-2 border-primary bg-transparent px-8 text-base font-semibold text-primary shadow-sm transition-all hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50'
+            'inline-flex h-11 items-center justify-center gap-2 rounded-2xl border-2 border-primary bg-transparent px-8 text-base font-semibold text-primary shadow-sm transition-all hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50'
           )}>
           {isSubmitting ? (
             <>

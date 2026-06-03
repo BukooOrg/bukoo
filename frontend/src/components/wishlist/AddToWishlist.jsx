@@ -1,6 +1,7 @@
 'use client';
 
 import { Heart } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -63,7 +64,7 @@ export function AddToWishlist({ bookId, className, size = 'default' }) {
       disabled={isLoading}
       aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
       className={cn(
-        'flex items-center justify-center rounded-lg bg-primary transition-all hover:bg-primary/90 disabled:opacity-40',
+        'relative flex items-center justify-center rounded-lg bg-primary transition-all hover:bg-primary/90 disabled:opacity-40',
         sizeClasses[size],
         className
       )}>
@@ -74,6 +75,18 @@ export function AddToWishlist({ bookId, className, size = 'default' }) {
           inWishlist && 'fill-white'
         )}
       />
+      <AnimatePresence>
+        {inWishlist && (
+          <motion.span
+            key='heart-ring'
+            initial={{ scale: 0.5, opacity: 0.6 }}
+            animate={{ scale: 1.8, opacity: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className='absolute inset-0 rounded-lg bg-white pointer-events-none'
+          />
+        )}
+      </AnimatePresence>
     </button>
   );
 }

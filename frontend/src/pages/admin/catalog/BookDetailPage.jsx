@@ -335,7 +335,7 @@ export default function BookDetailPage() {
                 size='sm'
                 onClick={handleToggleActive}
                 disabled={actionLoading}
-                className='gap-1 font-sans font-bold uppercase tracking-[0.1em] text-xs rounded-xl'>
+                className='gap-1 font-sans font-bold uppercase tracking-[0.1em] text-xs rounded-2xl'>
                 {actionLoading ? (
                   <Loader2 className='w-4 h-4 animate-spin' />
                 ) : (
@@ -347,7 +347,7 @@ export default function BookDetailPage() {
                 variant='outline'
                 size='sm'
                 onClick={() => setEditing(true)}
-                className='gap-1 font-sans font-bold uppercase tracking-[0.1em] text-xs rounded-xl'>
+                className='gap-1 font-sans font-bold uppercase tracking-[0.1em] text-xs rounded-2xl'>
                 <Pencil className='w-4 h-4' />
                 Edit
               </Button>
@@ -355,7 +355,7 @@ export default function BookDetailPage() {
                 variant='outline'
                 size='sm'
                 onClick={() => setDeleteTarget(true)}
-                className='gap-1 font-sans font-bold uppercase tracking-[0.1em] text-xs rounded-xl text-destructive border-destructive/20 hover:bg-destructive/5'>
+                className='gap-1 font-sans font-bold uppercase tracking-[0.1em] text-xs rounded-2xl text-destructive border-destructive/20 hover:bg-destructive/5'>
                 <Trash2 className='w-4 h-4' />
                 Delete
               </Button>
@@ -374,9 +374,14 @@ export default function BookDetailPage() {
 
       {/* Cover Image */}
       <div className='flex items-start gap-6'>
-        <div className='relative w-32 h-48 overflow-hidden rounded-xl border border-primary/5 bg-primary/5 shrink-0'>
+        <div className='relative w-32 h-48 overflow-hidden rounded-2xl border border-primary/5 bg-primary/5 shrink-0'>
           {book.coverUrl ? (
-            <img src={book.coverUrl} alt={book.title} className='object-cover w-full h-full' />
+            <img
+              src={book.coverUrl}
+              alt={book.title}
+              referrerpolicy='no-referrer'
+              className='object-cover w-full h-full'
+            />
           ) : (
             <div className='flex items-center justify-center w-full h-full'>
               <BookOpen className='w-8 h-8 text-primary/20' />
@@ -394,7 +399,7 @@ export default function BookDetailPage() {
 
         {/* Quick info */}
         <div className='grid flex-1 grid-cols-2 gap-3 sm:grid-cols-4'>
-          <div className='p-3 rounded-xl bg-primary/5'>
+          <div className='p-3 rounded-2xl bg-primary/5'>
             <p className='text-[10px] font-black uppercase tracking-widest text-primary/30'>
               Price
             </p>
@@ -402,7 +407,7 @@ export default function BookDetailPage() {
               {formatBookPrice(book.price)}
             </p>
           </div>
-          <div className='p-3 rounded-xl bg-primary/5'>
+          <div className='p-3 rounded-2xl bg-primary/5'>
             <p className='text-[10px] font-black uppercase tracking-widest text-primary/30'>
               Stock
             </p>
@@ -416,13 +421,13 @@ export default function BookDetailPage() {
               {book.stockQuantity}
             </p>
           </div>
-          <div className='p-3 rounded-xl bg-primary/5'>
+          <div className='p-3 rounded-2xl bg-primary/5'>
             <p className='text-[10px] font-black uppercase tracking-widest text-primary/30'>
               Pages
             </p>
             <p className='font-sans text-lg font-bold text-primary'>{book.pageCount || '—'}</p>
           </div>
-          <div className='p-3 rounded-xl bg-primary/5'>
+          <div className='p-3 rounded-2xl bg-primary/5'>
             <p className='text-[10px] font-black uppercase tracking-widest text-primary/30'>
               Language
             </p>
@@ -456,7 +461,7 @@ export default function BookDetailPage() {
             type='button'
             onClick={handleStockUpdate}
             disabled={stockLoading || !stockVal}
-            className='py-4 px-6 bg-primary text-secondary rounded-2xl font-sans font-bold uppercase tracking-[0.1em] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100'>
+            className='py-5 px-6 bg-primary text-secondary rounded-2xl font-sans font-bold uppercase tracking-[0.2em] shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100'>
             {stockLoading ? (
               <Loader2 className='w-5 h-5 animate-spin' />
             ) : (
@@ -698,7 +703,7 @@ export default function BookDetailPage() {
               <button
                 type='submit'
                 disabled={saveLoading}
-                className='flex-1 py-4 bg-primary text-secondary rounded-2xl font-sans font-bold uppercase tracking-[0.1em] shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100'>
+                className='flex-1 py-5 bg-primary text-secondary rounded-2xl font-sans font-bold uppercase tracking-[0.2em] shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100'>
                 {saveLoading ? (
                   <Loader2 className='w-5 h-5 animate-spin' />
                 ) : (
@@ -861,14 +866,14 @@ export default function BookDetailPage() {
             <Button
               variant='outline'
               onClick={() => setDeleteTarget(false)}
-              className='rounded-xl font-sans font-bold uppercase tracking-[0.1em] text-xs'>
+              className='rounded-2xl font-sans font-bold uppercase tracking-[0.1em] text-xs'>
               Cancel
             </Button>
             <Button
               variant='destructive'
               onClick={handleDelete}
               disabled={deleteLoading}
-              className='gap-2 rounded-xl font-sans font-bold uppercase tracking-[0.1em] text-xs'>
+              className='gap-2 rounded-2xl font-sans font-bold uppercase tracking-[0.1em] text-xs'>
               {deleteLoading ? (
                 <Loader2 className='w-4 h-4 animate-spin' />
               ) : (

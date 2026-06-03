@@ -18,11 +18,11 @@ export function MetricCard({ icon: Icon, label, value, accent = 'default', class
   return (
     <div
       className={cn(
-        'rounded-xl border p-5 flex items-start gap-4 transition-colors',
+        'rounded-2xl border p-5 flex items-start gap-4 transition-colors',
         accentMap[accent],
         className
       )}>
-      <div className={cn('rounded-lg p-2.5 shrink-0', iconBgMap[accent])}>
+      <div className={cn('rounded-2xl p-2.5 shrink-0', iconBgMap[accent])}>
         <Icon className='w-5 h-5' />
       </div>
       <div className='space-y-1 min-w-0'>

@@ -1,7 +1,8 @@
 'use client';
 
 import { PlusCircleIcon } from 'lucide-react';
-import React, { useState } from 'react';
+import { motion } from 'motion/react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -24,6 +25,7 @@ export function AddToCart({
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [pulse, setPulse] = useState(false);
 
   const resolvedBookId = bookId || product?.id;
 
@@ -40,6 +42,8 @@ export function AddToCart({
     try {
       await addToCart(resolvedBookId, 1);
       toast.success('Added to cart');
+      setPulse(true);
+      setTimeout(() => setPulse(false), 300);
     } catch {
       toast.error('Failed to add to cart');
     } finally {
@@ -64,26 +68,30 @@ export function AddToCart({
   };
 
   const buttonElement = (
-    <Button
-      type='button'
-      onClick={handleAddToCart}
-      aria-label={!resolvedBookId ? 'Select a book' : 'Add to bag'}
-      disabled={isDisabled}
-      className={
-        iconOnly ? className : cn('w-full relative flex items-center justify-between', className)
-      }
-      {...buttonProps}>
-      {isLoading ? (
-        <Loader size={getLoaderSize()} />
-      ) : iconOnly ? (
-        <span className='inline-block'>{icon}</span>
-      ) : (
-        <div className='w-full flex items-center justify-center gap-3'>
-          <span className='font-sans font-bold uppercase tracking-tight'>{getButtonText()}</span>
-          <PlusCircleIcon />
-        </div>
-      )}
-    </Button>
+    <motion.div
+      animate={pulse ? { scale: [1, 1.05, 1] } : {}}
+      transition={{ duration: 0.3, ease: 'easeOut' }}>
+      <Button
+        type='button'
+        onClick={handleAddToCart}
+        aria-label={!resolvedBookId ? 'Select a book' : 'Add to bag'}
+        disabled={isDisabled}
+        className={
+          iconOnly ? className : cn('w-full relative flex items-center justify-between', className)
+        }
+        {...buttonProps}>
+        {isLoading ? (
+          <Loader size={getLoaderSize()} />
+        ) : iconOnly ? (
+          <span className='inline-block'>{icon}</span>
+        ) : (
+          <div className='w-full flex items-center justify-center gap-3'>
+            <span className='font-sans font-bold uppercase tracking-tight'>{getButtonText()}</span>
+            <PlusCircleIcon />
+          </div>
+        )}
+      </Button>
+    </motion.div>
   );
 
   return (

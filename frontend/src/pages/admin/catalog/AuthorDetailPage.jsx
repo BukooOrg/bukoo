@@ -233,7 +233,7 @@ export default function AuthorDetailPage() {
               setBookPage(1);
             }}
             placeholder='Search books...'
-            className='w-full pl-10 pr-4 py-2 bg-white/40 border border-primary/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm'
+            className='w-full pl-12 pr-4 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm'
           />
         </div>
 
@@ -265,7 +265,7 @@ export default function AuthorDetailPage() {
                   pageBooks.map((book) => (
                     <div
                       key={book.id}
-                      className='flex items-center justify-between p-3 bg-white/60 rounded-xl'>
+                      className='flex items-center justify-between p-3 bg-white/60 rounded-2xl'>
                       <div>
                         <Link
                           to={`/admin/books/${book.id}`}
@@ -298,7 +298,7 @@ export default function AuthorDetailPage() {
                       size='sm'
                       disabled={!hasPrev}
                       onClick={() => setBookPage(bookPage - 1)}
-                      className='gap-1 rounded-xl'>
+                      className='gap-1 rounded-2xl'>
                       <ChevronLeft className='w-4 h-4' />
                       Previous
                     </Button>
@@ -307,7 +307,7 @@ export default function AuthorDetailPage() {
                       size='sm'
                       disabled={!hasNext}
                       onClick={() => setBookPage(bookPage + 1)}
-                      className='gap-1 rounded-xl'>
+                      className='gap-1 rounded-2xl'>
                       Next
                       <ChevronRight className='w-4 h-4' />
                     </Button>
@@ -328,14 +328,14 @@ export default function AuthorDetailPage() {
           <Button
             variant='outline'
             onClick={openEditDialog}
-            className='gap-2 rounded-xl text-xs font-bold uppercase tracking-widest'>
+            className='gap-2 rounded-2xl text-xs font-bold uppercase tracking-widest'>
             <Pencil className='w-4 h-4' />
             Edit Author
           </Button>
           <Button
             variant='outline'
             onClick={() => setDeleteDialog(true)}
-            className='gap-2 rounded-xl text-xs font-bold uppercase tracking-widest border-destructive/20 text-destructive hover:bg-destructive/5'>
+            className='gap-2 rounded-2xl text-xs font-bold uppercase tracking-widest border-destructive/20 text-destructive hover:bg-destructive/5'>
             <Trash2 className='w-4 h-4' />
             Delete Author
           </Button>
@@ -361,7 +361,7 @@ export default function AuthorDetailPage() {
                   type='text'
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className='w-full pl-12 pr-4 py-3 bg-white/40 border border-primary/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm'
+                  className='w-full pl-12 pr-4 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm'
                 />
               </div>
             </div>

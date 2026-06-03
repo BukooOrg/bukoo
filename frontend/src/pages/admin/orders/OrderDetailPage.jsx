@@ -24,7 +24,7 @@ function formatPrice(amount, currency = 'RM') {
 
 function OrderItemCard({ item }) {
   return (
-    <div className='flex gap-8 p-8 border border-primary/5 rounded-lg bg-white'>
+    <div className='flex gap-8 p-8 border border-primary/5 rounded-2xl bg-white'>
       <div className='w-32 h-44 shrink-0 overflow-hidden rounded bg-primary/5'>
         {item.bookCoverUrl ? (
           <img
@@ -54,7 +54,7 @@ function OrderItemCard({ item }) {
 
 function AdminOrderSummary({ order }) {
   return (
-    <div className='bg-white border border-primary/5 rounded-lg p-8 space-y-6'>
+    <div className='bg-white border border-primary/5 rounded-2xl p-8 space-y-6'>
       <h2 className='font-serif text-2xl font-bold text-primary'>Summary</h2>
       <div className='space-y-4 text-base'>
         <div className='flex justify-between'>

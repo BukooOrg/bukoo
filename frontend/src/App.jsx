@@ -1,11 +1,56 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AnimatePresence } from 'motion/react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
 import { CartProvider } from './components/cart/CartContext';
 // ─── Guards ─────────────────────────────────────────────────────────────────
 import { AdminRoute } from './components/guards/AdminRoute';
+// ─── Legacy router (kept for reference) ──────────────────────────────────────
+// import { Toaster } from 'sonner';
+// import { Footer } from './components/layout/footer';
+// import { Header } from './components/layout/header';
+// import Home from './pages/Home';
+// import Login from './pages/Login';
+// import OAuthCallback from './pages/OAuthCallback';
+// import ProductDetail from './pages/ProductDetail';
+// import Register from './pages/Register';
+// import Shop from './pages/Shop';
+//
+// function AppLegacy() {
+//   return (
+//     <AuthProvider>
+//       <CartProvider>
+//         <Router>
+//           <div className='flex flex-col min-h-screen font-sans antialiased bg-background text-foreground'>
+//             <Header />
+//             <main className='flex-1'>
+//               <Routes>
+//                 <Route path='/' element={<Home />} />
+//                 <Route path='/shop' element={<Shop />} />
+//                 <Route path='/shop/:collection' element={<Shop />} />
+//                 <Route path='/search' element={<Shop />} />
+//                 <Route path='/product/:handle' element={<ProductDetail />} />
+//                 <Route path='/login' element={<Login />} />
+//                 <Route path='/register' element={<Register />} />
+//                 <Route path='/oauth/callback' element={<OAuthCallback />} />
+//                 <Route
+//                   path='*'
+//                   element={
+//                     <div className='pt-48 font-serif text-2xl text-center opacity-40'>
+//                       404 - Chapter Not Found
+//                     </div>
+//                   }
+//                 />
+//               </Routes>
+//             </main>
+//             <Footer />
+//             <Toaster closeButton position='bottom-right' />
+//           </div>
+//         </Router>
+//       </CartProvider>
+//     </AuthProvider>
+//   );
+// }
 import { CustomerRoute } from './components/guards/CustomerRoute';
-// import { ProtectedRoute } from './components/guards/ProtectedRoute';
 // ─── Layouts ────────────────────────────────────────────────────────────────
 import { AccountLayout } from './components/layout/AccountLayout';
 import { AdminLayout } from './components/layout/AdminLayout';
@@ -75,108 +120,112 @@ import NotFoundPage from './pages/storefront/NotFoundPage';
 import ProductDetailPage from './pages/storefront/ProductDetailPage';
 import ShopPage from './pages/storefront/ShopPage';
 
+function AppRoutes() {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode='wait'>
+      <Routes location={location} key={location.pathname}>
+        {/* ── AUTH LAYOUT — no Header/Footer ───────────────────────── */}
+        <Route element={<AuthLayout />}>
+          <Route path='/login' element={<LoginPage />} />
+          <Route path='/register' element={<RegisterPage />} />
+          <Route path='/oauth/callback' element={<OAuthCallbackPage />} />
+          <Route path='/verify-email' element={<VerifyEmailPage />} />
+          <Route path='/forgot-password' element={<ForgotPasswordPage />} />
+          <Route path='/verify-password-reset-otp' element={<VerifyPasswordResetOtpPage />} />
+          <Route path='/reset-password' element={<ResetPasswordPage />} />
+        </Route>
+
+        {/* ── STOREFRONT LAYOUT — Header + Footer ──────────────────── */}
+        <Route element={<StorefrontLayout />}>
+          {/* 🌐 Public */}
+          <Route path='/' element={<HomePage />} />
+          <Route path='/shop' element={<ShopPage />} />
+          <Route path='/shop/:collection' element={<ShopPage />} />
+          <Route path='/search' element={<ShopPage />} />
+        </Route>
+        <Route
+          element={<StorefrontLayout customHeader={<Header shouldRenderSearchBar={false} />} />}>
+          <Route path='/product/:handle' element={<ProductDetailPage />} />
+        </Route>
+
+        {/* 👤 Account pages — customers only, admins redirected to /admin */}
+        <Route element={<CustomerRoute />}>
+          <Route element={<AccountLayout />}>
+            <Route path='/account' element={<AccountPage />} />
+            <Route path='/account/profile' element={<ProfilePage />} />
+            <Route path='/account/password' element={<PasswordPage />} />
+            <Route path='/account/address' element={<AddressPage />} />
+            <Route path='/account/wishlist' element={<WishlistPage />} />
+            <Route path='/account/delete' element={<DeleteAccountPage />} />
+            <Route path='/account/orders' element={<AccountOrdersPage />} />
+            <Route path='/account/orders/:orderId' element={<AccountOrderDetailPage />} />
+            <Route path='/account/reviews' element={<AccountReviewsPage />} />
+            <Route path='/account/notifications' element={<AccountNotificationsPage />} />
+            <Route path='/account/cart' element={<CartPage />} />
+          </Route>
+          <Route path='/checkout' element={<CheckoutPage />} />
+          <Route path='/checkout/payment' element={<CheckoutPaymentPage />} />
+          <Route path='/checkout/confirmation' element={<CheckoutConfirmationPage />} />
+        </Route>
+        {/* </Route> */}
+
+        {/* ── ADMIN LAYOUT — sidebar shell ─────────────────────────── */}
+        <Route element={<AdminRoute />}>
+          <Route element={<AdminLayout />}>
+            {/* Dashboard */}
+            <Route path='/admin' element={<AdminDashboardPage />} />
+            <Route path='/admin/notifications' element={<AdminNotificationsPage />} />
+
+            {/* Catalog */}
+            <Route path='/admin/books' element={<BooksPage />} />
+            <Route path='/admin/books/new' element={<BookNewPage />} />
+            <Route path='/admin/books/:bookId' element={<BookDetailPage />} />
+            <Route path='/admin/collections' element={<CollectionsPage />} />
+            <Route path='/admin/collections/new' element={<CollectionNewPage />} />
+            <Route path='/admin/collections/:collectionId' element={<CollectionDetailPage />} />
+            <Route path='/admin/categories' element={<CategoriesPage />} />
+            <Route path='/admin/categories/new' element={<CategoryNewPage />} />
+            <Route path='/admin/categories/:categoryId' element={<CategoryDetailPage />} />
+            <Route path='/admin/authors' element={<AuthorsPage />} />
+            <Route path='/admin/authors/new' element={<AuthorNewPage />} />
+            <Route path='/admin/authors/:authorId' element={<AuthorDetailPage />} />
+            <Route path='/admin/publishers' element={<PublishersPage />} />
+            <Route path='/admin/publishers/new' element={<PublisherNewPage />} />
+            <Route path='/admin/publishers/:publisherId' element={<PublisherDetailPage />} />
+
+            {/* Users */}
+            <Route path='/admin/users' element={<UsersPage />} />
+            <Route path='/admin/users/new' element={<UserNewPage />} />
+            <Route path='/admin/users/:userId' element={<UserDetailPage />} />
+
+            {/* Orders */}
+            <Route path='/admin/orders' element={<AdminOrdersPage />} />
+            <Route path='/admin/orders/:orderId' element={<AdminOrderDetailPage />} />
+
+            {/* Reviews */}
+            <Route path='/admin/reviews' element={<AdminReviewsPage />} />
+
+            {/* Inventory & Reports */}
+            <Route path='/admin/inventory' element={<InventoryPage />} />
+            <Route path='/admin/reports' element={<ReportsPage />} />
+          </Route>
+        </Route>
+
+        {/* 404 */}
+        <Route path='*' element={<NotFoundPage />} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
 function App() {
   return (
     <AuthProvider>
       <CartProvider>
         <WishlistProvider>
           <Router>
-            <Routes>
-              {/* ── AUTH LAYOUT — no Header/Footer ───────────────────────── */}
-              <Route element={<AuthLayout />}>
-                <Route path='/login' element={<LoginPage />} />
-                <Route path='/register' element={<RegisterPage />} />
-                <Route path='/oauth/callback' element={<OAuthCallbackPage />} />
-                <Route path='/verify-email' element={<VerifyEmailPage />} />
-                <Route path='/forgot-password' element={<ForgotPasswordPage />} />
-                <Route path='/verify-password-reset-otp' element={<VerifyPasswordResetOtpPage />} />
-                <Route path='/reset-password' element={<ResetPasswordPage />} />
-              </Route>
-
-              {/* ── STOREFRONT LAYOUT — Header + Footer ──────────────────── */}
-              <Route element={<StorefrontLayout />}>
-                {/* 🌐 Public */}
-                <Route path='/' element={<HomePage />} />
-                <Route path='/shop' element={<ShopPage />} />
-                <Route path='/shop/:collection' element={<ShopPage />} />
-                <Route path='/search' element={<ShopPage />} />
-              </Route>
-              <Route
-                element={
-                  <StorefrontLayout customHeader={<Header shouldRenderSearchBar={false} />} />
-                }>
-                <Route path='/product/:handle' element={<ProductDetailPage />} />
-              </Route>
-
-              {/* 👤 Account pages — customers only, admins redirected to /admin */}
-              <Route element={<CustomerRoute />}>
-                <Route element={<AccountLayout />}>
-                  <Route path='/account' element={<AccountPage />} />
-                  <Route path='/account/profile' element={<ProfilePage />} />
-                  <Route path='/account/password' element={<PasswordPage />} />
-                  <Route path='/account/address' element={<AddressPage />} />
-                  <Route path='/account/wishlist' element={<WishlistPage />} />
-                  <Route path='/account/delete' element={<DeleteAccountPage />} />
-                  <Route path='/account/orders' element={<AccountOrdersPage />} />
-                  <Route path='/account/orders/:orderId' element={<AccountOrderDetailPage />} />
-                  <Route path='/account/reviews' element={<AccountReviewsPage />} />
-                  <Route path='/account/notifications' element={<AccountNotificationsPage />} />
-                  <Route path='/account/cart' element={<CartPage />} />
-                </Route>
-                <Route path='/checkout' element={<CheckoutPage />} />
-                <Route path='/checkout/payment' element={<CheckoutPaymentPage />} />
-                <Route path='/checkout/confirmation' element={<CheckoutConfirmationPage />} />
-              </Route>
-              {/* </Route> */}
-
-              {/* ── ADMIN LAYOUT — sidebar shell ─────────────────────────── */}
-              <Route element={<AdminRoute />}>
-                <Route element={<AdminLayout />}>
-                  {/* Dashboard */}
-                  <Route path='/admin' element={<AdminDashboardPage />} />
-                  <Route path='/admin/notifications' element={<AdminNotificationsPage />} />
-
-                  {/* Catalog */}
-                  <Route path='/admin/books' element={<BooksPage />} />
-                  <Route path='/admin/books/new' element={<BookNewPage />} />
-                  <Route path='/admin/books/:bookId' element={<BookDetailPage />} />
-                  <Route path='/admin/collections' element={<CollectionsPage />} />
-                  <Route path='/admin/collections/new' element={<CollectionNewPage />} />
-                  <Route
-                    path='/admin/collections/:collectionId'
-                    element={<CollectionDetailPage />}
-                  />
-                  <Route path='/admin/categories' element={<CategoriesPage />} />
-                  <Route path='/admin/categories/new' element={<CategoryNewPage />} />
-                  <Route path='/admin/categories/:categoryId' element={<CategoryDetailPage />} />
-                  <Route path='/admin/authors' element={<AuthorsPage />} />
-                  <Route path='/admin/authors/new' element={<AuthorNewPage />} />
-                  <Route path='/admin/authors/:authorId' element={<AuthorDetailPage />} />
-                  <Route path='/admin/publishers' element={<PublishersPage />} />
-                  <Route path='/admin/publishers/new' element={<PublisherNewPage />} />
-                  <Route path='/admin/publishers/:publisherId' element={<PublisherDetailPage />} />
-
-                  {/* Users */}
-                  <Route path='/admin/users' element={<UsersPage />} />
-                  <Route path='/admin/users/new' element={<UserNewPage />} />
-                  <Route path='/admin/users/:userId' element={<UserDetailPage />} />
-
-                  {/* Orders */}
-                  <Route path='/admin/orders' element={<AdminOrdersPage />} />
-                  <Route path='/admin/orders/:orderId' element={<AdminOrderDetailPage />} />
-
-                  {/* Reviews */}
-                  <Route path='/admin/reviews' element={<AdminReviewsPage />} />
-
-                  {/* Inventory & Reports */}
-                  <Route path='/admin/inventory' element={<InventoryPage />} />
-                  <Route path='/admin/reports' element={<ReportsPage />} />
-                </Route>
-              </Route>
-
-              {/* 404 */}
-              <Route path='*' element={<NotFoundPage />} />
-            </Routes>
+            <AppRoutes />
           </Router>
         </WishlistProvider>
       </CartProvider>

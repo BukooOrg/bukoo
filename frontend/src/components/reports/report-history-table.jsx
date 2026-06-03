@@ -171,7 +171,7 @@ export function ReportHistoryTable() {
             setStatusFilter(e.target.value);
             setPage(1);
           }}
-          className='h-10 rounded-lg border border-primary/10 px-3 pr-8 text-sm appearance-none bg-background transition-all focus:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/10'>
+          className='h-10 rounded-2xl border border-primary/10 px-3 pr-8 text-sm appearance-none bg-background transition-all focus:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/10'>
           <option value=''>All Status</option>
           <option value={ReportJobStatus.PENDING}>Pending</option>
           <option value={ReportJobStatus.PROCESSING}>Processing</option>
@@ -185,7 +185,7 @@ export function ReportHistoryTable() {
             setTypeFilter(e.target.value);
             setPage(1);
           }}
-          className='h-10 rounded-lg border border-primary/10 px-3 pr-8 text-sm appearance-none bg-background transition-all focus:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/10'>
+          className='h-10 rounded-2xl border border-primary/10 px-3 pr-8 text-sm appearance-none bg-background transition-all focus:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/10'>
           <option value=''>All Types</option>
           <option value={ReportType.SALES_SUMMARY}>Sales Summary</option>
           <option value={ReportType.TOP_BOOKS}>Top Books</option>
@@ -233,7 +233,7 @@ export function ReportHistoryTable() {
                       onClick={() => handleDownload(job)}
                       variant='ghost'
                       size='icon-sm'
-                      className='h-8 w-8 rounded-lg text-primary/40 hover:text-primary hover:bg-primary/5'>
+                      className='h-8 w-8 rounded-2xl text-primary/40 hover:text-primary hover:bg-primary/5'>
                       <Download className='size-4' />
                     </Button>
                   ) : (

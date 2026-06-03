@@ -1,3 +1,4 @@
+import { motion } from 'motion/react';
 import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Toaster } from 'sonner';
@@ -37,7 +38,13 @@ export function StorefrontLayout({ customHeader = null }) {
       <div className='mt-24 md:mt-32'>
         {showGenreNav && <GenreNav collections={collections} activeHandle={activeHandle} />}
         <main id='main-content' className='min-h-screen pt-0'>
-          <Outlet />
+          <motion.div
+            initial={{ y: 6 }}
+            animate={{ y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.1, ease: 'easeOut' }}>
+            <Outlet />
+          </motion.div>
         </main>
       </div>
       {!isAccountPage && <Footer />}

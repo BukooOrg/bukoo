@@ -5,15 +5,15 @@ import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 const statCardVariants = cva(
-  'rounded-xl border bg-card p-6 transition-all duration-200 hover:shadow-md',
+  'rounded-2xl border bg-card p-6 transition-all duration-200 hover:shadow-md',
   {
     variants: {
       variant: {
         default: 'border-border',
         accent: 'border-primary/20 bg-primary/5',
-        success: 'border-green-200 bg-green-50',
-        warning: 'border-amber-200 bg-amber-50',
-        destructive: 'border-red-200 bg-red-50',
+        success: 'border-primary/20 bg-primary/10',
+        warning: 'border-primary/10 bg-primary/5',
+        destructive: 'border-destructive/20 bg-destructive/10',
       },
     },
     defaultVariants: {
@@ -73,7 +73,7 @@ function TrendIndicator({ value }) {
   if (value === 0) return null;
 
   const isPositive = value > 0;
-  const color = isPositive ? 'text-green-600' : 'text-red-600';
+  const color = isPositive ? 'text-primary' : 'text-destructive';
 
   return (
     <span className={cn('text-xs font-semibold tabular-nums', color)}>

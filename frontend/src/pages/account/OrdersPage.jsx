@@ -88,7 +88,7 @@ export default function AccountOrdersPage() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className='h-10 px-3 border border-primary/5 rounded text-sm'>
+            className='h-10 px-3 bg-white/40 border border-primary/5 rounded-2xl text-sm font-sans font-bold focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all'>
             <option value=''>All Status</option>
             <option value='pending'>Pending</option>
             <option value='paid'>Paid</option>
@@ -111,7 +111,7 @@ export default function AccountOrdersPage() {
               return (
                 <div
                   key={order.id}
-                  className='flex items-center justify-between p-6 border border-primary/5 rounded-lg bg-white hover:border-primary transition-colors'>
+                  className='flex items-center justify-between p-6 border border-primary/5 rounded-2xl bg-white hover:border-primary transition-colors'>
                   <Link to={`/account/orders/${order.id}`} className='flex-1'>
                     <div>
                       <p className='text-lg font-medium font-serif'>
@@ -135,7 +135,7 @@ export default function AccountOrdersPage() {
                     {isPending && (
                       <Button
                         onClick={() => navigate(`/checkout/payment?orderId=${order.id}`)}
-                        className='h-10 text-sm bg-primary text-white hover:bg-primary/90'>
+                        className='h-10 text-sm bg-primary text-secondary hover:bg-primary/90'>
                         Pay Now
                       </Button>
                     )}
