@@ -103,10 +103,10 @@ export default function CategoriesPage() {
 
       {/* Top bar — collection filter + create */}
       <div className='flex flex-wrap items-center justify-end gap-3'>
-        <div className='flex p-1 bg-primary/5 rounded-xl'>
+        <div className='flex p-1 bg-primary/5 rounded-2xl'>
           <button
             onClick={() => handleCollectionChange('all')}
-            className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${
+            className={`px-4 py-2 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all ${
               collectionFilter === 'all'
                 ? 'bg-white shadow-sm text-primary'
                 : 'text-primary/40 hover:text-primary/60'
@@ -117,7 +117,7 @@ export default function CategoriesPage() {
             <button
               key={col.id}
               onClick={() => handleCollectionChange(col.id)}
-              className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${
+              className={`px-4 py-2 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all ${
                 collectionFilter === col.id
                   ? 'bg-white shadow-sm text-primary'
                   : 'text-primary/40 hover:text-primary/60'
@@ -146,7 +146,7 @@ export default function CategoriesPage() {
       {loading ? (
         <div className='animate-pulse space-y-3'>
           {[...Array(6)].map((_, i) => (
-            <div key={i} className='h-14 bg-primary/5 rounded-xl' />
+            <div key={i} className='h-14 bg-primary/5 rounded-2xl' />
           ))}
         </div>
       ) : (
@@ -193,7 +193,7 @@ export default function CategoriesPage() {
                             <Button
                               variant='ghost'
                               size='icon'
-                              className='w-8 h-8 rounded-lg text-primary/40 hover:text-primary hover:bg-primary/5'>
+                              className='w-8 h-8 rounded-2xl text-primary/40 hover:text-primary hover:bg-primary/5'>
                               <Eye className='w-4 h-4' />
                             </Button>
                           </Link>
@@ -202,7 +202,7 @@ export default function CategoriesPage() {
                             size='icon'
                             onClick={() => handleDeleteClick(cat)}
                             disabled={deletingId === cat.id}
-                            className='w-8 h-8 rounded-lg text-primary/40 hover:text-destructive hover:bg-destructive/5'>
+                            className='w-8 h-8 rounded-2xl text-primary/40 hover:text-destructive hover:bg-destructive/5'>
                             {deletingId === cat.id ? (
                               <Loader2 className='w-4 h-4 animate-spin' />
                             ) : (

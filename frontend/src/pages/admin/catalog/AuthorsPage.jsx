@@ -131,7 +131,7 @@ export default function AuthorsPage() {
             value={search}
             onChange={handleSearchChange}
             placeholder='Search authors...'
-            className='w-full pl-10 pr-4 py-2.5 bg-white/40 border border-primary/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm'
+            className='w-full pl-12 pr-4 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm'
           />
         </div>
         <Link to='/admin/authors/new'>
@@ -154,7 +154,7 @@ export default function AuthorsPage() {
       {loading ? (
         <div className='animate-pulse space-y-3'>
           {[...Array(6)].map((_, i) => (
-            <div key={i} className='h-14 bg-primary/5 rounded-xl' />
+            <div key={i} className='h-14 bg-primary/5 rounded-2xl' />
           ))}
         </div>
       ) : (
@@ -201,7 +201,7 @@ export default function AuthorsPage() {
                             <Button
                               variant='ghost'
                               size='icon'
-                              className='w-8 h-8 rounded-lg text-primary/40 hover:text-primary hover:bg-primary/5'>
+                              className='w-8 h-8 rounded-2xl text-primary/40 hover:text-primary hover:bg-primary/5'>
                               <Eye className='w-4 h-4' />
                             </Button>
                           </Link>
@@ -210,7 +210,7 @@ export default function AuthorsPage() {
                             size='icon'
                             onClick={() => handleDeleteClick(author)}
                             disabled={deletingId === author.id}
-                            className='w-8 h-8 rounded-lg text-primary/40 hover:text-destructive hover:bg-destructive/5'>
+                            className='w-8 h-8 rounded-2xl text-primary/40 hover:text-destructive hover:bg-destructive/5'>
                             {deletingId === author.id ? (
                               <Loader2 className='w-4 h-4 animate-spin' />
                             ) : (
@@ -238,7 +238,7 @@ export default function AuthorsPage() {
                   size='sm'
                   disabled={!hasPrev}
                   onClick={() => setPage(page - 1)}
-                  className='gap-1 rounded-xl'>
+                  className='gap-1 rounded-2xl'>
                   <ChevronLeft className='w-4 h-4' />
                   Previous
                 </Button>
@@ -247,7 +247,7 @@ export default function AuthorsPage() {
                   size='sm'
                   disabled={!hasNext}
                   onClick={() => setPage(page + 1)}
-                  className='gap-1 rounded-xl'>
+                  className='gap-1 rounded-2xl'>
                   Next
                   <ChevronRight className='w-4 h-4' />
                 </Button>

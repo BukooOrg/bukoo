@@ -71,7 +71,7 @@ export default function AccountNotificationsPage() {
 
         {/* Filters */}
         <div className='flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between'>
-          <div className='flex items-center gap-1 p-1 bg-primary/5 rounded-lg'>
+          <div className='flex items-center gap-1 p-1 bg-primary/5 rounded-2xl'>
             {FILTERS.map((f) => (
               <button
                 key={f.key}
@@ -80,14 +80,14 @@ export default function AccountNotificationsPage() {
                   setPage(1);
                 }}
                 className={cn(
-                  'px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                  'px-4 py-2 text-sm font-medium rounded-2xl transition-colors',
                   filter === f.key
                     ? 'bg-white text-primary shadow-sm'
                     : 'text-primary/50 hover:text-primary'
                 )}>
                 {f.label}
                 {f.key === 'unread' && unreadCount > 0 && (
-                  <span className='ml-1.5 px-1.5 py-0.5 text-[10px] font-bold bg-primary text-white rounded-full'>
+                  <span className='ml-1.5 px-1.5 py-0.5 text-[10px] font-bold bg-primary text-secondary rounded-full'>
                     {unreadCount}
                   </span>
                 )}

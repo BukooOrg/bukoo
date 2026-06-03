@@ -108,7 +108,7 @@ export default function ResetPasswordPage() {
           <div className='max-w-md w-full bg-white/80 backdrop-blur-3xl p-10 md:p-12 rounded-[40px] border border-white/40 shadow-2xl transition-all animate-in fade-in zoom-in duration-700'>
             <div className='flex justify-center mb-6'>
               <div className='flex items-center justify-center rounded-full w-14 h-14 bg-primary/5'>
-                <CheckCircle className='w-7 h-7 text-green-600' />
+                <CheckCircle className='w-7 h-7 text-primary' />
               </div>
             </div>
 
@@ -122,8 +122,8 @@ export default function ResetPasswordPage() {
             </div>
 
             <div className='space-y-6'>
-              <div className='p-4 border bg-green-50 border-green-200 rounded-2xl'>
-                <p className='text-sm font-bold text-green-800 text-center'>
+              <div className='p-4 border bg-primary/5 border-primary/10 rounded-2xl'>
+                <p className='text-sm font-bold text-primary text-center'>
                   You can now login with your new password.
                 </p>
               </div>

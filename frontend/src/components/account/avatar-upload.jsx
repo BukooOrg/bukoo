@@ -62,8 +62,8 @@ export function AvatarUpload({ currentAvatarUrl, fullName, onAvatarChange }) {
           <button
             type='button'
             onClick={() => fileInputRef.current?.click()}
-            className='absolute inset-0 flex items-center justify-center transition-opacity rounded-full opacity-0 bg-black/40 group-hover:opacity-100'>
-            <Camera className='w-6 h-6 text-white' />
+            className='absolute inset-0 flex items-center justify-center transition-opacity rounded-full opacity-0 bg-primary/40 group-hover:opacity-100'>
+            <Camera className='w-6 h-6 text-secondary' />
           </button>
         )}
 

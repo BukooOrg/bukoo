@@ -15,7 +15,7 @@ export function FeaturedProductLabel({ product, principal = false, className }) 
           className
         )}>
         <div>
-          <Badge className='bg-primary text-white font-sans font-bold uppercase tracking-widest px-3 py-1 text-[10px]'>
+          <Badge className='bg-primary text-secondary font-sans font-bold uppercase tracking-widest px-3 py-1 text-[10px]'>
             {product.categoryId === 'top-seller' ? 'Staff Pick' : 'Best Seller'}
           </Badge>
         </div>

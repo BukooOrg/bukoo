@@ -57,7 +57,7 @@ export function ReviewForm({ review, onSubmit, onCancel, loading = false, classN
         <textarea
           {...register('comment')}
           rows={4}
-          className='w-full px-3 py-2 text-sm border rounded-lg border-primary/10 focus:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all resize-none'
+          className='w-full px-4 py-4 bg-white/40 border rounded-2xl border-primary/5 focus:border-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all resize-none font-sans font-bold text-sm'
           placeholder='Share your thoughts about this book...'
         />
         <p className='mt-1 text-xs text-primary/30'>{watch('comment').length}/2000 characters</p>
@@ -79,7 +79,7 @@ export function ReviewForm({ review, onSubmit, onCancel, loading = false, classN
         <Button
           type='submit'
           disabled={loading || currentRating === 0}
-          className='h-10 bg-primary text-white hover:bg-primary/90'>
+          className='h-10 bg-primary text-secondary hover:bg-primary/90'>
           {loading
             ? isEditing
               ? 'Saving...'

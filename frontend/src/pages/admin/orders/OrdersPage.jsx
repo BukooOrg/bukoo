@@ -145,7 +145,7 @@ export default function AdminOrdersPage() {
               setPage(1);
             }}
             placeholder='Search orders...'
-            className='w-64 h-10 px-3 text-sm transition-all border rounded-lg border-primary/10 focus:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/10'
+            className='w-64 h-10 px-3 text-sm transition-all border rounded-2xl border-primary/5 focus:border-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/10 bg-white/40 font-sans font-bold'
           />
           <select
             value={statusFilter}
@@ -153,7 +153,7 @@ export default function AdminOrdersPage() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className='h-10 px-3 text-sm transition-all border rounded-lg border-primary/10 focus:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/10'>
+            className='h-10 px-3 text-sm transition-all border rounded-2xl border-primary/5 focus:border-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/10 bg-white/40 font-sans font-bold'>
             <option value=''>All Status</option>
             <option value='pending'>Pending</option>
             <option value='paid'>Paid</option>
@@ -230,7 +230,7 @@ export default function AdminOrdersPage() {
                               disabled={isActing}
                               variant='ghost'
                               size='icon'
-                              className='w-8 h-8 rounded-lg text-primary/40 hover:text-primary hover:bg-primary/5'>
+                              className='w-8 h-8 rounded-2xl text-primary/40 hover:text-primary hover:bg-primary/5'>
                               {isActing ? (
                                 <Loader2 className='w-4 h-4 animate-spin' />
                               ) : (
@@ -244,7 +244,7 @@ export default function AdminOrdersPage() {
                               disabled={isActing}
                               variant='ghost'
                               size='icon'
-                              className='w-8 h-8 rounded-lg text-primary/40 hover:text-primary hover:bg-primary/5'>
+                              className='w-8 h-8 rounded-2xl text-primary/40 hover:text-primary hover:bg-primary/5'>
                               {isActing ? (
                                 <Loader2 className='w-4 h-4 animate-spin' />
                               ) : (

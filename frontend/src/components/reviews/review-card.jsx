@@ -35,7 +35,7 @@ export function ReviewCard({
   return (
     <div
       className={cn(
-        'p-4 border rounded-xl bg-white transition-colors',
+        'p-4 border rounded-2xl bg-white transition-colors',
         isHidden && 'opacity-60',
         variant === 'compact' ? 'border-primary/5' : 'border-primary/10 hover:border-primary/20',
         className
@@ -53,7 +53,7 @@ export function ReviewCard({
               </span>
             )}
             {isHidden && (
-              <span className='flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-red-50 text-red-600'>
+              <span className='flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-destructive/5 text-destructive'>
                 <EyeOff className='w-3 h-3' />
                 Hidden
               </span>
@@ -89,7 +89,7 @@ export function ReviewCard({
           <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger asChild>
               <button
-                className='p-1 rounded-lg hover:bg-primary/5 transition-colors shrink-0'
+                className='p-1 rounded-2xl hover:bg-primary/5 transition-colors shrink-0'
                 aria-label='Review actions'>
                 <MoreVertical className='w-4 h-4 text-primary/40' />
               </button>
@@ -108,7 +108,9 @@ export function ReviewCard({
                 </DropdownMenuItem>
               )}
               {onDelete && (
-                <DropdownMenuItem onClick={onDelete} className='text-red-600 focus:text-red-600'>
+                <DropdownMenuItem
+                  onClick={onDelete}
+                  className='text-destructive focus:text-destructive'>
                   <Trash2 className='w-4 h-4 mr-2' />
                   Delete
                 </DropdownMenuItem>

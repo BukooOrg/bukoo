@@ -86,7 +86,7 @@ export default function NewPage() {
 import NewPage from "./pages/account/NewPage";
 // ...
 // Inside the CustomerRoute → AccountLayout block:
-<Route path='/account/new' element={<NewPage />} />
+<Route path='/account/new' element={<NewPage />} />;
 ```
 
 Pages always belong in a subdirectory (`account/`, `admin/catalog/`, `shopping/`, `auth/`, `storefront/`) — never flat in `pages/`.
@@ -258,15 +258,15 @@ Routes are organized into four layout groups in `App.jsx`.
 
 **Auth layout** (no header/footer):
 
-| Path                           | Page                      |
-| ------------------------------ | ------------------------- |
-| `/login`                       | LoginPage                 |
-| `/register`                    | RegisterPage              |
-| `/oauth/callback`              | OAuthCallbackPage         |
-| `/verify-email`                | VerifyEmailPage           |
-| `/forgot-password`             | ForgotPasswordPage        |
-| `/verify-password-reset-otp`   | VerifyPasswordResetOtpPage |
-| `/reset-password`              | ResetPasswordPage         |
+| Path                         | Page                       |
+| ---------------------------- | -------------------------- |
+| `/login`                     | LoginPage                  |
+| `/register`                  | RegisterPage               |
+| `/oauth/callback`            | OAuthCallbackPage          |
+| `/verify-email`              | VerifyEmailPage            |
+| `/forgot-password`           | ForgotPasswordPage         |
+| `/verify-password-reset-otp` | VerifyPasswordResetOtpPage |
+| `/reset-password`            | ResetPasswordPage          |
 
 **Storefront layout** (header + footer, public):
 
@@ -280,52 +280,52 @@ Routes are organized into four layout groups in `App.jsx`.
 
 **Customer layout** (requires customer role; admins redirected to `/admin`):
 
-| Path                           | Page                       |
-| ------------------------------ | -------------------------- |
-| `/account`                     | AccountPage                |
-| `/account/profile`             | ProfilePage                |
-| `/account/password`            | PasswordPage               |
-| `/account/address`             | AddressPage                |
-| `/account/wishlist`            | WishlistPage               |
-| `/account/delete`              | DeleteAccountPage          |
-| `/account/orders`              | AccountOrdersPage          |
-| `/account/orders/:orderId`     | AccountOrderDetailPage     |
-| `/account/reviews`             | AccountReviewsPage         |
-| `/account/notifications`       | AccountNotificationsPage   |
-| `/account/cart`                | CartPage                   |
-| `/checkout`                    | CheckoutPage               |
-| `/checkout/payment`            | CheckoutPaymentPage        |
-| `/checkout/confirmation`       | CheckoutConfirmationPage   |
+| Path                       | Page                     |
+| -------------------------- | ------------------------ |
+| `/account`                 | AccountPage              |
+| `/account/profile`         | ProfilePage              |
+| `/account/password`        | PasswordPage             |
+| `/account/address`         | AddressPage              |
+| `/account/wishlist`        | WishlistPage             |
+| `/account/delete`          | DeleteAccountPage        |
+| `/account/orders`          | AccountOrdersPage        |
+| `/account/orders/:orderId` | AccountOrderDetailPage   |
+| `/account/reviews`         | AccountReviewsPage       |
+| `/account/notifications`   | AccountNotificationsPage |
+| `/account/cart`            | CartPage                 |
+| `/checkout`                | CheckoutPage             |
+| `/checkout/payment`        | CheckoutPaymentPage      |
+| `/checkout/confirmation`   | CheckoutConfirmationPage |
 
 **Admin layout** (requires admin role):
 
-| Path                              | Page                   |
-| --------------------------------- | ---------------------- |
-| `/admin`                          | AdminDashboardPage     |
-| `/admin/notifications`            | AdminNotificationsPage |
-| `/admin/books`                    | BooksPage              |
-| `/admin/books/new`                | BookNewPage            |
-| `/admin/books/:bookId`            | BookDetailPage         |
-| `/admin/collections`              | CollectionsPage        |
-| `/admin/collections/new`          | CollectionNewPage      |
-| `/admin/collections/:collectionId`| CollectionDetailPage   |
-| `/admin/categories`               | CategoriesPage         |
-| `/admin/categories/new`           | CategoryNewPage        |
-| `/admin/categories/:categoryId`   | CategoryDetailPage     |
-| `/admin/authors`                  | AuthorsPage            |
-| `/admin/authors/new`              | AuthorNewPage          |
-| `/admin/authors/:authorId`        | AuthorDetailPage       |
-| `/admin/publishers`               | PublishersPage         |
-| `/admin/publishers/new`           | PublisherNewPage       |
-| `/admin/publishers/:publisherId`  | PublisherDetailPage    |
-| `/admin/users`                    | UsersPage              |
-| `/admin/users/new`                | UserNewPage            |
-| `/admin/users/:userId`            | UserDetailPage         |
-| `/admin/orders`                   | AdminOrdersPage        |
-| `/admin/orders/:orderId`          | AdminOrderDetailPage   |
-| `/admin/reviews`                  | AdminReviewsPage       |
-| `/admin/inventory`                | InventoryPage          |
-| `/admin/reports`                  | ReportsPage            |
+| Path                               | Page                   |
+| ---------------------------------- | ---------------------- |
+| `/admin`                           | AdminDashboardPage     |
+| `/admin/notifications`             | AdminNotificationsPage |
+| `/admin/books`                     | BooksPage              |
+| `/admin/books/new`                 | BookNewPage            |
+| `/admin/books/:bookId`             | BookDetailPage         |
+| `/admin/collections`               | CollectionsPage        |
+| `/admin/collections/new`           | CollectionNewPage      |
+| `/admin/collections/:collectionId` | CollectionDetailPage   |
+| `/admin/categories`                | CategoriesPage         |
+| `/admin/categories/new`            | CategoryNewPage        |
+| `/admin/categories/:categoryId`    | CategoryDetailPage     |
+| `/admin/authors`                   | AuthorsPage            |
+| `/admin/authors/new`               | AuthorNewPage          |
+| `/admin/authors/:authorId`         | AuthorDetailPage       |
+| `/admin/publishers`                | PublishersPage         |
+| `/admin/publishers/new`            | PublisherNewPage       |
+| `/admin/publishers/:publisherId`   | PublisherDetailPage    |
+| `/admin/users`                     | UsersPage              |
+| `/admin/users/new`                 | UserNewPage            |
+| `/admin/users/:userId`             | UserDetailPage         |
+| `/admin/orders`                    | AdminOrdersPage        |
+| `/admin/orders/:orderId`           | AdminOrderDetailPage   |
+| `/admin/reviews`                   | AdminReviewsPage       |
+| `/admin/inventory`                 | InventoryPage          |
+| `/admin/reports`                   | ReportsPage            |
 
 **Fallback:** `*` → NotFoundPage
 

@@ -57,7 +57,7 @@ const CartItems = ({ closeCart }) => {
 
   return (
     <div className='flex flex-col h-full'>
-      <div className='flex justify-between px-1 text-base text-gray-500'>
+      <div className='flex justify-between px-1 text-base text-primary/40'>
         <span>Products</span>
         <span>{cart.items.length} items</span>
       </div>
@@ -86,20 +86,20 @@ const CartItems = ({ closeCart }) => {
             ))}
         </AnimatePresence>
       </div>
-      <div className='py-6 text-base text-gray-600 space-y-4'>
-        <div className='flex items-center justify-between pt-3 border-t border-gray-200'>
+      <div className='py-6 text-base text-primary/60 space-y-4'>
+        <div className='flex items-center justify-between pt-3 border-t border-primary/5'>
           <p>Shipping</p>
           <p className='text-right'>Calculated at checkout</p>
         </div>
         <div className='flex items-center justify-between'>
-          <p className='text-lg font-medium text-black'>Total</p>
-          <p className='text-2xl font-bold text-black'>{formatPrice(cart.totalPrice)}</p>
+          <p className='text-lg font-medium text-primary'>Total</p>
+          <p className='text-2xl font-bold text-primary'>{formatPrice(cart.totalPrice)}</p>
         </div>
       </div>
       <Button
         onClick={handleCheckout}
         size='lg'
-        className='relative flex items-center justify-between w-full gap-3 bg-black text-white h-14 text-lg'>
+        className='relative flex items-center justify-between w-full gap-3 bg-primary text-secondary h-14 text-lg'>
         Proceed to Checkout
         <ArrowRight className='size-6' />
       </Button>
@@ -122,8 +122,8 @@ function CartItemRow({ item, onRemove, onQuantityChange, onCloseCart }) {
   const subtotal = (Number(item.book.price) * item.quantity).toFixed(2);
 
   return (
-    <div className='flex gap-5 p-5 border border-gray-200 rounded-lg bg-white'>
-      <div className='w-24 h-36 overflow-hidden rounded bg-gray-100 shrink-0'>
+    <div className='flex gap-5 p-5 border border-primary/5 rounded-2xl bg-white'>
+      <div className='w-24 h-36 overflow-hidden rounded-2xl bg-primary/5 shrink-0'>
         {item.book.coverUrl ? (
           <img
             src={item.book.coverUrl}
@@ -131,7 +131,7 @@ function CartItemRow({ item, onRemove, onQuantityChange, onCloseCart }) {
             className='w-full h-full object-cover'
           />
         ) : (
-          <div className='w-full h-full flex items-center justify-center text-gray-400 text-sm'>
+          <div className='w-full h-full flex items-center justify-center text-primary/40 text-sm'>
             No cover
           </div>
         )}
@@ -143,9 +143,9 @@ function CartItemRow({ item, onRemove, onQuantityChange, onCloseCart }) {
           className='text-lg font-medium font-serif hover:underline truncate'>
           {item.book.title}
         </Link>
-        <p className='text-base text-gray-500 mt-1'>RM {item.book.price} each</p>
+        <p className='text-base text-primary/40 mt-1'>RM {item.book.price} each</p>
         <div className='flex items-center justify-between mt-4'>
-          <div className='flex h-10 items-center border border-gray-200 rounded'>
+          <div className='flex h-10 items-center border border-primary/5 rounded-2xl'>
             <QuantityButton
               onClick={() => onQuantityChange(item.id, item.book.title, item.quantity - 1)}
               type='minus'
@@ -160,7 +160,7 @@ function CartItemRow({ item, onRemove, onQuantityChange, onCloseCart }) {
             <span className='text-lg font-medium'>RM {subtotal}</span>
             <button
               onClick={() => onRemove(item.id)}
-              className='text-sm text-gray-400 hover:text-red-600'
+              className='text-sm text-primary/40 hover:text-destructive'
               aria-label='Remove item'>
               Remove
             </button>
@@ -177,7 +177,7 @@ function QuantityButton({ type, onClick }) {
       type='button'
       onClick={onClick}
       aria-label={type === 'plus' ? 'Increase item quantity' : 'Reduce item quantity'}
-      className='flex items-center justify-center w-10 h-full hover:bg-gray-100 transition-colors'>
+      className='flex items-center justify-center w-10 h-full hover:bg-primary/5 transition-colors'>
       {type === 'plus' ? <PlusCircleIcon className='size-5' /> : <MinusIcon className='size-5' />}
     </button>
   );
@@ -234,12 +234,12 @@ export default function CartModal() {
     if (!cart || !cart.items || cart.items.length === 0) {
       return (
         <div className='flex flex-col items-center justify-center h-full text-center'>
-          <ShoppingBag className='size-16 text-gray-300 mb-6' />
-          <p className='text-xl font-medium text-gray-600'>Your cart is empty</p>
+          <ShoppingBag className='size-16 text-primary/30 mb-6' />
+          <p className='text-xl font-medium text-primary/60'>Your cart is empty</p>
           <Link
             to='/shop'
             onClick={closeCart}
-            className='mt-6 text-base font-medium text-black underline'>
+            className='mt-6 text-base font-medium text-primary underline'>
             Continue Shopping
           </Link>
         </div>
@@ -256,10 +256,10 @@ export default function CartModal() {
         onClick={openCart}
         variant='ghost'
         size='icon'
-        className='relative transition-colors text-black hover:bg-gray-100'>
+        className='relative transition-colors text-primary hover:bg-primary/5'>
         <ShoppingBag className='size-5' />
         {(cart?.totalQuantity || 0) > 0 && (
-          <span className='absolute -top-1 -right-1 size-4 flex items-center justify-center text-[9px] font-bold bg-black text-white rounded-full'>
+          <span className='absolute -top-1 -right-1 size-4 flex items-center justify-center text-[9px] font-bold bg-primary text-secondary rounded-full'>
             {cart.totalQuantity}
           </span>
         )}
@@ -273,7 +273,7 @@ export default function CartModal() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className='fixed inset-0 z-[9999] bg-black/40'
+                className='fixed inset-0 z-[9999] bg-primary/40'
                 onClick={closeCart}
                 aria-hidden='true'
               />
@@ -285,13 +285,13 @@ export default function CartModal() {
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
                 className='fixed top-0 right-0 bottom-0 z-[9999] w-full max-w-lg bg-white shadow-xl'>
                 <div className='flex flex-col h-full'>
-                  <div className='flex items-center justify-between p-8 border-b border-gray-200'>
-                    <h2 className='text-2xl font-bold font-serif text-black'>Your Cart</h2>
+                  <div className='flex items-center justify-between p-8 border-b border-primary/5'>
+                    <h2 className='text-2xl font-bold font-serif text-primary'>Your Cart</h2>
                     <div className='flex items-center gap-3'>
                       <Link
                         to='/account/cart'
                         onClick={closeCart}
-                        className='text-sm font-medium text-gray-500 hover:text-black underline'>
+                        className='text-sm font-medium text-primary/40 hover:text-primary underline'>
                         View full cart
                       </Link>
                       <Button
@@ -299,7 +299,7 @@ export default function CartModal() {
                         variant='ghost'
                         aria-label='Close cart'
                         onClick={closeCart}
-                        className='text-gray-400 hover:text-black'>
+                        className='text-primary/40 hover:text-primary'>
                         <X className='size-6' />
                       </Button>
                     </div>

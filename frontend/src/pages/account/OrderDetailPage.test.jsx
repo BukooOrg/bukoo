@@ -29,7 +29,14 @@ vi.mock('@/lib/apiClient', () => ({
 }));
 
 vi.mock('@/components/cart/ConfirmDialog', () => ({
-  ConfirmDialog: ({ open, title, description, onConfirm, loading }) => {
+  ConfirmDialog: ({
+    open,
+    onOpenChange: _onOpenChange,
+    title,
+    description,
+    onConfirm,
+    loading,
+  }) => {
     if (!open) return null;
     return (
       <div data-testid='confirm-dialog'>

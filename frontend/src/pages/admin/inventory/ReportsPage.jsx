@@ -24,7 +24,7 @@ export default function ReportsPage() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className='w-full'>
           <TabsList
             className={cn(
-              'w-full max-w-md mx-auto h-auto p-1 rounded-xl bg-primary/5',
+              'w-full max-w-md mx-auto h-auto p-1 rounded-2xl bg-primary/5',
               'flex gap-1'
             )}
             role='tablist'
@@ -34,7 +34,7 @@ export default function ReportsPage() {
               role='tab'
               aria-selected={activeTab === 'generate'}
               className={cn(
-                'flex-1 rounded-lg py-2.5 text-xs font-bold uppercase tracking-widest transition-all',
+                'flex-1 rounded-2xl py-2.5 text-xs font-bold uppercase tracking-widest transition-all',
                 'data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary',
                 'data-[state=inactive]:text-primary/40 data-[state=inactive]:hover:text-primary/60'
               )}>
@@ -45,7 +45,7 @@ export default function ReportsPage() {
               role='tab'
               aria-selected={activeTab === 'history'}
               className={cn(
-                'flex-1 rounded-lg py-2.5 text-xs font-bold uppercase tracking-widest transition-all',
+                'flex-1 rounded-2xl py-2.5 text-xs font-bold uppercase tracking-widest transition-all',
                 'data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary',
                 'data-[state=inactive]:text-primary/40 data-[state=inactive]:hover:text-primary/60'
               )}>

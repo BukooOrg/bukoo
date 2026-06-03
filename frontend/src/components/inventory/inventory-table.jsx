@@ -132,7 +132,7 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
         </div>
         <div className='animate-pulse space-y-3'>
           {[...Array(5)].map((_, i) => (
-            <div key={i} className='h-16 bg-primary/5 rounded-xl' />
+            <div key={i} className='h-16 bg-primary/5 rounded-2xl' />
           ))}
         </div>
       </div>
@@ -156,7 +156,7 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
             value={search}
             onChange={handleSearchChange}
             placeholder='Search by title or ISBN...'
-            className='w-full pl-10 pr-4 py-2.5 bg-white/40 border border-primary/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm'
+            className='w-full pl-10 pr-4 py-2.5 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm'
             aria-label='Search inventory'
           />
         </div>
@@ -164,7 +164,7 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
           <select
             value={rangeIndex}
             onChange={handleRangeChange}
-            className='h-10 px-3 text-sm transition-all border rounded-lg border-primary/10 focus:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/10'
+            className='h-10 px-3 text-sm transition-all border rounded-2xl border-primary/10 focus:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/10'
             aria-label='Stock range'>
             {rangeSelector.options.map((opt, i) => (
               <option key={i} value={i}>
@@ -176,12 +176,12 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
       </div>
 
       {error && (
-        <div className='flex items-center justify-between p-4 border bg-destructive/5 border-destructive/10 rounded-xl'>
+        <div className='flex items-center justify-between p-4 border bg-destructive/5 border-destructive/10 rounded-2xl'>
           <div className='flex items-start gap-3'>
             <AlertCircle className='w-5 h-5 text-destructive shrink-0' />
             <p className='text-xs font-bold leading-relaxed text-destructive'>{error}</p>
           </div>
-          <Button variant='outline' size='sm' onClick={handleRetry} className='rounded-lg'>
+          <Button variant='outline' size='sm' onClick={handleRetry} className='rounded-2xl'>
             Retry
           </Button>
         </div>
@@ -214,10 +214,10 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
                       <img
                         src={book.coverUrl}
                         alt={book.title}
-                        className='object-cover w-12 h-16 rounded shadow-sm'
+                        className='object-cover w-12 h-16 rounded-2xl shadow-sm'
                       />
                     ) : (
-                      <div className='flex items-center justify-center w-12 h-16 rounded bg-primary/5'>
+                      <div className='flex items-center justify-center w-12 h-16 rounded-2xl bg-primary/5'>
                         <BookOpen className='w-4 h-4 text-primary/20' />
                       </div>
                     )}
@@ -241,7 +241,7 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
                           book.stockQuantity > 0 &&
                             range &&
                             book.stockQuantity <= (range.max ?? Infinity) &&
-                            'text-amber-600'
+                            'text-primary'
                         )}>
                         {book.stockQuantity}
                       </span>
@@ -252,7 +252,7 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
                       <Button
                         variant='ghost'
                         size='icon-sm'
-                        className='w-8 h-8 rounded-lg text-primary/40 hover:text-primary hover:bg-primary/5'>
+                        className='w-8 h-8 rounded-2xl text-primary/40 hover:text-primary hover:bg-primary/5'>
                         <ExternalLink className='w-4 h-4' />
                       </Button>
                     </Link>
@@ -270,7 +270,7 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
             variant='outline'
             disabled={!hasPrev}
             onClick={() => goToPage(page - 1)}
-            className='h-9 rounded-lg'>
+            className='h-9 rounded-2xl'>
             Previous
           </Button>
           <span className='text-sm text-primary/40'>
@@ -280,7 +280,7 @@ export function InventoryTable({ title, description, fetchItems, emptyMessage, r
             variant='outline'
             disabled={!hasNext}
             onClick={() => goToPage(page + 1)}
-            className='h-9 rounded-lg'>
+            className='h-9 rounded-2xl'>
             Next
           </Button>
         </div>

@@ -1,4 +1,5 @@
 import { BookOpen, Calendar, Globe, Hash, Layers, User } from 'lucide-react';
+import { motion } from 'motion/react';
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
@@ -78,13 +79,13 @@ export default function ProductDetailPage() {
         <Breadcrumb className='mb-6'>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink asChild>
+              <BreadcrumbLink asChild className='text-gray-600 hover:text-black'>
                 <Link to='/shop'>Shop</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>{product.title}</BreadcrumbPage>
+              <BreadcrumbPage className='text-gray-900'>{product.title}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -93,12 +94,16 @@ export default function ProductDetailPage() {
         <div className='flex flex-col gap-8 md:flex-row md:gap-12'>
           {/* Cover image */}
           <div className='shrink-0 w-64 mx-auto md:w-80 md:mx-0'>
-            <div className='overflow-hidden rounded-xl shadow-xl aspect-[2/3] bg-gray-100'>
+            <div className='overflow-hidden rounded-2xl shadow-xl aspect-[2/3] bg-gray-100'>
               {product.featuredImage?.url ? (
-                <img
+                <motion.img
                   src={product.featuredImage.url}
                   alt={product.title}
-                  className='object-cover w-full h-full'
+                  referrerpolicy='no-referrer'
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className='object-contain w-full h-full'
                 />
               ) : (
                 <div className='flex items-center justify-center w-full h-full'>
@@ -113,9 +118,7 @@ export default function ProductDetailPage() {
             {/* Title & author */}
             <div className='mb-6'>
               <h1 className='text-4xl font-bold tracking-tight md:text-5xl'>{product.title}</h1>
-              <p className='mt-2 text-xl text-gray-500 italic'>
-                {product.vendor || 'Bukoo Editions'}
-              </p>
+              <p className='mt-1 text-lg text-gray-500'>{product.vendor || 'Bukoo Editions'}</p>
             </div>
 
             {/* Tags */}
@@ -124,7 +127,7 @@ export default function ProductDetailPage() {
                 {product.tags.map((tag) => (
                   <span
                     key={tag}
-                    className='px-4 py-2 text-sm font-medium rounded-full bg-gray-100 text-gray-500'>
+                    className='px-4 py-2 text-sm font-medium rounded-full bg-gray-100 text-gray-600'>
                     {tag}
                   </span>
                 ))}
@@ -132,7 +135,7 @@ export default function ProductDetailPage() {
             )}
 
             {/* Description */}
-            <h2 className='text-sm font-bold uppercase tracking-[0.2em] text-gray-400 mb-3'>
+            <h2 className='text-sm font-bold uppercase tracking-[0.2em] text-gray-500 mb-3'>
               About This Book
             </h2>
             <p className='mb-8 text-base leading-relaxed text-gray-600'>
@@ -140,34 +143,34 @@ export default function ProductDetailPage() {
             </p>
 
             {/* Metadata */}
-            <div className='grid grid-cols-2 gap-4 p-6 mb-8 rounded-xl bg-gray-50 md:grid-cols-3'>
+            <div className='grid grid-cols-2 gap-4 p-6 mb-8 bg-white border border-gray-200 rounded-2xl md:grid-cols-3'>
               <div className='flex flex-col gap-1.5'>
                 <div className='flex items-center gap-2 text-gray-400'>
                   <Hash className='w-4 h-4' />
                   <span className='text-sm font-medium'>ISBN</span>
                 </div>
-                <p className='text-base text-gray-700'>{product.isbn || '—'}</p>
+                <p className='text-base text-black'>{product.isbn || '—'}</p>
               </div>
               <div className='flex flex-col gap-1.5'>
                 <div className='flex items-center gap-2 text-gray-400'>
                   <Layers className='w-4 h-4' />
                   <span className='text-sm font-medium'>Pages</span>
                 </div>
-                <p className='text-base text-gray-700'>{product.pageCount || '—'}</p>
+                <p className='text-base text-black'>{product.pageCount || '—'}</p>
               </div>
               <div className='flex flex-col gap-1.5'>
                 <div className='flex items-center gap-2 text-gray-400'>
                   <Globe className='w-4 h-4' />
                   <span className='text-sm font-medium'>Language</span>
                 </div>
-                <p className='text-base text-gray-700'>{product.language || '—'}</p>
+                <p className='text-base text-black'>{product.language || '—'}</p>
               </div>
               <div className='flex flex-col gap-1.5'>
                 <div className='flex items-center gap-2 text-gray-400'>
                   <User className='w-4 h-4' />
                   <span className='text-sm font-medium'>Publisher</span>
                 </div>
-                <p className='text-base text-gray-700'>
+                <p className='text-base text-black'>
                   {product.publisher?.name || product.vendor || '—'}
                 </p>
               </div>
@@ -176,22 +179,26 @@ export default function ProductDetailPage() {
                   <Calendar className='w-4 h-4' />
                   <span className='text-sm font-medium'>Published</span>
                 </div>
-                <p className='text-base text-gray-700'>{formatDate(product.publishedDate)}</p>
+                <p className='text-base text-black'>{formatDate(product.publishedDate)}</p>
               </div>
             </div>
 
             {/* Price & CTA */}
-            <div className='flex items-center gap-3 p-6 border border-gray-200 rounded-xl bg-gray-50'>
+            <div className='flex items-center gap-3 p-6 border border-gray-200 rounded-2xl bg-white'>
               <div className='flex-1'>
-                <p className='text-sm font-medium uppercase text-gray-400'>Price</p>
-                <p className='text-3xl font-bold text-gray-900'>{formatPrice(price, currency)}</p>
+                <p className='text-sm font-medium uppercase text-gray-500'>Price</p>
+                <p className='text-3xl font-bold text-black'>{formatPrice(price, currency)}</p>
               </div>
               <AddToCart
                 bookId={product.id}
                 available={true}
-                className='flex-1 h-14 bg-black text-white text-base font-medium rounded-lg'
+                className='flex-1 h-14 bg-black text-white text-base font-medium rounded-lg hover:bg-white hover:text-black'
               />
-              <AddToWishlist bookId={product.id} size='lg' />
+              <AddToWishlist
+                bookId={product.id}
+                size='lg'
+                className='bg-black text-white hover:bg-white hover:text-black'
+              />
             </div>
           </div>
         </div>

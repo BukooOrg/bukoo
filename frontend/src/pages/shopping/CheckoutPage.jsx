@@ -95,10 +95,10 @@ export default function CheckoutPage() {
     return (
       <div className='px-sides py-24'>
         <div className='max-w-2xl mx-auto text-center'>
-          <h1 className='font-serif text-5xl font-black text-black tracking-tighter'>
+          <h1 className='font-sans text-4xl font-bold text-black tracking-tight'>
             Your Cart is Empty
           </h1>
-          <p className='mt-6 text-lg text-gray-500'>
+          <p className='mt-4 text-base text-gray-500'>
             Add some books to your cart before checking out.
           </p>
           <Link to='/shop'>
@@ -170,25 +170,24 @@ export default function CheckoutPage() {
   return (
     <div className='px-sides py-16'>
       <div className='max-w-4xl mx-auto'>
-        <h1 className='font-serif text-4xl font-black text-black tracking-tighter mb-8'>
-          Checkout
-        </h1>
+        <h1 className='font-sans text-3xl font-bold text-black tracking-tight mb-8'>Checkout</h1>
 
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
           <div className='lg:col-span-2 space-y-4'>
-            <h2 className='text-lg font-bold text-black'>Order Items ({cart.items.length})</h2>
+            <h2 className='text-base font-bold text-black'>Order Items ({cart.items.length})</h2>
             {cart.items
               .sort((a, b) => a.book.title.localeCompare(b.book.title))
               .map((item) => (
                 <div
                   key={item.id}
-                  className='flex gap-4 p-4 border border-gray-200 rounded-lg bg-white'>
-                  <div className='w-16 h-24 shrink-0 overflow-hidden rounded bg-gray-100'>
+                  className='flex gap-4 p-4 border border-gray-200 rounded-2xl bg-white'>
+                  <div className='w-16 h-24 shrink-0 overflow-hidden rounded-2xl bg-gray-100'>
                     {item.book.coverUrl ? (
                       <img
                         src={item.book.coverUrl}
                         alt={item.book.title}
-                        className='w-full h-full object-cover'
+                        referrerpolicy='no-referrer'
+                        className='w-full h-full object-contain bg-gray-100'
                       />
                     ) : (
                       <div className='w-full h-full flex items-center justify-center text-gray-400 text-xs'>
@@ -197,8 +196,10 @@ export default function CheckoutPage() {
                     )}
                   </div>
                   <div className='flex-1 min-w-0'>
-                    <p className='text-base font-medium font-serif truncate'>{item.book.title}</p>
-                    <div className='flex items-center gap-4 mt-2 text-sm text-gray-500'>
+                    <p className='text-sm font-semibold font-sans truncate text-black'>
+                      {item.book.title}
+                    </p>
+                    <div className='flex items-center gap-4 mt-2 text-xs text-gray-500'>
                       <span>RM {Number(item.book.price).toFixed(2)} each</span>
                       <span>&middot;</span>
                       <span>Qty: {item.quantity}</span>
@@ -214,8 +215,8 @@ export default function CheckoutPage() {
           </div>
 
           <div className='lg:col-span-1'>
-            <div className='sticky top-24 bg-white border border-gray-200 rounded-lg p-6 space-y-4'>
-              <h2 className='text-lg font-bold text-black'>Order Summary</h2>
+            <div className='sticky top-24 bg-white border border-gray-200 rounded-2xl p-6 space-y-4'>
+              <h2 className='text-base font-bold text-black'>Order Summary</h2>
               <div className='space-y-2 text-sm'>
                 <div className='flex justify-between'>
                   <span className='text-gray-500'>Subtotal</span>
@@ -228,7 +229,7 @@ export default function CheckoutPage() {
               </div>
               <div className='pt-4 border-t border-gray-200'>
                 <div className='flex justify-between items-baseline'>
-                  <span className='text-lg font-bold text-black'>Total</span>
+                  <span className='text-base font-bold text-black'>Total</span>
                   <span className='text-2xl font-bold text-black'>RM {total.toFixed(2)}</span>
                 </div>
               </div>

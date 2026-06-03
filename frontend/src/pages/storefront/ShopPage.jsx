@@ -1,12 +1,18 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion } from 'motion/react';
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 
 import { PageLayout } from '@/components/layout/PageLayout';
-import { LatestProductCard } from '@/components/products/LatestProductCard';
+import { LatestProductCard } from '@/components/products/latest-product-card';
 import mockProducts from '@/data/mock/products.json';
 import { bookApi, collectionApi } from '@/lib/apiClient';
-import { fromApiBooks, reshapeProducts } from '@/lib/sfcc/utils';
+import { fromApiBooks, reshapeProducts, sortProductsByCover } from '@/lib/sfcc/utils';
+
+const gridVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.03 } },
+};
 
 const PAGE_SIZE = 24;
 
@@ -39,7 +45,7 @@ export default function ShopPage() {
           pageSize: PAGE_SIZE,
         });
         const items = bookRes.data?.items || [];
-        setProducts(fromApiBooks(items));
+        setProducts(fromApiBooks(items).sort(sortProductsByCover));
         setTotalItems(bookRes.data?.pagination?.totalItems || 0);
         setLoading(false);
         return;
@@ -57,7 +63,8 @@ export default function ShopPage() {
       }
       setTotalItems(filtered.length);
       const start = (page - 1) * PAGE_SIZE;
-      setProducts(filtered.slice(start, start + PAGE_SIZE));
+      const sorted = [...filtered].sort(sortProductsByCover);
+      setProducts(sorted.slice(start, start + PAGE_SIZE));
       setLoading(false);
     }
     loadData();
@@ -71,20 +78,24 @@ export default function ShopPage() {
         {loading ? (
           <div className='grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-x-6 gap-y-12 animate-pulse'>
             {[...Array(12)].map((_, i) => (
-              <div key={i} className='aspect-[2/3] bg-primary/5 rounded-2xl' />
+              <div key={i} className='aspect-[2/3] bg-gray-100 rounded-2xl' />
             ))}
           </div>
         ) : (
           <>
             {products.length > 0 ? (
-              <div className='grid grid-cols-2 duration-700 lg:grid-cols-4 xl:grid-cols-6 gap-x-6 gap-y-12 animate-in fade-in'>
+              <motion.div
+                variants={gridVariants}
+                initial='hidden'
+                animate='visible'
+                className='grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-x-6 gap-y-12'>
                 {products.map((product) => (
                   <LatestProductCard key={product.id || product.handle} product={product} />
                 ))}
-              </div>
+              </motion.div>
             ) : (
               <div className='py-32 text-center'>
-                <p className='font-serif text-2xl italic opacity-30'>
+                <p className='font-sans text-lg font-medium text-gray-500'>
                   No books found matching your criteria.
                 </p>
                 <Link
@@ -96,25 +107,30 @@ export default function ShopPage() {
             )}
 
             {totalPages > 1 && (
-              <div className='flex items-center justify-center gap-6 mt-16'>
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.2, delay: 0.15 }}
+                className='flex items-center justify-center gap-6 mt-16'>
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page <= 1}
-                  className='flex items-center gap-1 px-4 py-2 text-xs font-sans font-bold uppercase tracking-widest text-primary/60 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors'>
+                  className='flex items-center gap-1 px-4 py-2 text-xs font-sans font-bold uppercase tracking-widest text-gray-500 hover:text-black disabled:opacity-30 disabled:cursor-not-allowed transition-colors'>
                   <ChevronLeft className='w-4 h-4' />
                   Previous
                 </button>
-                <span className='text-xs font-sans font-bold text-primary/40'>
+                <span className='text-xs font-sans font-bold text-gray-400'>
                   {page} / {totalPages}
                 </span>
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page >= totalPages}
-                  className='flex items-center gap-1 px-4 py-2 text-xs font-sans font-bold uppercase tracking-widest text-primary/60 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors'>
+                  className='flex items-center gap-1 px-4 py-2 text-xs font-sans font-bold uppercase tracking-widest text-gray-500 hover:text-black disabled:opacity-30 disabled:cursor-not-allowed transition-colors'>
                   Next
                   <ChevronRight className='w-4 h-4' />
                 </button>
-              </div>
+              </motion.div>
             )}
           </>
         )}

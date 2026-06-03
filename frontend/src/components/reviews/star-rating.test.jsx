@@ -15,7 +15,7 @@ describe('StarRating', () => {
     const stars = screen.getAllByRole('button');
     // Check that 3 stars are filled (amber color) and 2 are empty
     const filledStars = stars.filter((star) =>
-      star.querySelector('svg')?.classList.contains('text-amber-400')
+      star.querySelector('svg')?.classList.contains('text-primary')
     );
     expect(filledStars).toHaveLength(3);
   });

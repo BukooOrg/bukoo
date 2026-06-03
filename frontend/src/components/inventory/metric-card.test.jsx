@@ -18,8 +18,8 @@ describe('MetricCard', () => {
     );
 
     const card = container.firstChild;
-    expect(card).toHaveClass('border-red-500/20');
-    expect(card).toHaveClass('bg-red-500/[0.04]');
+    expect(card).toHaveClass('border-destructive/20');
+    expect(card).toHaveClass('bg-destructive/[0.04]');
   });
 
   it('applies amber accent variant correctly', () => {
@@ -28,8 +28,8 @@ describe('MetricCard', () => {
     );
 
     const card = container.firstChild;
-    expect(card).toHaveClass('border-amber-500/20');
-    expect(card).toHaveClass('bg-amber-500/[0.04]');
+    expect(card).toHaveClass('border-primary/20');
+    expect(card).toHaveClass('bg-primary/[0.04]');
   });
 
   it('applies green accent variant correctly', () => {
@@ -38,8 +38,8 @@ describe('MetricCard', () => {
     );
 
     const card = container.firstChild;
-    expect(card).toHaveClass('border-green-500/20');
-    expect(card).toHaveClass('bg-green-500/[0.04]');
+    expect(card).toHaveClass('border-primary/20');
+    expect(card).toHaveClass('bg-primary/[0.04]');
   });
 
   it('renders with default variant when no accent specified', () => {

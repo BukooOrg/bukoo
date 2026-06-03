@@ -56,13 +56,9 @@ export default function CheckoutPaymentPage() {
     return (
       <div className='px-sides py-24'>
         <div className='max-w-2xl mx-auto text-center'>
-          <h1 className='font-serif text-4xl font-black tracking-tighter text-primary'>
-            Invalid Order
-          </h1>
-          <p className='text-primary/40 font-bold italic text-sm mt-2'>
-            This order could not be found
-          </p>
-          <Link to='/account/orders' className='mt-4 text-primary underline'>
+          <h1 className='font-sans text-3xl font-bold tracking-tight text-black'>Invalid Order</h1>
+          <p className='text-gray-500 text-sm mt-2'>This order could not be found</p>
+          <Link to='/account/orders' className='mt-4 text-gray-600 underline'>
             Back to Orders
           </Link>
         </div>
@@ -74,13 +70,11 @@ export default function CheckoutPaymentPage() {
     return (
       <div className='px-sides py-24'>
         <div className='max-w-2xl mx-auto text-center'>
-          <h1 className='font-serif text-4xl font-black tracking-tighter text-primary'>
+          <h1 className='font-sans text-3xl font-bold tracking-tight text-black'>
             Payment Not Required
           </h1>
-          <p className='text-primary/40 font-bold italic text-sm mt-2'>
-            This order has already been {order.status}
-          </p>
-          <Link to={`/account/orders/${orderId}`} className='mt-4 text-primary underline'>
+          <p className='text-gray-500 text-sm mt-2'>This order has already been {order.status}</p>
+          <Link to={`/account/orders/${orderId}`} className='mt-4 text-gray-600 underline'>
             View Order
           </Link>
         </div>
@@ -130,17 +124,17 @@ export default function CheckoutPaymentPage() {
     <div className='px-sides py-16'>
       <div className='max-w-4xl mx-auto'>
         <div className='mb-10'>
-          <h1 className='font-serif text-4xl font-black tracking-tighter text-primary'>Payment</h1>
-          <p className='text-primary/40 font-bold italic text-sm mt-1'>
+          <h1 className='font-sans text-3xl font-bold tracking-tight text-black'>Payment</h1>
+          <p className='text-gray-500 text-sm mt-1'>
             Order #{order.id.slice(0, 8)} &middot; {formatPrice(order.total)}
           </p>
         </div>
 
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-10'>
           <div className='lg:col-span-2'>
-            <div className='bg-white border border-gray-200 rounded-lg p-8 space-y-6'>
+            <div className='bg-white border border-gray-200 rounded-2xl p-8 space-y-6'>
               <div className='space-y-3'>
-                <label className='flex items-center gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-primary'>
+                <label className='flex items-center gap-3 p-4 border border-gray-200 rounded-2xl cursor-pointer hover:border-black'>
                   <input
                     type='radio'
                     name='payment'
@@ -155,19 +149,17 @@ export default function CheckoutPaymentPage() {
                 {paymentMethod === 'online_banking' && (
                   <div className='space-y-3 pl-4'>
                     <div>
-                      <label className='block text-sm font-medium text-gray-700 mb-1'>
-                        Bank Name
-                      </label>
+                      <label className='block text-sm font-medium text-black mb-1'>Bank Name</label>
                       <input
                         type='text'
                         value={bankName}
                         onChange={(e) => setBankName(e.target.value)}
                         placeholder='e.g. Maybank'
-                        className='w-full h-10 px-3 border border-gray-200 rounded text-sm'
+                        className='w-full px-3 py-4 bg-white border border-gray-200 rounded-2xl text-sm font-sans font-bold focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black/20 transition-all'
                       />
                     </div>
                     <div>
-                      <label className='block text-sm font-medium text-gray-700 mb-1'>
+                      <label className='block text-sm font-medium text-black mb-1'>
                         Account Number
                       </label>
                       <input
@@ -175,7 +167,7 @@ export default function CheckoutPaymentPage() {
                         value={accountNumber}
                         onChange={(e) => setAccountNumber(e.target.value)}
                         placeholder='e.g. 1234567890'
-                        className='w-full h-10 px-3 border border-gray-200 rounded text-sm'
+                        className='w-full px-3 py-4 bg-white border border-gray-200 rounded-2xl text-sm font-sans font-bold focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black/20 transition-all'
                       />
                     </div>
                   </div>
@@ -183,7 +175,7 @@ export default function CheckoutPaymentPage() {
               </div>
 
               <div className='space-y-3'>
-                <label className='flex items-center gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-primary'>
+                <label className='flex items-center gap-3 p-4 border border-gray-200 rounded-2xl cursor-pointer hover:border-black'>
                   <input
                     type='radio'
                     name='payment'
@@ -198,7 +190,7 @@ export default function CheckoutPaymentPage() {
                 {paymentMethod === 'card' && (
                   <div className='space-y-3 pl-4'>
                     <div>
-                      <label className='block text-sm font-medium text-gray-700 mb-1'>
+                      <label className='block text-sm font-medium text-black mb-1'>
                         Card Number
                       </label>
                       <input
@@ -206,12 +198,12 @@ export default function CheckoutPaymentPage() {
                         value={cardNumber}
                         onChange={(e) => setCardNumber(e.target.value)}
                         placeholder='e.g. 4111111111111111'
-                        className='w-full h-10 px-3 border border-gray-200 rounded text-sm'
+                        className='w-full px-3 py-4 bg-white border border-gray-200 rounded-2xl text-sm font-sans font-bold focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black/20 transition-all'
                       />
                     </div>
                     <div className='grid grid-cols-2 gap-3'>
                       <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-1'>
+                        <label className='block text-sm font-medium text-black mb-1'>
                           Expiry Date
                         </label>
                         <input
@@ -219,17 +211,17 @@ export default function CheckoutPaymentPage() {
                           value={expiryDate}
                           onChange={(e) => setExpiryDate(e.target.value)}
                           placeholder='MM/YY'
-                          className='w-full h-10 px-3 border border-gray-200 rounded text-sm'
+                          className='w-full px-3 py-4 bg-white border border-gray-200 rounded-2xl text-sm font-sans font-bold focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black/20 transition-all'
                         />
                       </div>
                       <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-1'>CVV</label>
+                        <label className='block text-sm font-medium text-black mb-1'>CVV</label>
                         <input
                           type='text'
                           value={cvv}
                           onChange={(e) => setCvv(e.target.value)}
                           placeholder='123'
-                          className='w-full h-10 px-3 border border-gray-200 rounded text-sm'
+                          className='w-full px-3 py-4 bg-white border border-gray-200 rounded-2xl text-sm font-sans font-bold focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black/20 transition-all'
                         />
                       </div>
                     </div>
@@ -248,8 +240,8 @@ export default function CheckoutPaymentPage() {
           </div>
 
           <div className='lg:col-span-1'>
-            <div className='sticky top-24 bg-white border border-gray-200 rounded-lg p-8 space-y-6'>
-              <h2 className='font-serif text-2xl font-bold text-black'>Order Summary</h2>
+            <div className='sticky top-24 bg-white border border-gray-200 rounded-2xl p-8 space-y-6'>
+              <h2 className='font-sans text-base font-bold text-black'>Order Summary</h2>
               <div className='space-y-4 text-base'>
                 <div className='flex justify-between'>
                   <span className='text-gray-500'>Subtotal</span>
@@ -262,15 +254,15 @@ export default function CheckoutPaymentPage() {
               </div>
               <div className='pt-6 border-t border-gray-200'>
                 <div className='flex justify-between items-baseline'>
-                  <span className='font-serif text-xl font-bold text-black'>Total</span>
-                  <span className='font-serif text-3xl font-black text-black'>
+                  <span className='font-sans text-xl font-bold text-black'>Total</span>
+                  <span className='font-sans text-3xl font-bold text-black'>
                     {formatPrice(order.total)}
                   </span>
                 </div>
               </div>
 
               <div className='pt-6 border-t border-gray-200'>
-                <h3 className='text-base font-bold text-gray-700 mb-2'>
+                <h3 className='text-base font-bold text-black mb-2'>
                   Items ({order.items.length})
                 </h3>
                 <div className='space-y-3'>

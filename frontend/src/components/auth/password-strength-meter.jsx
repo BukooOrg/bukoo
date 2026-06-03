@@ -7,10 +7,10 @@ const strengthLevels = [
   {
     level: 1,
     label: 'Medium',
-    color: 'bg-amber-500',
-    textColor: 'text-amber-700',
+    color: 'bg-primary',
+    textColor: 'text-primary',
   },
-  { level: 2, label: 'Strong', color: 'bg-green-600', textColor: 'text-green-600' },
+  { level: 2, label: 'Strong', color: 'bg-primary', textColor: 'text-primary' },
 ];
 
 function calculateStrength(password) {

@@ -153,7 +153,7 @@ describe('ReviewSubmissionDialog', () => {
     render(<ReviewSubmissionDialog {...defaultProps} existingReview={existingReview} />);
     const stars = screen.getAllByRole('radio');
     const filledStars = stars.filter((star) =>
-      star.querySelector('svg')?.classList.contains('text-amber-400')
+      star.querySelector('svg')?.classList.contains('text-primary')
     );
     expect(filledStars).toHaveLength(4);
     expect(screen.getByPlaceholderText(/Share your thoughts/)).toHaveValue('Original review text');

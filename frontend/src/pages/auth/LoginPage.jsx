@@ -160,7 +160,7 @@ export default function LoginPage() {
               <label className='flex items-center gap-3 cursor-pointer group'>
                 <input
                   type='checkbox'
-                  className='w-5 h-5 rounded-lg border-primary/10 text-primary focus:ring-primary/20'
+                  className='w-5 h-5 rounded-2xl border-primary/10 text-primary focus:ring-primary/20'
                 />
                 <span className='text-xs font-bold transition-colors text-primary/40 group-hover:text-primary'>
                   Remember me

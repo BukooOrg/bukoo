@@ -3,11 +3,11 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 
 const statusConfig = {
-  pending: { label: 'Pending', className: 'bg-gray-100 text-gray-700' },
-  paid: { label: 'Paid', className: 'bg-blue-100 text-blue-700' },
-  shipped: { label: 'Shipped', className: 'bg-purple-100 text-purple-700' },
-  delivered: { label: 'Delivered', className: 'bg-green-100 text-green-700' },
-  cancelled: { label: 'Cancelled', className: 'bg-red-100 text-red-700' },
+  pending: { label: 'Pending', className: 'bg-primary/5 text-primary' },
+  paid: { label: 'Paid', className: 'bg-primary/10 text-primary' },
+  shipped: { label: 'Shipped', className: 'bg-primary/10 text-primary' },
+  delivered: { label: 'Delivered', className: 'bg-primary/10 text-primary' },
+  cancelled: { label: 'Cancelled', className: 'bg-destructive/10 text-destructive' },
 };
 
 export function OrderStatusBadge({ status, className }) {

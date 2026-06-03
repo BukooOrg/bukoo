@@ -1,3 +1,4 @@
+import { motion } from 'motion/react';
 import { Suspense } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -6,6 +7,11 @@ import { cn } from '@/lib/utils';
 
 import { AddToCart } from '../cart/AddToCart';
 import { AddToWishlist } from '../wishlist/AddToWishlist';
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.18, ease: 'easeOut' } },
+};
 
 import { FeaturedProductLabel } from './FeaturedProductLabel';
 
@@ -18,6 +24,7 @@ export function LatestProductCard({ product, principal = false, className }) {
             <img
               src={product.featuredImage.url}
               alt={product.featuredImage.altText}
+              referrerpolicy='no-referrer'
               className='object-cover transition-transform duration-700 size-full group-hover:scale-105'
             />
           )}
@@ -31,15 +38,23 @@ export function LatestProductCard({ product, principal = false, className }) {
   }
 
   return (
-    <div className={cn('relative flex flex-col group transition-all duration-500', className)}>
+    <motion.div
+      variants={cardVariants}
+      whileHover={{ y: -6 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 18 }}
+      className={cn('relative flex flex-col group transition-all duration-500', className)}>
       <Link
         to={`/product/${product.handle}`}
-        className='block w-full aspect-[3/4] overflow-hidden rounded-sm bg-card border border-border/20 shadow-sm'>
+        className='block w-full aspect-[3/4] overflow-hidden rounded-sm bg-gray-100 border border-gray-200 shadow-sm'>
         {product.featuredImage.url && (
-          <img
+          <motion.img
             src={product.featuredImage.url}
             alt={product.featuredImage.altText}
-            className='object-cover transition-transform duration-500 ease-out size-full group-hover:scale-110'
+            referrerpolicy='no-referrer'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className='object-contain transition-transform duration-500 ease-out size-full group-hover:scale-110'
           />
         )}
 
@@ -48,9 +63,13 @@ export function LatestProductCard({ product, principal = false, className }) {
             <AddToCart
               product={product}
               variant='default'
-              className='w-36 h-10 rounded-full bg-black text-white text-sm shadow-lg'
+              className='w-36 h-10 rounded-full bg-black text-white text-sm shadow-lg hover:bg-white hover:text-black'
             />
-            <AddToWishlist bookId={product.id} size='sm' className='shadow-lg' />
+            <AddToWishlist
+              bookId={product.id}
+              size='sm'
+              className='bg-black text-white shadow-lg hover:bg-white hover:text-black'
+            />
           </Suspense>
         </div>
       </Link>
@@ -58,19 +77,19 @@ export function LatestProductCard({ product, principal = false, className }) {
       <div className='flex flex-col gap-1 px-1 pt-6 text-left'>
         <Link
           to={`/product/${product.handle}`}
-          className='font-serif text-xl font-black leading-tight truncate transition-opacity md:text-2xl text-primary hover:opacity-70'>
+          className='font-sans text-lg font-semibold leading-tight truncate transition-opacity md:text-xl text-black'>
           {product.title}
         </Link>
-        <p className='text-[10px] md:text-xs font-sans font-bold italic opacity-40 uppercase tracking-widest truncate'>
+        <p className='text-[10px] md:text-xs font-sans font-bold text-gray-500 uppercase tracking-widest truncate'>
           {product.vendor}
         </p>
-        <p className='mt-2 font-serif text-lg font-black text-primary'>
+        <p className='mt-2 font-sans text-base font-semibold text-black'>
           {formatPrice(
             product.priceRange.minVariantPrice.amount,
             product.priceRange.minVariantPrice.currencyCode
           )}
         </p>
       </div>
-    </div>
+    </motion.div>
   );
 }

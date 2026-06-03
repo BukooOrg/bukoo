@@ -147,13 +147,13 @@ export default function UsersPage() {
 
       {/* Top bar — filters + actions */}
       <div className='flex flex-wrap items-center justify-end gap-3'>
-        <div className='flex p-1 bg-primary/5 rounded-xl'>
+        <div className='flex p-1 bg-primary/5 rounded-2xl'>
           {ROLE_OPTIONS.map((opt) => (
             <button
               key={opt.value}
               onClick={() => handleRoleChange(opt.value)}
               className={cn(
-                'px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all',
+                'px-4 py-2 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all',
                 role === opt.value
                   ? 'bg-white shadow-sm text-primary'
                   : 'text-primary/40 hover:text-primary/60'
@@ -162,13 +162,13 @@ export default function UsersPage() {
             </button>
           ))}
         </div>
-        <div className='flex p-1 bg-primary/5 rounded-xl'>
+        <div className='flex p-1 bg-primary/5 rounded-2xl'>
           {STATUS_OPTIONS.map((opt) => (
             <button
               key={opt.value}
               onClick={() => handleStatusChange(opt.value)}
               className={cn(
-                'px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all',
+                'px-4 py-2 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all',
                 status === opt.value
                   ? 'bg-white shadow-sm text-primary'
                   : 'text-primary/40 hover:text-primary/60'
@@ -266,7 +266,7 @@ export default function UsersPage() {
                             <Button
                               variant='ghost'
                               size='icon'
-                              className='w-8 h-8 rounded-lg text-primary/40 hover:text-primary hover:bg-primary/5'>
+                              className='w-8 h-8 rounded-2xl text-primary/40 hover:text-primary hover:bg-primary/5'>
                               <Eye className='w-4 h-4' />
                             </Button>
                           </Link>
@@ -276,7 +276,7 @@ export default function UsersPage() {
                               size='icon'
                               onClick={() => handleToggleStatus(user)}
                               disabled={actionLoading === user.id}
-                              className='w-8 h-8 rounded-lg text-primary/40 hover:text-destructive hover:bg-destructive/5'>
+                              className='w-8 h-8 rounded-2xl text-primary/40 hover:text-destructive hover:bg-destructive/5'>
                               {actionLoading === user.id ? (
                                 <Loader2 className='w-4 h-4 animate-spin' />
                               ) : (
@@ -290,7 +290,7 @@ export default function UsersPage() {
                               size='icon'
                               onClick={() => handleToggleStatus(user)}
                               disabled={actionLoading === user.id}
-                              className='w-8 h-8 rounded-lg text-primary/40 hover:text-green-600 hover:bg-green-500/5'>
+                              className='w-8 h-8 rounded-2xl text-primary/40 hover:text-primary hover:bg-primary/5'>
                               {actionLoading === user.id ? (
                                 <Loader2 className='w-4 h-4 animate-spin' />
                               ) : (
@@ -319,7 +319,7 @@ export default function UsersPage() {
                   size='sm'
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={!hasPrev}
-                  className='gap-1 rounded-xl text-xs font-bold uppercase tracking-widest'>
+                  className='gap-1 rounded-2xl text-xs font-bold uppercase tracking-widest'>
                   <ChevronLeft className='w-4 h-4' />
                   Prev
                 </Button>
@@ -328,7 +328,7 @@ export default function UsersPage() {
                   size='sm'
                   onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
                   disabled={!hasNext}
-                  className='gap-1 rounded-xl text-xs font-bold uppercase tracking-widest'>
+                  className='gap-1 rounded-2xl text-xs font-bold uppercase tracking-widest'>
                   Next
                   <ChevronRight className='w-4 h-4' />
                 </Button>

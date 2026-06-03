@@ -13,6 +13,7 @@ import {
   User,
   X,
 } from 'lucide-react';
+import { motion } from 'motion/react';
 import React, { useState } from 'react';
 import { Link, useLocation, Outlet } from 'react-router-dom';
 
@@ -220,7 +221,13 @@ export function AccountLayout() {
               'flex-1 p-6 pt-24 md:p-10 md:pt-32 transition-all duration-300',
               collapsed ? MAIN_MARGIN_COLLAPSED : MAIN_MARGIN_EXPANDED
             )}>
-            <Outlet />
+            <motion.div
+              initial={{ y: 6 }}
+              animate={{ y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.1, ease: 'easeOut' }}>
+              <Outlet />
+            </motion.div>
           </main>
         </div>
       </div>

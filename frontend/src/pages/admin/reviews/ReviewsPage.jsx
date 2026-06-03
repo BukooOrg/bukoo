@@ -139,7 +139,7 @@ export default function AdminReviewsPage() {
               setPage(1);
             }}
             placeholder='Search reviews...'
-            className='h-10 px-3 border rounded-lg text-sm w-64 border-primary/10 focus:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all'
+            className='h-10 px-3 bg-white/40 border rounded-2xl text-sm w-64 border-primary/5 focus:border-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all font-sans font-bold'
           />
           <select
             value={hiddenFilter}
@@ -147,7 +147,7 @@ export default function AdminReviewsPage() {
               setHiddenFilter(e.target.value);
               setPage(1);
             }}
-            className='h-10 px-3 border rounded-lg text-sm border-primary/10 focus:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all'>
+            className='h-10 px-3 bg-white/40 border rounded-2xl text-sm border-primary/5 focus:border-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all font-sans font-bold'>
             <option value=''>All Reviews</option>
             <option value='visible'>Visible Only</option>
             <option value='hidden'>Hidden Only</option>
@@ -203,12 +203,12 @@ export default function AdminReviewsPage() {
                       </TableCell>
                       <TableCell>
                         {review.isHidden ? (
-                          <span className='flex items-center gap-1 px-2 py-1 text-xs rounded-full bg-red-50 text-red-600 w-fit'>
+                          <span className='flex items-center gap-1 px-2 py-1 text-xs rounded-full bg-destructive/5 text-destructive w-fit'>
                             <EyeOff className='w-3 h-3' />
                             Hidden
                           </span>
                         ) : (
-                          <span className='px-2 py-1 text-xs rounded-full bg-green-50 text-green-600 w-fit'>
+                          <span className='px-2 py-1 text-xs rounded-full bg-primary/5 text-primary w-fit'>
                             Visible
                           </span>
                         )}
@@ -220,7 +220,7 @@ export default function AdminReviewsPage() {
                             disabled={isActing}
                             variant='ghost'
                             size='icon'
-                            className='w-8 h-8 rounded-lg text-primary/40 hover:text-primary hover:bg-primary/5'
+                            className='w-8 h-8 rounded-2xl text-primary/40 hover:text-primary hover:bg-primary/5'
                             aria-label={review.isHidden ? 'Restore review' : 'Hide review'}>
                             {isActing ? (
                               <Loader2 className='w-4 h-4 animate-spin' />
@@ -233,7 +233,7 @@ export default function AdminReviewsPage() {
                             disabled={isActing}
                             variant='ghost'
                             size='icon'
-                            className='w-8 h-8 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50'
+                            className='w-8 h-8 rounded-2xl text-destructive hover:text-destructive hover:bg-destructive/5'
                             aria-label='Delete review'>
                             {isActing ? (
                               <Loader2 className='w-4 h-4 animate-spin' />

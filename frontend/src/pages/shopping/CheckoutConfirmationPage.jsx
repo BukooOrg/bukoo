@@ -19,13 +19,14 @@ function formatDate(dateValue) {
 
 function ConfirmationItem({ item }) {
   return (
-    <div className='flex gap-4 py-3 border-b border-gray-100 last:border-0'>
-      <div className='w-12 h-16 shrink-0 overflow-hidden rounded bg-gray-100'>
+    <div className='flex gap-4 py-3 border-b border-gray-200 last:border-0'>
+      <div className='w-12 h-16 shrink-0 overflow-hidden rounded-2xl bg-gray-100'>
         {item.bookCoverUrl ? (
           <img
             src={item.bookCoverUrl}
             alt={item.bookTitle}
-            className='w-full h-full object-cover'
+            referrerpolicy='no-referrer'
+            className='w-full h-full object-contain bg-gray-100'
           />
         ) : (
           <div className='w-full h-full flex items-center justify-center text-gray-400 text-xs'>
@@ -82,8 +83,8 @@ export default function CheckoutConfirmationPage() {
     return (
       <div className='px-sides py-24'>
         <div className='max-w-2xl mx-auto text-center'>
-          <h1 className='font-serif text-4xl font-black text-black'>Order Not Found</h1>
-          <Link to='/shop' className='mt-4 text-black underline'>
+          <h1 className='font-sans text-3xl font-bold text-black'>Order Not Found</h1>
+          <Link to='/shop' className='mt-4 text-gray-600 underline'>
             Continue Shopping
           </Link>
         </div>
@@ -95,9 +96,9 @@ export default function CheckoutConfirmationPage() {
     <div className='px-sides py-16'>
       <div className='max-w-2xl mx-auto'>
         <div className='text-center mb-8'>
-          <div className='inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4'>
+          <div className='inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4'>
             <svg
-              className='w-8 h-8 text-green-600'
+              className='w-8 h-8 text-black'
               fill='none'
               viewBox='0 0 24 24'
               stroke='currentColor'>
@@ -109,7 +110,7 @@ export default function CheckoutConfirmationPage() {
               />
             </svg>
           </div>
-          <h1 className='font-serif text-4xl font-black text-black tracking-tighter'>
+          <h1 className='font-sans text-3xl font-bold tracking-tight text-black'>
             Order Confirmed
           </h1>
           <p className='mt-2 text-gray-500'>
@@ -118,7 +119,7 @@ export default function CheckoutConfirmationPage() {
           <OrderStatusBadge status={order.status} className='mt-3' />
         </div>
 
-        <div className='bg-white border border-gray-200 rounded-lg p-6 space-y-4'>
+        <div className='bg-white border border-gray-200 rounded-2xl p-6 space-y-4'>
           <h2 className='text-lg font-bold text-black'>Order Items ({order.items.length})</h2>
           {order.items.map((item) => (
             <ConfirmationItem key={item.id} item={item} />
@@ -133,7 +134,7 @@ export default function CheckoutConfirmationPage() {
               <span className='text-gray-500'>Shipping</span>
               <span>RM {Number(order.shippingCost).toFixed(2)}</span>
             </div>
-            <div className='flex justify-between text-lg font-bold pt-2 border-t'>
+            <div className='flex justify-between text-lg font-bold pt-2 border-t border-gray-200'>
               <span>Total</span>
               <span>RM {Number(order.total).toFixed(2)}</span>
             </div>

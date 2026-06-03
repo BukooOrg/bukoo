@@ -153,13 +153,13 @@ export default function BooksPage() {
 
       {/* Top bar — filters + actions */}
       <div className='flex flex-wrap items-center justify-end gap-3'>
-        <div className='flex p-1 bg-primary/5 rounded-xl'>
+        <div className='flex p-1 bg-primary/5 rounded-2xl'>
           {STATUS_OPTIONS.map((opt) => (
             <button
               key={opt.value}
               onClick={() => handleStatusChange(opt.value)}
               className={cn(
-                'px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all',
+                'px-4 py-2 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all',
                 status === opt.value
                   ? 'bg-white shadow-sm text-primary'
                   : 'text-primary/40 hover:text-primary/60'
@@ -235,10 +235,10 @@ export default function BooksPage() {
                           <img
                             src={book.coverUrl}
                             alt={book.title}
-                            className='object-cover w-14 h-20 rounded shadow-sm'
+                            className='object-cover w-14 h-20 rounded-2xl shadow-sm'
                           />
                         ) : (
-                          <div className='flex items-center justify-center w-14 h-20 rounded bg-primary/5'>
+                          <div className='flex items-center justify-center w-14 h-20 rounded-2xl bg-primary/5'>
                             <BookOpen className='w-5 h-5 text-primary/20' />
                           </div>
                         )}
@@ -268,7 +268,7 @@ export default function BooksPage() {
                           className={cn(
                             'font-sans font-bold text-sm',
                             book.stockQuantity === 0 && 'text-destructive',
-                            book.stockQuantity > 0 && book.stockQuantity <= 5 && 'text-yellow-600'
+                            book.stockQuantity > 0 && book.stockQuantity <= 5 && 'text-primary'
                           )}>
                           {book.stockQuantity}
                         </span>
@@ -278,7 +278,7 @@ export default function BooksPage() {
                           variant={book.isActive ? 'default' : 'secondary'}
                           className={cn(
                             'text-[10px] font-black uppercase tracking-widest',
-                            book.isActive && 'bg-green-500/10 text-green-700 border-green-500/20',
+                            book.isActive && 'bg-primary/10 text-primary border-primary/20',
                             !book.isActive && 'bg-primary/5 text-primary/40 border-primary/10'
                           )}>
                           {book.isActive ? 'Active' : 'Inactive'}
@@ -290,7 +290,7 @@ export default function BooksPage() {
                             <Button
                               variant='ghost'
                               size='icon'
-                              className='w-8 h-8 rounded-lg text-primary/40 hover:text-primary hover:bg-primary/5'>
+                              className='w-8 h-8 rounded-2xl text-primary/40 hover:text-primary hover:bg-primary/5'>
                               <Pencil className='w-4 h-4' />
                             </Button>
                           </Link>
@@ -300,10 +300,10 @@ export default function BooksPage() {
                             disabled={actionLoading === book.id}
                             onClick={() => handleToggleActive(book)}
                             className={cn(
-                              'w-8 h-8 rounded-lg',
+                              'w-8 h-8 rounded-2xl',
                               book.isActive
-                                ? 'text-primary/40 hover:text-yellow-600 hover:bg-yellow-50'
-                                : 'text-primary/40 hover:text-green-600 hover:bg-green-50'
+                                ? 'text-primary/40 hover:text-primary hover:bg-primary/5'
+                                : 'text-primary/40 hover:text-primary hover:bg-primary/5'
                             )}>
                             {actionLoading === book.id ? (
                               <Loader2 className='w-4 h-4 animate-spin' />
@@ -315,7 +315,7 @@ export default function BooksPage() {
                             variant='ghost'
                             size='icon'
                             onClick={() => setDeleteTarget(book)}
-                            className='w-8 h-8 rounded-lg text-primary/40 hover:text-destructive hover:bg-destructive/5'>
+                            className='w-8 h-8 rounded-2xl text-primary/40 hover:text-destructive hover:bg-destructive/5'>
                             <Trash2 className='w-4 h-4' />
                           </Button>
                         </div>
@@ -339,7 +339,7 @@ export default function BooksPage() {
                   size='sm'
                   disabled={!hasPrev}
                   onClick={() => setPage(page - 1)}
-                  className='gap-1 rounded-xl'>
+                  className='gap-1 rounded-2xl'>
                   <ChevronLeft className='w-4 h-4' />
                   Previous
                 </Button>
@@ -348,7 +348,7 @@ export default function BooksPage() {
                   size='sm'
                   disabled={!hasNext}
                   onClick={() => setPage(page + 1)}
-                  className='gap-1 rounded-xl'>
+                  className='gap-1 rounded-2xl'>
                   Next
                   <ChevronRight className='w-4 h-4' />
                 </Button>
@@ -374,14 +374,14 @@ export default function BooksPage() {
             <Button
               variant='outline'
               onClick={() => setDeleteTarget(null)}
-              className='rounded-xl font-sans font-bold uppercase tracking-[0.1em] text-xs'>
+              className='rounded-2xl font-sans font-bold uppercase tracking-[0.1em] text-xs'>
               Cancel
             </Button>
             <Button
               variant='destructive'
               onClick={handleDelete}
               disabled={deleteLoading}
-              className='gap-2 rounded-xl font-sans font-bold uppercase tracking-[0.1em] text-xs'>
+              className='gap-2 rounded-2xl font-sans font-bold uppercase tracking-[0.1em] text-xs'>
               {deleteLoading ? (
                 <Loader2 className='w-4 h-4 animate-spin' />
               ) : (

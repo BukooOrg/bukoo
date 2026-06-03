@@ -80,7 +80,7 @@ export default function ForgotPasswordPage() {
           <div className='flex justify-center mb-6'>
             <div className='flex items-center justify-center rounded-full w-14 h-14 bg-primary/5'>
               {success ? (
-                <CheckCircle className='w-7 h-7 text-green-600' />
+                <CheckCircle className='w-7 h-7 text-primary' />
               ) : (
                 <Key className='w-7 h-7 text-primary' />
               )}
@@ -102,12 +102,12 @@ export default function ForgotPasswordPage() {
           {/* Success State */}
           {success ? (
             <div className='space-y-6'>
-              <div className='p-4 border bg-green-50 border-green-200 rounded-2xl'>
-                <p className='text-sm font-bold text-green-800 text-center'>
+              <div className='p-4 border bg-primary/5 border-primary/10 rounded-2xl'>
+                <p className='text-sm font-bold text-primary text-center'>
                   Check your inbox! We've sent password reset instructions to{' '}
                   <span className='font-black'>{email}</span>
                 </p>
-                <p className='text-xs text-green-600 text-center mt-2'>
+                <p className='text-xs text-primary text-center mt-2'>
                   Didn't receive the email? Check your spam folder or click 'Resend' below.
                 </p>
               </div>
