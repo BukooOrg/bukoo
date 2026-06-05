@@ -1,5 +1,5 @@
 import { ResponseError } from '@bukoo/api-client';
-import { User, Lock, Mail, UserPlus, AlertCircle, Loader2 } from 'lucide-react';
+import { User, Lock, Mail, UserPlus, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -14,6 +14,8 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -149,15 +151,21 @@ export default function RegisterPage() {
                   <Lock className='w-5 h-5 text-primary/30 group-focus-within:text-primary transition-colors' />
                 </div>
                 <input
-                  type='password'
+                  type={showPassword ? 'text' : 'password'}
                   name='password'
                   required
                   minLength={8}
                   placeholder='Min. 8 characters'
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className='w-full pl-12 pr-4 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold'
+                  className='w-full pl-12 pr-12 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold'
                 />
+                <button
+                  type='button'
+                  onClick={() => setShowPassword(!showPassword)}
+                  className='absolute inset-y-0 right-0 pr-4 flex items-center text-primary/40 hover:text-primary transition-colors'>
+                  {showPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
+                </button>
               </div>
               <PasswordStrengthMeter password={password} />
             </div>
@@ -172,13 +180,23 @@ export default function RegisterPage() {
                   <Lock className='w-5 h-5 text-primary/30 group-focus-within:text-primary transition-colors' />
                 </div>
                 <input
-                  type='password'
+                  type={showConfirmPassword ? 'text' : 'password'}
                   name='confirm_password'
                   required
                   minLength={8}
                   placeholder='Re-enter password'
-                  className='w-full pl-12 pr-4 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold'
+                  className='w-full pl-12 pr-12 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold'
                 />
+                <button
+                  type='button'
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className='absolute inset-y-0 right-0 pr-4 flex items-center text-primary/40 hover:text-primary transition-colors'>
+                  {showConfirmPassword ? (
+                    <EyeOff className='w-5 h-5' />
+                  ) : (
+                    <Eye className='w-5 h-5' />
+                  )}
+                </button>
               </div>
             </div>
 

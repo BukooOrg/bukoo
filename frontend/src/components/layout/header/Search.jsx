@@ -101,7 +101,13 @@ export default function Search() {
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
+          onBlur={(e) => {
+            // Don't close if focus moved to a suggestion link inside the dropdown
+            if (containerRef.current && containerRef.current.contains(e.relatedTarget)) {
+              return;
+            }
+            setFocused(false);
+          }}
           className='w-full px-5 py-3 !text-black placeholder:!text-black/50 bg-transparent rounded-xl focus:outline-none focus:ring-1 focus:ring-black/10 font-sans font-medium text-base md:text-lg tracking-tight transition-colors caret-black'
         />
 

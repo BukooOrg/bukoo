@@ -1,5 +1,5 @@
 import { ResponseError } from '@bukoo/api-client';
-import { User, Lock, LogIn, AlertCircle, Loader2 } from 'lucide-react';
+import { User, Lock, LogIn, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -46,6 +46,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [oauthLoading, setOauthLoading] = useState(null);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -147,12 +148,18 @@ export default function LoginPage() {
                   <Lock className='w-5 h-5 transition-colors text-primary/30 group-focus-within:text-primary' />
                 </div>
                 <input
-                  type='password'
+                  type={showPassword ? 'text' : 'password'}
                   name='password'
                   required
                   placeholder='Enter your password'
-                  className='w-full py-4 pl-12 pr-4 font-sans font-bold transition-all border md:py-5 bg-white/40 border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20'
+                  className='w-full py-4 pl-12 pr-12 font-sans font-bold transition-all border md:py-5 bg-white/40 border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20'
                 />
+                <button
+                  type='button'
+                  onClick={() => setShowPassword(!showPassword)}
+                  className='absolute inset-y-0 right-0 pr-4 flex items-center text-primary/40 hover:text-primary transition-colors'>
+                  {showPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
+                </button>
               </div>
             </div>
 
