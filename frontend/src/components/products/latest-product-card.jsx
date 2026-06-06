@@ -24,7 +24,7 @@ export function LatestProductCard({ product, principal = false, className }) {
             <img
               src={product.featuredImage.url}
               alt={product.featuredImage.altText}
-              referrerpolicy='no-referrer'
+              referrerPolicy='no-referrer'
               className='object-cover transition-transform duration-700 size-full group-hover:scale-105'
             />
           )}
@@ -50,7 +50,7 @@ export function LatestProductCard({ product, principal = false, className }) {
           <motion.img
             src={product.featuredImage.url}
             alt={product.featuredImage.altText}
-            referrerpolicy='no-referrer'
+            referrerPolicy='no-referrer'
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}

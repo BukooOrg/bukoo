@@ -10,12 +10,22 @@ import {
   AlertCircle,
   ImagePlus,
   ArrowLeft,
+  Plus,
+  Check,
+  X,
 } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { bookApi, publisherApi, categoryApi, authorApi, uploadBookCover } from '@/lib/apiClient';
+import {
+  bookApi,
+  publisherApi,
+  categoryApi,
+  authorApi,
+  collectionApi,
+  uploadBookCover,
+} from '@/lib/apiClient';
 
 export default function BookNewPage() {
   const navigate = useNavigate();
@@ -38,7 +48,69 @@ export default function BookNewPage() {
   const [publishers, setPublishers] = useState([]);
   const [categories, setCategories] = useState([]);
   const [authors, setAuthors] = useState([]);
+  const [collections, setCollections] = useState([]);
   const [refLoading, setRefLoading] = useState(true);
+
+  // Inline creation state
+  const [showNewPublisher, setShowNewPublisher] = useState(false);
+  const [newPublisherName, setNewPublisherName] = useState('');
+  const [publisherCreating, setPublisherCreating] = useState(false);
+  const [showNewCategory, setShowNewCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [newCategoryCollection, setNewCategoryCollection] = useState('');
+  const [categoryCreating, setCategoryCreating] = useState(false);
+  const [showNewAuthor, setShowNewAuthor] = useState(false);
+  const [newAuthorName, setNewAuthorName] = useState('');
+  const [authorCreating, setAuthorCreating] = useState(false);
+
+  // Search state for select fields
+  const [publisherSearch, setPublisherSearch] = useState('');
+  const [categorySearch, setCategorySearch] = useState('');
+  const [authorSearch, setAuthorSearch] = useState('');
+
+  // Server-side search results
+  const [publisherResults, setPublisherResults] = useState(null);
+  const [categoryResults, setCategoryResults] = useState(null);
+  const [authorResults, setAuthorResults] = useState(null);
+  const pubDebounce = useRef(null);
+  const catDebounce = useRef(null);
+  const authDebounce = useRef(null);
+
+  const searchPublishers = useCallback((query) => {
+    if (pubDebounce.current) clearTimeout(pubDebounce.current);
+    pubDebounce.current = setTimeout(async () => {
+      try {
+        const res = await publisherApi.findPublishers({ search: query, pageSize: 100 });
+        setPublisherResults(res.data?.items || []);
+      } catch {
+        setPublisherResults([]);
+      }
+    }, 250);
+  }, []);
+
+  const searchCategories = useCallback((query) => {
+    if (catDebounce.current) clearTimeout(catDebounce.current);
+    catDebounce.current = setTimeout(async () => {
+      try {
+        const res = await categoryApi.findCategories({ search: query, pageSize: 100 });
+        setCategoryResults(res.data || []);
+      } catch {
+        setCategoryResults([]);
+      }
+    }, 250);
+  }, []);
+
+  const searchAuthors = useCallback((query) => {
+    if (authDebounce.current) clearTimeout(authDebounce.current);
+    authDebounce.current = setTimeout(async () => {
+      try {
+        const res = await authorApi.findAuthors({ search: query, pageSize: 100 });
+        setAuthorResults(res.data?.items || []);
+      } catch {
+        setAuthorResults([]);
+      }
+    }, 250);
+  }, []);
 
   // Submit state
   const [submitting, setSubmitting] = useState(false);
@@ -47,14 +119,16 @@ export default function BookNewPage() {
   useEffect(() => {
     async function loadRefs() {
       try {
-        const [pubRes, catRes, authRes] = await Promise.all([
-          publisherApi.findPublishers({}),
-          categoryApi.findCategories({}),
-          authorApi.findAuthors({}),
+        const [pubRes, catRes, authRes, colRes] = await Promise.all([
+          publisherApi.findPublishers({ pageSize: 100 }),
+          categoryApi.findCategories({ pageSize: 100 }),
+          authorApi.findAuthors({ pageSize: 100 }),
+          collectionApi.findCollections({ pageSize: 100 }),
         ]);
         setPublishers(pubRes.data?.items || []);
         setCategories(catRes.data || []);
         setAuthors(authRes.data?.items || []);
+        setCollections(colRes.data?.items || []);
       } catch (err) {
         console.error('Failed to load reference data', err);
       } finally {
@@ -71,6 +145,70 @@ export default function BookNewPage() {
       }
       return [...prev, authorId];
     });
+  };
+
+  const createPublisherInline = async () => {
+    if (!newPublisherName.trim()) return;
+    setPublisherCreating(true);
+    try {
+      const res = await publisherApi.createPublisher({
+        createPublisherRequest: { name: newPublisherName.trim() },
+      });
+      const created = res.data;
+      setPublishers((prev) => [...prev, created]);
+      setPublisherId(created.id);
+      setShowNewPublisher(false);
+      setNewPublisherName('');
+      toast.success(`Publisher "${created.name}" created`);
+    } catch (err) {
+      toast.error(err?.response?.data?.error?.message || 'Failed to create publisher');
+    } finally {
+      setPublisherCreating(false);
+    }
+  };
+
+  const createCategoryInline = async () => {
+    if (!newCategoryName.trim() || !newCategoryCollection) return;
+    setCategoryCreating(true);
+    try {
+      const res = await categoryApi.createCategory({
+        createCategoryRequest: {
+          name: newCategoryName.trim(),
+          collectionId: newCategoryCollection,
+        },
+      });
+      const created = res.data;
+      setCategories((prev) => [...prev, created]);
+      setCategoryId(created.id);
+      setShowNewCategory(false);
+      setNewCategoryName('');
+      setNewCategoryCollection('');
+      toast.success(`Category "${created.name}" created`);
+    } catch (err) {
+      toast.error(err?.response?.data?.error?.message || 'Failed to create category');
+    } finally {
+      setCategoryCreating(false);
+    }
+  };
+
+  const createAuthorInline = async () => {
+    if (!newAuthorName.trim()) return;
+    setAuthorCreating(true);
+    try {
+      const res = await authorApi.createAuthor({
+        createAuthorRequest: { name: newAuthorName.trim() },
+      });
+      const created = res.data;
+      setAuthors((prev) => [...prev, created]);
+      setSelectedAuthors((prev) => [...prev, created.id]);
+      setShowNewAuthor(false);
+      setNewAuthorName('');
+      toast.success(`Author "${created.name}" created`);
+    } catch (err) {
+      toast.error(err?.response?.data?.error?.message || 'Failed to create author');
+    } finally {
+      setAuthorCreating(false);
+    }
   };
 
   const validateIsbn13 = (isbn) => {
@@ -378,21 +516,85 @@ export default function BookNewPage() {
           <label className='block text-xs font-black uppercase tracking-[0.2em] text-primary/60 pl-1'>
             Publisher
           </label>
-          <select
-            value={publisherId}
-            onChange={(e) => setPublisherId(e.target.value)}
-            className='w-full pl-4 pr-10 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm appearance-none bg-no-repeat bg-[center_right_1rem]'
-            style={{
-              backgroundImage:
-                "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%233F2305' opacity='0.3'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E\")",
-            }}>
-            <option value=''>No publisher</option>
-            {publishers.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
+          {showNewPublisher ? (
+            <div className='flex items-center gap-2'>
+              <input
+                type='text'
+                value={newPublisherName}
+                onChange={(e) => setNewPublisherName(e.target.value)}
+                placeholder='Publisher name'
+                autoFocus
+                className='flex-1 px-4 py-3 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm'
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    createPublisherInline();
+                  }
+                  if (e.key === 'Escape') {
+                    setShowNewPublisher(false);
+                    setNewPublisherName('');
+                  }
+                }}
+              />
+              <button
+                type='button'
+                onClick={createPublisherInline}
+                disabled={publisherCreating || !newPublisherName.trim()}
+                className='p-3 rounded-2xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors disabled:opacity-30'>
+                {publisherCreating ? (
+                  <Loader2 className='w-4 h-4 animate-spin' />
+                ) : (
+                  <Check className='w-4 h-4' />
+                )}
+              </button>
+              <button
+                type='button'
+                onClick={() => {
+                  setShowNewPublisher(false);
+                  setNewPublisherName('');
+                }}
+                className='p-3 rounded-2xl hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors'>
+                <X className='w-4 h-4' />
+              </button>
+            </div>
+          ) : (
+            <div className='space-y-2'>
+              <input
+                type='text'
+                value={publisherSearch}
+                onChange={(e) => {
+                  setPublisherSearch(e.target.value);
+                  searchPublishers(e.target.value);
+                }}
+                placeholder='Search publishers...'
+                className='w-full px-4 py-2.5 bg-white/40 border border-primary/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all font-sans font-medium text-sm'
+              />
+              <div className='flex items-center gap-2'>
+                <select
+                  value={publisherId}
+                  onChange={(e) => setPublisherId(e.target.value)}
+                  className='flex-1 pl-4 pr-10 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm appearance-none bg-no-repeat bg-[center_right_1rem]'
+                  style={{
+                    backgroundImage:
+                      "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%233F2305' opacity='0.3'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E\")",
+                  }}>
+                  <option value=''>No publisher</option>
+                  {(publisherSearch ? publisherResults : publishers)?.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type='button'
+                  onClick={() => setShowNewPublisher(true)}
+                  className='p-3 rounded-2xl text-primary/50 hover:text-primary hover:bg-primary/5 transition-colors shrink-0'
+                  title='New publisher'>
+                  <Plus className='w-4 h-4' />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Category */}
@@ -400,46 +602,186 @@ export default function BookNewPage() {
           <label className='block text-xs font-black uppercase tracking-[0.2em] text-primary/60 pl-1'>
             Category
           </label>
-          <select
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-            className='w-full pl-4 pr-10 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm appearance-none bg-no-repeat bg-[center_right_1rem]'
-            style={{
-              backgroundImage:
-                "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%233F2305' opacity='0.3'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E\")",
-            }}>
-            <option value=''>No category</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+          {showNewCategory ? (
+            <div className='space-y-2'>
+              <input
+                type='text'
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                placeholder='Category name'
+                autoFocus
+                className='w-full px-4 py-3 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm'
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    setShowNewCategory(false);
+                    setNewCategoryName('');
+                  }
+                }}
+              />
+              <select
+                value={newCategoryCollection}
+                onChange={(e) => setNewCategoryCollection(e.target.value)}
+                className='w-full pl-4 pr-10 py-3 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm appearance-none bg-no-repeat bg-[center_right_1rem]'
+                style={{
+                  backgroundImage:
+                    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%233F2305' opacity='0.3'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E\")",
+                }}>
+                <option value=''>Select collection</option>
+                {collections.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+              <div className='flex items-center gap-2'>
+                <button
+                  type='button'
+                  onClick={createCategoryInline}
+                  disabled={categoryCreating || !newCategoryName.trim() || !newCategoryCollection}
+                  className='flex-1 py-3 rounded-2xl bg-primary/10 text-primary font-sans font-bold text-sm hover:bg-primary/20 transition-colors disabled:opacity-30 flex items-center justify-center gap-2'>
+                  {categoryCreating ? (
+                    <Loader2 className='w-4 h-4 animate-spin' />
+                  ) : (
+                    <Check className='w-4 h-4' />
+                  )}
+                  Create Category
+                </button>
+                <button
+                  type='button'
+                  onClick={() => {
+                    setShowNewCategory(false);
+                    setNewCategoryName('');
+                    setNewCategoryCollection('');
+                  }}
+                  className='py-3 px-4 rounded-2xl hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors'>
+                  <X className='w-4 h-4' />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className='space-y-2'>
+              <input
+                type='text'
+                value={categorySearch}
+                onChange={(e) => {
+                  setCategorySearch(e.target.value);
+                  searchCategories(e.target.value);
+                }}
+                placeholder='Search categories...'
+                className='w-full px-4 py-2.5 bg-white/40 border border-primary/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all font-sans font-medium text-sm'
+              />
+              <div className='flex items-center gap-2'>
+                <select
+                  value={categoryId}
+                  onChange={(e) => setCategoryId(e.target.value)}
+                  className='flex-1 pl-4 pr-10 py-4 bg-white/40 border border-primary/5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/20 transition-all font-sans font-bold text-sm appearance-none bg-no-repeat bg-[center_right_1rem]'
+                  style={{
+                    backgroundImage:
+                      "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%233F2305' opacity='0.3'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E\")",
+                  }}>
+                  <option value=''>No category</option>
+                  {(categorySearch ? categoryResults : categories)?.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type='button'
+                  onClick={() => setShowNewCategory(true)}
+                  className='p-3 rounded-2xl text-primary/50 hover:text-primary hover:bg-primary/5 transition-colors shrink-0'
+                  title='New category'>
+                  <Plus className='w-4 h-4' />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Authors */}
-        {authors.length > 0 && (
-          <div className='space-y-2'>
-            <label className='block text-xs font-black uppercase tracking-[0.2em] text-primary/60 pl-1'>
-              Authors
-            </label>
-            <div className='p-4 space-y-2 bg-white/40 border border-primary/5 rounded-2xl max-h-48 overflow-y-auto'>
-              {authors.map((author) => (
-                <label key={author.id} className='flex items-center gap-3 cursor-pointer group'>
-                  <input
-                    type='checkbox'
-                    checked={selectedAuthors.includes(author.id)}
-                    onChange={() => handleAuthorToggle(author.id)}
-                    className='w-4 h-4 rounded border-primary/20 text-primary focus:ring-primary/20'
-                  />
-                  <span className='text-sm font-sans font-bold text-primary/70 group-hover:text-primary transition-colors'>
-                    {author.name}
-                  </span>
-                </label>
-              ))}
-            </div>
+        <div className='space-y-2'>
+          <label className='block text-xs font-black uppercase tracking-[0.2em] text-primary/60 pl-1'>
+            Authors
+          </label>
+          <div className='p-4 space-y-2 bg-white/40 border border-primary/5 rounded-2xl max-h-64 overflow-y-auto'>
+            <input
+              type='text'
+              value={authorSearch}
+              onChange={(e) => {
+                setAuthorSearch(e.target.value);
+                searchAuthors(e.target.value);
+              }}
+              placeholder='Search authors...'
+              className='w-full px-3 py-2 bg-white/60 border border-primary/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all font-sans font-medium text-sm sticky top-0'
+            />
+            {authorSearch && (!authorResults || authorResults.length === 0) && (
+              <p className='text-xs text-center text-muted-foreground py-2'>No authors match</p>
+            )}
+            {(authorSearch ? authorResults : authors)?.map((author) => (
+              <label key={author.id} className='flex items-center gap-3 cursor-pointer group'>
+                <input
+                  type='checkbox'
+                  checked={selectedAuthors.includes(author.id)}
+                  onChange={() => handleAuthorToggle(author.id)}
+                  className='w-4 h-4 rounded border-primary/20 text-primary focus:ring-primary/20'
+                />
+                <span className='text-sm font-sans font-bold text-primary/70 group-hover:text-primary transition-colors'>
+                  {author.name}
+                </span>
+              </label>
+            ))}
+            {showNewAuthor ? (
+              <div className='flex items-center gap-2 pt-2 border-t border-primary/5'>
+                <input
+                  type='text'
+                  value={newAuthorName}
+                  onChange={(e) => setNewAuthorName(e.target.value)}
+                  placeholder='New author name'
+                  autoFocus
+                  className='flex-1 px-3 py-2 bg-white/60 border border-primary/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all font-sans font-bold text-sm'
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      createAuthorInline();
+                    }
+                    if (e.key === 'Escape') {
+                      setShowNewAuthor(false);
+                      setNewAuthorName('');
+                    }
+                  }}
+                />
+                <button
+                  type='button'
+                  onClick={createAuthorInline}
+                  disabled={authorCreating || !newAuthorName.trim()}
+                  className='p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors disabled:opacity-30'>
+                  {authorCreating ? (
+                    <Loader2 className='w-3.5 h-3.5 animate-spin' />
+                  ) : (
+                    <Check className='w-3.5 h-3.5' />
+                  )}
+                </button>
+                <button
+                  type='button'
+                  onClick={() => {
+                    setShowNewAuthor(false);
+                    setNewAuthorName('');
+                  }}
+                  className='p-2 rounded-xl hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors'>
+                  <X className='w-3.5 h-3.5' />
+                </button>
+              </div>
+            ) : (
+              <button
+                type='button'
+                onClick={() => setShowNewAuthor(true)}
+                className='w-full flex items-center justify-center gap-2 py-2 rounded-xl text-primary/50 hover:text-primary hover:bg-primary/5 transition-colors text-xs font-bold'>
+                <Plus className='w-3.5 h-3.5' />
+                Add Author
+              </button>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Error */}
         {error && (

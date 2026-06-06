@@ -31,6 +31,7 @@ vi.mock('sonner', () => ({
     error: vi.fn(),
     warning: vi.fn(),
   },
+  Toaster: () => null,
 }));
 
 vi.mock('@/context/AuthContext', () => ({

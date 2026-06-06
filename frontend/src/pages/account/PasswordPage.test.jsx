@@ -4,6 +4,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import PasswordPage from './PasswordPage';
 
+vi.mock('@/context/AuthContext', () => ({
+  useAuth: () => ({
+    user: { havePassword: true },
+  }),
+}));
+
 vi.mock('@/lib/apiClient', () => ({
   userApi: {
     changePassword: vi.fn(),

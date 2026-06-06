@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import override
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid_extension import uuid7
 
@@ -102,6 +103,12 @@ class CreateBookUseCase(BaseBookUseCase):
             book.set_author(book_author)
 
         await self._book_repo.save(book, False)
-        await self._db_session.commit()
+        try:
+            await self._db_session.commit()
+        except IntegrityError:
+            await self._db_session.rollback()
+            if cmd.isbn is not None:
+                raise BookAlreadyExistsError(cmd.isbn) from None
+            raise
 
         return self._to_result(book, CreateBookResult)

@@ -317,7 +317,7 @@ export default function UserDetailPage() {
               <Button
                 variant='outline'
                 onClick={() => setResetDialog(true)}
-                className='gap-2 rounded-2xl text-xs font-bold uppercase tracking-widest'>
+                className='gap-2 rounded-2xl text-xs font-bold uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5'>
                 <Key className='w-4 h-4' />
                 Reset Password
               </Button>
@@ -428,7 +428,10 @@ export default function UserDetailPage() {
             <Button variant='outline' onClick={() => setResetDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={handleResetPassword} disabled={actionLoading || !newPassword}>
+            <Button
+              onClick={handleResetPassword}
+              disabled={actionLoading || !newPassword}
+              className='text-white'>
               {actionLoading ? <Loader2 className='w-4 h-4 animate-spin' /> : 'Reset Password'}
             </Button>
           </DialogFooter>

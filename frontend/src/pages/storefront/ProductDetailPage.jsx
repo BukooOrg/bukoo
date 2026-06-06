@@ -99,7 +99,7 @@ export default function ProductDetailPage() {
                 <motion.img
                   src={product.featuredImage.url}
                   alt={product.title}
-                  referrerpolicy='no-referrer'
+                  referrerPolicy='no-referrer'
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.5 }}

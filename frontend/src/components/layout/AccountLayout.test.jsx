@@ -10,6 +10,7 @@ vi.mock('@/context/AuthContext', () => ({
       fullName: 'Test User',
       email: 'test@test.com',
       avatarUrl: null,
+      havePassword: true,
     },
   }),
 }));

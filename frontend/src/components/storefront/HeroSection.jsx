@@ -38,7 +38,7 @@ function MarqueeColumn({ books, speed, className }) {
               <img
                 src={book.featuredImage.url}
                 alt={book.featuredImage.altText || book.title}
-                referrerpolicy='no-referrer'
+                referrerPolicy='no-referrer'
                 className='w-full h-full object-contain'
                 draggable={false}
               />

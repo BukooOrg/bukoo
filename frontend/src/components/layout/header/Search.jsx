@@ -134,7 +134,7 @@ export default function Search() {
                   <img
                     src={book.coverUrl}
                     alt=''
-                    referrerpolicy='no-referrer'
+                    referrerPolicy='no-referrer'
                     className='w-9 h-13 object-contain rounded-sm shrink-0 bg-gray-100'
                   />
                 )}

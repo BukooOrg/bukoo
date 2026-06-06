@@ -47,6 +47,13 @@ const sections = [
     ],
   },
   {
+    label: 'Inventory & Reports',
+    items: [
+      { to: '/admin/inventory', label: 'Inventory', icon: Warehouse },
+      { to: '/admin/reports', label: 'Reports', icon: BarChart3 },
+    ],
+  },
+  {
     label: 'Users',
     items: [
       { to: '/admin/users', label: 'Manage Users', icon: Users },
@@ -58,13 +65,6 @@ const sections = [
     items: [
       { to: '/admin/orders', label: 'Orders', icon: Package },
       { to: '/admin/reviews', label: 'Reviews', icon: MessageSquare },
-    ],
-  },
-  {
-    label: 'Inventory & Reports',
-    items: [
-      { to: '/admin/inventory', label: 'Inventory', icon: Warehouse },
-      { to: '/admin/reports', label: 'Reports', icon: BarChart3 },
     ],
   },
   {

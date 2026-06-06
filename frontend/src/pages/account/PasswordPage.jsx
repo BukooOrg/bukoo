@@ -1,12 +1,28 @@
-import { Loader2, Eye, EyeOff, Lock, AlertCircle } from 'lucide-react';
+import { Loader2, Eye, EyeOff, Lock, AlertCircle, ShieldAlert } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 
 import { PasswordStrengthMeter } from '@/components/auth/password-strength-meter';
+import { useAuth } from '@/context/AuthContext';
 import { useApiMutation } from '@/hooks/useApiMutation';
 import { userApi } from '@/lib/apiClient';
 
 export default function PasswordPage() {
+  const { user } = useAuth();
+
+  if (user && !user.havePassword) {
+    return (
+      <div className='text-center py-16 space-y-4'>
+        <ShieldAlert className='w-12 h-12 mx-auto text-muted-foreground' />
+        <h2 className='text-2xl font-serif font-black text-primary'>No Password Needed</h2>
+        <p className='text-sm text-muted-foreground max-w-md mx-auto'>
+          Your account uses Google or Facebook login, so there&apos;s no local password to change.
+          If you lost access to your social account, contact support.
+        </p>
+      </div>
+    );
+  }
+
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');

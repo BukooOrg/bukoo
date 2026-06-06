@@ -25,7 +25,7 @@ function ConfirmationItem({ item }) {
           <img
             src={item.bookCoverUrl}
             alt={item.bookTitle}
-            referrerpolicy='no-referrer'
+            referrerPolicy='no-referrer'
             className='w-full h-full object-contain bg-gray-100'
           />
         ) : (

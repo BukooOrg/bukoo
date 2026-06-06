@@ -16,6 +16,7 @@ import {
 import { motion } from 'motion/react';
 import React, { useState } from 'react';
 import { Link, useLocation, Outlet } from 'react-router-dom';
+import { Toaster } from 'sonner';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/data-display/avatar';
 import { SkipLink } from '@/components/ui/misc/skip-link';
@@ -40,7 +41,7 @@ const navItems = [
   { to: '/account/orders', label: 'Orders', icon: ShoppingCart },
   { to: '/account/reviews', label: 'Reviews', icon: Star },
   { to: '/account/notifications', label: 'Notifications', icon: Bell },
-  { to: '/account/password', label: 'Password', icon: Lock },
+  { to: '/account/password', label: 'Password', icon: Lock, requires: 'havePassword' },
 ];
 
 const SIDEBAR_WIDTH_EXPANDED = 'w-80 md:w-96';
@@ -138,42 +139,44 @@ export function AccountLayout() {
                   'flex-1 overflow-y-auto transition-all duration-300',
                   collapsed ? 'space-y-0.5' : 'space-y-1'
                 )}>
-                {navItems.map((item) => {
-                  const isActive = location.pathname === item.to;
-                  const Icon = item.icon;
+                {navItems
+                  .filter((item) => !item.requires || user?.[item.requires])
+                  .map((item) => {
+                    const isActive = location.pathname === item.to;
+                    const Icon = item.icon;
 
-                  if (collapsed) {
+                    if (collapsed) {
+                      return (
+                        <Tooltip key={item.to}>
+                          <TooltipTrigger asChild>
+                            <Link
+                              to={item.to}
+                              onClick={() => setMobileOpen(false)}
+                              className='flex items-center justify-center p-3 transition-colors rounded-lg cursor-pointer text-primary/70 hover:bg-primary/5 hover:text-primary'>
+                              <Icon className='w-5 h-5 shrink-0' />
+                            </Link>
+                          </TooltipTrigger>
+                          <TooltipContent side='right' align='center' sideOffset={8}>
+                            {item.label}
+                          </TooltipContent>
+                        </Tooltip>
+                      );
+                    }
+
                     return (
-                      <Tooltip key={item.to}>
-                        <TooltipTrigger asChild>
-                          <Link
-                            to={item.to}
-                            onClick={() => setMobileOpen(false)}
-                            className='flex items-center justify-center p-3 transition-colors rounded-lg cursor-pointer text-primary/70 hover:bg-primary/5 hover:text-primary'>
-                            <Icon className='w-5 h-5 shrink-0' />
-                          </Link>
-                        </TooltipTrigger>
-                        <TooltipContent side='right' align='center' sideOffset={8}>
-                          {item.label}
-                        </TooltipContent>
-                      </Tooltip>
+                      <Link
+                        key={item.to}
+                        to={item.to}
+                        onClick={() => setMobileOpen(false)}
+                        className={cn(
+                          'flex items-center gap-3.5 px-4 py-3 rounded-lg text-base font-sans font-medium leading-relaxed transition-colors cursor-pointer text-primary/70 hover:bg-primary/5 hover:text-primary',
+                          isActive && 'bg-primary/10 text-primary font-bold'
+                        )}>
+                        <Icon className='w-5 h-5 shrink-0' />
+                        <span>{item.label}</span>
+                      </Link>
                     );
-                  }
-
-                  return (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      onClick={() => setMobileOpen(false)}
-                      className={cn(
-                        'flex items-center gap-3.5 px-4 py-3 rounded-lg text-base font-sans font-medium leading-relaxed transition-colors cursor-pointer text-primary/70 hover:bg-primary/5 hover:text-primary',
-                        isActive && 'bg-primary/10 text-primary font-bold'
-                      )}>
-                      <Icon className='w-5 h-5 shrink-0' />
-                      <span>{item.label}</span>
-                    </Link>
-                  );
-                })}
+                  })}
               </nav>
 
               {/* Back to home — pinned bottom */}
@@ -231,6 +234,7 @@ export function AccountLayout() {
           </main>
         </div>
       </div>
+      <Toaster closeButton position='bottom-right' />
     </TooltipProvider>
   );
 }

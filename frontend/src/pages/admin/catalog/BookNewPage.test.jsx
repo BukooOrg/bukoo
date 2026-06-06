@@ -37,6 +37,11 @@ vi.mock('@/lib/apiClient', () => ({
       },
     }),
   },
+  collectionApi: {
+    findCollections: vi.fn().mockResolvedValue({
+      data: { items: [] },
+    }),
+  },
 }));
 
 describe('BookNewPage', () => {

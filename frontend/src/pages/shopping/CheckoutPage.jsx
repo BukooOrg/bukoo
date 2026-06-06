@@ -186,7 +186,7 @@ export default function CheckoutPage() {
                       <img
                         src={item.book.coverUrl}
                         alt={item.book.title}
-                        referrerpolicy='no-referrer'
+                        referrerPolicy='no-referrer'
                         className='w-full h-full object-contain bg-gray-100'
                       />
                     ) : (

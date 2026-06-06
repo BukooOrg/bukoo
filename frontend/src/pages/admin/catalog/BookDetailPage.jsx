@@ -14,7 +14,7 @@ import {
   ArrowLeft,
   ImagePlus,
 } from 'lucide-react';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -72,6 +72,53 @@ export default function BookDetailPage() {
   const [categories, setCategories] = useState([]);
   const [authors, setAuthors] = useState([]);
 
+  // Search state for select fields
+  const [publisherSearch, setPublisherSearch] = useState('');
+  const [categorySearch, setCategorySearch] = useState('');
+  const [authorSearch, setAuthorSearch] = useState('');
+  const [publisherResults, setPublisherResults] = useState(null);
+  const [categoryResults, setCategoryResults] = useState(null);
+  const [authorResults, setAuthorResults] = useState(null);
+  const pubDebounce = useRef(null);
+  const catDebounce = useRef(null);
+  const authDebounce = useRef(null);
+
+  const searchPublishers = useCallback((query) => {
+    if (pubDebounce.current) clearTimeout(pubDebounce.current);
+    pubDebounce.current = setTimeout(async () => {
+      try {
+        const res = await publisherApi.findPublishers({ search: query, pageSize: 100 });
+        setPublisherResults(res.data?.items || []);
+      } catch {
+        setPublisherResults([]);
+      }
+    }, 250);
+  }, []);
+
+  const searchCategories = useCallback((query) => {
+    if (catDebounce.current) clearTimeout(catDebounce.current);
+    catDebounce.current = setTimeout(async () => {
+      try {
+        const res = await categoryApi.findCategories({ search: query, pageSize: 100 });
+        setCategoryResults(res.data || []);
+      } catch {
+        setCategoryResults([]);
+      }
+    }, 250);
+  }, []);
+
+  const searchAuthors = useCallback((query) => {
+    if (authDebounce.current) clearTimeout(authDebounce.current);
+    authDebounce.current = setTimeout(async () => {
+      try {
+        const res = await authorApi.findAuthors({ search: query, pageSize: 100 });
+        setAuthorResults(res.data?.items || []);
+      } catch {
+        setAuthorResults([]);
+      }
+    }, 250);
+  }, []);
+
   // Action states
   const [saveLoading, setSaveLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
@@ -117,9 +164,9 @@ export default function BookDetailPage() {
     async function loadRefs() {
       try {
         const [pubRes, catRes, authRes] = await Promise.all([
-          publisherApi.findPublishers({}),
-          categoryApi.findCategories({}),
-          authorApi.findAuthors({}),
+          publisherApi.findPublishers({ pageSize: 100 }),
+          categoryApi.findCategories({ pageSize: 100 }),
+          authorApi.findAuthors({ pageSize: 100 }),
         ]);
         setPublishers(pubRes.data?.items || []);
         setCategories(catRes.data || []);
@@ -379,7 +426,7 @@ export default function BookDetailPage() {
             <img
               src={book.coverUrl}
               alt={book.title}
-              referrerpolicy='no-referrer'
+              referrerPolicy='no-referrer'
               className='object-cover w-full h-full'
             />
           ) : (
@@ -624,6 +671,16 @@ export default function BookDetailPage() {
               <label className='block text-xs font-black uppercase tracking-[0.2em] text-primary/60 pl-1'>
                 Publisher
               </label>
+              <input
+                type='text'
+                value={publisherSearch}
+                onChange={(e) => {
+                  setPublisherSearch(e.target.value);
+                  searchPublishers(e.target.value);
+                }}
+                placeholder='Search publishers...'
+                className='w-full px-4 py-2.5 bg-white/40 border border-primary/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all font-sans font-medium text-sm'
+              />
               <select
                 value={publisherId}
                 onChange={(e) => setPublisherId(e.target.value)}
@@ -633,7 +690,7 @@ export default function BookDetailPage() {
                     "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%233F2305' opacity='0.3'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E\")",
                 }}>
                 <option value=''>No publisher</option>
-                {publishers.map((p) => (
+                {(publisherSearch ? publisherResults : publishers)?.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name}
                   </option>
@@ -646,6 +703,16 @@ export default function BookDetailPage() {
               <label className='block text-xs font-black uppercase tracking-[0.2em] text-primary/60 pl-1'>
                 Category
               </label>
+              <input
+                type='text'
+                value={categorySearch}
+                onChange={(e) => {
+                  setCategorySearch(e.target.value);
+                  searchCategories(e.target.value);
+                }}
+                placeholder='Search categories...'
+                className='w-full px-4 py-2.5 bg-white/40 border border-primary/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all font-sans font-medium text-sm'
+              />
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
@@ -655,7 +722,7 @@ export default function BookDetailPage() {
                     "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%233F2305' opacity='0.3'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E\")",
                 }}>
                 <option value=''>No category</option>
-                {categories.map((c) => (
+                {(categorySearch ? categoryResults : categories)?.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
                   </option>
@@ -664,34 +731,45 @@ export default function BookDetailPage() {
             </div>
 
             {/* Authors */}
-            {authors.length > 0 && (
-              <div className='space-y-2'>
-                <label className='block text-xs font-black uppercase tracking-[0.2em] text-primary/60 pl-1'>
-                  Authors
-                </label>
-                <div className='p-4 space-y-2 bg-white/40 border border-primary/5 rounded-2xl max-h-48 overflow-y-auto'>
-                  {authors.map((author) => (
-                    <label key={author.id} className='flex items-center gap-3 cursor-pointer group'>
-                      <input
-                        type='checkbox'
-                        checked={selectedAuthors.includes(author.id)}
-                        onChange={() =>
-                          setSelectedAuthors((prev) =>
-                            prev.includes(author.id)
-                              ? prev.filter((id) => id !== author.id)
-                              : [...prev, author.id]
-                          )
-                        }
-                        className='w-4 h-4 rounded border-primary/20 text-primary focus:ring-primary/20'
-                      />
-                      <span className='text-sm font-sans font-bold text-primary/70 group-hover:text-primary transition-colors'>
-                        {author.name}
-                      </span>
-                    </label>
-                  ))}
-                </div>
+            <div className='space-y-2'>
+              <label className='block text-xs font-black uppercase tracking-[0.2em] text-primary/60 pl-1'>
+                Authors
+              </label>
+              <div className='p-4 space-y-2 bg-white/40 border border-primary/5 rounded-2xl max-h-64 overflow-y-auto'>
+                <input
+                  type='text'
+                  value={authorSearch}
+                  onChange={(e) => {
+                    setAuthorSearch(e.target.value);
+                    searchAuthors(e.target.value);
+                  }}
+                  placeholder='Search authors...'
+                  className='w-full px-3 py-2 bg-white/60 border border-primary/5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all font-sans font-medium text-sm sticky top-0'
+                />
+                {authorSearch && (!authorResults || authorResults.length === 0) && (
+                  <p className='text-xs text-center text-muted-foreground py-2'>No authors match</p>
+                )}
+                {(authorSearch ? authorResults : authors)?.map((author) => (
+                  <label key={author.id} className='flex items-center gap-3 cursor-pointer group'>
+                    <input
+                      type='checkbox'
+                      checked={selectedAuthors.includes(author.id)}
+                      onChange={() =>
+                        setSelectedAuthors((prev) =>
+                          prev.includes(author.id)
+                            ? prev.filter((id) => id !== author.id)
+                            : [...prev, author.id]
+                        )
+                      }
+                      className='w-4 h-4 rounded border-primary/20 text-primary focus:ring-primary/20'
+                    />
+                    <span className='text-sm font-sans font-bold text-primary/70 group-hover:text-primary transition-colors'>
+                      {author.name}
+                    </span>
+                  </label>
+                ))}
               </div>
-            )}
+            </div>
 
             <div className='flex gap-3 pt-4'>
               <button
